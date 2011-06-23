@@ -1,0 +1,18 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler <%= Time.now.year %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'wisp/sidebar' %>
+<% end %>
+<%= render 'form' %>
+
+<p id="notice"><%= notice %></p>
+
+
+<%= link_to 'Edit', edit_weather_station_data_path(@weather_station_data) %> |
+<%= link_to 'Back', weather_station_data_path %>

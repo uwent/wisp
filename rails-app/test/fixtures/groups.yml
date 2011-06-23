@@ -1,0 +1,11 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+default:
+  id: 1
+  description: This is the default group
+
+ricks:
+  description: This is rick's group 
+
+finns:
+  description: This is finn's group

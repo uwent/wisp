@@ -1,0 +1,16 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler <%= Time.now.year %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'sidebar' %>
+<% end %>
+
+<h2>Wisp#report_setup</h2>
+<p>Find me in app/views/wisp/report_setup.html.erb</p>
+
+<p>A page for gathering information needed for constructing any available reports downloaded to the users' local machine.</p>

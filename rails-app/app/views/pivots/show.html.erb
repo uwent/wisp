@@ -1,0 +1,63 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler <%= Time.now.year %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'wisp/sidebar' %>
+<% end %>
+<%= render 'form' %>
+
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Farm:</b>
+  <%= @pivot.farm_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @pivot.name %>
+</p>
+
+<p>
+  <b>Latitude:</b>
+  <%= @pivot.latitude %>
+</p>
+
+<p>
+  <b>Longitude:</b>
+  <%= @pivot.longitude %>
+</p>
+
+<p>
+  <b>Equipment:</b>
+  <%= @pivot.equipment %>
+</p>
+
+<p>
+  <b>Pump capacity:</b>
+  <%= @pivot.pump_capacity %>
+</p>
+
+<p>
+  <b>Some energy rate metric:</b>
+  <%= @pivot.some_energy_rate_metric %>
+</p>
+
+<p>
+  <b>Cropping year:</b>
+  <%= @pivot.cropping_year %>
+</p>
+
+<p>
+  <b>Notes:</b>
+  <%= @pivot.notes %>
+</p>
+
+
+<%= link_to 'Edit', edit_pivot_path(@pivot) %> |
+<%= link_to 'Back', pivots_path %>

@@ -1,0 +1,57 @@
+<%= form_for(@field) do |f| %>
+  <% if @field.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@field.errors.count, "error") %> prohibited this field from being saved:</h2>
+
+      <ul>
+      <% @field.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :pivot_id %><br />
+    <%= f.text_field :pivot_id %>
+  </div>
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :soil_type %><br />
+    <%= f.text_field :soil_type %>
+  </div>
+  <div class="field">
+    <%= f.label :area %><br />
+    <%= f.text_field :area %>
+  </div>
+  <div class="field">
+    <%= f.label :field_capacity %><br />
+    <%= f.text_field :field_capacity %>
+  </div>
+  <div class="field">
+    <%= f.label :perm_wilting_pt %><br />
+    <%= f.text_field :perm_wilting_pt %>
+  </div>
+  <div class="field">
+    <%= f.label :ref_et_station_id %><br />
+    <%= f.text_field :ref_et_station_id %>
+  </div>
+  <div class="field">
+    <%= f.label :rain_station_id %><br />
+    <%= f.text_field :rain_station_id %>
+  </div>
+  <div class="field">
+    <%= f.label :soil_moisture_station_id %><br />
+    <%= f.text_field :soil_moisture_station_id %>
+  </div>
+  <div class="field">
+    <%= f.label :notes %><br />
+    <%= f.text_field :notes %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

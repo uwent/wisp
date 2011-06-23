@@ -1,0 +1,5 @@
+<!-- Iterate through the columns of ActiveRecord object obj; emit a TD 
+    element for the contents of each one -->
+<% for column in obj.class.content_columns %>
+  <td><%=h obj.send(column.name) %></td>
+<% end %>

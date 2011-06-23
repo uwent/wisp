@@ -1,0 +1,60 @@
+<% content_for :title do %>
+  Weather Observations
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= image_tag "DSC00659.jpg", {:width => "231", :height => "231", :alt => "Snowy Scene"} %>
+  <h2>Weather Observations</h2>
+  <p></p>
+<% end %>
+
+<!-- content for remainder of page -->
+
+<a href="http://www.soils.wisc.edu/cgi-bin/asig/HYDAccessPage.rb#today"><%= image_tag "opu.png", {:width=>"109", :height => "95", :alt => "HYD Report screenshot", :class =>"left"} %>
+<h2>HYD Reports</h2></a>
+<p>We offer online access to NWS HYD reports -- daily weather summaries of temperature and
+  precipitation by volunteer observers -- for hundreds of locations throughout Wisconsin going back to 1995. 
+  The reports are text files, one per day.</p>
+  <p><%= todays_hyd_link %>
+  <a href="http://www.soils.wisc.edu/cgi-bin/asig/HYDAccessPage.rb#today" class="bar-lit">Access to dataset</a></p>
+
+<div class="fineline"></div>
+
+<%= image_tag "sunwater.png", {:width => "109", :height => "108", :alt => "Sun and Water", :class => "left"} %>
+<h2><%= link_to "Automated Weather Observation Network", :controller => "awon", :action => "index" %></h2>
+<p>Since 1985, we have maintained automated weather stations at the Hancock and Arlington ag research stations.
+  (Others were also operated in the 1980s-1990s.) They make
+  hourly observations and daily averages for temperature, humidity, wind speed and direction, solar radiation, and soil temperature.</p>
+  <p><a href="http://www.soils.wisc.edu/servlets/servlet/EDU.wisc.soils.AWSReport.AWSRepServlet">7-day weather report</a>
+  <a href="http://www.soils.wisc.edu/servlets/servlet/EDU.wisc.soils.AWSReport.AWSRepServlet?ReportType=Soil" class="bar-lit">7-day soil-temp report</a>
+  <%= link_to 'Access to dataset', {:controller => 'awon'}, {:class => 'bar-lit'} %>
+  <%= link_to 'Station status weblog', {:controller => 'awon', :action => :blog }, {:class => 'bar-lit'}%></p>
+  <div class="fineline"></div>
+
+
+<%= image_tag "grid_map.png", {:width => "109", :height => "108", :alt => "Temperature Map", :class => "left"} %>
+<h2><a><%= link_to "Grid-Interpolated Daily Temperatures", :controller => "weather", :action => :grid_temps %></h2>
+<p>Working from observations made by hundreds of automated weather stations across the Upper Midwest,
+   our computer model interpolates the temperatures to form rectilinear grids by latitude and longitude for daily max,
+   min, and average temperature.
+   </p>
+   <p>&nbsp;</p>
+   <div class="fineline"></div>
+
+<a href="http://www.soils.wisc.edu/~asig/webcam/big.jpg">   
+<img src="http://www.soils.wisc.edu/~asig/webcam/halfsize.jpg" width="108" height="90" alt="Webcam Image" class="left"/></a>
+<h2><a><%= link_to "King Hall Web Cam", :controller => "weather", :action => :webcam %></h2>
+<p>The view over Lake Mendota. We offer daily time-lapse movies and 5-minute and one-hour image archives all the way
+   back to 2004.
+  <br/>
+  <br/><a href="http://www.soils.wisc.edu/~asig/webcam/big.jpg" class="bar-lit">Latest Image</a>
+  <%= webcam_archive_link "Today's Pictures",{},{:class => 'bar-lit'} %>
+  <%= webcam_archive_link "Today's Movie (requires Java)",{:movie => 'true'},{:class => 'bar-lit'} %>
+  </p>
+
+
+	

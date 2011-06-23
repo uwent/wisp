@@ -1,0 +1,48 @@
+<% content_for :title do %>
+  <%= title %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+    <% render :partial => 'welcome' %>
+<% end %>
+  
+<h2>Data Available</h2>
+<p>The AWON automated weather stations produce several different types of reports,
+each with its own list of data parameters measured.</p>
+
+<p><%= link_to "Graphs of recent meterological data", :action => :graphs %>&nbsp;&nbsp;|&nbsp;&nbsp;<%= link_to "Graphs of soil temperatures", :action => :graphs_soiltemp %></p>
+<p><%= link_to "List of stations", :action => "station_info" %>, their geographic locations, and the operational dates.</p>
+<p><%= link_to "Station status weblog", :action => :blog %> <%= @blogs && @blogs.size > 0 ? "(Last updated #{@blogs[0].date})" : ""%></p>
+
+<h4>Download Data</h4>
+<p>Listed below are the
+existing report types and a summary of parameters in each report. Please click on the
+report you wish to query:
+</p>
+<P>
+<CENTER>
+<table BORDER=5 CELLPADDING=5 WIDTH=500>
+<tr>
+  <td><%= link_to "Daily Climate Data", :action => :daily_clim %></td>
+  <td>Temperatures, humidity, dewpoint, wind, insolation, Ref ET, % cloud cover</td>
+</tr>
+<tr>
+  <td><%= link_to "Daily Soil<BR> Temperature Data", :action => :daily_soil %></td>
+  <td>Daily soil temps at 2, 4, 20 and 40"</td>
+</tr>
+<tr>
+  <td><%= link_to "Hourly or Half-Hourly* Climate <BR>and Soil Data", :action => "half_hourly" %></td>
+  <td>Temperatures, humidity, dewpoint, wind, insolation</td>
+</tr>
+<tr>
+  <td><%= link_to "Five-Minute<BR> Rainfall Data", :action => :five_min_rain %></td>
+  <td>Five-minute rainfall and wind observations</td>
+</tr>
+ </table>
+ <br/>
+ *Note: Some decommissioned stations reported half-hourly, while others were hourly. In 1999 all remaining stations went to half-hour reporting.<br/><br/>
+</CENTER>

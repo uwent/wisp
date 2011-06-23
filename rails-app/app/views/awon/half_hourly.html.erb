@@ -1,0 +1,110 @@
+<% content_for :title do %>
+  <%= title %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+    <%= do_welcome %>
+<% end %>
+
+
+<h2>Select Desired Half-Hourly Climate and Soil Data</h2>
+<form name="select" METHOD="POST" ACTION="http://www.soils.wisc.edu/asigServlets/AWSDownload">
+  <input type="hidden" name="rpt_type" value="403"/>
+<B>First,</B> please select the station whose data you wish to download:
+<P> The list box
+below lists the stations available, showing the station number, the first
+day of data available for that station, the last day of data available,
+and the station's name.
+<P>
+<%= render :partial => 'date_selector' %>
+
+<P><HR><P>
+
+<B>Next, </b>please choose the data fields you wish to include:
+<P>
+<input TYPE="checkbox" NAME="show_first_line" VALUE="yes" CHECKED>&nbsp&nbsp Display
+data field abbreviations as first line of data (column headings)
+<br><input TYPE="checkbox" NAME="year_doy" VALUE="yes">&nbsp&nbsp Display date as
+year and day-of-year (default is year-month-day)
+<P>
+<table BORDER=5 CELLPADDING=3>
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="stnid" CHECKED>&nbsp&nbsp Station Number</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="theDate" CHECKED>&nbsp&nbsp Date</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="theTime" CHECKED>&nbsp&nbsp Time</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HToPcpn" CHECKED>&nbsp&nbsp Total Precipitation
+(mm)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HAvSol" CHECKED>&nbsp&nbsp Average Solar
+Radiation (W/m2)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HAvTAir" CHECKED>&nbsp&nbsp Average Air
+Temperature (Deg C)</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HAvRHum" CHECKED>&nbsp&nbsp Average Relative
+Humidity (Percent)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HAvTS05" CHECKED>&nbsp&nbsp Average 2
+Inch Soil Temperature (Deg C)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HAvTS10" CHECKED>&nbsp&nbsp Average 4
+Inch Soil Temperature (Deg C)</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HAvTS50" CHECKED>&nbsp&nbsp Average 20
+Inch Soil Temperature (Deg C)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HPkWind" CHECKED>&nbsp&nbsp Peak Wind
+(m/s)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HAvWind" CHECKED>&nbsp&nbsp Average Wind
+(m/s)</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HRsWind" CHECKED>&nbsp&nbsp Resultant
+Wind (m/s)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HRsDir" CHECKED>&nbsp&nbsp Resultant Wind
+Direction (Degrees)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HDvDir" CHECKED>&nbsp&nbsp Std. Dev. of
+Res. Wind Dir. (Degrees)</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HAvPAR" CHECKED>&nbsp&nbsp Average P.A.R.
+Radiation (uMoles/(m2s))</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HMxWnd1" CHECKED>&nbsp&nbsp Maximum One
+Minute Wind Speed (m/s)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="HAvTDew" CHECKED>&nbsp&nbsp Average Dew
+Temperature (Deg C)</td>
+</tr>
+</table>
+
+<P><HR><P>
+
+<B>Next, </b>select the date range you want:
+<%= date_selector_section %>
+
+<P><HR><P>
+<B>Finally,</B> click the "Download Data" button to obtain your data: 
+When the data appear in your browser window, you can copy and paste them into
+a file, or use the "Save As.." function of your browser to save them. Press
+the "Clear All Checkboxes" button to un-check all the data-selection boxes.
+<p><input type="submit" value="Download Data">&nbsp&nbsp <input type="reset" value="Clear All Checkboxes">
+</form>

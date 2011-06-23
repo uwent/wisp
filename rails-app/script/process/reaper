@@ -1,0 +1,4 @@
+#!/usr/local/ruby-1.8.7/bin/ruby
+require File.dirname(__FILE__) + '/../../config/boot'
+$:.unshift "#{RAILS_ROOT}/vendor/plugins/irs_process_scripts/lib"
+require 'commands/process/reaper'
