@@ -1,0 +1,26 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler <%= Time.now.year %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'sidebar' %>
+<% end %>
+
+<h2>Wisp#farm_status</h2>
+<p>Find me in app/views/wisp/farm_status.html.erb</p>
+
+<p>This page lists any fields with problems such as pending under or over irrigation, 
+along with pertinent information describing the problem and a link to the field status page for more information.</p>
+
+<table border="1" cellpadding="1" cellspacing="1" summary="Action Items for farm XXX">
+<tr>
+		<th>Field name</th><th>Explanation</th>
+</tr>
+<tr>
+		<td>Field name (and link to field status)</td><td>Explanation of problem</td>
+</tr>
+</table>

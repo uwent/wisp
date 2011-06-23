@@ -1,0 +1,49 @@
+<% content_for :title do %>
+ Thermal Models
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= image_tag "thermal.png",{:width => "231", :height => "156", :alt => "Hot and Cold"} %>
+  <h2>Thermal Models</h2>
+  <p>Growth and development for many plants and insects is keyed to temperature. By calculating the history
+    of daily temperatures over a season, we can predict pest emergence, crop development, and other events
+    of keen interest in agriculture.</p>
+<% end %>
+
+<!-- Content for remainder of stuff -->
+<%= image_tag "WIMNDDModB50_1.png", {:width => "75", :height => "75", :alt => "Degree-day plot", :class => "left"} %>
+<h2><%= link_to "Generic Degree Day Calculator", {:controller => "thermal_models", :action => :degree_days } %></h2>
+<p>This calculator allows you to input your location, method of calculation (e.g. Modified Sine B), and the
+  appropriate biofix dates.</p>
+  <p>We also calculate a <%= link_to "simple daily text report", :action => :wiDDs %> for 24 locations in and around Wisconsin</p>
+  <div class="fineline"></div>
+
+<%= image_tag "AlfalfaWeevilLarvae2.jpg", {:width => "75", :height => "75", :alt => "Alfalfa Weevil Larvae", :class => "left"} %>
+<h2><%= link_to "Alfalfa Weevil Thermal Models", :action => :alfalfa %></h2>
+<p>Degree-day map and information on weevil development.</p>
+<p>&nbsp;</p>
+<div class=", {}, fineline"></div>
+  
+<%= image_tag "corn.jpg", {:width => "75", :height => "75", :alt => "Corn", :class => "left"} %>
+<h2><%= link_to "Corn-Specific Thermal Models", :action => :corn %></h2>
+<p>Corn development model and specific degree-day models for corn pests.</p>
+<p>&nbsp;</p>
+<div class="fineline"></div>
+
+<%= image_tag "potato.png", {:width => "75", :height => "75", :alt => "potato", :class => "left"} %>
+<h2><%= link_to "Potato Development", :action => :potato%></h2>
+<p>Potato P-Day map.</p>
+<p>&nbsp;</p>
+<div class=", {}, fineline"></div>
+
+<%= image_tag "tree.png", {:width => "75", :height => "75", :alt => "tree", :class => "left"} %>    
+<h2>Tree Pests</h2>
+<p>We use a Base 50F degree-day model to predict the development of <%= link_to "many tree pests", :action => :tree%>.</p>
+<p>In addition, we also provide results from the 
+   <%= link_to 'GMPHEN gypsy-moth phenology model', :action => :gypsy %>.</p>
+<div class=", {}, fineline"></div>
+

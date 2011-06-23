@@ -1,0 +1,23 @@
+<h2>WISP: Wisconsin Irrigation Scheduler <%= Time.now.year %></h2>
+	<ul>
+		<li><%= link_to "Farms", :controller => 'farms' %></li>
+		<li><%= link_to "Pivots", :controller => :pivots %></li>
+		<li><%= link_to "Fields", :controller => :fields %></li>
+	</ul>
+<br/>
+<br/>
+  <ul>
+    <li><%= link_to "Back to WISP Home", :action => :index %></li>
+    <li><%= link_to "Farm Status", :action => :farm_status %></li>
+    <li><%= link_to "Field Status", :action => :field_status %></li>
+    <li><%= link_to "Pivots, Fields, and Crops", :action => :pivot_crop %></li>
+    <li><%= link_to "Weather Data", :action => :weather %></li>
+    <li><%= link_to "Report Setup", :action => :report_setup %></li>
+  </ul>
+<% (0..15).each do %>
+<br/>
+<% end %>
+  
+  <% if signed_in? %>
+    <%= button_to "Logout " + current_user.email, :controller => 'sessions', :action => :destroy, :redirect => :wisp %>
+  <% end %>

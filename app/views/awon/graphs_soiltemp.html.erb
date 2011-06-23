@@ -1,0 +1,23 @@
+<% content_for :title do %>
+  <%= title %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+    <%= do_welcome %>
+<% end %>
+
+<h2>AWON Station Soil Temperatures</h2>
+<p>From date shown to present. Hancock is 4751, Arena/Spring Green is 4773, Arlington 4781.</p>
+<a href="http://andi.soils.wisc.edu:3000/awon/show_soil_temps?depth=5&size=big">
+  <IMG src="http://andi.soils.wisc.edu:3000/awon/show_soil_temps?depth=5"/>
+</a>
+<a href="http://andi.soils.wisc.edu:3000/awon/show_soil_temps?depth=10&size=big">
+  <IMG src="http://andi.soils.wisc.edu:3000/awon/show_soil_temps?depth=10"/>
+</a>
+<a href="http://andi.soils.wisc.edu:3000/awon/show_soil_temps?depth=50&size=big">
+  <IMG src="http://andi.soils.wisc.edu:3000/awon/show_soil_temps?depth=50"/>
+</a>

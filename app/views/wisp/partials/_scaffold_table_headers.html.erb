@@ -1,0 +1,8 @@
+<tr>
+  <!-- objs is a collection of ActiveRecord objects; take the first one and enumerate the 
+  names of its columns in TH elements inside a TR. -->
+  <% for column in obj_class.content_columns %>
+    <th><%= column.human_name %></th>
+  <% end %>
+  
+</tr>

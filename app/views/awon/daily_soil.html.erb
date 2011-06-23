@@ -1,0 +1,117 @@
+<% content_for :title do %>
+  <%= title %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+    <%= do_welcome %>
+<% end %>
+
+<h2>
+Select Desired Daily Soil Temperature Data</h2>
+<form name="select" METHOD="POST" ACTION="http://www.soils.wisc.edu/asigServlets/AWSDownload">
+<B>First, </B> First, please select the station whose data you wish to download:
+<P> The list box
+below lists the stations available, showing the station number, the first
+day of data available for that station, the last day of data available,
+and the station's name.
+<P>
+<input TYPE="hidden" NAME="rpt_type" VALUE="412">
+<%= render :partial => 'date_selector' %>
+
+<P><HR><P>
+
+<B>Next, </B> please choose the data fields you wish to include:
+<P>
+<input TYPE="checkbox" NAME="show_first_line" VALUE="yes" CHECKED>&nbsp&nbsp Display
+data field abbreviations as first line of data (column headings)
+<br><input TYPE="checkbox" NAME="year_doy" VALUE="yes">&nbsp&nbsp Display date as
+year and day-of-year (default is year-month-day)
+<P>
+<table BORDER=5 CELLPADDING=3>
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="stnid">&nbsp&nbsp Station Number</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="theDate">&nbsp&nbsp Date</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="theTime">&nbsp&nbsp Time</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DAvTS05">&nbsp&nbsp 2 Inch Average
+Soil Temp. (Deg C)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DMxTS05">&nbsp&nbsp 2 Inch Maximum
+Soil Temp. (Deg C)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DTxTS05">&nbsp&nbsp 2 Inch Time
+Max. Soil Temp. (HHMM)</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DMnTS05">&nbsp&nbsp 2 Inch Minimum
+Soil Temp. (Deg C)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DTnTS05">&nbsp&nbsp 2 Inch Time
+Min. Soil Temp. (HHMM)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DAvTS10">&nbsp&nbsp 4 Inch Average
+Soil Temp. (Deg C)</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DMxTS10">&nbsp&nbsp 4 Inch Maximum
+Soil Temp. (Deg C)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DTxTS10">&nbsp&nbsp 4 Inch Time
+Max. Soil Temp. (HHMM)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DMnTS10">&nbsp&nbsp 4 Inch Minimum
+Soil Temp. (Deg C)</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DTnTS10">&nbsp&nbsp 4 Inch Time
+Min. Soil Temp. (HHMM)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DAvTS50">&nbsp&nbsp 20 Inch Average
+Soil Temp. (Deg C)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DMxTS50">&nbsp&nbsp 20 Inch Maximum
+Soil Temp. (Deg C)</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DTxTS50">&nbsp&nbsp 20 Inch Time
+Max. Soil Temp. (HHMM)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DMnTS50">&nbsp&nbsp 20 Inch Minimum
+Soil Temp. (Deg C)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DTnTS50">&nbsp&nbsp 20 Inch Time
+Min. Soil Temp. (HHMM)</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="DAvTS1m">&nbsp&nbsp 40 Inch Average
+Soil Temp. (Deg C)</td>
+<td align="center">-</td>
+<td align="center">-</td>
+
+</tr>
+</table>
+
+<P><HR><P>
+
+<B>Next, </B> <%= date_selector_section %>
+
+<P><HR><P>
+<B>Finally,</B> click the "Download Data" button to obtain your data:
+<P>When the data appear in your browser window, you can copy and paste them into
+a file, or use the "Save As.." function of your browser to save them. Press
+the "Clear All Checkboxes" button to un-check all the data-selection boxes.
+<P><input type="submit" value="Download Data">&nbsp&nbsp<input type="reset" value="Clear All Checkboxes">
+</form>

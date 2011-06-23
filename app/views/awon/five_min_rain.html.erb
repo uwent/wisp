@@ -1,0 +1,74 @@
+<% content_for :title do %>
+  <%= title %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+    <%= do_welcome %>
+<% end %>
+
+<h2>
+Select Desired Five-Minute Rainfall Data</h2>
+<form name="select" METHOD="POST" ACTION="http://www.soils.wisc.edu/asigServlets/AWSDownload">
+<B>First,</B> please select the station whose data you wish to download:
+<P> The list box
+below lists the stations available, showing the station number, the first
+day of data available for that station, the last day of data available,
+and the station's name.
+<P>
+<input TYPE="hidden" NAME="rpt_type" VALUE="401">
+<select Name="station" SIZE=4>
+	<option 4751 SELECTED>4751 2002-02-27 to present Hancock&nbsp;
+	<option 4773 >4773 2001-11-13
+ to present Spring Green&nbsp;
+	<option 4781  >4781 2001-12-12 to present Arlington&nbsp;
+</select>
+
+<P><HR><P>
+
+<B>Next, </B> please choose the data fields you wish to include. Note that these observations
+do not form a continuous series; there is only a record when there is rainfall.
+<P>
+<input TYPE="checkbox" NAME="show_first_line" VALUE="yes" CHECKED>&nbsp&nbsp Display
+data field abbreviations as first line of data (column headings)
+<br><input TYPE="checkbox" NAME="year_doy" VALUE="yes">&nbsp&nbsp Display date as
+year and day-of-year (default is year-month-day)
+
+<P>
+<table BORDER=5 CELLPADDING=3>
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="stnid">&nbsp&nbsp Station Number</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="theDate">&nbsp&nbsp Date</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="theTime">&nbsp&nbsp Time</td>
+</tr>
+
+<tr>
+<td><input TYPE="checkbox" NAME="data_field" VALUE="M5Pcpn">&nbsp&nbsp Five-Minute Precip
+(mm)</td>
+
+<td><input TYPE="checkbox" NAME="data_field" VALUE="M5Wind">&nbsp&nbsp Five-Minute Wind
+(m/s)</td>
+
+</tr>
+
+</table>
+
+<P><HR><P>
+
+<B>Next, </B> select the date range you want:
+<%= render :partial => 'date_selector' %>
+</table>
+
+<P><HR><P>
+<B>Finally,</B> click the "Download Data" button to obtain your data:
+<P>When the data appear in your browser window, you can copy and paste them into
+a file, or use the "Save As.." function of your browser to save them. Press
+the "Clear All Checkboxes" button to un-check all the data-selection boxes.
+<P><input type="submit" value="Download Data">&nbsp&nbsp<input type="reset" value="Clear All Checkboxes">
+
+</form>

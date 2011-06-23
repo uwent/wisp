@@ -1,0 +1,46 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler <%= Time.now.year %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'sidebar' %>
+<% end %>
+<!-- Content for the remainder (body) of the page goes here -->
+<h2>Home Page (Description, Login)</h2>
+<p>
+<ul>
+  <li><b>WISP Project Description</b><br />
+	...<br /></li>
+  <li><b>Link to model description (algorithms)</b><br />
+	...<br />
+  </li>
+  <li><b>WISP uses <a href="http://openid.net/get-an-openid/what-is-openid/">OpenID</a> for secure access to your data.</b> Currently the only
+      provider supported by WISP is Google, but we anticipate including other providers soon. In order to use WISP, you need to have an 
+  		account set up with one of the providers WISP supports. Then when you start to use the site, you will be directed to a login page 
+  		where you can enter your account name and password. That's all there is to it! Currently only one login is associated with a WISP account, but in the future
+			the account owner will be able to designate other logins that can have access to their WISP data. If you want to do this right now,
+			then you should create a "disposable" account with the OpenID provider which is not associated with your email and such, and then 
+			share the new credentials with whoever needs access to the WISP data.</li>
+  <li><b>Getting started</b>
+      <ol>
+  		   <li>Create an OpenID account if you don't have one.</li>
+				 <li>Go to the WISP site and click on the Farm link in the navigation bar on the left side of the screen. You will be requested to provide your login credentials.</li>
+				 <li>If your login is successful, you will see the WISP farm screen. A new account will have no farm set up, so
+				     click the "Add Farm" button and enter a farm name and ET adjustment method. The other data entry is optional.</li>
+				 <li>Click on the "Pivots" link in the navigation bar, and use the "Add Pivots" button to add pivots for the farm.</li>
+				 <li>Each piviot can have one or more fields to accomodate multiple crops under one pivot, and each field can have 
+				     multiple crops per season. Field designations can change between growing years if needed or can remain the same. 
+						 All field information is required except "Notes". </li>
+				 <li>Enter crop data (default MRZD and AD?)</li>
+				 <li>Entering weather data</li>
+				 <li>Getting results and reports</li>
+				 <li>Backups</li>
+				 <li>Using previous year's data</li>
+  		</ol>
+  </li>		
+</ul>
+</p>

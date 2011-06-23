@@ -1,0 +1,24 @@
+<% content_for :title do %>
+  <%= title %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+    <%= do_welcome %>
+<% end %>
+
+<h2>AWON Station Recent Data</h2>
+<p>Click to enlarge (may take several seconds). All units are MKS; note that
+  windspeed is shown at 10 times its value to scale better on the plot (so "30" on the plot means 3 meters/second).</p>
+<a href="http://andi.soils.wisc.edu:3000/awon/show?stn=4781&size=big">
+  <IMG src="http://andi.soils.wisc.edu:3000/awon/show?stn=4781"/>
+</a>
+<a href="http://andi.soils.wisc.edu:3000/awon/show?stn=4751&size=big">
+  <IMG src="http://andi.soils.wisc.edu:3000/awon/show?stn=4751"/>
+</a>
+<a href="http://andi.soils.wisc.edu:3000/awon/show?stn=4773&size=big">
+  <IMG src="http://andi.soils.wisc.edu:3000/awon/show?stn=4773"/>
+</a>
