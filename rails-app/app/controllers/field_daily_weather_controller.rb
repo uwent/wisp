@@ -15,10 +15,10 @@ class FieldDailyWeatherController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @field_daily_weather }
-      format.json { render :json => @field_daily_weather.to_jqgrid_json([:id,:date,:ref_et,:adj_et,:rain,:irrigation,
+      format.json { render :json => @field_daily_weather.to_jqgrid_json([:date,:ref_et,:adj_et,:rain,:irrigation,
                                                                          :pct_moisture,:entered_pct_cover,
                                                                          :entered_leaf_area_index,
-                                                                         :ad,:deep_drainage], 
+                                                                         :ad,:deep_drainage,:id], 
                                                              params[:page], params[:rows],@field_daily_weather.size) }
     end
     

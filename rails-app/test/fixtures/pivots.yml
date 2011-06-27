@@ -34,6 +34,7 @@ two:
   notes:
     
 default:
+  id: 1
   farm_id: 1
   name: Default Pivot 
   latitude: 1.5

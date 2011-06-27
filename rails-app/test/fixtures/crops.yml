@@ -23,6 +23,7 @@ two:
   notes: 
 
 default:
+  id: 1
   field_id: 1
   crop: Corn
   variety: Fabulous Hybrid
