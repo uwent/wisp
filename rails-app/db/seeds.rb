@@ -12,7 +12,7 @@ et_methods = EtMethod.create(
   ])
 
 # note that this ID should be the same as AuthenticationHelper.SINGLE_USER_ID 
-user = User.create( :id => 1, :email => 'anonymous@mailinator.com', :identifier_url => nil,
+user = User.create!( :id => 1, :email => 'anonymous@mailinator.com', :identifier_url => nil,
    :first_name => 'Anonymous',  :last_name => 'User')
 
 # remaining IDs are set to 1 just as a convenience
