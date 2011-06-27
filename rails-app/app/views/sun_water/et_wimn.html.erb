@@ -1,0 +1,732 @@
+<% @title = "Estimated ET for Wisconsin and Minnesota"%>
+<% content_for :title do %>
+  <%= @title %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= image_tag "degree_flower.png",{:width => "231", :height => "156", :alt => "Hot and Cold"} %>
+  <h2><%= @title %></h2>
+  <p>Our evapotranspiration model uses atmospheric observations from ASOS stations and satellite-derived 
+    insolation estimates to predict water use by plants
+    </p>
+<% end %>
+
+<h2><%= @title %></h2>
+
+<P>
+Get ETs Automatically by email! Send us <a href="mailto:fewayne@wisc.edu">email</a>
+ with your lat/long coordinates (see map below).
+<p>You can also view a <a href="#rails">time series of ET estimates for your location.</a> Just click on the map to get ET values
+	going back in time (default is 30 days back).
+<center>
+<img src="http://www.soils.wisc.edu/uwex_agwx_data/et/yestWIMNet.gif" ALT="Yesterday's ET Estimates" usemap="#latlong"/>
+  <P> <a href="http://www.soils.wisc.edu/uwex_agwx_data/et/yestWIMNet.asc"> Download yesterday's entire grid of data in ASCII Format</a><br>
+
+<!-- <a href=http://emily.soils.wisc.edu/cgi-bin/aws/et_arch.pl?Region=WIMN>Earlier Wisconsin-Minnesota ET Maps</a>-->
+</center>
+
+
+<map name="latlong" id="latlong">
+<area shape="rect" coords="35,616,52,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=98.0"/>
+<area shape="rect" coords="53,616,70,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=97.6"/>
+<area shape="rect" coords="71,616,88,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=97.2"/>
+<area shape="rect" coords="89,616,106,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=96.8"/>
+<area shape="rect" coords="107,616,124,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=96.4"/>
+<area shape="rect" coords="125,616,142,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=96.0"/>
+<area shape="rect" coords="143,616,160,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=95.6"/>
+<area shape="rect" coords="161,616,178,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=95.2"/>
+<area shape="rect" coords="179,616,196,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=94.8"/>
+<area shape="rect" coords="197,616,214,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=94.4"/>
+<area shape="rect" coords="215,616,232,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=94.0"/>
+<area shape="rect" coords="233,616,250,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=93.6"/>
+
+<area shape="rect" coords="251,616,268,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=93.2"/>
+<area shape="rect" coords="269,616,286,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=92.8"/>
+<area shape="rect" coords="287,616,304,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=92.4"/>
+<area shape="rect" coords="305,616,322,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=92.0"/>
+<area shape="rect" coords="323,616,340,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=91.6"/>
+<area shape="rect" coords="341,616,358,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=91.2"/>
+<area shape="rect" coords="359,616,376,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=90.8"/>
+<area shape="rect" coords="377,616,394,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=90.4"/>
+<area shape="rect" coords="395,616,412,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=90.0"/>
+<area shape="rect" coords="413,616,430,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=89.6"/>
+<area shape="rect" coords="431,616,448,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=89.2"/>
+<area shape="rect" coords="449,616,466,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=88.8"/>
+<area shape="rect" coords="467,616,484,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=88.4"/>
+<area shape="rect" coords="485,616,502,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=88.0"/>
+<area shape="rect" coords="503,616,520,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=87.6"/>
+<area shape="rect" coords="521,616,538,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=87.2"/>
+<area shape="rect" coords="539,616,556,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=86.8"/>
+
+<area shape="rect" coords="557,616,574,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=86.4"/>
+<area shape="rect" coords="575,616,592,595" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.0&longitude=86.0"/>
+<area shape="rect" coords="35,594,52,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=98.0"/>
+<area shape="rect" coords="53,594,70,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=97.6"/>
+<area shape="rect" coords="71,594,88,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=97.2"/>
+<area shape="rect" coords="89,594,106,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=96.8"/>
+<area shape="rect" coords="107,594,124,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=96.4"/>
+<area shape="rect" coords="125,594,142,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=96.0"/>
+<area shape="rect" coords="143,594,160,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=95.6"/>
+<area shape="rect" coords="161,594,178,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=95.2"/>
+<area shape="rect" coords="179,594,196,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=94.8"/>
+<area shape="rect" coords="197,594,214,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=94.4"/>
+<area shape="rect" coords="215,594,232,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=94.0"/>
+<area shape="rect" coords="233,594,250,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=93.6"/>
+<area shape="rect" coords="251,594,268,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=93.2"/>
+<area shape="rect" coords="269,594,286,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=92.8"/>
+<area shape="rect" coords="287,594,304,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=92.4"/>
+
+<area shape="rect" coords="305,594,322,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=92.0"/>
+<area shape="rect" coords="323,594,340,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=91.6"/>
+<area shape="rect" coords="341,594,358,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=91.2"/>
+<area shape="rect" coords="359,594,376,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=90.8"/>
+<area shape="rect" coords="377,594,394,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=90.4"/>
+<area shape="rect" coords="395,594,412,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=90.0"/>
+<area shape="rect" coords="413,594,430,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=89.6"/>
+<area shape="rect" coords="431,594,448,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=89.2"/>
+<area shape="rect" coords="449,594,466,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=88.8"/>
+<area shape="rect" coords="467,594,484,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=88.4"/>
+<area shape="rect" coords="485,594,502,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=88.0"/>
+<area shape="rect" coords="503,594,520,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=87.6"/>
+<area shape="rect" coords="521,594,538,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=87.2"/>
+<area shape="rect" coords="539,594,556,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=86.8"/>
+<area shape="rect" coords="557,594,574,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=86.4"/>
+<area shape="rect" coords="575,594,592,573" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.4&longitude=86.0"/>
+<area shape="rect" coords="35,572,52,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=98.0"/>
+
+<area shape="rect" coords="53,572,70,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=97.6"/>
+<area shape="rect" coords="71,572,88,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=97.2"/>
+<area shape="rect" coords="89,572,106,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=96.8"/>
+<area shape="rect" coords="107,572,124,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=96.4"/>
+<area shape="rect" coords="125,572,142,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=96.0"/>
+<area shape="rect" coords="143,572,160,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=95.6"/>
+<area shape="rect" coords="161,572,178,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=95.2"/>
+<area shape="rect" coords="179,572,196,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=94.8"/>
+<area shape="rect" coords="197,572,214,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=94.4"/>
+<area shape="rect" coords="215,572,232,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=94.0"/>
+<area shape="rect" coords="233,572,250,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=93.6"/>
+<area shape="rect" coords="251,572,268,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=93.2"/>
+<area shape="rect" coords="269,572,286,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=92.8"/>
+<area shape="rect" coords="287,572,304,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=92.4"/>
+<area shape="rect" coords="305,572,322,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=92.0"/>
+<area shape="rect" coords="323,572,340,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=91.6"/>
+<area shape="rect" coords="341,572,358,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=91.2"/>
+
+<area shape="rect" coords="359,572,376,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=90.8"/>
+<area shape="rect" coords="377,572,394,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=90.4"/>
+<area shape="rect" coords="395,572,412,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=90.0"/>
+<area shape="rect" coords="413,572,430,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=89.6"/>
+<area shape="rect" coords="431,572,448,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=89.2"/>
+<area shape="rect" coords="449,572,466,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=88.8"/>
+<area shape="rect" coords="467,572,484,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=88.4"/>
+<area shape="rect" coords="485,572,502,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=88.0"/>
+<area shape="rect" coords="503,572,520,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=87.6"/>
+<area shape="rect" coords="521,572,538,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=87.2"/>
+<area shape="rect" coords="539,572,556,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=86.8"/>
+<area shape="rect" coords="557,572,574,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=86.4"/>
+<area shape="rect" coords="575,572,592,551" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=42.8&longitude=86.0"/>
+<area shape="rect" coords="35,550,52,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=98.0"/>
+<area shape="rect" coords="53,550,70,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=97.6"/>
+<area shape="rect" coords="71,550,88,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=97.2"/>
+<area shape="rect" coords="89,550,106,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=96.8"/>
+
+<area shape="rect" coords="107,550,124,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=96.4"/>
+<area shape="rect" coords="125,550,142,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=96.0"/>
+<area shape="rect" coords="143,550,160,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=95.6"/>
+<area shape="rect" coords="161,550,178,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=95.2"/>
+<area shape="rect" coords="179,550,196,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=94.8"/>
+<area shape="rect" coords="197,550,214,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=94.4"/>
+<area shape="rect" coords="215,550,232,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=94.0"/>
+<area shape="rect" coords="233,550,250,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=93.6"/>
+<area shape="rect" coords="251,550,268,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=93.2"/>
+<area shape="rect" coords="269,550,286,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=92.8"/>
+<area shape="rect" coords="287,550,304,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=92.4"/>
+<area shape="rect" coords="305,550,322,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=92.0"/>
+<area shape="rect" coords="323,550,340,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=91.6"/>
+<area shape="rect" coords="341,550,358,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=91.2"/>
+<area shape="rect" coords="359,550,376,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=90.8"/>
+<area shape="rect" coords="377,550,394,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=90.4"/>
+<area shape="rect" coords="395,550,412,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=90.0"/>
+
+<area shape="rect" coords="413,550,430,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=89.6"/>
+<area shape="rect" coords="431,550,448,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=89.2"/>
+<area shape="rect" coords="449,550,466,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=88.8"/>
+<area shape="rect" coords="467,550,484,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=88.4"/>
+<area shape="rect" coords="485,550,502,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=88.0"/>
+<area shape="rect" coords="503,550,520,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=87.6"/>
+<area shape="rect" coords="521,550,538,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=87.2"/>
+<area shape="rect" coords="539,550,556,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=86.8"/>
+<area shape="rect" coords="557,550,574,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=86.4"/>
+<area shape="rect" coords="575,550,592,529" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.2&longitude=86.0"/>
+<area shape="rect" coords="35,528,52,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=98.0"/>
+<area shape="rect" coords="53,528,70,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=97.6"/>
+<area shape="rect" coords="71,528,88,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=97.2"/>
+<area shape="rect" coords="89,528,106,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=96.8"/>
+<area shape="rect" coords="107,528,124,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=96.4"/>
+<area shape="rect" coords="125,528,142,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=96.0"/>
+<area shape="rect" coords="143,528,160,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=95.6"/>
+
+<area shape="rect" coords="161,528,178,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=95.2"/>
+<area shape="rect" coords="179,528,196,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=94.8"/>
+<area shape="rect" coords="197,528,214,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=94.4"/>
+<area shape="rect" coords="215,528,232,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=94.0"/>
+<area shape="rect" coords="233,528,250,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=93.6"/>
+<area shape="rect" coords="251,528,268,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=93.2"/>
+<area shape="rect" coords="269,528,286,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=92.8"/>
+<area shape="rect" coords="287,528,304,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=92.4"/>
+<area shape="rect" coords="305,528,322,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=92.0"/>
+<area shape="rect" coords="323,528,340,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=91.6"/>
+<area shape="rect" coords="341,528,358,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=91.2"/>
+<area shape="rect" coords="359,528,376,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=90.8"/>
+<area shape="rect" coords="377,528,394,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=90.4"/>
+<area shape="rect" coords="395,528,412,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=90.0"/>
+<area shape="rect" coords="413,528,430,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=89.6"/>
+<area shape="rect" coords="431,528,448,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=89.2"/>
+<area shape="rect" coords="449,528,466,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=88.8"/>
+
+<area shape="rect" coords="467,528,484,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=88.4"/>
+<area shape="rect" coords="485,528,502,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=88.0"/>
+<area shape="rect" coords="503,528,520,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=87.6"/>
+<area shape="rect" coords="521,528,538,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=87.2"/>
+<area shape="rect" coords="539,528,556,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=86.8"/>
+<area shape="rect" coords="557,528,574,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=86.4"/>
+<area shape="rect" coords="575,528,592,507" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=43.6&longitude=86.0"/>
+<area shape="rect" coords="35,506,52,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=98.0"/>
+<area shape="rect" coords="53,506,70,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=97.6"/>
+<area shape="rect" coords="71,506,88,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=97.2"/>
+<area shape="rect" coords="89,506,106,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=96.8"/>
+<area shape="rect" coords="107,506,124,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=96.4"/>
+<area shape="rect" coords="125,506,142,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=96.0"/>
+<area shape="rect" coords="143,506,160,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=95.6"/>
+<area shape="rect" coords="161,506,178,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=95.2"/>
+<area shape="rect" coords="179,506,196,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=94.8"/>
+<area shape="rect" coords="197,506,214,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=94.4"/>
+
+<area shape="rect" coords="215,506,232,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=94.0"/>
+<area shape="rect" coords="233,506,250,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=93.6"/>
+<area shape="rect" coords="251,506,268,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=93.2"/>
+<area shape="rect" coords="269,506,286,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=92.8"/>
+<area shape="rect" coords="287,506,304,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=92.4"/>
+<area shape="rect" coords="305,506,322,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=92.0"/>
+<area shape="rect" coords="323,506,340,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=91.6"/>
+<area shape="rect" coords="341,506,358,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=91.2"/>
+<area shape="rect" coords="359,506,376,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=90.8"/>
+<area shape="rect" coords="377,506,394,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=90.4"/>
+<area shape="rect" coords="395,506,412,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=90.0"/>
+<area shape="rect" coords="413,506,430,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=89.6"/>
+<area shape="rect" coords="431,506,448,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=89.2"/>
+<area shape="rect" coords="449,506,466,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=88.8"/>
+<area shape="rect" coords="467,506,484,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=88.4"/>
+<area shape="rect" coords="485,506,502,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=88.0"/>
+<area shape="rect" coords="503,506,520,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=87.6"/>
+
+<area shape="rect" coords="521,506,538,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=87.2"/>
+<area shape="rect" coords="539,506,556,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=86.8"/>
+<area shape="rect" coords="557,506,574,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=86.4"/>
+<area shape="rect" coords="575,506,592,485" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.0&longitude=86.0"/>
+<area shape="rect" coords="35,484,52,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=98.0"/>
+<area shape="rect" coords="53,484,70,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=97.6"/>
+<area shape="rect" coords="71,484,88,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=97.2"/>
+<area shape="rect" coords="89,484,106,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=96.8"/>
+<area shape="rect" coords="107,484,124,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=96.4"/>
+<area shape="rect" coords="125,484,142,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=96.0"/>
+<area shape="rect" coords="143,484,160,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=95.6"/>
+<area shape="rect" coords="161,484,178,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=95.2"/>
+<area shape="rect" coords="179,484,196,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=94.8"/>
+<area shape="rect" coords="197,484,214,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=94.4"/>
+<area shape="rect" coords="215,484,232,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=94.0"/>
+<area shape="rect" coords="233,484,250,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=93.6"/>
+<area shape="rect" coords="251,484,268,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=93.2"/>
+
+<area shape="rect" coords="269,484,286,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=92.8"/>
+<area shape="rect" coords="287,484,304,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=92.4"/>
+<area shape="rect" coords="305,484,322,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=92.0"/>
+<area shape="rect" coords="323,484,340,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=91.6"/>
+<area shape="rect" coords="341,484,358,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=91.2"/>
+<area shape="rect" coords="359,484,376,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=90.8"/>
+<area shape="rect" coords="377,484,394,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=90.4"/>
+<area shape="rect" coords="395,484,412,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=90.0"/>
+<area shape="rect" coords="413,484,430,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=89.6"/>
+<area shape="rect" coords="431,484,448,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=89.2"/>
+<area shape="rect" coords="449,484,466,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=88.8"/>
+<area shape="rect" coords="467,484,484,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=88.4"/>
+<area shape="rect" coords="485,484,502,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=88.0"/>
+<area shape="rect" coords="503,484,520,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=87.6"/>
+<area shape="rect" coords="521,484,538,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=87.2"/>
+<area shape="rect" coords="539,484,556,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=86.8"/>
+<area shape="rect" coords="557,484,574,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=86.4"/>
+
+<area shape="rect" coords="575,484,592,463" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.4&longitude=86.0"/>
+<area shape="rect" coords="35,462,52,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=98.0"/>
+<area shape="rect" coords="53,462,70,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=97.6"/>
+<area shape="rect" coords="71,462,88,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=97.2"/>
+<area shape="rect" coords="89,462,106,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=96.8"/>
+<area shape="rect" coords="107,462,124,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=96.4"/>
+<area shape="rect" coords="125,462,142,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=96.0"/>
+<area shape="rect" coords="143,462,160,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=95.6"/>
+<area shape="rect" coords="161,462,178,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=95.2"/>
+<area shape="rect" coords="179,462,196,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=94.8"/>
+<area shape="rect" coords="197,462,214,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=94.4"/>
+<area shape="rect" coords="215,462,232,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=94.0"/>
+<area shape="rect" coords="233,462,250,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=93.6"/>
+<area shape="rect" coords="251,462,268,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=93.2"/>
+<area shape="rect" coords="269,462,286,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=92.8"/>
+<area shape="rect" coords="287,462,304,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=92.4"/>
+<area shape="rect" coords="305,462,322,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=92.0"/>
+
+<area shape="rect" coords="323,462,340,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=91.6"/>
+<area shape="rect" coords="341,462,358,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=91.2"/>
+<area shape="rect" coords="359,462,376,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=90.8"/>
+<area shape="rect" coords="377,462,394,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=90.4"/>
+<area shape="rect" coords="395,462,412,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=90.0"/>
+<area shape="rect" coords="413,462,430,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=89.6"/>
+<area shape="rect" coords="431,462,448,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=89.2"/>
+<area shape="rect" coords="449,462,466,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=88.8"/>
+<area shape="rect" coords="467,462,484,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=88.4"/>
+<area shape="rect" coords="485,462,502,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=88.0"/>
+<area shape="rect" coords="503,462,520,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=87.6"/>
+<area shape="rect" coords="521,462,538,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=87.2"/>
+<area shape="rect" coords="539,462,556,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=86.8"/>
+<area shape="rect" coords="557,462,574,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=86.4"/>
+<area shape="rect" coords="575,462,592,441" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=44.8&longitude=86.0"/>
+<area shape="rect" coords="35,440,52,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=98.0"/>
+<area shape="rect" coords="53,440,70,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=97.6"/>
+
+<area shape="rect" coords="71,440,88,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=97.2"/>
+<area shape="rect" coords="89,440,106,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=96.8"/>
+<area shape="rect" coords="107,440,124,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=96.4"/>
+<area shape="rect" coords="125,440,142,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=96.0"/>
+<area shape="rect" coords="143,440,160,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=95.6"/>
+<area shape="rect" coords="161,440,178,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=95.2"/>
+<area shape="rect" coords="179,440,196,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=94.8"/>
+<area shape="rect" coords="197,440,214,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=94.4"/>
+<area shape="rect" coords="215,440,232,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=94.0"/>
+<area shape="rect" coords="233,440,250,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=93.6"/>
+<area shape="rect" coords="251,440,268,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=93.2"/>
+<area shape="rect" coords="269,440,286,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=92.8"/>
+<area shape="rect" coords="287,440,304,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=92.4"/>
+<area shape="rect" coords="305,440,322,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=92.0"/>
+<area shape="rect" coords="323,440,340,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=91.6"/>
+<area shape="rect" coords="341,440,358,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=91.2"/>
+<area shape="rect" coords="359,440,376,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=90.8"/>
+
+<area shape="rect" coords="377,440,394,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=90.4"/>
+<area shape="rect" coords="395,440,412,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=90.0"/>
+<area shape="rect" coords="413,440,430,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=89.6"/>
+<area shape="rect" coords="431,440,448,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=89.2"/>
+<area shape="rect" coords="449,440,466,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=88.8"/>
+<area shape="rect" coords="467,440,484,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=88.4"/>
+<area shape="rect" coords="485,440,502,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=88.0"/>
+<area shape="rect" coords="503,440,520,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=87.6"/>
+<area shape="rect" coords="521,440,538,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=87.2"/>
+<area shape="rect" coords="539,440,556,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=86.8"/>
+<area shape="rect" coords="557,440,574,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=86.4"/>
+<area shape="rect" coords="575,440,592,419" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.2&longitude=86.0"/>
+<area shape="rect" coords="35,418,52,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=98.0"/>
+<area shape="rect" coords="53,418,70,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=97.6"/>
+<area shape="rect" coords="71,418,88,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=97.2"/>
+<area shape="rect" coords="89,418,106,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=96.8"/>
+<area shape="rect" coords="107,418,124,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=96.4"/>
+
+<area shape="rect" coords="125,418,142,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=96.0"/>
+<area shape="rect" coords="143,418,160,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=95.6"/>
+<area shape="rect" coords="161,418,178,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=95.2"/>
+<area shape="rect" coords="179,418,196,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=94.8"/>
+<area shape="rect" coords="197,418,214,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=94.4"/>
+<area shape="rect" coords="215,418,232,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=94.0"/>
+<area shape="rect" coords="233,418,250,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=93.6"/>
+<area shape="rect" coords="251,418,268,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=93.2"/>
+<area shape="rect" coords="269,418,286,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=92.8"/>
+<area shape="rect" coords="287,418,304,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=92.4"/>
+<area shape="rect" coords="305,418,322,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=92.0"/>
+<area shape="rect" coords="323,418,340,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=91.6"/>
+<area shape="rect" coords="341,418,358,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=91.2"/>
+<area shape="rect" coords="359,418,376,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=90.8"/>
+<area shape="rect" coords="377,418,394,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=90.4"/>
+<area shape="rect" coords="395,418,412,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=90.0"/>
+<area shape="rect" coords="413,418,430,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=89.6"/>
+
+<area shape="rect" coords="431,418,448,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=89.2"/>
+<area shape="rect" coords="449,418,466,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=88.8"/>
+<area shape="rect" coords="467,418,484,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=88.4"/>
+<area shape="rect" coords="485,418,502,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=88.0"/>
+<area shape="rect" coords="503,418,520,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=87.6"/>
+<area shape="rect" coords="521,418,538,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=87.2"/>
+<area shape="rect" coords="539,418,556,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=86.8"/>
+<area shape="rect" coords="557,418,574,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=86.4"/>
+<area shape="rect" coords="575,418,592,397" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=45.6&longitude=86.0"/>
+<area shape="rect" coords="35,396,52,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=98.0"/>
+<area shape="rect" coords="53,396,70,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=97.6"/>
+<area shape="rect" coords="71,396,88,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=97.2"/>
+<area shape="rect" coords="89,396,106,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=96.8"/>
+<area shape="rect" coords="107,396,124,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=96.4"/>
+<area shape="rect" coords="125,396,142,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=96.0"/>
+<area shape="rect" coords="143,396,160,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=95.6"/>
+<area shape="rect" coords="161,396,178,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=95.2"/>
+
+<area shape="rect" coords="179,396,196,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=94.8"/>
+<area shape="rect" coords="197,396,214,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=94.4"/>
+<area shape="rect" coords="215,396,232,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=94.0"/>
+<area shape="rect" coords="233,396,250,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=93.6"/>
+<area shape="rect" coords="251,396,268,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=93.2"/>
+<area shape="rect" coords="269,396,286,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=92.8"/>
+<area shape="rect" coords="287,396,304,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=92.4"/>
+<area shape="rect" coords="305,396,322,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=92.0"/>
+<area shape="rect" coords="323,396,340,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=91.6"/>
+<area shape="rect" coords="341,396,358,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=91.2"/>
+<area shape="rect" coords="359,396,376,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=90.8"/>
+<area shape="rect" coords="377,396,394,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=90.4"/>
+<area shape="rect" coords="395,396,412,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=90.0"/>
+<area shape="rect" coords="413,396,430,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=89.6"/>
+<area shape="rect" coords="431,396,448,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=89.2"/>
+<area shape="rect" coords="449,396,466,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=88.8"/>
+<area shape="rect" coords="467,396,484,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=88.4"/>
+
+<area shape="rect" coords="485,396,502,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=88.0"/>
+<area shape="rect" coords="503,396,520,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=87.6"/>
+<area shape="rect" coords="521,396,538,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=87.2"/>
+<area shape="rect" coords="539,396,556,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=86.8"/>
+<area shape="rect" coords="557,396,574,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=86.4"/>
+<area shape="rect" coords="575,396,592,375" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.0&longitude=86.0"/>
+<area shape="rect" coords="35,374,52,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=98.0"/>
+<area shape="rect" coords="53,374,70,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=97.6"/>
+<area shape="rect" coords="71,374,88,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=97.2"/>
+<area shape="rect" coords="89,374,106,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=96.8"/>
+<area shape="rect" coords="107,374,124,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=96.4"/>
+<area shape="rect" coords="125,374,142,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=96.0"/>
+<area shape="rect" coords="143,374,160,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=95.6"/>
+<area shape="rect" coords="161,374,178,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=95.2"/>
+<area shape="rect" coords="179,374,196,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=94.8"/>
+<area shape="rect" coords="197,374,214,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=94.4"/>
+<area shape="rect" coords="215,374,232,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=94.0"/>
+
+<area shape="rect" coords="233,374,250,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=93.6"/>
+<area shape="rect" coords="251,374,268,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=93.2"/>
+<area shape="rect" coords="269,374,286,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=92.8"/>
+<area shape="rect" coords="287,374,304,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=92.4"/>
+<area shape="rect" coords="305,374,322,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=92.0"/>
+<area shape="rect" coords="323,374,340,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=91.6"/>
+<area shape="rect" coords="341,374,358,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=91.2"/>
+<area shape="rect" coords="359,374,376,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=90.8"/>
+<area shape="rect" coords="377,374,394,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=90.4"/>
+<area shape="rect" coords="395,374,412,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=90.0"/>
+<area shape="rect" coords="413,374,430,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=89.6"/>
+<area shape="rect" coords="431,374,448,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=89.2"/>
+<area shape="rect" coords="449,374,466,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=88.8"/>
+<area shape="rect" coords="467,374,484,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=88.4"/>
+<area shape="rect" coords="485,374,502,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=88.0"/>
+<area shape="rect" coords="503,374,520,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=87.6"/>
+<area shape="rect" coords="521,374,538,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=87.2"/>
+
+<area shape="rect" coords="539,374,556,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=86.8"/>
+<area shape="rect" coords="557,374,574,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=86.4"/>
+<area shape="rect" coords="575,374,592,353" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.4&longitude=86.0"/>
+<area shape="rect" coords="35,352,52,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=98.0"/>
+<area shape="rect" coords="53,352,70,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=97.6"/>
+<area shape="rect" coords="71,352,88,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=97.2"/>
+<area shape="rect" coords="89,352,106,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=96.8"/>
+<area shape="rect" coords="107,352,124,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=96.4"/>
+<area shape="rect" coords="125,352,142,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=96.0"/>
+<area shape="rect" coords="143,352,160,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=95.6"/>
+<area shape="rect" coords="161,352,178,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=95.2"/>
+<area shape="rect" coords="179,352,196,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=94.8"/>
+<area shape="rect" coords="197,352,214,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=94.4"/>
+<area shape="rect" coords="215,352,232,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=94.0"/>
+<area shape="rect" coords="233,352,250,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=93.6"/>
+<area shape="rect" coords="251,352,268,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=93.2"/>
+<area shape="rect" coords="269,352,286,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=92.8"/>
+
+<area shape="rect" coords="287,352,304,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=92.4"/>
+<area shape="rect" coords="305,352,322,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=92.0"/>
+<area shape="rect" coords="323,352,340,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=91.6"/>
+<area shape="rect" coords="341,352,358,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=91.2"/>
+<area shape="rect" coords="359,352,376,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=90.8"/>
+<area shape="rect" coords="377,352,394,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=90.4"/>
+<area shape="rect" coords="395,352,412,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=90.0"/>
+<area shape="rect" coords="413,352,430,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=89.6"/>
+<area shape="rect" coords="431,352,448,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=89.2"/>
+<area shape="rect" coords="449,352,466,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=88.8"/>
+<area shape="rect" coords="467,352,484,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=88.4"/>
+<area shape="rect" coords="485,352,502,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=88.0"/>
+<area shape="rect" coords="503,352,520,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=87.6"/>
+<area shape="rect" coords="521,352,538,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=87.2"/>
+<area shape="rect" coords="539,352,556,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=86.8"/>
+<area shape="rect" coords="557,352,574,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=86.4"/>
+<area shape="rect" coords="575,352,592,331" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=46.8&longitude=86.0"/>
+
+<area shape="rect" coords="35,330,52,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=98.0"/>
+<area shape="rect" coords="53,330,70,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=97.6"/>
+<area shape="rect" coords="71,330,88,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=97.2"/>
+<area shape="rect" coords="89,330,106,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=96.8"/>
+<area shape="rect" coords="107,330,124,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=96.4"/>
+<area shape="rect" coords="125,330,142,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=96.0"/>
+<area shape="rect" coords="143,330,160,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=95.6"/>
+<area shape="rect" coords="161,330,178,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=95.2"/>
+<area shape="rect" coords="179,330,196,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=94.8"/>
+<area shape="rect" coords="197,330,214,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=94.4"/>
+<area shape="rect" coords="215,330,232,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=94.0"/>
+<area shape="rect" coords="233,330,250,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=93.6"/>
+<area shape="rect" coords="251,330,268,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=93.2"/>
+<area shape="rect" coords="269,330,286,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=92.8"/>
+<area shape="rect" coords="287,330,304,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=92.4"/>
+<area shape="rect" coords="305,330,322,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=92.0"/>
+<area shape="rect" coords="323,330,340,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=91.6"/>
+
+<area shape="rect" coords="341,330,358,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=91.2"/>
+<area shape="rect" coords="359,330,376,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=90.8"/>
+<area shape="rect" coords="377,330,394,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=90.4"/>
+<area shape="rect" coords="395,330,412,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=90.0"/>
+<area shape="rect" coords="413,330,430,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=89.6"/>
+<area shape="rect" coords="431,330,448,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=89.2"/>
+<area shape="rect" coords="449,330,466,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=88.8"/>
+<area shape="rect" coords="467,330,484,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=88.4"/>
+<area shape="rect" coords="485,330,502,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=88.0"/>
+<area shape="rect" coords="503,330,520,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=87.6"/>
+<area shape="rect" coords="521,330,538,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=87.2"/>
+<area shape="rect" coords="539,330,556,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=86.8"/>
+<area shape="rect" coords="557,330,574,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=86.4"/>
+<area shape="rect" coords="575,330,592,309" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.2&longitude=86.0"/>
+<area shape="rect" coords="35,308,52,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=98.0"/>
+<area shape="rect" coords="53,308,70,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=97.6"/>
+<area shape="rect" coords="71,308,88,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=97.2"/>
+
+<area shape="rect" coords="89,308,106,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=96.8"/>
+<area shape="rect" coords="107,308,124,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=96.4"/>
+<area shape="rect" coords="125,308,142,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=96.0"/>
+<area shape="rect" coords="143,308,160,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=95.6"/>
+<area shape="rect" coords="161,308,178,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=95.2"/>
+<area shape="rect" coords="179,308,196,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=94.8"/>
+<area shape="rect" coords="197,308,214,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=94.4"/>
+<area shape="rect" coords="215,308,232,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=94.0"/>
+<area shape="rect" coords="233,308,250,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=93.6"/>
+<area shape="rect" coords="251,308,268,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=93.2"/>
+<area shape="rect" coords="269,308,286,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=92.8"/>
+<area shape="rect" coords="287,308,304,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=92.4"/>
+<area shape="rect" coords="305,308,322,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=92.0"/>
+<area shape="rect" coords="323,308,340,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=91.6"/>
+<area shape="rect" coords="341,308,358,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=91.2"/>
+<area shape="rect" coords="359,308,376,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=90.8"/>
+<area shape="rect" coords="377,308,394,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=90.4"/>
+
+<area shape="rect" coords="395,308,412,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=90.0"/>
+<area shape="rect" coords="413,308,430,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=89.6"/>
+<area shape="rect" coords="431,308,448,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=89.2"/>
+<area shape="rect" coords="449,308,466,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=88.8"/>
+<area shape="rect" coords="467,308,484,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=88.4"/>
+<area shape="rect" coords="485,308,502,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=88.0"/>
+<area shape="rect" coords="503,308,520,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=87.6"/>
+<area shape="rect" coords="521,308,538,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=87.2"/>
+<area shape="rect" coords="539,308,556,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=86.8"/>
+<area shape="rect" coords="557,308,574,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=86.4"/>
+<area shape="rect" coords="575,308,592,287" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=47.6&longitude=86.0"/>
+<area shape="rect" coords="35,286,52,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=98.0"/>
+<area shape="rect" coords="53,286,70,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=97.6"/>
+<area shape="rect" coords="71,286,88,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=97.2"/>
+<area shape="rect" coords="89,286,106,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=96.8"/>
+<area shape="rect" coords="107,286,124,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=96.4"/>
+<area shape="rect" coords="125,286,142,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=96.0"/>
+
+<area shape="rect" coords="143,286,160,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=95.6"/>
+<area shape="rect" coords="161,286,178,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=95.2"/>
+<area shape="rect" coords="179,286,196,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=94.8"/>
+<area shape="rect" coords="197,286,214,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=94.4"/>
+<area shape="rect" coords="215,286,232,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=94.0"/>
+<area shape="rect" coords="233,286,250,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=93.6"/>
+<area shape="rect" coords="251,286,268,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=93.2"/>
+<area shape="rect" coords="269,286,286,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=92.8"/>
+<area shape="rect" coords="287,286,304,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=92.4"/>
+<area shape="rect" coords="305,286,322,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=92.0"/>
+<area shape="rect" coords="323,286,340,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=91.6"/>
+<area shape="rect" coords="341,286,358,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=91.2"/>
+<area shape="rect" coords="359,286,376,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=90.8"/>
+<area shape="rect" coords="377,286,394,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=90.4"/>
+<area shape="rect" coords="395,286,412,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=90.0"/>
+<area shape="rect" coords="413,286,430,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=89.6"/>
+<area shape="rect" coords="431,286,448,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=89.2"/>
+
+<area shape="rect" coords="449,286,466,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=88.8"/>
+<area shape="rect" coords="467,286,484,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=88.4"/>
+<area shape="rect" coords="485,286,502,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=88.0"/>
+<area shape="rect" coords="503,286,520,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=87.6"/>
+<area shape="rect" coords="521,286,538,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=87.2"/>
+<area shape="rect" coords="539,286,556,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=86.8"/>
+<area shape="rect" coords="557,286,574,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=86.4"/>
+<area shape="rect" coords="575,286,592,265" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=86.0"/>
+<area shape="rect" coords="35,264,52,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=98.0"/>
+<area shape="rect" coords="53,264,70,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=97.6"/>
+<area shape="rect" coords="71,264,88,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=97.2"/>
+<area shape="rect" coords="89,264,106,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=96.8"/>
+<area shape="rect" coords="107,264,124,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=96.4"/>
+<area shape="rect" coords="125,264,142,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=96.0"/>
+<area shape="rect" coords="143,264,160,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=95.6"/>
+<area shape="rect" coords="161,264,178,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=95.2"/>
+<area shape="rect" coords="179,264,196,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=94.8"/>
+
+<area shape="rect" coords="197,264,214,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=94.4"/>
+<area shape="rect" coords="215,264,232,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=94.0"/>
+<area shape="rect" coords="233,264,250,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=93.6"/>
+<area shape="rect" coords="251,264,268,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=93.2"/>
+<area shape="rect" coords="269,264,286,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=92.8"/>
+<area shape="rect" coords="287,264,304,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=92.4"/>
+<area shape="rect" coords="305,264,322,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=92.0"/>
+<area shape="rect" coords="323,264,340,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=91.6"/>
+<area shape="rect" coords="341,264,358,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=91.2"/>
+<area shape="rect" coords="359,264,376,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=90.8"/>
+<area shape="rect" coords="377,264,394,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=90.4"/>
+<area shape="rect" coords="395,264,412,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=90.0"/>
+<area shape="rect" coords="413,264,430,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=89.6"/>
+<area shape="rect" coords="431,264,448,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=89.2"/>
+<area shape="rect" coords="449,264,466,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=88.8"/>
+<area shape="rect" coords="467,264,484,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=88.4"/>
+<area shape="rect" coords="485,264,502,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=88.0"/>
+
+<area shape="rect" coords="503,264,520,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=87.6"/>
+<area shape="rect" coords="521,264,538,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=87.2"/>
+<area shape="rect" coords="539,264,556,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=86.8"/>
+<area shape="rect" coords="557,264,574,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=86.4"/>
+<area shape="rect" coords="575,264,592,243" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.4&longitude=86.0"/>
+<area shape="rect" coords="35,242,52,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=98.0"/>
+<area shape="rect" coords="53,242,70,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=97.6"/>
+<area shape="rect" coords="71,242,88,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=97.2"/>
+<area shape="rect" coords="89,242,106,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=96.8"/>
+<area shape="rect" coords="107,242,124,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=96.4"/>
+<area shape="rect" coords="125,242,142,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=96.0"/>
+<area shape="rect" coords="143,242,160,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=95.6"/>
+<area shape="rect" coords="161,242,178,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=95.2"/>
+<area shape="rect" coords="179,242,196,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=94.8"/>
+<area shape="rect" coords="197,242,214,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=94.4"/>
+<area shape="rect" coords="215,242,232,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=94.0"/>
+<area shape="rect" coords="233,242,250,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=93.6"/>
+
+<area shape="rect" coords="251,242,268,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=93.2"/>
+<area shape="rect" coords="269,242,286,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=92.8"/>
+<area shape="rect" coords="287,242,304,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=92.4"/>
+<area shape="rect" coords="305,242,322,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=92.0"/>
+<area shape="rect" coords="323,242,340,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=91.6"/>
+<area shape="rect" coords="341,242,358,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=91.2"/>
+<area shape="rect" coords="359,242,376,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=90.8"/>
+<area shape="rect" coords="377,242,394,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=90.4"/>
+<area shape="rect" coords="395,242,412,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=90.0"/>
+<area shape="rect" coords="413,242,430,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=89.6"/>
+<area shape="rect" coords="431,242,448,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=89.2"/>
+<area shape="rect" coords="449,242,466,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=88.8"/>
+<area shape="rect" coords="467,242,484,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=88.4"/>
+<area shape="rect" coords="485,242,502,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=88.0"/>
+<area shape="rect" coords="503,242,520,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=87.6"/>
+<area shape="rect" coords="521,242,538,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=87.2"/>
+<area shape="rect" coords="539,242,556,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=86.8"/>
+
+<area shape="rect" coords="557,242,574,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=86.4"/>
+<area shape="rect" coords="575,242,592,221" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.8&longitude=86.0"/>
+<area shape="rect" coords="35,220,52,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=98.0"/>
+<area shape="rect" coords="53,220,70,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=97.6"/>
+<area shape="rect" coords="71,220,88,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=97.2"/>
+<area shape="rect" coords="89,220,106,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=96.8"/>
+<area shape="rect" coords="107,220,124,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=96.4"/>
+<area shape="rect" coords="125,220,142,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=96.0"/>
+<area shape="rect" coords="143,220,160,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=95.6"/>
+<area shape="rect" coords="161,220,178,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=95.2"/>
+<area shape="rect" coords="179,220,196,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=94.8"/>
+<area shape="rect" coords="197,220,214,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=94.4"/>
+<area shape="rect" coords="215,220,232,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=94.0"/>
+<area shape="rect" coords="233,220,250,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=93.6"/>
+<area shape="rect" coords="251,220,268,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=93.2"/>
+<area shape="rect" coords="269,220,286,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=92.8"/>
+<area shape="rect" coords="287,220,304,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=92.4"/>
+
+<area shape="rect" coords="305,220,322,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=92.0"/>
+<area shape="rect" coords="323,220,340,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=91.6"/>
+<area shape="rect" coords="341,220,358,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=91.2"/>
+<area shape="rect" coords="359,220,376,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=90.8"/>
+<area shape="rect" coords="377,220,394,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=90.4"/>
+<area shape="rect" coords="395,220,412,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=90.0"/>
+<area shape="rect" coords="413,220,430,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=89.6"/>
+<area shape="rect" coords="431,220,448,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=89.2"/>
+<area shape="rect" coords="449,220,466,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=88.8"/>
+<area shape="rect" coords="467,220,484,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=88.4"/>
+<area shape="rect" coords="485,220,502,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=88.0"/>
+<area shape="rect" coords="503,220,520,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=87.6"/>
+<area shape="rect" coords="521,220,538,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=87.2"/>
+<area shape="rect" coords="539,220,556,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=86.8"/>
+<area shape="rect" coords="557,220,574,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=86.4"/>
+<area shape="rect" coords="575,220,592,199" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.2&longitude=86.0"/>
+<area shape="rect" coords="35,198,52,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=98.0"/>
+
+<area shape="rect" coords="53,198,70,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=97.6"/>
+<area shape="rect" coords="71,198,88,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=97.2"/>
+<area shape="rect" coords="89,198,106,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=96.8"/>
+<area shape="rect" coords="107,198,124,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=96.4"/>
+<area shape="rect" coords="125,198,142,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=96.0"/>
+<area shape="rect" coords="143,198,160,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=95.6"/>
+<area shape="rect" coords="161,198,178,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=95.2"/>
+<area shape="rect" coords="179,198,196,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=94.8"/>
+<area shape="rect" coords="197,198,214,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=94.4"/>
+<area shape="rect" coords="215,198,232,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=94.0"/>
+<area shape="rect" coords="233,198,250,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=93.6"/>
+<area shape="rect" coords="251,198,268,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=93.2"/>
+<area shape="rect" coords="269,198,286,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=92.8"/>
+<area shape="rect" coords="287,198,304,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=92.4"/>
+<area shape="rect" coords="305,198,322,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=92.0"/>
+<area shape="rect" coords="323,198,340,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=91.6"/>
+<area shape="rect" coords="341,198,358,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=91.2"/>
+
+<area shape="rect" coords="359,198,376,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=90.8"/>
+<area shape="rect" coords="377,198,394,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=90.4"/>
+<area shape="rect" coords="395,198,412,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=90.0"/>
+<area shape="rect" coords="413,198,430,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=89.6"/>
+<area shape="rect" coords="431,198,448,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=89.2"/>
+<area shape="rect" coords="449,198,466,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=88.8"/>
+<area shape="rect" coords="467,198,484,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=88.4"/>
+<area shape="rect" coords="485,198,502,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=88.0"/>
+<area shape="rect" coords="503,198,520,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=87.6"/>
+<area shape="rect" coords="521,198,538,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=87.2"/>
+<area shape="rect" coords="539,198,556,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=86.8"/>
+<area shape="rect" coords="557,198,574,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=86.4"/>
+<area shape="rect" coords="575,198,592,177" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=49.6&longitude=86.0"/>
+<area shape="rect" coords="35,176,52,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=98.0"/>
+<area shape="rect" coords="53,176,70,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=97.6"/>
+<area shape="rect" coords="71,176,88,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=97.2"/>
+<area shape="rect" coords="89,176,106,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=96.8"/>
+
+<area shape="rect" coords="107,176,124,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=96.4"/>
+<area shape="rect" coords="125,176,142,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=96.0"/>
+<area shape="rect" coords="143,176,160,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=95.6"/>
+<area shape="rect" coords="161,176,178,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=95.2"/>
+<area shape="rect" coords="179,176,196,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=94.8"/>
+<area shape="rect" coords="197,176,214,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=94.4"/>
+<area shape="rect" coords="215,176,232,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=94.0"/>
+<area shape="rect" coords="233,176,250,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=93.6"/>
+<area shape="rect" coords="251,176,268,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=93.2"/>
+<area shape="rect" coords="269,176,286,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=92.8"/>
+<area shape="rect" coords="287,176,304,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=92.4"/>
+<area shape="rect" coords="305,176,322,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=92.0"/>
+<area shape="rect" coords="323,176,340,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=91.6"/>
+<area shape="rect" coords="341,176,358,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=91.2"/>
+<area shape="rect" coords="359,176,376,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=90.8"/>
+<area shape="rect" coords="377,176,394,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=90.4"/>
+<area shape="rect" coords="395,176,412,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=90.0"/>
+
+<area shape="rect" coords="413,176,430,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=89.6"/>
+<area shape="rect" coords="431,176,448,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=89.2"/>
+<area shape="rect" coords="449,176,466,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=88.8"/>
+<area shape="rect" coords="467,176,484,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=88.4"/>
+<area shape="rect" coords="485,176,502,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=88.0"/>
+<area shape="rect" coords="503,176,520,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=87.6"/>
+<area shape="rect" coords="521,176,538,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=87.2"/>
+<area shape="rect" coords="539,176,556,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=86.8"/>
+<area shape="rect" coords="557,176,574,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=86.4"/>
+<area shape="rect" coords="575,176,592,155" href="http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=50.0&longitude=86.0"/>
+</map>
+<P>
+<a name="rails"/></a>To locate 
+your particular site on the map, use the lines of latitude 
+and longitude. Then click on the map to get a listing of ET estimates for that location. The default is one month, but you can
+pick whatever dates you like.</p>
+<p>If you have suggestions, feel free to email them to <a href="mailto:fewayne@wisc.edu">Rick Wayne.</a></p>
+
+<P>
+<CENTER>

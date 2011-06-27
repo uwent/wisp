@@ -1,0 +1,111 @@
+module ADCalculator
+  # Calculations for all one-time and daily water balance parameters.
+  # These calculations just return the calculated value and assume that
+  # some other code is responsible for stuffing the results into the appropriate storage.
+  # These are all instance methods now, which obviates the necessity for callers to do
+  # ADCalculator::method.
+  # Authors:: Paul Kaarakka, Rick Wayne
+
+  ###############################################
+  # Created:: 18May11
+  # Author:: P Kaarakka
+  # This should be recalculated and saved whenever soils, crop, or root zone depth are changed
+  # TAW is Total Available Water
+  # fc is field capacity
+  # pwp is permanent wilting point
+  # mrzd is managed root zone depth
+  # Result is inches of water
+  def calc_taw(fc, pwp, mrzd)
+    taw = (fc - pwp)*mrzd
+  end # calc_TAW
+
+  ###############################################
+  # Created:: 18May11
+  # Author:: P Kaarakka
+  # This should be recalculated and saved whenever soils, crop, or root zone depth are changed
+  # AD is Allowable Depletion (aka RAW - Readily Available Water)
+  # madFrac is fractional form of Maximum Allowable Depletion
+  # taw is Total Available Water
+  # Result is in inches of water
+  def calc_ad_max_inches(mad_frac, taw)
+    ad_max = mad_frac * taw
+  end # calc_Max_AD
+
+  ###############################################
+  # Created:: 18May11
+  # Author:: P Kaarakka
+  # This should be recalculated and saved whenever soils, crop, or root zone depth are changed
+  # fc is field capacity
+  # mrzd is managed root zone depth
+  # adMax is calculated in calc_AD_Max_inches
+  # Result is in percent
+  def calc_pct_moisture_at_ad_min(fc, ad_max, mrzd)
+    pct_moisture_at_ad_min = (fc - (ad_max/mrzd)) * 100
+  end  # calc_Pct_Moisture_At_AD_Min
+  ###############################################
+  # Created:: 18May11
+  # Author:: P Kaarakka
+  # daily_Rain is accumulated rainfall for the day in inches
+  # daily_Irrigation is accumulated irigation for the day in inches
+  # adj_ET is calculated in module EtCalculator
+  # Result is in inches of water
+  def calc_change_in_daily_storage(daily_rain, daily_irrig, adj_et)
+    delta_stor = (daily_rain + daily_irrig) - adj_et
+  end # calc_Change_In_Daily_Storage
+
+  ###############################################
+  # Created:: 18May11
+  # Author:: P Kaarakka
+  # AD is Allowable Depletion (aka RAW - Readily Available Water)
+  # prev_Daily_AD is previous day's daily AD
+  # delta_Stor is calculated in calc_Change_In_Daily_Storage
+  # Result is in inches of water, the smaller of max_ad_inches and the sum of previous + delta
+  def calc_daily_ad(prev_daily_ad, delta_stor, mad_frac, taw)
+    max_ad_inches = calc_ad_max_inches(mad_frac,taw)
+    [max_ad_inches,prev_daily_ad + delta_stor].min
+  end # calc_Daily_AD
+  
+
+  ###############################################
+  # Created:: 15Jun11
+  # Author:: P Kaarakka & Rick Wayne
+  # mad_frac and taw are used to calculate Max AD in inches
+  # mrzd, pct_mad_min and obs_pct_moisture are used to calculate the new AD
+  # Result is Allowable Depletion in inches of water (aka RAW - Readily Available Water)
+  def calc_daily_ad_from_moisture(mad_frac,taw,mrzd,pct_mad_min,obs_pct_moisture)
+    max_ad_inches = calc_ad_max_inches(mad_frac,taw)
+    [max_ad_inches,mrzd * ((obs_pct_moisture - pct_mad_min) / 100)].min
+  end
+  
+  ###############################################
+  # Created:: 18May11
+  # Author:: P Kaarakka
+  # pwp is permanent wilting point
+  # mrzd is managed root zone depth
+  # pct_Moisture_At_AD_Min is calculated in calc_Pct_Moisture_At_AD_Min
+  # ad is current day's AD
+  # pct_Moisture_Obs is observed soil moisture for the day
+  # if pct_moisture_obs is supplied, just return that
+  # Result is in percent  
+  def calc_pct_moisture_from_ad(pwp, fc, ad_max, ad, mrzd, pct_moisture_obs=nil)
+    pct_moisture_at_ad_min = calc_pct_moisture_at_ad_min(fc, ad_max, mrzd)
+    pct_moisture_obs || ([(pct_moisture_at_ad_min+((ad/mrzd)*100)),pwp].max)
+  end # calc_Daily_TWC
+  
+  ###############################################
+  # Created:: 18May11
+  # Author:: P Kaarakka
+  # ad_Max is calculated in calc_AD_Max_inches
+  # prev_Daily_AD is previous day's daily AD
+  # delta_Stor is calculated in calc_Change_In_Daily_Storage
+  # Result is in inches/day
+  def calc_daily_deep_drainage_volume(ad_max, prev_daily_ad, delta_stor)
+    temp_ddv = prev_daily_ad + delta_stor
+    if temp_ddv > ad_max
+      ddv = temp_ddv - ad_max
+    else
+      ddv = 0
+    end
+  end # calc_Daily_Deep_Drainage_Volume
+end
+

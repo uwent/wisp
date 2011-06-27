@@ -1,0 +1,127 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler <%= Time.now.year %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+  <%= jqgrid_stylesheets.html_safe -%>
+  <style type="text/css">
+	h2 {text-align:center;}
+	#fieldDataBox
+	{
+		position:absolute;
+		left:275px;
+		top:150px;
+		width:200px;
+		padding:2px;
+		border:1px solid gray;
+		margin:0px;
+	}
+
+	#tableDataBox
+	{
+		position:absolute;
+		left:500px;
+		top:130px;
+		width:500px;
+		padding:2px;
+		border:1px solid gray;
+		margin:0px;
+	}
+
+	#tableDataBox table tr td.editable
+	{
+		background:white
+	}
+
+	#summaryDataBox
+	{
+		position:absolute;
+		left:1025px;
+		top:150px;
+		width:170px;
+		padding:2px;
+		border:1px solid gray;
+		margin:0px;
+	}
+
+	#graphBox
+	{
+		position:absolute;
+		left:275px;
+		top:375px;
+		width:575px;
+		padding:2px;
+		border:1px solid gray;
+		margin:0px;
+	}
+	
+	#projectedADBox
+	{
+		position:absolute;
+		left:875px;
+		top:375px;
+		width:300px;
+		padding:2px;
+		border:1px solid gray;
+		margin:0px;
+	}
+	
+	</style>
+   </style>
+<% end %>
+<%= content_for :scripts do %>
+  <%= jqgrid_javascripts.html_safe %>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'sidebar' %>
+<% end %>
+
+<h2>WISP Field Status Page</h2>
+
+<div id="fieldDataBox">
+<h2>Field Data</h2>
+Farm name:<%= @farm.name if @farm %><br/>
+Pivot name: <%= @pivot.name if @pivot %><br/>
+Field name/soil: <%= @field.name if @field %><br/>
+Crop: <%= @field.current_crop.crop + " " + @field.current_crop.variety if @field && @field.current_crop %><br/>
+Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %><br/>
+Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>
+Initial soil moisture: <%= @field_weather_data.first.pct_moisture  if @field_weather_data && @field_weather_data.size > 0 %><br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+</div>
+
+<%= render :partial => 'partials/field_daily_wx'%>
+
+<div id="summaryDataBox">
+<h2>Summary Data</h2>
+Rainfall (in):<br/>
+Irrigation (in):<br/>
+Irrig. (gal x 1K):<br/>
+ET (in):<br/>
+Drainage (in):<br/>
+Power (kWH): <br/>
+Run time (hours): <br/>
+Cost ($): <br/>
+<br/>
+<br/>
+<br/>
+<br/>
+</div>
+
+<div id="graphBox">
+<%= image_tag "ADGraph.png" %>
+</div>
+
+<div id="projectedADBox">
+<h2>Projected Allowable Depletion</h2>
+<br/>
+<br/>
+<br/>
+<br/>
+</div>

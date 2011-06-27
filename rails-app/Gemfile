@@ -1,0 +1,45 @@
+ source 'http://rubygems.org'
+
+gem 'rails', '3.0.7'
+
+# Bundle edge Rails instead:
+# gem 'rails', :git => 'git://github.com/rails/rails.git'
+
+# gem 'activerecord-mysql2-adapter' # think this is because of the explicit connects in awon_controller
+# Use unicorn as the web server
+# gem 'unicorn'
+
+# Deploy with Capistrano
+gem 'capistrano'
+
+# Use OpenID for authentication
+gem "ruby-openid"
+gem "rack-openid"
+# For dev use, gets around the RequestURITooLarge error with WEBrick and OpenID
+gem 'mongrel', '1.2.0.pre2'
+
+# Everything from the comma eastward will go away once I get Rubyforge working!
+gem 'asigbiophys', :path => File.join(File.dirname(__FILE__),'vendor', 'asig')
+# The RMagick and Gruff gems for graph support
+# gem 'rmagick'
+# gem 'gruff'
+
+# To use debugger (ruby-debug for Ruby 1.8.7+, ruby-debug19 for Ruby 1.9.2+)
+# gem 'ruby-debug'
+# gem 'ruby-debug19', :require => 'ruby-debug'
+
+# Bundle the extra gems:
+# gem 'bj'
+# gem 'nokogiri'
+# gem 'sqlite3-ruby', :require => 'sqlite3'
+# gem 'aws-s3', :require => 'aws/s3'
+
+# Bundle gems for the local environment. Make sure to
+# put test-only gems in this group so their generators
+# and rake tasks are available in development mode:
+group :development, :test do
+  gem 'sqlite3'
+end
+# group :production do 
+	# gem 'mysql2'
+# end

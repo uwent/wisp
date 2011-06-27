@@ -1,0 +1,32 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler <%= Time.now.year %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'wisp/sidebar' %>
+<% end %>
+
+<h3>Farm: <%= @farm.name %></h3>
+<h3>Pivot: <%= @pivot.name %></h3>
+
+<table>
+  <%= render :partial => 'wisp/partials/scaffold_table_headers', :locals => {:obj_class => Field} %>
+
+<% @fields.each do |field| %>
+  <tr>
+    <%= render :partial => 'wisp/partials/scaffold_table_show', :locals => {:obj => field } %>
+    <td><%= link_to 'See crops for this field', :controller => 'crops', :field_id => field[:id]%></td>
+    <td><%= link_to 'Show', field %></td>
+    <td><%= link_to 'Edit', edit_field_path(field) %></td>
+    <td><%= button_to 'Destroy', field, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Field', new_field_path %>

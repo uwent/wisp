@@ -1,0 +1,16 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler <%= Time.now.year %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'wisp/sidebar' %>
+<% end %>
+
+<%= render 'form' %>
+
+<%= link_to 'Show', @crop %> |
+<%= link_to 'Back', crops_path %>
