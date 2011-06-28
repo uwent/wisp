@@ -1,0 +1,92 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler <%= Time.now.year %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+  <%= jqgrid_stylesheets.html_safe -%>
+  <style type="text/css">
+  	h2 {text-align:center;}
+  	#pivotDataBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:150px;
+  		width:920px;
+  		padding:2px;
+  		border:1px solid gray;
+  		margin:0px;
+  	}
+		
+  	#fieldDataBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:325px;
+  		width:920px;
+  		padding:2px;
+  		border:1px solid gray;
+  		margin:0px;
+  	}
+		
+  	#cropsDataBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:500px;
+  		width:920px;
+  		padding:2px;
+  		border:1px solid gray;
+  		margin:0px;
+  	}
+		
+   </style>
+<% end %>
+<%= content_for :scripts do %>
+  <%= jqgrid_javascripts.html_safe %>
+<% end %>
+
+
+<% content_for :welcome do %>
+  <%= render :partial => 'sidebar' %>
+<% end %>
+
+<h2>Wisp Pivot, Field and Crops Data</h2>
+
+<div id="pivotDataBox">
+	<h2>Pivot Data</h2>
+	
+	<b>Select Pivot</b> 
+	<select name="user[role_id]">
+    <option value="1" selected="selected">North 40</option>
+    <option value="2">South 40</option>
+    <option value="3">Ed's field</option>
+	</select> 
+	<%= submit_tag "Add New Pivot", :type => 'button', :onclick => 'alert("Add pivot button")' %> 
+	<%= submit_tag "Delete Pivot", :type => 'button', :onclick => 'alert("Delete pivot button")' %>
+	<br />
+	<br />
+	<b>Edit pivot name:</b> <input id="pivot_name" name="pivot_name" type="text" /> 
+	<b>Lat:</b> <input id="lat" name="lat" type="text" /> 
+	<b>Long:</b> <input id="long" name="long" type="text" />
+  <br />
+	<br />
+	<b>Pivot Type:</b> <input id="pivot_type" name="pivot_type" type="text" /> 
+	<b>Pump Capacity:</b> <input id="pivot_capacity" name="pivot_capacity" type="text" /> 
+	<br />
+	<br />
+	<b>Notes:</b> <input id="notes" name="notes" type="text" /> 	
+</div>
+
+<div id="fieldDataBox">
+	<h2>Field Data</h2>
+	Fields for pivot: xxx
+	<%= submit_tag "Add Field", :type => 'button', :onclick => 'alert("Add field button")' %>
+	<%= submit_tag "Delete Selected Field", :type => 'button', :onclick => 'alert("Delete field button")' %>
+</div>
+<div id="cropsDataBox">
+	<h2>Crop Data</h2>
+	Crops for field: xxx
+	<%= submit_tag "Add Crop", :type => 'button', :onclick => 'alert("Add crop button")' %>
+	<%= submit_tag "Delete Selected Crop", :type => 'button', :onclick => 'alert("Delete crop button")' %>
+</div>

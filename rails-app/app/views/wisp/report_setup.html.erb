@@ -4,13 +4,34 @@
 
 <% content_for :stylesheet do %>
   <%= stylesheet_link_tag "style" -%>
+  <style type="text/css">
+  	h2 {text-align:center;}
+  </style>
 <% end %>
 
 <% content_for :welcome do %>
   <%= render :partial => 'sidebar' %>
 <% end %>
 
-<h2>Wisp#report_setup</h2>
-<p>Find me in app/views/wisp/report_setup.html.erb</p>
+<h2>Wisp Report Setup</h2>
+	<br />
+  <br />
+	<b>Select Report</b> 
+	<select name="user[role_id]">
+    <option value="1" selected="selected">Irrigation Summary</option>
+    <option value="2">Energy and Water Use Summary</option>
+    <option value="3">Some Other Report</option>
+	</select> 
+	<br />
+  <br />
+	<b>Report Format</b><br />
+  <input type="radio" id="html" name="user[receive_newsletter]" value="html"  checked="checked" /> Web Page (.html)<br />
+  <input type="radio" id="lai" name="user[receive_newsletter]" value="lai"/> Spreadsheet (.csv)
+	<br />
+  <br />
+	<b>Notes:</b> <input id="notes" name="notes" type="text" />
+	<br />
+  <br />
+	<b>Save Report to:</b> <input id="dest" name="dest" type="text" />
+	<%= submit_tag "Browse", :type => 'button', :onclick => 'alert("Browse users file system")' %>
 
-<p>A page for gathering information needed for constructing any available reports downloaded to the users' local machine.</p>

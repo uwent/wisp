@@ -4,11 +4,73 @@
 
 <% content_for :stylesheet do %>
   <%= stylesheet_link_tag "style" -%>
+  <%= stylesheet_link_tag "style" -%>
+  <style type="text/css">
+  	h2 {text-align:center;}
+  	#stationDataBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:150px;
+  		width:920px;
+  		padding:2px;
+  		border:1px solid gray;
+  		margin:0px;
+  	}
+		
+  	#irrigationDataBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:400px;
+  		width:920px;
+  		padding:2px;
+  		border:1px solid gray;
+  		margin:0px;
+  	}
+  </style>
 <% end %>
 
 <% content_for :welcome do %>
   <%= render :partial => 'sidebar' %>
 <% end %>
 
-<h2>Wisp#weather</h2>
-<p>Find me in app/views/wisp/weather.html.erb</p>
+<h2>Wisp Weather and Irrigation Data</h2>
+
+<div id="stationDataBox">
+	<h2>Weather Station Data</h2>
+	<b>Select Weather Station</b> 
+	<select name="user[role_id]">
+    <option value="1" selected="selected">Station 1</option>
+    <option value="2">Station 2</option>
+    <option value="3">Station 3</option>
+	</select> 
+	<%= submit_tag "Add Station", :type => 'button', :onclick => 'alert("Add station button")' %>
+	<%= submit_tag "Delete Station", :type => 'button', :onclick => 'alert("Delete station button")' %>
+	<br />
+  <br />
+	<b>Edit Station Name:</b> <input id="name" name="name" type="text" />
+	<br />
+  <br />
+	<b>Notes:</b> <input id="name" name="name" type="text" />
+	<br />
+  <br />
+	<b>Data entry for station xxx:</b>
+	<br />
+	<%= submit_tag "Add Daily Weather", :type => 'button', :onclick => 'alert("Add weather data")' %>
+</div>
+
+<div id="irrigationDataBox">
+	<h2>Irrigation Data</h2>
+	<b>Select Pivot</b> 
+	<select name="user[role_id]">
+    <option value="1" selected="selected">Pivot 1</option>
+    <option value="2">Pivot 2</option>
+    <option value="3">Pivot 3</option>
+	</select> 
+	<br />
+  <br />
+	<b>Irrigation events for pivot xxx:</b>
+	<br />
+	<%= submit_tag "Add Irrigation Event", :type => 'button', :onclick => 'alert("Add irrigation event")' %>
+</div>
