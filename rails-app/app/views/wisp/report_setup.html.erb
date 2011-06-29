@@ -22,6 +22,7 @@
     <option value="2">Energy and Water Use Summary</option>
     <option value="3">Some Other Report</option>
 	</select> 
+	<b>Notes:</b> <input id="notes" name="notes" type="text" />
 	<br />
   <br />
 	<b>Report Format</b><br />
@@ -29,9 +30,5 @@
   <input type="radio" id="lai" name="user[receive_newsletter]" value="lai"/> Spreadsheet (.csv)
 	<br />
   <br />
-	<b>Notes:</b> <input id="notes" name="notes" type="text" />
-	<br />
-  <br />
-	<b>Save Report to:</b> <input id="dest" name="dest" type="text" />
-	<%= submit_tag "Browse", :type => 'button', :onclick => 'alert("Browse users file system")' %>
-
+	<%= submit_tag "Create Report", :type => 'button', :onclick => 'alert("Creating report")' %>
+	
