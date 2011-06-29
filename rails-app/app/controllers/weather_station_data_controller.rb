@@ -1,15 +1,25 @@
 class WeatherStationDataController < ApplicationController
   before_filter :ensure_signed_in
   
-  # GET /weather_station_data
-  # GET /weather_station_data.xml
   def index
-    @weather_station_data = WeatherStationData.all
+    weather_station_id = session[:weather_station_id] || session[:weather_station_id] = params[:weather_station_id]
+    # FIXME: Need to filter by year :-)
+    @weather_data = WeatherStationData.where(:weather_station_id => weather_station_id).order(:date) do
+      paginate :page => params[:page], :per_page => params[:rows]
+    end
+    puts "getting wx stn data for #{weather_station_id}, found #{@weather_data.size} entries"
+    @weather_data ||= []
 
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @weather_station_data }
+      format.xml  { render :xml => @weather_data }
+      format.json { render :json => @weather_data.to_jqgrid_json([:date,:ref_et,:rainfall,:soil_moisture,:id], 
+                                                             params[:page], params[:rows],@weather_data.size) }
     end
+  end  
+  
+  def post_data
+    raise "Not implemented!"
   end
 
   # GET /weather_station_data/1
