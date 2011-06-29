@@ -82,7 +82,8 @@ class FieldDailyWeatherController < ApplicationController
 
     respond_to do |format|
       if @field_daily_weather.save
-        format.html { redirect_to(@field_daily_weather, :notice => 'Field daily weather was successfully created.') }
+        # format.html { redirect_to(@field_daily_weather, :notice => 'Field daily weather was successfully created.') }
+        format.html { redirect_to :controller => 'wisp', :action => 'field_status'}
         format.xml  { render :xml => @field_daily_weather, :status => :created, :location => @field_daily_weather }
       else
         format.html { render :action => "new" }

@@ -4,7 +4,7 @@
 
 <% content_for :stylesheet do %>
   <%= stylesheet_link_tag "style" -%>
-  <%= stylesheet_link_tag "style" -%>
+  <%= jqgrid_stylesheets.html_safe -%>
   <style type="text/css">
   	h2 {text-align:center;}
   	#stationDataBox
@@ -30,7 +30,9 @@
   	}
   </style>
 <% end %>
-
+<%= content_for :scripts do %>
+  <%= jqgrid_javascripts.html_safe %>
+<% end %>
 <% content_for :welcome do %>
   <%= render :partial => 'sidebar' %>
 <% end %>
@@ -73,4 +75,6 @@
 	<b>Irrigation events for pivot xxx:</b>
 	<br />
 	<%= submit_tag "Add Irrigation Event", :type => 'button', :onclick => 'alert("Add irrigation event")' %>
+	<%= render :partial => 'wisp/partials/irrig_event_grid'%>
+  
 </div>

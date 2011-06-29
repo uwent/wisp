@@ -100,6 +100,8 @@ Initial soil moisture: <%= @field_weather_data.first.pct_moisture  if @field_wea
 
 <%= render :partial => 'partials/field_daily_wx'%>
 
+<%= button_to 'add day', :controller => 'field_daily_weather', :action => 'create', :field_daily_weather => {:field_id => 1, :date => '2011-06-01'}%>
+
 <div id="summaryDataBox">
 <h2>Summary Data</h2>
 Rainfall (in):<br/>

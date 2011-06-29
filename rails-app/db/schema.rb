@@ -92,6 +92,7 @@ ActiveRecord::Schema.define(:version => 20110531234143) do
 
   create_table "irrigation_events", :force => true do |t|
     t.integer  "pivot_id"
+    t.datetime "date"
     t.float    "inches_applied"
     t.float    "run_time"
     t.float    "total_volume"

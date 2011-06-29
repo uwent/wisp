@@ -1,9 +1,28 @@
 class IrrigationEventsController < ApplicationController
   before_filter :ensure_signed_in
+  def index
+    pivot_id = session[:pivot_id] || session[:pivot_id] = params[:pivot_id]
+    @irrig_events = IrrigationEvent.where(:pivot_id => pivot_id).order(:date) do
+      paginate :page => params[:page], :per_page => params[:rows]
+    end
+    puts "getting irrig events field #{pivot_id}, found #{@irrig_events.size} entries"
+    @irrig_events ||= []
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @irrig_events }
+      format.json { render :json => @irrig_events.to_jqgrid_json([:date,:inches_applied,:id], 
+                                                             params[:page], params[:rows],@irrig_events.size) }
+    end
+   end  
+  
+  def post_data
+    raise "Not implemented!"
+  end
   
   # GET /irrigation_events
   # GET /irrigation_events.xml
-  def index
+  def old_index
     @irrigation_events = IrrigationEvent.all
 
     respond_to do |format|
