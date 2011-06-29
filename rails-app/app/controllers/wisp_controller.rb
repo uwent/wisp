@@ -21,6 +21,8 @@ class WispController < ApplicationController
     logger.info @farm_id
     logger.info @field_id
     logger.info @pivot_id
+    @ad_data = ad_data(@field_id,'2011-05-01','2011-06-01')
+    @projected_ad_data = projected_ad(@ad_data,@field_id)
   end
 
   def farm_status
@@ -28,5 +30,24 @@ class WispController < ApplicationController
 
   def report_setup
   end
-
+    
+  private
+  def ad_data(field_id,start_date,end_date)
+    recs = FieldDailyWeather.where(
+      "field_id=? and date >= ? and date <= ?",field_id,start_date,end_date
+      ).sort {|fdw,fdw2| fdw[:date] <=> fdw2[:date]}
+    # recs.collect { |rec| rec[:ad] ? rec[:ad] : 0.0 }
+    # For now, throw in random numbers. We'll want to return the last 7 elements,
+    # and project two
+    recs.collect { |e| rand }
+  end
+  
+  def projected_ad(ad_data,field_id)
+    projected_ad_data = []
+    0..ad_data.size.times {projected_ad_data << 0.0}
+    projected_ad_data[-1] = ad_data[-1]
+    increment = ad_data[-1] - ad_data[-2]
+    projected_ad_data << ad_data[-1] + increment
+    projected_ad_data << projected_ad_data[-1] + increment
+  end
 end

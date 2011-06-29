@@ -71,6 +71,9 @@
 <% end %>
 <%= content_for :scripts do %>
   <%= jqgrid_javascripts.html_safe %>
+  <%= javascript_include_tag 'bluff/js-class.js'  %>
+  <%= javascript_include_tag 'bluff/excanvas.js'  %>
+  <%= javascript_include_tag 'bluff/bluff-min.js' %>
 <% end %>
 
 <% content_for :welcome do %>
@@ -114,7 +117,20 @@ Cost ($): <br/>
 </div>
 
 <div id="graphBox">
-<%= image_tag "ADGraph.png" %>
+  <canvas id="example" width="400" height="300"></canvas>
+
+    <script type="text/javascript">
+      var g = new Bluff.Line('example', '575x300');
+      g.title = 'Allowable Depletion';
+      g.tooltips = true;
+
+      g.theme_37signals();
+
+      g.data("Allowable Depletion", <%= @ad_data.to_s %>);
+      g.data("Projected", <%= @projected_ad_data.to_s %>)
+
+      g.draw();
+    </script>
 </div>
 
 <div id="projectedADBox">
