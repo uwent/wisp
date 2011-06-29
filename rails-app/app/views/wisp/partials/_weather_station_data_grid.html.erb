@@ -1,0 +1,64 @@
+<div id="stationDataGrid">
+	<b>Data entry for station xxx:</b>
+	<br />
+	<%= submit_tag "Add Daily Weather", :type => 'button', :onclick => 'alert("Add weather data")' %>
+
+        <script type="text/javascript">
+          var lastsel;
+          jQuery(document).ready(function(){
+          var mygrid = jQuery("#weather_station_data").jqGrid({
+              url:'/weather_station_data?q=1',
+              editurl:'/weather_station_data/post_data',
+              datatype: "json",
+              colNames:['Date','RefET','Rain','Soil Moisture','ID'],
+              colModel:[{name:'date', index:'date',width:83},
+                             {name:'ref_et', index:'ref_et',width:47,editable:true, align:'right'},
+                             {name:'rainfall', index:'rainfall',width:47,editable:true, align:'right'},
+                             {name:'soil_moisture', index:'soil_moisture',width:47,editable:true, align:'right'},
+                             {name:'id', index:'id',width:1}
+                             ],
+              pager: '#weather_station_data_pager',
+              rowNum:180,
+              rowList:[180],
+              imgpath: '/images/jqgrid',
+              sortname: '',
+              viewrecords: true,
+              height: 130,
+              width: 200,
+              sortorder: '',
+              gridview: false,
+              scrollrows: true,
+              autowidth: false,
+              rownumbers: false,
+              multiselect: false,
+              
+              onSelectRow: function(id){ 
+                if(id && id!==lastsel){ 
+                  jQuery('#weather_station_data').restoreRow(lastsel);
+                  jQuery('#weather_station_data').editRow(id,true); 
+                  lastsel=id; 
+                } 
+              },             
+              
+              
+              subGrid:false,
+              
+              caption: "Weather Station Data"
+            })
+            .navGrid('#weather_station_data_pager',
+              {edit:false,add:true,del:true,search:false,refresh:true},
+              {afterSubmit:function(r,data){return true;(r,data,'edit');}},
+              {afterSubmit:function(r,data){return true;(r,data,'add');}},
+              {afterSubmit:function(r,data){return true;(r,data,'delete');}}
+            )
+            .navButtonAdd("#weather_station_data_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
+            
+            
+            mygrid.filterToolbar();mygrid[0].toggleToolbar()
+          });
+        </script>
+
+        <table id="weather_station_data" class="scroll" cellpadding="0" cellspacing="0"></table>
+        <div id="weather_station_data_pager" class="scroll" style="text-align:center;"></div>
+      
+</div>

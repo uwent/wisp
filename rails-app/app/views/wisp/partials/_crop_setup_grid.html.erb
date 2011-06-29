@@ -1,0 +1,67 @@
+<%= jqgrid("Irrig 2", "irrig_table_2", "irrigation_events",
+  [
+      { :field => 'id', :label => 'ID'},
+      { :field => 'date', :label => 'Date'},
+      { :field => 'inches_applied', :label => 'Inches Applied'}
+  ]
+
+ ).html_safe %>
+<div id="tableDataBox">
+
+        <script type="text/javascript">
+          var lastsel;
+          jQuery(document).ready(function(){
+          var mygrid = jQuery("#crop_setup").jqGrid({
+              url:'/crop_setup?q=1',
+              editurl:'/crop_setup/post_data',
+              datatype: "json",
+              colNames:['Date','Inches Applied','ID'],
+              colModel:[{name:'date', index:'date',width:83},
+                             {name:'inches_applied', index:'inches_applied',width:47,editable:true, align:'right'},
+                             {name:'id', index:'id',width:1}
+                             ],
+              pager: '#crop_setup_pager',
+              rowNum:180,
+              rowList:[180],
+              imgpath: '/images/jqgrid',
+              sortname: '',
+              viewrecords: true,
+              height: 130,
+              width: 200,
+              sortorder: '',
+              gridview: false,
+              scrollrows: true,
+              autowidth: false,
+              rownumbers: false,
+              multiselect: false,
+              
+              onSelectRow: function(id){ 
+                if(id && id!==lastsel){ 
+                  jQuery('#crop_setup').restoreRow(lastsel);
+                  jQuery('#crop_setup').editRow(id,true); 
+                  lastsel=id; 
+                } 
+              },             
+              
+              
+              subGrid:false,
+              
+              caption: "Irrigation Events"
+            })
+            .navGrid('#crop_setup_pager',
+              {edit:false,add:true,del:true,search:false,refresh:true},
+              {afterSubmit:function(r,data){return true;(r,data,'edit');}},
+              {afterSubmit:function(r,data){return true;(r,data,'add');}},
+              {afterSubmit:function(r,data){return true;(r,data,'delete');}}
+            )
+            .navButtonAdd("#crop_setup_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
+            
+            
+            mygrid.filterToolbar();mygrid[0].toggleToolbar()
+          });
+        </script>
+
+        <table id="crop_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
+        <div id="crop_setup_pager" class="scroll" style="text-align:center;"></div>
+      
+</div>
