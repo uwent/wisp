@@ -18,11 +18,16 @@
   		margin:0px;
   	}
 		
+  	#stationDataGrid
+  	{
+  		float:right;
+  	}
+
   	#irrigationDataBox
   	{
   		position:absolute;
   		left:275px;
-  		top:400px;
+  		top:450px;
   		width:920px;
   		padding:2px;
   		border:1px solid gray;
@@ -47,6 +52,7 @@
     <option value="2">Station 2</option>
     <option value="3">Station 3</option>
 	</select> 
+	<%= render :partial => 'wisp/partials/weather_station_data_grid'%>
 	<%= submit_tag "Add Station", :type => 'button', :onclick => 'alert("Add station button")' %>
 	<%= submit_tag "Delete Station", :type => 'button', :onclick => 'alert("Delete station button")' %>
 	<br />
@@ -55,11 +61,7 @@
 	<br />
   <br />
 	<b>Notes:</b> <input id="name" name="name" type="text" />
-	<br />
   <br />
-	<b>Data entry for station xxx:</b>
-	<br />
-	<%= submit_tag "Add Daily Weather", :type => 'button', :onclick => 'alert("Add weather data")' %>
 </div>
 
 <div id="irrigationDataBox">
@@ -70,11 +72,6 @@
     <option value="2">Pivot 2</option>
     <option value="3">Pivot 3</option>
 	</select> 
-	<br />
-  <br />
-	<b>Irrigation events for pivot xxx:</b>
-	<br />
-	<%= submit_tag "Add Irrigation Event", :type => 'button', :onclick => 'alert("Add irrigation event")' %>
 	<%= render :partial => 'wisp/partials/irrig_event_grid'%>
   
 </div>

@@ -1,12 +1,5 @@
-<%= jqgrid("Irrig 2", "irrig_table_2", "irrigation_events",
-  [
-      { :field => 'id', :label => 'ID'},
-      { :field => 'date', :label => 'Date'},
-      { :field => 'inches_applied', :label => 'Inches Applied'}
-  ]
-
- ).html_safe %>
-<div id="tableDataBox">
+<div id="irrigationDataGrid">
+	<%= submit_tag "Add Irrigation Event", :type => 'button', :onclick => 'alert("Add irrigation event")' %>
 
         <script type="text/javascript">
           var lastsel;
@@ -26,7 +19,7 @@
               imgpath: '/images/jqgrid',
               sortname: '',
               viewrecords: true,
-              height: 130,
+              height: 100,
               width: 200,
               sortorder: '',
               gridview: false,
