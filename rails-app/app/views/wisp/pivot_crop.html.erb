@@ -6,7 +6,7 @@
   <%= stylesheet_link_tag "style" -%>
   <%= jqgrid_stylesheets.html_safe -%>
   <style type="text/css">
-  	h2 {text-align:center;}
+  	h2.pagehead {text-align:center;}
   	#pivotDataBox
   	{
   		position:absolute;
@@ -31,10 +31,6 @@
   		border:1px solid gray;
   		margin:0px;
   	}
-		#fieldDataGrid
-		{
-		  float:right;
-		}
   	#cropsDataBox
   	{
   		position:absolute;
@@ -50,6 +46,12 @@
 <% end %>
 <%= content_for :scripts do %>
   <%= jqgrid_javascripts.html_safe %>
+  <script type="text/javascript">
+    jQuery(document).ready(function(){
+      alert("Called!");
+      $('#cropDataGrid').load('/wisp/crop_setup_grid');
+    }
+  </script>
 <% end %>
 
 
@@ -57,14 +59,9 @@
   <%= render :partial => 'sidebar' %>
 <% end %>
 
-<h2>Wisp Pivot, Field and Crops Data</h2>
+<h2 class="pagehead">Wisp Pivot, Field and Crops Data</h2>
 
 <div id="pivotDataBox">
-	<table><tr><td><b>Select A Different Pivot</b>   <form action="/wisp/pivot_crop">
-  <td><%= select_tag "pivot_id", options_from_collection_for_select(@pivots,"id","name"), :selected => @pivot[:id] %> </td>
-    <td><%= submit_tag "Go to this pivot"%></td>
-    </form></td>
-	</tr> </table>
 	<h2>Pivot Data</h2>
 	
 	<%= form_for @pivot do |f| %>
@@ -131,19 +128,27 @@
     <%= f.submit %>
   </div>
 	<% end %>
-<table>	<tr><td><%= link_to "Add New Pivot", :controller => 'pivots', :action => :new, :farm_id => @farm[:id] %></td>
-	<td><%= button_to "Delete pivot", :controller => 'pivots', :action => :destroy, :id => @pivot[:id], :confirm => "Are you sure?"%></td></tr></table>
+<table border="1">
+  <tr>
+  	<td><%= button_to "Delete this pivot", :controller => 'pivots', :action => :destroy, :id => @pivot[:id], :confirm => "Are you sure?"%></td>
+    <td>Select A Different Pivot
+      <form style="display:inline" action="/wisp/pivot_crop">
+        <%= select_tag "pivot_id", options_from_collection_for_select(@pivots,"id","name"), :selected => @pivot[:id] %>
+        <%= submit_tag "Go"%>
+      </form>
+    </td>
+    <td><%= link_to "Add New Pivot", :controller => 'pivots', :action => :new, :farm_id => @farm[:id] %></td>
+	</tr>
+</table>
 </div>
 
 <div id="fieldDataBox">
 	<h2>Field Data for <%= @pivot.name %></h2>
 	<%= render :partial => '/wisp/partials/field_setup_grid'%>
-	<%= submit_tag "Add Field", :type => 'button', :onclick => 'alert("Add field button")' %><br/>
-	<%= submit_tag "Delete Selected Field", :type => 'button', :onclick => 'alert("Delete field button")' %>
 </div>
 <div id="cropsDataBox">
 	<h2>Crop Data for <%= @field.name %></h2>
-	<%= render :partial => '/wisp/partials/crop_setup_grid'%>
+	<div id="cropDataGrid"></div>
 	<%= submit_tag "Add Crop", :type => 'button', :onclick => 'alert("Add crop button")' %>
 	<%= submit_tag "Delete Selected Crop", :type => 'button', :onclick => 'alert("Delete crop button")' %>
 </div>

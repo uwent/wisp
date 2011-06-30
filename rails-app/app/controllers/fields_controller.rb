@@ -36,7 +36,12 @@ class FieldsController < ApplicationController
     for col_name in COLUMN_NAMES
       attribs[col_name] = params[col_name] unless col_name == :id
     end
-    Field.find(params[:id]).update_attributes(attribs)
+    if params[:oper] && params[:oper] == "add"
+      attribs[:pivot_id] = @pivot_id
+      Field.create(attribs)
+    else
+      Field.find(params[:id]).update_attributes(attribs)
+    end
     render :nothing => true
   end
 
