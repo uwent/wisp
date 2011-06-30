@@ -11,11 +11,14 @@
   	{
   		position:absolute;
   		left:275px;
-  		top:150px;
+  		top:130px;
   		width:920px;
   		padding:2px;
   		border:1px solid gray;
   		margin:0px;
+  	}
+  	.field {
+  	  display:inline;
   	}
 		
   	#fieldDataBox
@@ -56,26 +59,78 @@
 <div id="pivotDataBox">
 	<h2>Pivot Data</h2>
 	
-	<b>Select Pivot</b> 
-	<select name="user[role_id]">
-    <option value="1" selected="selected">North 40</option>
-    <option value="2">South 40</option>
-    <option value="3">Ed's field</option>
-	</select> 
-	<%= submit_tag "Add New Pivot", :type => 'button', :onclick => 'alert("Add pivot button")' %> 
-	<%= submit_tag "Delete Pivot", :type => 'button', :onclick => 'alert("Delete pivot button")' %>
-	<br />
-	<br />
-	<b>Edit pivot name:</b> <input id="pivot_name" name="pivot_name" type="text" /> 
-	<b>Lat:</b> <input id="lat" name="lat" type="text" /> 
-	<b>Long:</b> <input id="long" name="long" type="text" />
-  <br />
-	<br />
-	<b>Pivot Type:</b> <input id="pivot_type" name="pivot_type" type="text" /> 
-	<b>Pump Capacity:</b> <input id="pivot_capacity" name="pivot_capacity" type="text" /> 
-	<br />
-	<br />
-	<b>Notes:</b> <input id="notes" name="notes" type="text" /> 	
+	<table><tr><td><b>Select Another Pivot</b> </td>
+	  <form action="/wisp/pivot_crop">
+	<td><%= select_tag "pivot_id", options_from_collection_for_select(@pivots,"id","name"), :selected => @pivot[:id] %> </td>
+	  <td><%= submit_tag "Go to this pivot"%></td>
+	  </form>
+	</tr> </table>
+	<%= form_for @pivot do |f| %>
+	<table>
+	  <tr>
+	    <td>  <div class="field">
+          <%= f.label :name %>
+          </td><td>
+          <%= f.text_field :name %>
+        </div>
+      </td>
+      <td>  <div class="field">
+          <%= f.label :latitude %>
+        </td><td>
+          <%= f.text_field :latitude %>
+        </div>
+      </td>
+      <td>  <div class="field">
+          <%= f.label :longitude %>
+        </td><td>
+          <%= f.text_field :longitude %>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>  <div class="field">
+          <%= f.label :equipment %>
+        </td><td>
+          <%= f.text_field :equipment %>
+        </div>
+      </td>
+
+      <td>  <div class="field">
+          <%= f.label :pump_capacity %>
+        </td><td>
+          <%= f.text_field :pump_capacity %>
+        </div>
+      </td>
+      
+    </tr>
+    <tr>
+      <td>  <div class="field">
+          <%= f.label :some_energy_rate_metric %>
+        </td><td>
+          <%= f.text_field :some_energy_rate_metric %>
+        </div>
+      </td>
+      <td>  <div class="field">
+          <%= f.label :cropping_year %>
+        </td><td>
+          <%= f.text_field :cropping_year %>
+        </div>
+      </td>
+      <td>  <div class="field">
+          <%= f.label :notes %>
+        </td><td>
+          <%= f.text_field :notes %>
+        </div>
+      </td>
+      
+    </tr>
+  </table>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+	<% end %>
+<table>	<tr><td><%= link_to "Add New Pivot", :controller => 'pivots', :action => :new, :farm_id => @farm[:id] %></td>
+	<td><%= button_to "Delete pivot", :controller => 'pivots', :action => :destroy, :id => @pivot[:id], :confirm => "Are you sure?"%></td></tr></table>
 </div>
 
 <div id="fieldDataBox">

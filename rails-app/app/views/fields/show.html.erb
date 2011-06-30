@@ -65,4 +65,4 @@
 
 
 <%= link_to 'Edit', edit_field_path(@field) %> |
-<%= link_to 'Back', fields_path %>
+<%= link_to 'Back to Pivots, Fields, and Crops', :controller => 'wisp', :farm_id => @field.pivot.farm[:id], :pivot_id => @field.pivot[:id], :field_id => @field[:id] %>

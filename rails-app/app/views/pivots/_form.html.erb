@@ -12,8 +12,12 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :farm_id %><br />
-    <%= f.text_field :farm_id %>
+    <% if @farm %>
+      <input type="hidden" name="pivot[farm_id]" value="<%= @farm[:id] %>"/>
+    <% else %>
+      <%= f.label :farm_id %><br />
+      <%= select_tag "farm_id", options_from_collection_for_select(@farms,"id","name") %>
+    <% end %>
   </div>
   <div class="field">
     <%= f.label :name %><br />

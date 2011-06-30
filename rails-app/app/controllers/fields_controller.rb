@@ -9,6 +9,11 @@ class FieldsController < ApplicationController
     session[:pivot_id] = @pivot_id
     @farm = Farm.find(@farm_id)
     @pivot = Pivot.find(@pivot_id)
+    if params[:field_id]
+      @field = @fields.find { |f| f[:id] == params[:field_id] } || @fields.first
+    else
+      @field = @fields.first
+    end
 	
     respond_to do |format|
       format.html # index.html.erb

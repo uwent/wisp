@@ -9,10 +9,11 @@
 <% content_for :welcome do %>
   <%= render :partial => 'wisp/sidebar' %>
 <% end %>
-<%= render 'form' %>
 
 <p id="notice"><%= notice %></p>
 
+<%= link_to 'Edit', edit_pivot_path(@pivot) %> |
+<%= link_to 'Back to Pivots, Fields, and Crops', :controller => 'wisp', :action => :pivot_crop, :farm_id => @pivot.farm[:id], :pivot_id => @pivot[:id] %>
 <p>
   <b>Farm:</b>
   <%= @pivot.farm_id %>
@@ -59,5 +60,3 @@
 </p>
 
 
-<%= link_to 'Edit', edit_pivot_path(@pivot) %> |
-<%= link_to 'Back', pivots_path %>
