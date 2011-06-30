@@ -2,7 +2,7 @@ class CreateCrops < ActiveRecord::Migration
   def self.up
     create_table :crops do |t|
       t.integer :field_id
-      t.string :crop
+      t.string :name
       t.string :variety
       t.datetime :emergence_date
       t.datetime :end_date

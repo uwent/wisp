@@ -1,22 +1,49 @@
 class CropsController < ApplicationController
   before_filter :ensure_signed_in, :current_user, :get_current_ids
   
+  COLUMN_NAMES = [:name,
+:variety,
+:emergence_date,
+# :end_date,
+:harvest_or_kill_date,
+:max_root_zone_depth,
+# :max_allowable_depletion_frac,
+:max_allowable_depletion_inches,
+:notes
+  ]
+  
   # GET /crops
   # GET /crops.xml
   def index
-    @crops = Crop.all
-	@cropss = Crop.find(:all, :conditions => ['field_id = ?', @field_id])
     session[:farm_id] = @farm_id
     session[:pivot_id] = @pivot_id
-	session[:field_id] = @field_id
+  	session[:field_id] = @field_id
     @farm = Farm.find(@farm_id)
     @pivot = Pivot.find(@pivot_id)
     @field = Field.find(@field_id)
 
+    @crops = Crop.where(:field_id => @field_id).order(:name) do
+      paginate :page => params[:page], :per_page => params[:rows]
+    end
+    puts "getting crops for field #{@field_id}, found #{@crops.size} entries"
+    @crops ||= []
+
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @crops }
+      columns = COLUMN_NAMES; columns << :id
+      format.json { render :json => @crops.to_jqgrid_json(columns,params[:page], params[:rows],@crops.size) }
     end
+
+  end
+
+  def post_data
+    attribs = {}
+    for col_name in COLUMN_NAMES
+      attribs[col_name] = params[col_name] unless col_name == :id
+    end
+    Crop.find(params[:id]).update_attributes(attribs)
+    render :nothing => true
   end
 
   # GET /crops/1

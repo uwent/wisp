@@ -1,0 +1,62 @@
+
+<script type="text/javascript">
+  var lastsel;
+  jQuery(document).ready(function(){
+  var mygrid = jQuery("#crop_setup").jqGrid({
+      url:'/crops?q=1',
+      editurl:'/crops/post_data',
+      datatype: "json",
+      colNames:['Crop','Variety','Emergence Date','Harvest or Kill Date','Max Root Zone Depth','Max AD (inches)','Notes',' '],
+      // colNames:['Crop','Variety','Emergence Date','Harvest or Kill Date',' '],
+      colModel:[ {name:'name', index:'name',width:83},
+                 {name:'variety', index:'variety',width:47,editable:true, align:'right'},
+                 {name:'emergence_date', index:'emergence_date',width:47,editable:true, align:'right'},
+                 {name:'harvest_or_kill_date', index:'harvest_or_kill_date',width:47,editable:true, align:'right'},
+                 {name:'max_root_zone_depth', index:'max_root_zone_depth',width:47,editable:true, align:'right'},
+                 {name:'max_allowable_depletion_inches', index:'max_allowable_depletion_inches',width:47,editable:true, align:'right'},
+                 {name:'notes', index:'notes',width:47,editable:true, align:'right'},
+                 {name:'id', index:'id',width:1}
+                ],
+      pager: '#crop_setup_pager',
+      rowNum:180,
+      rowList:[180],
+      imgpath: '/images/jqgrid',
+      sortname: '',
+      viewrecords: true,
+      height: 70,
+      width: 900,
+      sortorder: '',
+      gridview: false,
+      scrollrows: true,
+      autowidth: false,
+      rownumbers: false,
+      multiselect: false,
+      
+      onSelectRow: function(id){ 
+        if(id && id!==lastsel){ 
+          jQuery('#crop_setup').restoreRow(lastsel);
+          jQuery('#crop_setup').editRow(id,true); 
+          lastsel=id; 
+        } 
+      },             
+      
+      
+      subGrid:false,
+      
+      caption: "Crops"
+    })
+    .navGrid('#crop_setup_pager',
+      {edit:false,add:true,del:true,search:false,refresh:true},
+      {afterSubmit:function(r,data){return true;(r,data,'edit');}},
+      {afterSubmit:function(r,data){return true;(r,data,'add');}},
+      {afterSubmit:function(r,data){return true;(r,data,'delete');}}
+    )
+    .navButtonAdd("#crop_setup_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
+    
+    
+    mygrid.filterToolbar();mygrid[0].toggleToolbar()
+  });
+</script>
+
+<table id="crop_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
+<div id="crop_setup_pager" class="scroll" style="text-align:center;"></div>

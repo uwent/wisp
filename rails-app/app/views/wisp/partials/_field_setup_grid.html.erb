@@ -4,18 +4,18 @@
           var lastsel;
           jQuery(document).ready(function(){
           var mygrid = jQuery("#field_setup").jqGrid({
-              url:'/field_setup?q=1',
-              editurl:'/field_setup/post_data',
+              url:'/fields?q=1',
+              editurl:'/fields/post_data',
               datatype: "json",
-              colNames:['Name','Area','Soil Type','Field Capacity','Permanent Wilting Point,'ET Station','Rain Station','Soil Moisture Station','Notes','field_ID'],
-              colModel:[{name:'name', index:'name',width:83},
+              colNames:['Name','Area','Soil Type','Field Capacity','Permanent Wilting Point','ET Station','Rain Station','Soil Moisture Station','Notes',' '],
+              colModel:[{name:'name', index:'name',width:83,editable:true},
                              {name:'area', index:'area',width:47,editable:true, align:'right'},
                              {name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'},
                              {name:'field_capacity', index:'field_capacity',width:47,editable:true, align:'right'},
                              {name:'perm_wilting_pt', index:'perm_wilting_pt',width:47,editable:true, align:'right'},
-                             {name:'ref_et_station', index:'ref_et_station',width:47,editable:true, align:'right'},
-                             {name:'rain_station', index:'rain_station',width:47,editable:true, align:'right'},
-                             {name:'soil_moisture_station', index:'soil_moisture_station',width:47,editable:true, align:'right'},
+                             {name:'ref_et_station_id', index:'ref_et_station_id',width:47,editable:true, align:'right'},
+                             {name:'rain_station_id', index:'rain_station_id',width:47,editable:true, align:'right'},
+                             {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:47,editable:true, align:'right'},
                              {name:'notes', index:'notes',width:47,editable:true, align:'right'},
                              {name:'id', index:'id',width:1}
                              ],
@@ -25,8 +25,8 @@
               imgpath: '/images/jqgrid',
               sortname: '',
               viewrecords: true,
-              height: 130,
-              width: 200,
+              height: 70,
+              width: 750,
               sortorder: '',
               gridview: false,
               scrollrows: true,
@@ -38,14 +38,16 @@
                 if(id && id!==lastsel){ 
                   jQuery('#field_setup').restoreRow(lastsel);
                   jQuery('#field_setup').editRow(id,true); 
-                  lastsel=id; 
+                  lastsel=id;
+                  alert('I have just selected a row with field id '+id);
+                  $.get('/wisp/pivot_crop',{field_id:id}); 
                 } 
               },             
               
               
               subGrid:false,
               
-              caption: "Irrigation Events"
+              caption: "Fields"
             })
             .navGrid('#field_setup_pager',
               {edit:false,add:true,del:true,search:false,refresh:true},

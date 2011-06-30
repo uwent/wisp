@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(:version => 20110531234143) do
 
   create_table "crops", :force => true do |t|
     t.integer  "field_id"
-    t.string   "crop"
+    t.string   "name"
     t.string   "variety"
     t.datetime "emergence_date"
     t.datetime "end_date"

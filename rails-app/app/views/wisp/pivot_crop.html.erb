@@ -31,7 +31,10 @@
   		border:1px solid gray;
   		margin:0px;
   	}
-		
+		#fieldDataGrid
+		{
+		  float:right;
+		}
   	#cropsDataBox
   	{
   		position:absolute;
@@ -57,14 +60,13 @@
 <h2>Wisp Pivot, Field and Crops Data</h2>
 
 <div id="pivotDataBox">
+	<table><tr><td><b>Select A Different Pivot</b>   <form action="/wisp/pivot_crop">
+  <td><%= select_tag "pivot_id", options_from_collection_for_select(@pivots,"id","name"), :selected => @pivot[:id] %> </td>
+    <td><%= submit_tag "Go to this pivot"%></td>
+    </form></td>
+	</tr> </table>
 	<h2>Pivot Data</h2>
 	
-	<table><tr><td><b>Select Another Pivot</b> </td>
-	  <form action="/wisp/pivot_crop">
-	<td><%= select_tag "pivot_id", options_from_collection_for_select(@pivots,"id","name"), :selected => @pivot[:id] %> </td>
-	  <td><%= submit_tag "Go to this pivot"%></td>
-	  </form>
-	</tr> </table>
 	<%= form_for @pivot do |f| %>
 	<table>
 	  <tr>
@@ -134,14 +136,19 @@
 </div>
 
 <div id="fieldDataBox">
-	<h2>Field Data</h2>
-	Fields for pivot: xxx
-	<%= submit_tag "Add Field", :type => 'button', :onclick => 'alert("Add field button")' %>
+	<h2>Field Data for <%= @pivot.name %></h2>
+	<%= render :partial => '/wisp/partials/field_setup_grid'%>
+	<%= submit_tag "Add Field", :type => 'button', :onclick => 'alert("Add field button")' %><br/>
 	<%= submit_tag "Delete Selected Field", :type => 'button', :onclick => 'alert("Delete field button")' %>
 </div>
 <div id="cropsDataBox">
-	<h2>Crop Data</h2>
-	Crops for field: xxx
+	<h2>Crop Data for <%= @field.name %></h2>
+	<%= render :partial => '/wisp/partials/crop_setup_grid'%>
 	<%= submit_tag "Add Crop", :type => 'button', :onclick => 'alert("Add crop button")' %>
 	<%= submit_tag "Delete Selected Crop", :type => 'button', :onclick => 'alert("Delete crop button")' %>
 </div>
+
+
+<% content_for :footer do %>
+<%= render :partial => '/wisp/partials/debug'%>
+<% end %>

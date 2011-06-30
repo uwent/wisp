@@ -14,6 +14,17 @@ class WispController < ApplicationController
     @crops = Crop.where(:field_id => @field_id)
   end
 
+  def crop_setup_grid
+    @farm = Farm.find(@farm_id) if @farm_id
+    @pivot = Pivot.find(@pivot_id) if @pivot_id
+    @pivots = Pivot.where(:farm_id => @farm_id)
+    @field = Field.find(@field_id) if @field_id
+    @fields = Field.where(:pivot_id => @pivot_id)
+    @crop = Crop.find(@crop_id) if @crop_id
+    @crops = Crop.where(:field_id => @field_id)
+    render :layout => false
+  end
+
   def weather
     # FIXME: Should use the selected station, not be fixed!
     @weather_station_id = 1

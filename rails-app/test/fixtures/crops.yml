@@ -2,7 +2,7 @@
 
 one:
   field_id: 1
-  crop: Corn
+  name: Corn
   variety: Fabulous Hybrid
   emergence_date: 2011-05-20 15:01:43
   harvest_or_kill_date: 2011-05-20 15:01:43
@@ -13,7 +13,7 @@ one:
 
 two:
   field_id: 
-  crop: MyString
+  name: MyString
   variety: MyString
   emergence_date: 2011-05-20 15:01:43
   harvest_or_kill_date: 2011-05-20 15:01:43
@@ -25,7 +25,7 @@ two:
 default:
   id: 1
   field_id: 1
-  crop: Corn
+  name: Corn
   variety: Fabulous Hybrid
   emergence_date: 2011-05-01 15:01:43
   harvest_or_kill_date: 2011-05-20 15:01:43

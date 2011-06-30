@@ -87,7 +87,7 @@
 Farm name:<%= @farm.name if @farm %><br/>
 Pivot name: <%= @pivot.name if @pivot %><br/>
 Field name/soil: <%= @field.name if @field %><br/>
-Crop: <%= @field.current_crop.crop + " " + @field.current_crop.variety if @field && @field.current_crop %><br/>
+Crop: <%= @field.current_crop.name + " " + @field.current_crop.variety if @field && @field.current_crop %><br/>
 Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %><br/>
 Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>
 Initial soil moisture: <%= @field_weather_data.first.pct_moisture  if @field_weather_data && @field_weather_data.size > 0 %><br/>
