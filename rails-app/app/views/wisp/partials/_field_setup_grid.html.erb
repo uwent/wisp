@@ -1,26 +1,25 @@
-<%= jqgrid("Irrig 2", "irrig_table_2", "irrigation_events",
-  [
-      { :field => 'id', :label => 'ID'},
-      { :field => 'date', :label => 'Date'},
-      { :field => 'inches_applied', :label => 'Inches Applied'}
-  ]
-
- ).html_safe %>
-<div id="tableDataBox">
+<div id="fieldDataGrid">
 
         <script type="text/javascript">
           var lastsel;
           jQuery(document).ready(function(){
-          var mygrid = jQuery("#irrig_events").jqGrid({
-              url:'/irrigation_events?q=1',
-              editurl:'/irrigation_events/post_irrig_data',
+          var mygrid = jQuery("#field_setup").jqGrid({
+              url:'/field_setup?q=1',
+              editurl:'/field_setup/post_data',
               datatype: "json",
-              colNames:['Date','Inches Applied','ID'],
-              colModel:[{name:'date', index:'date',width:83},
-                             {name:'inches_applied', index:'inches_applied',width:47,editable:true, align:'right'},
+              colNames:['Name','Area','Soil Type','Field Capacity','Permanent Wilting Point,'ET Station','Rain Station','Soil Moisture Station','Notes','field_ID'],
+              colModel:[{name:'name', index:'name',width:83},
+                             {name:'area', index:'area',width:47,editable:true, align:'right'},
+                             {name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'},
+                             {name:'field_capacity', index:'field_capacity',width:47,editable:true, align:'right'},
+                             {name:'perm_wilting_pt', index:'perm_wilting_pt',width:47,editable:true, align:'right'},
+                             {name:'ref_et_station', index:'ref_et_station',width:47,editable:true, align:'right'},
+                             {name:'rain_station', index:'rain_station',width:47,editable:true, align:'right'},
+                             {name:'soil_moisture_station', index:'soil_moisture_station',width:47,editable:true, align:'right'},
+                             {name:'notes', index:'notes',width:47,editable:true, align:'right'},
                              {name:'id', index:'id',width:1}
                              ],
-              pager: '#irrig_events_pager',
+              pager: '#field_setup_pager',
               rowNum:180,
               rowList:[180],
               imgpath: '/images/jqgrid',
@@ -37,8 +36,8 @@
               
               onSelectRow: function(id){ 
                 if(id && id!==lastsel){ 
-                  jQuery('#irrig_events').restoreRow(lastsel);
-                  jQuery('#irrig_events').editRow(id,true); 
+                  jQuery('#field_setup').restoreRow(lastsel);
+                  jQuery('#field_setup').editRow(id,true); 
                   lastsel=id; 
                 } 
               },             
@@ -48,20 +47,20 @@
               
               caption: "Irrigation Events"
             })
-            .navGrid('#irrig_events_pager',
+            .navGrid('#field_setup_pager',
               {edit:false,add:true,del:true,search:false,refresh:true},
               {afterSubmit:function(r,data){return true;(r,data,'edit');}},
               {afterSubmit:function(r,data){return true;(r,data,'add');}},
               {afterSubmit:function(r,data){return true;(r,data,'delete');}}
             )
-            .navButtonAdd("#irrig_events_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
+            .navButtonAdd("#field_setup_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
             
             
             mygrid.filterToolbar();mygrid[0].toggleToolbar()
           });
         </script>
 
-        <table id="irrig_events" class="scroll" cellpadding="0" cellspacing="0"></table>
-        <div id="irrig_events_pager" class="scroll" style="text-align:center;"></div>
+        <table id="field_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
+        <div id="field_setup_pager" class="scroll" style="text-align:center;"></div>
       
 </div>
