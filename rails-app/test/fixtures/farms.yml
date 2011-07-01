@@ -4,13 +4,14 @@ default:
   id: 1
   year: 2011
   group_id: 1
+  et_method_id: 1 #LAI
   name: Default Farm
 
 ricks_farm:
   group: ricks
   year: 2011
   name: This is Rick's Farm 1
-  et_method: pct_cover
+  et_method_id: 1 #LAI
   notes: 
 
 ricks_other_farm:
