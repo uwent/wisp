@@ -8,10 +8,11 @@
               url:'/farms?q=1',
               editurl:'/farms/post_data',
               datatype: "json",
-              colNames:['Name',ET Method','Notes',' '],
+              colNames:['Name','ET Method','Notes','Problem?',' '],
               colModel:[{name:'name', index:'name',width:83,editable:true},
                              {name:'et_method_id', index:'et_method_id',width:87,editable:true, align:'right'},
                              {name:'notes', index:'notes',width:87,editable:true, align:'right'},
+                             {name:'problem', index:'problem',width:20, align:'right'},
                              {name:'id', index:'id',width:1}
                              ],
               pager: '#farm_setup_pager',

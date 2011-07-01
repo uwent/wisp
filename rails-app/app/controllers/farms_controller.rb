@@ -27,7 +27,7 @@ class FarmsController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @farms }
-      format.json { render :json => @farms.to_jqgrid_json([:name,:et_method_id,:notes,:id], 
+      format.json { render :json => @farms.to_jqgrid_json([:name,:et_method_id,:notes,:problem,:id], 
                                                              params[:page], params[:rows],@farms.size) }
     end
     
@@ -36,7 +36,7 @@ class FarmsController < ApplicationController
   def post_data
     attribs = {}
     for col_name in COLUMN_NAMES
-      attribs[col_name] = params[col_name] unless col_name == :id
+      attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem
     end
     if params[:oper] && params[:oper] == "add"
       attribs[:pivot_id] = @group[:id]

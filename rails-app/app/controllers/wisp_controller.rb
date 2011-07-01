@@ -35,7 +35,7 @@ class WispController < ApplicationController
   end
 
   def field_status
-    puts "field_status"
+    # puts "field_status"
     @farm = Farm.find(@farm_id) if @farm_id
     @pivot = Pivot.find(@pivot_id) if @pivot_id
     @field = Field.find(@field_id) if @field_id

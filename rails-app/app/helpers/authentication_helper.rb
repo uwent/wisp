@@ -2,23 +2,23 @@ module AuthenticationHelper
   USING_OPENID = false
   SINGLE_USER_ID = 1
   def signed_in?
-    puts "signed_in: session[:user_id] is #{session[:user_id]}"
+    # puts "signed_in: session[:user_id] is #{session[:user_id]}"
     !session[:user_id].nil?
   end
   
   def current_user
-    puts "current_user: starting with #{@current_user.inspect}"
+    # puts "current_user: starting with #{@current_user.inspect}"
 	if signed_in?
 		@current_user ||= User.find(session[:user_id])
 	else
 		@current_user = nil
 	end
-    puts "current_user: now #{@current_user.inspect}"
+    # puts "current_user: now #{@current_user.inspect}"
     @current_user
   end
   
   def ensure_signed_in
-    puts "ensure_signed_in"
+    # puts "ensure_signed_in"
     if USING_OPENID
       unless signed_in?
         session[:redirect_to] = request.request_uri

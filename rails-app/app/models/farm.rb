@@ -6,4 +6,9 @@ class Farm < ActiveRecord::Base
   def self.my_farms(group_id)
     Farm.find(:all, :conditions => ['group_id = ?',group_id])
   end
+  
+  def problem
+    # FIXME: Should have code in here to actually iterate through the fields and detect problems!
+    rand > 0.5 ? "Yes": ""
+  end
 end

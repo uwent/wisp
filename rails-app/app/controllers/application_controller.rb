@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
     unless @current_user
       return nil
     end
-    puts "get_group: #{@current_user.inspect} Current user's groups: #{@current_user.groups.inspect}"
+    # puts "get_group: #{@current_user.inspect} Current user's groups: #{@current_user.groups.inspect}"
     @group = @current_user.groups.first
   end
   
