@@ -14,8 +14,9 @@ class FieldTest < ActiveSupport::TestCase
   end
 
   test "fields can enumerate their weather" do
-    assert(@pcf.field_daily_weather, "This field should have weather")
-    assert(@pcf.field_daily_weather.size > 0, "Should have a few days of daily weather")
+    default_field = fields(:default)
+    assert(default_field.field_daily_weather, "This field should have weather")
+    assert(default_field.field_daily_weather.size > 0, "Should have a few days of daily weather")
   end
   
   test "call all the methods from the AD Calculator" do
@@ -67,4 +68,43 @@ class FieldTest < ActiveSupport::TestCase
             :entered_pct_cover => 0.4)
           ]
   end
+  
+  test "start and end dates work" do
+    field = fields(:default)
+    assert(field)
+    year = field.year
+    assert(year)
+    start_date,end_date = field.date_endpoints
+  end
+  
+  test "can create a season's worth of field daily weather" do
+    field = Field.create(:pivot_id => Farm.first.pivots.first[:id])
+    FieldDailyWeather.destroy_all
+    field = Field.find(field[:id])
+    start_date,end_date = field.date_endpoints
+    n_days = 1 + (end_date - start_date)
+    assert(field)
+    assert_equal(0, field.field_daily_weather.size)
+    field.create_field_daily_weather
+    assert_equal(n_days, field.field_daily_weather.size)
+  end
+  
+  test "ensure that field_daily_weather recs are created after field is created" do
+    field = Field.create(:pivot_id => Farm.first.pivots.first[:id])
+    start_date,end_date = field.date_endpoints
+    n_days = 1 + (end_date - start_date)
+    assert_equal(n_days, field.field_daily_weather.size)
+  end
+  
+  test "field_daily_weather for a field all gets deleted when the field goes away" do
+    field = Field.create(:pivot_id => Farm.first.pivots.first[:id])
+    fdw = FieldDailyWeather.where(:field_id => field[:id])
+    start_date,end_date = field.date_endpoints
+    n_days = 1 + (end_date - start_date)
+    assert_equal(n_days, fdw.size)
+    field.destroy
+    fdw = FieldDailyWeather.where(:field_id => field[:id])
+    assert_equal(0, fdw.size, "All the weather records should have shuffled off.")
+  end
+  
 end

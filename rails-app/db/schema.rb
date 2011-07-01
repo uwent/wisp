@@ -44,6 +44,7 @@ ActiveRecord::Schema.define(:version => 20110531234143) do
 
   create_table "farms", :force => true do |t|
     t.integer  "group_id"
+    t.integer  "year"
     t.string   "name"
     t.integer  "et_method_id"
     t.string   "notes"
