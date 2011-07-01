@@ -1,0 +1,58 @@
+<div id="farmSetupGrid">
+
+        <script type="text/javascript">
+          var lastsel;
+          jQuery(document).ready(function(){
+            
+          var mygrid = jQuery("#farm_setup").jqGrid({
+              url:'/farms?q=1',
+              editurl:'/farms/post_data',
+              datatype: "json",
+              colNames:['Name',ET Method','Notes',' '],
+              colModel:[{name:'name', index:'name',width:83,editable:true},
+                             {name:'et_method_id', index:'et_method_id',width:87,editable:true, align:'right'},
+                             {name:'notes', index:'notes',width:87,editable:true, align:'right'},
+                             {name:'id', index:'id',width:1}
+                             ],
+              pager: '#farm_setup_pager',
+              rowNum:180,
+              rowList:[180],
+              imgpath: '/images/jqgrid',
+              sortname: '',
+              viewrecords: true,
+              height: 70,
+              width: 918,
+              sortorder: '',
+              gridview: false,
+              scrollrows: true,
+              autowidth: false,
+              rownumbers: false,
+              multiselect: false,
+              
+              onSelectRow: function(id){ 
+                if(id && id!==lastsel){ 
+                  jQuery('#farm_setup').restoreRow(lastsel);
+                  jQuery('#farm_setup').editRow(id,true); 
+                  lastsel=id;
+                } 
+              },             
+              
+              subGrid:false,
+              caption: "farms"
+            })
+            .navGrid('#farm_setup_pager',
+              {edit:false,add:true,del:true,search:false,refresh:true},
+              {afterSubmit:function(r,data){return true;(r,data,'edit');}},
+              {afterSubmit:function(r,data){return true;(r,data,'add');}},
+              {afterSubmit:function(r,data){return true;(r,data,'delete');}}
+            )
+            .navButtonAdd("#farm_setup_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
+            
+            mygrid.filterToolbar();mygrid[0].toggleToolbar()
+          });
+        </script>
+
+        <table id="farm_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
+        <div id="farm_setup_pager" class="scroll" style="text-align:center;"></div>
+      
+</div>
