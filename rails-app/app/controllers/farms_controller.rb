@@ -1,9 +1,10 @@
 class FarmsController < ApplicationController
+  COLUMN_NAMES = [:name,:et_method_id,:notes]
   before_filter :ensure_signed_in, :current_user, :get_group
   
   # GET /farms
   # GET /farms.xml
-  def index
+  def old_index
     gid = @group[:id]
     @farms = Farm.find(:all, :conditions => ['group_id = ?',gid])
         
@@ -11,6 +12,39 @@ class FarmsController < ApplicationController
       format.html # index.html.erb
       format.xml  { render :xml => @farms }
     end
+  end
+  # GET /field_daily_weather
+  # GET /field_daily_weather.xml
+  def index
+    group_id = @group[:id]
+    # FIXME: Don't forget to insert year here!
+    @farms = Farm.where(:group_id => group_id).order(:name) do
+      paginate :page => params[:page], :per_page => params[:rows]
+    end
+    puts "getting farms for group #{group_id}, found #{@farms.size} entries"
+    @farms ||= []
+
+    respond_to do |format|
+      format.html # index.html.erb
+      format.xml  { render :xml => @farms }
+      format.json { render :json => @farms.to_jqgrid_json([:name,:et_method_id,:notes,:id], 
+                                                             params[:page], params[:rows],@farms.size) }
+    end
+    
+  end # index
+  
+  def post_data
+    attribs = {}
+    for col_name in COLUMN_NAMES
+      attribs[col_name] = params[col_name] unless col_name == :id
+    end
+    if params[:oper] && params[:oper] == "add"
+      attribs[:pivot_id] = @group[:id]
+      Farm.create(attribs)
+    else
+      Farm.find(params[:id]).update_attributes(attribs)
+    end
+    render :nothing => true
   end
 
   # GET /farms/1

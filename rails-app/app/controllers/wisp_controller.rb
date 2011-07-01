@@ -12,6 +12,7 @@ class WispController < ApplicationController
     @fields = Field.where(:pivot_id => @pivot_id)
     @crop = Crop.find(@crop_id) if @crop_id
     @crops = Crop.where(:field_id => @field_id)
+    # FIXME: Need to filter everything below pivot for current year
   end
 
   def crop_setup_grid

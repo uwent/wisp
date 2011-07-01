@@ -2,6 +2,7 @@ class CreateFarms < ActiveRecord::Migration
   def self.up
     create_table :farms do |t|
       t.integer :group_id
+      t.integer :year # for future use
       t.string :name
       t.integer :et_method_id
       t.string :notes

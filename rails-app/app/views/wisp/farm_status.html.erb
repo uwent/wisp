@@ -4,6 +4,8 @@
 
 <% content_for :stylesheet do %>
   <%= stylesheet_link_tag "style" -%>
+  <%= jqgrid_stylesheets.html_safe -%>
+  
   <style type="text/css">
   	h2 {text-align:center;}
   	#farmDataBox
@@ -34,24 +36,15 @@
   <%= render :partial => 'sidebar' %>
 <% end %>
 
+<% content_for :scripts do %>
+  <%= jqgrid_javascripts.html_safe %>
+<% end %>
+
 <h2>Wisp Farm Data and Field Problem Summary</h2>
 
 <div id="farmDataBox">
 	<h2>Farm Data</h2>
-	<%= submit_tag "Add Farm", :type => 'button', :onclick => 'alert("Add farm button")' %>
-	<%= submit_tag "Delete Farm", :type => 'button', :onclick => 'alert("Delete farm button")' %>
-	<br />
-  <br />
-	<b>Edit Farm Name:</b> <input id="name" name="name" type="text" />
-	<br />
-  <br />
-	<b>ET Adjustment Method</b><br />
-  <input type="radio" id="pct_cover" name="user[receive_newsletter]" value="pct_cover" /> Crop % Cover<br />
-  <input type="radio" id="lai" name="user[receive_newsletter]" value="lai" checked="checked" /> LAI
-	<br />
-  <br />
-	<b>Notes:</b> <input id="name" name="name" type="text" />
-
+  <%= render :partial => '/wisp/partials/_farm_setup_grid'%>
 </div>
 
 <div id="farmProblemsBox">
