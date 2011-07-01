@@ -9,7 +9,7 @@ module ETCalculator
  # and make then instance methods of that class; ADCalculator is the same way.
  
   # Return the adjusted ET. Uses regression coefficients derived by J. Panuska from the UW Extension pub A3600.
-  def adjETPctCover(refET,pctCover)
+  def adj_et_pct_cover(refET,pctCover)
     # regression coefficients from J. Panuska in Linear_Regressions_for_A3600_Table.doc and based on Table C of UW Extension pub A3600, "Irrigation Management in Wisconsin - the Wisconsin Irrigation Scheduling Program (WISP)" 
     coeff = [[0,0],[-0.002263,0.2377],[-0.002789,0.3956],[-0.002368,0.5395],[-0.000316,0.6684],[-0.000053,0.7781],[0.001053,0.8772],[0.001947,0.9395],[0.000000,1.000]]
   
@@ -57,6 +57,13 @@ module ETCalculator
 	adjET = refET * crop_coeff
   end
 
+  # Return adjusted ET from the reference ET and the leaf area index
+  # Crop coeff math is from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
+  def adj_et_from_lai_corn(refET,lai)
+	crop_coeff = 1.1*(1-exp(-1.5*(lai)))
+	adjET = refET * crop_coeff
+  end
+
   # Duck Typing at work here; "day" can be anything that responds to the methods "refET", "lai", and "pctCover".
   # So an ActiveRecord class instance with those table columns will work, or a mock object for testing,
   # or wrapper around some other class that calls them referenceET and leafAreaIndex.
@@ -66,9 +73,9 @@ module ETCalculator
     # look at LAI first; since pctCover is (???) more likely to have default values automatically calculated,
     # if LAI is present it means the user wants us to use it
     if day.lai
-      adjETLAI(day.refET,day.lai)
+      adj_et_from_lai_corn(day.refET,day.lai)
     else
-      adjETPctCover(day.refET,day.pctCover)
+      adj_et_pct_cover(day.refET,day.pctCover)
     end
   end
   
