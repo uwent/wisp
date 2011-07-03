@@ -10,7 +10,7 @@ class FieldTest < ActiveSupport::TestCase
     method = nil
     assert_nothing_raised(Exception) { method = fields(:one).et_method }
     assert(method, "Should have returned an EtMethod")
-    assert_equal(PctCoverEtMethod, method.class,"Should have returned an EtMethod object")
+    assert_equal(LaiEtMethod, method.class,"Should have returned an LAI EtMethod object")
   end
 
   test "fields can enumerate their weather" do
@@ -105,6 +105,65 @@ class FieldTest < ActiveSupport::TestCase
     field.destroy
     fdw = FieldDailyWeather.where(:field_id => field[:id])
     assert_equal(0, fdw.size, "All the weather records should have shuffled off.")
+  end
+
+  def check_lai_profile(field,emergence_date)
+    lai = nil
+    field.field_daily_weather.each do |fdw|
+      if fdw.date < emergence_date
+        assert_nil(fdw.leaf_area_index)
+      elsif fdw.date == emergence_date
+        lai = fdw.leaf_area_index
+        assert(lai, "Should be an LAI value starting at emergence date")
+      elsif fdw.date > emergence_date + 61
+        break
+      else
+        assert(fdw.leaf_area_index > lai, "LAI should be increasing for the first two months. For #{fdw.date}, LAI was #{fdw.leaf_area_index} and previous day's was #{lai}")
+        lai = fdw.leaf_area_index
+      end
+    end
+  end
+
+  def check_field_has_no_lai(field,emergence_date)
+    fdw_emergence_date = (field.field_daily_weather.find_all {|fdw| fdw.date == emergence_date}).first
+    assert(fdw_emergence_date, "Should be a wx record for emergence date")
+    assert_nil(fdw_emergence_date.leaf_area_index,"Should start out with nothing for LAI on emergence date")
+  end
+
+  def setup_field_with_emergence
+    farm = Farm.first
+    assert_equal(LaiEtMethod, farm.et_method.class)
+    field = Field.create(:pivot_id => farm.pivots.first[:id])
+    emergence_date = DateTime.parse('2011-05-01')
+    check_field_has_no_lai(field,emergence_date)
+    [field,emergence_date]
+  end
+  
+  test "update_canopy called directly works for lai" do
+    field,emergence_date = setup_field_with_emergence
+    field.update_canopy(emergence_date)
+    check_lai_profile(field,emergence_date)
+  end
+  
+  test "setting crop emergence date works for lai" do
+    FieldDailyWeather.destroy_all
+    assert_equal(0, FieldDailyWeather.count)
+    field,emergence_date = setup_field_with_emergence
+    field_id = field[:id]
+    field.crops << (crop = Crop.new)
+    check_field_has_no_lai(field,emergence_date)
+    crop.emergence_date = emergence_date
+    crop.save!
+    field = Field.find(field_id)
+    check_lai_profile(field,emergence_date)
+  end
+  
+  test "I can get the correct index for a date" do
+    field,emergence_date = setup_field_with_emergence
+    fdw_start = field.field_daily_weather.first
+    start_date = DateTime.parse(fdw_start.date.to_s)
+    assert_equal(0, field.fdw_index(start_date))
+    assert_equal(emergence_date - start_date, field.fdw_index(emergence_date))
   end
   
 end

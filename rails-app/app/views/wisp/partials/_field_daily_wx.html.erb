@@ -14,15 +14,15 @@
                              {name:'irrigation', index:'irrigation',width:47,editable:true, align:'right'},
                              {name:'pct_moisture', index:'pct_moisture',width:47,editable:true, align:'right'},
                              {name:'entered_pct_cover', index:'entered_pct_cover',width:47,editable:true, align:'right'},
-                             {name:'entered_leaf_area_index', index:'entered_leaf_area_index',width:47,editable:true, align:'right'},
+                             {name:'leaf_area_index', index:'leaf_area_index',width:47,editable:true, align:'right'},
                              {name:'adj_et', index:'adj_et',width:47, align:'right'},
                              {name:'ad', index:'ad',width:47, align:'right'},
                              {name:'deep_drainage', index:'deep_drainage',width:47, align:'right'},
                              {name:'id', index:'id',width:1}
                              ],
               pager: '#weather_pager',
-              rowNum:180,
-              rowList:[180],
+              rowNum:-1,
+              rowList:[7,245],
               imgpath: '/images/jqgrid',
               sortname: '',
               viewrecords: true,
@@ -48,10 +48,8 @@
               caption: "Edit Observed Values Below"
             })
             .navGrid('#weather_pager',
-              {edit:false,add:true,del:true,search:false,refresh:true},
-              {afterSubmit:function(r,data){return true;(r,data,'edit');}},
-              {afterSubmit:function(r,data){return true;(r,data,'add');}},
-              {afterSubmit:function(r,data){return true;(r,data,'delete');}}
+              {edit:false,add:false,del:false,search:false,refresh:true},
+              {afterSubmit:function(r,data){return true;(r,data,'edit');}}
             )
             .navButtonAdd("#weather_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
             

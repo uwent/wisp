@@ -17,7 +17,7 @@ class FieldDailyWeatherController < ApplicationController
       format.xml  { render :xml => @field_daily_weather }
       format.json { render :json => @field_daily_weather.to_jqgrid_json([:date,:ref_et,:adj_et,:rain,:irrigation,
                                                                          :pct_moisture,:entered_pct_cover,
-                                                                         :entered_leaf_area_index,
+                                                                         :leaf_area_index,
                                                                          :ad,:deep_drainage,:id], 
                                                              params[:page], params[:rows],@field_daily_weather.size) }
     end
@@ -32,7 +32,7 @@ class FieldDailyWeatherController < ApplicationController
     #   irrigation =~ "%#{params[:irrigation]}%" if params[:irrigation].present?
     #   entered_pct_moisture =~ "%#{params[:entered_pct_moisture]}%" if params[:entered_pct_moisture].present?
     #   entered_pct_cover =~ "%#{params[:entered_pct_cover]}%" if params[:entered_pct_cover].present?
-    #   entered_leaf_area_index =~ "%#{params[:entered_leaf_area_index]}%" if params[:entered_leaf_area_index].present?
+    #   leaf_area_index =~ "%#{params[:leaf_area_index]}%" if params[:leaf_area_index].present?
     #   calcualated_pct_moisture =~ "%#{params[:calcualated_pct_moisture]}%" if params[:calcualated_pct_moisture].present?
     #   ad =~ "%#{params[:ad]}%" if params[:ad].present?
     #   deep_drainage =~ "%#{params[:deep_drainage]}%" if params[:deep_drainage].present?
@@ -43,7 +43,7 @@ class FieldDailyWeatherController < ApplicationController
     field_daily_weather_params = { :rain => params[:rain], :irrigation=> params[:irrigation],
       :entered_pct_moisture => params[:entered_pct_moisture],
       :entered_pct_cover => params[:entered_pct_cover],
-      :entered_leaf_area_index => params[:entered_leaf_area_index] }
+      :leaf_area_index => params[:leaf_area_index] }
       FieldDailyWeather.find(params[:id]).update_attributes(field_daily_weather_params)
     render :nothing => true
   end

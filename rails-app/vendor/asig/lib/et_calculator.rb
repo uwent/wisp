@@ -43,24 +43,24 @@ module ETCalculator
         adjET = refET
     end
     return adjET
-  end #adjETPctCover
+  end #adj_et_pct_cover
 
   # LAI growth curve function for corn from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
   def calc_lai_corn(days_since_emergence)
-	(0.000000000009*(days_since_emergence)**7.95)*(exp(-0.1*(days_since_emergence)))
+	(0.000000000009*(days_since_emergence)**7.95)*(Math.exp(-0.1*(days_since_emergence)))
   end
   
   # Return adjusted ET from the reference ET and the leaf area index
   # Crop coeff math is from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
   def adj_et_lai_corn(refET,days_since_emergence)
-	crop_coeff = 1.1*(1-exp(-1.5*(calc_lai_corn(days_since_emergence))))
+	crop_coeff = 1.1*(1-Math.exp(-1.5*(calc_lai_corn(days_since_emergence))))
 	adjET = refET * crop_coeff
   end
 
   # Return adjusted ET from the reference ET and the leaf area index
   # Crop coeff math is from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
   def adj_et_from_lai_corn(refET,lai)
-	crop_coeff = 1.1*(1-exp(-1.5*(lai)))
+	crop_coeff = 1.1*(1-Math.exp(-1.5*(lai)))
 	adjET = refET * crop_coeff
   end
 
@@ -72,8 +72,8 @@ module ETCalculator
   def calc_adj_ET(day)
     # look at LAI first; since pctCover is (???) more likely to have default values automatically calculated,
     # if LAI is present it means the user wants us to use it
-    if day.lai
-      adj_et_from_lai_corn(day.refET,day.lai)
+    if day.leaf_area_index
+      adj_et_from_lai_corn(day.refET,day.leaf_area_index)
     else
       adj_et_pct_cover(day.refET,day.pctCover)
     end

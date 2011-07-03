@@ -11,7 +11,7 @@
 	{
 		position:absolute;
 		left:275px;
-		top:150px;
+		top:200px;
 		width:200px;
 		padding:2px;
 		border:1px solid gray;
@@ -81,13 +81,19 @@
 <% end %>
 
 <h2>WISP Field Status</h2>
-
+<div style="display:inline">
+Choose a different field
+<%= form_tag "/wisp/field_status" do %>
+  <%= select_tag "field_id", options_from_collection_for_select(@pivot.fields,"id","name") %><br/>
+  <%= submit_tag "Go" %>
+<% end %>
+</div>
 <div id="fieldDataBox">
 <h2>Field Data</h2>
 Farm name:<%= @farm.name if @farm %><br/>
 Pivot name: <%= @pivot.name if @pivot %><br/>
-Field name/soil: <%= @field.name if @field %><br/>
-Crop: <%= @field.current_crop.name + " " + @field.current_crop.variety if @field && @field.current_crop %><br/>
+Field name/soil: <%= @field.name %><br/>
+Crop: <%= (@field.current_crop.name + " " + @field.current_crop.variety) if @field && @field.current_crop %><br/>
 Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %><br/>
 Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>
 Initial soil moisture: <%= @field_weather_data.first.pct_moisture  if @field_weather_data && @field_weather_data.size > 0 %><br/>
@@ -98,9 +104,7 @@ Initial soil moisture: <%= @field_weather_data.first.pct_moisture  if @field_wea
 <br/>
 </div>
 
-<%= render :partial => 'partials/field_daily_wx'%>
-
-<%= button_to 'add day', :controller => 'field_daily_weather', :action => 'create', :field_daily_weather => {:field_id => 1, :date => '2011-06-01'}%>
+<%= render :partial => 'wisp/partials/field_daily_wx'%>
 
 <div id="summaryDataBox">
 <h2>Summary Data</h2>
