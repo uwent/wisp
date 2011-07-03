@@ -9,7 +9,7 @@ class CreateFieldDailyWeather < ActiveRecord::Migration
       t.float :irrigation
       t.float :entered_pct_moisture
       t.float :entered_pct_cover
-      t.float :entered_leaf_area_index
+      t.float :leaf_area_index
       t.float :calculated_pct_moisture
       t.float :ad
       t.float :deep_drainage
