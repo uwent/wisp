@@ -2,12 +2,12 @@
 <br/>
 <br/>
   <ul>
-    <li><%= link_to "WISP Home", :action => :index %></li>
-    <li><%= link_to "Farm Status", :action => :farm_status %></li>
-    <li><%= link_to "Field Status", :action => :field_status %></li>
-    <li><%= link_to "Pivots, Fields, and Crops", :action => :pivot_crop %></li>
-    <li><%= link_to "Weather Data", :action => :weather %></li>
-    <li><%= link_to "Report Setup", :action => :report_setup %></li>
+    <li><%= link_to "Back to WISP Home", :controller => 'wisp', :action => :index %></li>
+    <li><%= link_to "Farm Status", :controller => 'wisp', :action => :farm_status %></li>
+    <li><%= link_to "Field Status", :controller => 'wisp', :action => :field_status %></li>
+    <li><%= link_to "Pivots, Fields, and Crops", :controller => 'wisp', :action => :pivot_crop %></li>
+    <li><%= link_to "Weather Data", :controller => 'wisp', :action => :weather %></li>
+    <li><%= link_to "Report Setup", :controller => 'wisp', :action => :report_setup %></li> 
   </ul>
 <% (0..15).each do %>
 <br/>
