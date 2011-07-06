@@ -19,7 +19,11 @@ class ApplicationController < ActionController::Base
     @field_id = params[:field_id] || session[:field_id] || (Pivot.find(@pivot_id).fields.first || Field.new)[:id]
     @crop_id = params[:crop_id] || session[:crop_id] || (Field.find(@field_id).crops.first || Crop.new)[:id]
     # is this really a good idea? Going with it for now...
-    session[:group_id] = @group[:id]; session[:farm_id] = @farm_id; session[:pivot_id] = @pivot_id; session[:field_id] = @field_id
+    session[:group_id] = @group[:id]
+    session[:farm_id] = @farm_id
+    session[:pivot_id] = @pivot_id
+    puts "setting field id in session to #{@field_id}"
+    session[:field_id] = @field_id
   end
   
 end

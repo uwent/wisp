@@ -2,14 +2,14 @@ class CropsController < ApplicationController
   before_filter :ensure_signed_in, :current_user, :get_current_ids
   
   COLUMN_NAMES = [:name,
-:variety,
-:emergence_date,
-# :end_date,
-:harvest_or_kill_date,
-:max_root_zone_depth,
-# :max_allowable_depletion_frac,
-:max_allowable_depletion_inches,
-:notes
+    :variety,
+    :emergence_date,
+    # :end_date,
+    :harvest_or_kill_date,
+    :max_root_zone_depth,
+    # :max_allowable_depletion_frac,
+    :max_allowable_depletion_inches,
+    :notes
   ]
   
   # GET /crops

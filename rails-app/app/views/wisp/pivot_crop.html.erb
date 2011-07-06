@@ -50,7 +50,7 @@
     jQuery(document).ready(function(){
       alert("Called!");
       $('#cropDataGrid').load('/wisp/crop_setup_grid');
-    }
+    });
   </script>
 <% end %>
 
@@ -147,7 +147,11 @@
 	<%= render :partial => '/wisp/partials/field_setup_grid'%>
 </div>
 <div id="cropsDataBox">
-	<h2>Crop Data</h2>
+  <% if @field %>
+  	<h2>Crop Data for <%= @field.name %></h2>
+	<% else %>
+  	<h2>Crop Data (select field above)</h2>
+  <% end %>
 	<div id="cropDataGrid"></div>
 </div>
 
