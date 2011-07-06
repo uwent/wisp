@@ -1,6 +1,7 @@
 class Crop < ActiveRecord::Base
   belongs_to :field
   after_save :update_field_with_emergence_date
+  validates :field, :presence => true
   
   def update_field_with_emergence_date
     if emergence_date

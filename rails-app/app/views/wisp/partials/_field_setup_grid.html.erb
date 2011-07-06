@@ -3,6 +3,7 @@
         <script type="text/javascript">
           var lastsel;
           jQuery(document).ready(function(){
+            alert("Field grid ready called");
             $('#cropDataGrid').load('/wisp/crop_setup_grid',{field_id:<%=@field_id%>});
             
           var mygrid = jQuery("#field_setup").jqGrid({

@@ -15,7 +15,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   end
   
   def create_field_with_crop
-    crop = Crop.new(:emergence_date => DateTime.parse('2011-05-01'), :max_root_zone_depth => 20,:max_allowable_depletion_frac => 0.5 )
+    crop = Crop.new(:emergence_date => Date.civil(2011,05,01), :max_root_zone_depth => 20,:max_allowable_depletion_frac => 0.5 )
     field = Field.new(:perm_wilting_pt => 0.2)
     field.crops << crop
     field.create_field_daily_weather

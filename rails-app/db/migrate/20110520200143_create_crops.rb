@@ -4,9 +4,9 @@ class CreateCrops < ActiveRecord::Migration
       t.integer :field_id
       t.string :name
       t.string :variety
-      t.datetime :emergence_date
-      t.datetime :end_date
-      t.datetime :harvest_or_kill_date
+      t.date :emergence_date
+      t.date :end_date
+      t.date :harvest_or_kill_date
       t.float :max_root_zone_depth
       t.float :max_allowable_depletion_frac
       t.float :max_allowable_depletion_inches

@@ -15,11 +15,8 @@ class CropsController < ApplicationController
   # GET /crops
   # GET /crops.xml
   def index
-    session[:farm_id] = @farm_id
-    session[:pivot_id] = @pivot_id
-  	session[:field_id] = @field_id
-    @farm = Farm.find(@farm_id)
-    @pivot = Pivot.find(@pivot_id)
+    # @farm = Farm.find(@farm_id)
+    # @pivot = Pivot.find(@pivot_id)
     @field = Field.find(@field_id)
 
     @crops = Crop.where(:field_id => @field_id).order(:name) do
@@ -42,7 +39,13 @@ class CropsController < ApplicationController
     for col_name in COLUMN_NAMES
       attribs[col_name] = params[col_name] unless col_name == :id
     end
-    Crop.find(params[:id]).update_attributes(attribs)
+    if params[:oper] && params[:oper] == "add"
+      puts "adding a crop..."
+      attribs[:field_id] = @field_id
+      Crop.create(attribs)
+    else
+      Crop.find(params[:id]).update_attributes(attribs)
+    end
     render :nothing => true
   end
 

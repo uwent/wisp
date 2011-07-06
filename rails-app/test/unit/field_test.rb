@@ -134,7 +134,7 @@ class FieldTest < ActiveSupport::TestCase
     farm = Farm.first
     assert_equal(LaiEtMethod, farm.et_method.class)
     field = Field.create(:pivot_id => farm.pivots.first[:id])
-    emergence_date = DateTime.parse('2011-05-01')
+    emergence_date = Date.civil(2011,05,01)
     check_field_has_no_lai(field,emergence_date)
     [field,emergence_date]
   end
@@ -161,7 +161,8 @@ class FieldTest < ActiveSupport::TestCase
   test "I can get the correct index for a date" do
     field,emergence_date = setup_field_with_emergence
     fdw_start = field.field_daily_weather.first
-    start_date = DateTime.parse(fdw_start.date.to_s)
+    assert(fdw_start, "No field daily weather for field")
+    start_date = fdw_start.date
     assert_equal(0, field.fdw_index(start_date))
     assert_equal(emergence_date - start_date, field.fdw_index(emergence_date))
   end

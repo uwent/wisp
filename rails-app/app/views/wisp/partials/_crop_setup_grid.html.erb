@@ -3,7 +3,8 @@
         <script type="text/javascript">
           var lastsel;
           jQuery(document).ready(function(){
-          var mygrid = jQuery("#crop_setup").jqGrid({
+            alert("Crop grid ready called");
+          var crop_grid = jQuery("#crop_setup").jqGrid({
               url:'/crops?q=1',
               editurl:'/crops/post_data',
               datatype: "json",
@@ -52,10 +53,10 @@
               {afterSubmit:function(r,data){return true;(r,data,'add');}},
               {afterSubmit:function(r,data){return true;(r,data,'delete');}}
             )
-            .navButtonAdd("#crop_setup_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
+            .navButtonAdd("#crop_setup_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ crop_grid[0].toggleToolbar() } })
             
             
-            mygrid.filterToolbar();mygrid[0].toggleToolbar()
+            crop_grid.filterToolbar();crop_grid[0].toggleToolbar()
           });
         </script>
 

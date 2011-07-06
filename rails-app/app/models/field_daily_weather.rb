@@ -34,15 +34,24 @@ class FieldDailyWeather < ActiveRecord::Base
   end
   
   def update_balances(previous_day)
-    if ref_et && previous_day.ad && field && field.field_capacity && field.perm_wilting_pt && field.current_crop && field.current_crop.max_root_zone_depth
+    if previous_day
+      previous_ad = previous_day.ad
+    else
+      puts "using field's initial value of #{field.inital_ad}"
+      previous_ad = field.initial_ad
+    end
+    if ref_et && previous_ad && field && field.field_capacity && field.perm_wilting_pt && field.current_crop && field.current_crop.max_root_zone_depth
       adj_et = field.et_method.adj_et(self)
       delta_storage = calc_change_in_daily_storage(rain, irrigation, adj_et)
       total_available_water = calc_taw(field.field_capacity, field.perm_wilting_pt, field.current_crop.max_root_zone_depth)
-      ad = calc_daily_ad(previous_day.ad, delta_storage, field.current_crop.max_allowable_depletion_frac, total_available_water)
+      ad = calc_daily_ad(previous_ad, delta_storage, field.current_crop.max_allowable_depletion_frac, total_available_water)
     else
       puts "No field"; return unless field
       puts "No crop"; return unless field.current_crop
-      puts "Missing value, could not calculate. ref_et: #{ref_et}  previous_day.ad: #{previous_day.ad}  field.field_capacity: #{field.field_capacity}  field.perm_wilting_pt: #{field.perm_wilting_pt}  field.crop.max_root_zone_depth: #{field.crop.max_root_zone_depth} "
+      puts "Missing value, could not calculate."
+      puts "ref_et: #{ref_et}  previous_ad: #{previous_ad}  field.field_capacity: #{field.field_capacity}"
+      puts "field.perm_wilting_pt: #{field.perm_wilting_pt}"
+      puts "field.current_crop.max_root_zone_depth: #{field.current_crop.max_root_zone_depth} "
     end
   end
 end

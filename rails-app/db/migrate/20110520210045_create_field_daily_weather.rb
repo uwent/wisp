@@ -2,7 +2,7 @@ class CreateFieldDailyWeather < ActiveRecord::Migration
   def self.up
     create_table :field_daily_weather do |t|
       t.integer :field_id
-      t.datetime :date
+      t.date :date
       t.float :ref_et
       t.float :adj_et
       t.float :rain

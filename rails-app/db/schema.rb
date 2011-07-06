@@ -23,9 +23,9 @@ ActiveRecord::Schema.define(:version => 20110531234143) do
     t.integer  "field_id"
     t.string   "name"
     t.string   "variety"
-    t.datetime "emergence_date"
-    t.datetime "end_date"
-    t.datetime "harvest_or_kill_date"
+    t.date     "emergence_date"
+    t.date     "end_date"
+    t.date     "harvest_or_kill_date"
     t.float    "max_root_zone_depth"
     t.float    "max_allowable_depletion_frac"
     t.float    "max_allowable_depletion_inches"
@@ -54,14 +54,14 @@ ActiveRecord::Schema.define(:version => 20110531234143) do
 
   create_table "field_daily_weather", :force => true do |t|
     t.integer  "field_id"
-    t.datetime "date"
+    t.date     "date"
     t.float    "ref_et"
     t.float    "adj_et"
     t.float    "rain"
     t.float    "irrigation"
     t.float    "entered_pct_moisture"
     t.float    "entered_pct_cover"
-    t.float    "entered_leaf_area_index"
+    t.float    "leaf_area_index"
     t.float    "calculated_pct_moisture"
     t.float    "ad"
     t.float    "deep_drainage"
@@ -93,7 +93,7 @@ ActiveRecord::Schema.define(:version => 20110531234143) do
 
   create_table "irrigation_events", :force => true do |t|
     t.integer  "pivot_id"
-    t.datetime "date"
+    t.date     "date"
     t.float    "inches_applied"
     t.float    "run_time"
     t.float    "total_volume"
@@ -134,7 +134,7 @@ ActiveRecord::Schema.define(:version => 20110531234143) do
 
   create_table "weather_station_data", :force => true do |t|
     t.integer  "station_id"
-    t.datetime "date"
+    t.date     "date"
     t.float    "ref_et"
     t.float    "rainfall"
     t.float    "soil_moisture"

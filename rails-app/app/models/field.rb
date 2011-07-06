@@ -4,8 +4,8 @@ require "et_calculator"
 class Field < ActiveRecord::Base
   after_create :create_field_daily_weather
   
-  START_DATE = '03-01'
-  END_DATE = '10-31'
+  START_DATE = [3,1]
+  END_DATE = [10,31]
   
   include ADCalculator
   include ETCalculator
@@ -35,13 +35,20 @@ class Field < ActiveRecord::Base
   end
   
   def create_field_daily_weather
+    puts "create_fdw"
     start_date,end_date = date_endpoints
     (start_date..end_date).each {|date| field_daily_weather << FieldDailyWeather.new(:date => date)}
     save!
   end
   
-  def date_endpoints
-    [(DateTime.parse year.to_s + '-' + START_DATE),(DateTime.parse year.to_s + '-' + END_DATE)]
+  def date_endpoints    
+    [Date.civil(year,START_DATE[0],START_DATE[1]),Date.civil(year,END_DATE[0],END_DATE[1])]
+  end
+  
+  def initial_ad
+    # FIXME: What's the initial AD?
+    puts "Returning bogus number for initial field AD"
+    5.0
   end
   
   def update_canopy(emergence_date)
@@ -62,16 +69,15 @@ class Field < ActiveRecord::Base
   def fdw_index(date)
     # why the *^$@ can't I just subtract the database field instead of this rigamarole?
     return nil unless field_daily_weather.first
-    fdw_date = DateTime.parse(field_daily_weather.first.date.to_s)
+    fdw_date = Date.parse(field_daily_weather.first.date.to_s)
     date - fdw_date
   end
   
   # hook method for FDW objects to alert us of their (newly changed?) AD
   def update_fdw(field_daily_wx)
     day = fdw_index(field_daily_wx.date)
+    return unless day
     puts "updating field daily wx for day #{day}"
-    unless day == nil || day == 0 # don't bother trying to get the AD balance from a day that doesn't exist
-      field_daily_wx.update_balances(field_daily_weather[day-1])
-    end
+    field_daily_wx.update_balances(day == 0 ? nil : field_daily_weather[day-1])
   end
 end
