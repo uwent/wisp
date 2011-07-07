@@ -1,4 +1,6 @@
 RailsApp::Application.routes.draw do |map|
+  match 'fdw/irrig_only/:id' => 'field_daily_weather#irrig_only'
+
   resources :field_daily_weather
 
   resources :weather_station_data, :collection => {:post_data => :post}

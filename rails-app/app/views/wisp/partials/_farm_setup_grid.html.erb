@@ -35,6 +35,9 @@
                   jQuery('#farm_setup').restoreRow(lastsel);
                   jQuery('#farm_setup').editRow(id,true); 
                   lastsel=id;
+                  $.post('/wisp/set_farm?farm_id='+id, function(data) {
+                    alert("Sent the AJAX!");
+                  });
                 } 
               },             
               

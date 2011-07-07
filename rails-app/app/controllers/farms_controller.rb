@@ -39,7 +39,7 @@ class FarmsController < ApplicationController
       attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem
     end
     if params[:oper] && params[:oper] == "add"
-      attribs[:pivot_id] = @group[:id]
+      attribs[:group_id] = @group[:id]
       Farm.create(attribs)
     else
       Farm.find(params[:id]).update_attributes(attribs)

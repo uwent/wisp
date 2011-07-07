@@ -2,71 +2,71 @@
 
 one:
   field_id: 1
-  date: 2011-05-21 16:00:45
+  date: 2011-05-21
   ref_et: 0.2
   entered_pct_cover: 0.0
 
 two:
   field_id: 1
-  date: 2011-05-22 16:00:45
+  date: 2011-05-22 
   ref_et: 0.2
   entered_pct_cover: 20.0
 
 three:
   field_id: 1
-  date: 2011-05-23 16:00:45
+  date: 2011-05-23 
   ref_et: 0.2
   entered_pct_cover: 60.0
 
 four:
   field_id: 1
-  date: 2011-05-24 16:00:45
+  date: 2011-05-24 
   ref_et: 0.2
   entered_pct_cover: 80.0
 
 five:
   field_id: 1
-  date: 2011-05-25 16:00:45
+  date: 2011-05-25 
   ref_et: 0.2
   entered_pct_cover: 100.0
 
 six:
   field_id: 1
-  date: 2011-05-26 16:00:45
+  date: 2011-05-26 
   ref_et: 0.2
   entered_pct_cover: 100.0
 
 
 seven:
   field_id: 1
-  date: 2011-05-27 16:00:45
+  date: 2011-05-27 
   ref_et: 0.2
   entered_pct_cover: 100.0
 
 
 eight:
   field_id: 1
-  date: 2011-05-28 16:00:45
+  date: 2011-05-28 
   ref_et: 0.2
   entered_pct_cover: 100.0
 
 
 nine:
   field_id: 1
-  date: 2011-05-29 16:00:45
+  date: 2011-05-29 
   ref_et: 0.2
   entered_pct_cover: 100.0
 
 
 ten:
   field_id: 1
-  date: 2011-05-30 16:00:45
+  date: 2011-05-30 
   ref_et: 0.2
   entered_pct_cover: 100.0
   
 
 eleven:
   field_id: 1
-  date: 2011-05-31 16:00:45
+  date: 2011-05-31
   ref_et: 0.2
   entered_pct_cover: 100.0

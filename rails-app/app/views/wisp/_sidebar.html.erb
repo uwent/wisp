@@ -3,6 +3,20 @@
 <br/>
   <ul>
     <li><%= link_to "Back to WISP Home", :controller => 'wisp', :action => :index %></li>
+  </ul>
+  <ul>
+    <li><form><%= select_tag "farm", options_from_collection_for_select(Farm.my_farms(@group[:id]),"id","name")%></form>
+        <script type="text/javascript">
+          $.("#farm").bind("blur", function() {
+            var form = $(this).parents("form"); // grab the form wrapping the search bar.
+            var url = '/wisp/set_farm';
+            var formData = form.serialize(); // grab the data in the form
+            $.get(url, formData, function(html) { // perform an AJAX get, the trailing function is what happens on successful get.
+            });
+          });
+        </script>
+      </li>
+        
     <li><%= link_to "Farm Status", :controller => 'wisp', :action => :farm_status %></li>
     <li><%= link_to "Field Status", :controller => 'wisp', :action => :field_status %></li>
     <li><%= link_to "Pivots, Fields, and Crops", :controller => 'wisp', :action => :pivot_crop %></li>

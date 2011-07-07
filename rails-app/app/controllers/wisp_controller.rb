@@ -51,7 +51,19 @@ class WispController < ApplicationController
 
   def report_setup
   end
-    
+  
+  def set_farm
+    render :nothing => true
+  end
+  
+  def set_pivot
+    render :nothing => true
+  end
+  
+  def set_field
+    render :nothing => true
+  end
+  
   private
   def ad_data(field_id,start_date,end_date)
     recs = FieldDailyWeather.where(
@@ -66,9 +78,9 @@ class WispController < ApplicationController
   def projected_ad(ad_data,field_id)
     projected_ad_data = []
     0..ad_data.size.times {projected_ad_data << 0.0}
-    projected_ad_data[-1] = ad_data[-1]
-    increment = ad_data[-1] - ad_data[-2]
-    projected_ad_data << ad_data[-1] + increment
-    projected_ad_data << projected_ad_data[-1] + increment
+    # projected_ad_data[-1] = ad_data[-1]
+    increment = ad_data[-1] / 3.0
+    projected_ad_data << ad_data[-1] - increment
+    projected_ad_data << projected_ad_data[-1] - increment
   end
 end
