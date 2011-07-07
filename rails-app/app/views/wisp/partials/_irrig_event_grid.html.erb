@@ -1,6 +1,4 @@
 <div id="irrigationDataGrid">
-	<%= submit_tag "Add Irrigation Event", :type => 'button', :onclick => 'alert("Add irrigation event")' %>
-
         <script type="text/javascript">
           var lastsel;
           jQuery(document).ready(function(){
@@ -20,7 +18,7 @@
               sortname: '',
               viewrecords: true,
               height: 100,
-              width: 200,
+              width: 400,
               sortorder: '',
               gridview: false,
               scrollrows: true,
@@ -72,8 +70,7 @@
           });
         </script>
 
-        <table id="irrig_events" class="scroll" cellpadding="0" cellspacing="0"></table>
+        <table id="irrig_events" class="scroll" cellpadding="0" cellspacing="0" style="display:inline"></table>
         <div id="irrig_events_pager" class="scroll" style="text-align:center;"></div>
 
-      <%= render :partial => 'wisp/partials/field_daily_irrig'%>
 </div>

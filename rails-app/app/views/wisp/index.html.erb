@@ -10,37 +10,54 @@
   <%= render :partial => 'sidebar' %>
 <% end %>
 <!-- Content for the remainder (body) of the page goes here -->
-<h2>Home Page (Description, Login)</h2>
-<p>
-<ul>
-  <li><b>WISP Project Description</b><br />
-	...<br /></li>
-  <li><b>Link to model description (algorithms)</b><br />
-	...<br />
-  </li>
-  <li><b>WISP uses <a href="http://openid.net/get-an-openid/what-is-openid/">OpenID</a> for secure access to your data.</b> Currently the only
-      provider supported by WISP is Google, but we anticipate including other providers soon. In order to use WISP, you need to have an 
-  		account set up with one of the providers WISP supports. Then when you start to use the site, you will be directed to a login page 
-  		where you can enter your account name and password. That's all there is to it! Currently only one login is associated with a WISP account, but in the future
-			the account owner will be able to designate other logins that can have access to their WISP data. If you want to do this right now,
-			then you should create a "disposable" account with the OpenID provider which is not associated with your email and such, and then 
-			share the new credentials with whoever needs access to the WISP data.</li>
-  <li><b>Getting started</b>
-      <ol>
-  		   <li>Create an OpenID account if you don't have one.</li>
-				 <li>Go to the WISP site and click on the Farm link in the navigation bar on the left side of the screen. You will be requested to provide your login credentials.</li>
-				 <li>If your login is successful, you will see the WISP farm screen. A new account will have no farm set up, so
-				     click the "Add Farm" button and enter a farm name and ET adjustment method. The other data entry is optional.</li>
-				 <li>Click on the "Pivots" link in the navigation bar, and use the "Add Pivots" button to add pivots for the farm.</li>
-				 <li>Each piviot can have one or more fields to accomodate multiple crops under one pivot, and each field can have 
-				     multiple crops per season. Field designations can change between growing years if needed or can remain the same. 
-						 All field information is required except "Notes". </li>
-				 <li>Enter crop data (default MRZD and AD?)</li>
-				 <li>Entering weather data</li>
-				 <li>Getting results and reports</li>
-				 <li>Backups</li>
-				 <li>Using previous year's data</li>
-  		</ol>
-  </li>		
-</ul>
-</p>
+<h2>WISP Home</h2>
+<%= image_tag "pivot.jpg", :width => 200, :style => "float:left; margin-right:30px; margin-bottom:30px; margin-top:10px"  %>
+
+<div class="wisp_description">
+  <h4>
+    About WISP
+  </h4>
+  <p>
+    WISP, the Wisconsin Irrigation Scheduler, is a program designed to help you achieve good yields while minimizing water and energy use. Based on research by Drs. John Panuska and John Norman at the University of Wisconsin-Madison, it uses crop models to predict the rate of water usage, and maintains a balance of water inputs and outputs.
+  </p>
+  <p>
+    WISP models your operation with a hierarchy of objects:
+  </p>
+  <ul>
+    <p>-- A <span style="font-style:italic">farm</span> is an administrative unit, basically a place to park a set of related irrigation pivots. One important setting for a farm is the ET method (Leaf area index or percent cover).
+    </p>
+    <p>-- A <span style="font-style:italic">pivot</span> has a latitude and longitude for automatically obtaining reference ET numbers from the Web.
+    </p>
+    <p>-- A <span style="font-style:italic">field</span> is a plot of ground under a pivot whose characteristics (e.g., soil type), crop, and irrigation management are uniform. In the simplest case, one field suffices for a pivot; if multiple crops are planted simultaneously, or soil characteristics differ significantly, or part of the pivot's circle is irrigated differently, multiple fields can be used to account for the differences.
+    </p>
+    <p>-- A <span style="font-style:italic">crop</span> represents a planting in a field. There can be multiple crops in a field per season, but (in this version, at least) only one crop at a time.
+    </p>  
+  </ul>
+  <p/>
+  <h4>Getting started</h4>
+  <ul>
+    <% if AuthenticationHelper::USING_OPENID %>
+      <p>WISP uses <a href="http://openid.net/get-an-openid/what-is-openid/">OpenID</a> for secure access to your data. Currently the only
+          provider supported by WISP is Google, but we anticipate including other providers soon. In order to use WISP, you need to have an 
+      		account set up with one of the providers WISP supports. Then when you start to use the site, you will be directed to a login page 
+      		where you can enter your account name and password. That's all there is to it! Currently only one login is associated with a WISP account, but in the future
+      		the account owner will be able to designate other logins that can have access to their WISP data. If you want to do this right now,
+      		then you should create a "disposable" account with the OpenID provider which is not associated with your email and such, and then 
+      		share the new credentials with whoever needs access to the WISP data.</p>
+       <p>Create an OpenID account if you don't have one.</p>
+       <p>Go to the WISP site and click on the Farm link in the navigation bar on the left side of the screen. You will be requested to provide your login credentials.</p>
+       <p>If your login is successful, you will see the WISP farm screen</p>
+    <% else %>
+    <% end %>
+    <p>When you first use WISP, a default farm, pivot, field, and crop are created for you, along with weather/irrigation records for the season. You can add more farms on the "Farm Status" page; pivots, the fields they serve, and crops in the field are managed from the "Pivots, Fields, and Crops" page.</p>
+    <p>Click on the "Pivots" link in the navigation bar, and use the "Add Pivots" button to add pivots for the farm.</p>
+    <p>Each piviot can have one or more fields to accomodate multiple crops under one pivot, and each field can have 
+       multiple crops per season. Field designations can change between growing years if needed or can remain the same. 
+    	 All field information is required except "Notes". </p>
+    <p>Enter crop data (default MRZD and AD?)</p>
+    <p>Entering weather data</p>
+    <p>Getting results and reports</p>
+    <p>Backups</p>
+    <p>Using previous year's data</p> 
+  </ul>
+</div>

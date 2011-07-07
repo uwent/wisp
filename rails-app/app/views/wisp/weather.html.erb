@@ -72,7 +72,9 @@
     <option value="1" selected="selected">Pivot 1</option>
     <option value="2">Pivot 2</option>
     <option value="3">Pivot 3</option>
-	</select> 
-	<%= render :partial => 'wisp/partials/irrig_event_grid'%>
-  
+	</select>
+	<table><tr>
+	  <td><%= render :partial => 'wisp/partials/irrig_event_grid'%></td>
+    <td><%= render :partial => 'wisp/partials/field_daily_irrig'%></td>
+  </tr></table>
 </div>

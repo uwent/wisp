@@ -5,18 +5,30 @@
     <li><%= link_to "Back to WISP Home", :controller => 'wisp', :action => :index %></li>
   </ul>
   <ul>
-    <li><form><%= select_tag "farm", options_from_collection_for_select(Farm.my_farms(@group[:id]),"id","name")%></form>
-        <script type="text/javascript">
-          $.("#farm").bind("blur", function() {
-            var form = $(this).parents("form"); // grab the form wrapping the search bar.
-            var url = '/wisp/set_farm';
-            var formData = form.serialize(); // grab the data in the form
-            $.get(url, formData, function(html) { // perform an AJAX get, the trailing function is what happens on successful get.
+    <!-- Only display the selectors if they're signed in -->
+    <% if @group %>
+      <li>
+        <% if @farm %>
+          <p>farm is <set><%= @farm.name %></p>
+          <%= select_tag "farm", options_from_collection_for_select(Farm.my_farms(@group[:id]),"id","name",@farm[:id])%>
+        <% else %>
+          <%= select_tag "farm", options_from_collection_for_select(Farm.my_farms(@group[:id]),"id","name")%>
+        <% end %>
+          <script type="text/javascript">
+            $(document).ready(function(){
+              $("#farm").change(function() {
+                var farm_id = $('#farm option:selected').val();
+                if (farm_id != 0) {
+                  // do an Ajax call to set the farm. Throw away the (nonexistent) output.
+                  $('#ajax_output').load('/wisp/set_farm',{farm_id:farm_id});
+                  // refresh the current page
+                  window.location.href = window.location.href;
+                }
+              });
             });
-          });
-        </script>
+          </script>
       </li>
-        
+    <% end %>
     <li><%= link_to "Farm Status", :controller => 'wisp', :action => :farm_status %></li>
     <li><%= link_to "Field Status", :controller => 'wisp', :action => :field_status %></li>
     <li><%= link_to "Pivots, Fields, and Crops", :controller => 'wisp', :action => :pivot_crop %></li>
@@ -27,6 +39,6 @@
 <br/>
 <% end %>
   
-  <% if signed_in? %>
+  <% if AuthenticationHelper::USING_OPENID && signed_in? %>
     <%= button_to "Logout " + current_user.email, :controller => 'sessions', :action => :destroy, :redirect => :wisp %>
   <% end %>

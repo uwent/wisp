@@ -1,6 +1,6 @@
 class WispController < ApplicationController
   before_filter :ensure_signed_in, :except => [:index]
-  before_filter :current_user, :get_group, :get_current_ids
+  before_filter :current_user, :get_current_ids, :except => [:index, :set_farm, :set_pivot, :set_field, :set_crop]
   def index
   end
 
@@ -53,6 +53,11 @@ class WispController < ApplicationController
   end
   
   def set_farm
+    puts "SET_FARM: setting the ids to #{params[:farm_id]}"
+    session[:farm_id] = @farm_id = params[:farm_id]
+    if @farm_id
+      @farm = Farm.find(@farm_id)
+    end
     render :nothing => true
   end
   
@@ -77,6 +82,7 @@ class WispController < ApplicationController
   
   def projected_ad(ad_data,field_id)
     projected_ad_data = []
+    return unless ad_data.size > 0
     0..ad_data.size.times {projected_ad_data << 0.0}
     # projected_ad_data[-1] = ad_data[-1]
     increment = ad_data[-1] / 3.0
