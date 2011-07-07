@@ -19,6 +19,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     field = Field.new(:perm_wilting_pt => 0.2)
     field.crops << crop
     field.create_field_daily_weather
+    field.save!
     field
   end
   

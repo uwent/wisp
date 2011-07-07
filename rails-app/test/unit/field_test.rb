@@ -86,6 +86,7 @@ class FieldTest < ActiveSupport::TestCase
     assert(field)
     assert_equal(0, field.field_daily_weather.size)
     field.create_field_daily_weather
+    field.save!
     assert_equal(n_days, field.field_daily_weather.size)
   end
   

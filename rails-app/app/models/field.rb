@@ -2,10 +2,10 @@ require "ad_calculator"
 require "et_calculator"
 
 class Field < ActiveRecord::Base
-  after_create :create_field_daily_weather
+  after_create :create_dependent_objects
   
-  START_DATE = [3,1]
-  END_DATE = [10,31]
+  START_DATE = [5,1]
+  END_DATE = [9,30]
   
   include ADCalculator
   include ETCalculator
@@ -30,15 +30,25 @@ class Field < ActiveRecord::Base
   end
   
   def year
-    return nil unless pivot && pivot.farm
+    return Time.now.year unless pivot && pivot.farm
     pivot.farm.year
+  end
+
+  def create_dependent_objects
+    create_field_daily_weather
+    create_crop
+    save!
   end
   
   def create_field_daily_weather
     puts "create_fdw"
     start_date,end_date = date_endpoints
     (start_date..end_date).each {|date| field_daily_weather << FieldDailyWeather.new(:date => date)}
-    save!
+  end
+  
+  def create_crop
+    puts "create crop"
+    crops << Crop.new(:name => 'New crop')
   end
   
   def date_endpoints    

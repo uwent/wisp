@@ -39,6 +39,10 @@ class FarmsController < ApplicationController
       attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem
     end
     if params[:oper] && params[:oper] == "add"
+      # if no year supplied, use current one
+      unless attribs[:year]
+        attribs[:year] = Time.now.year
+      end
       attribs[:group_id] = @group[:id]
       Farm.create(attribs)
     else
