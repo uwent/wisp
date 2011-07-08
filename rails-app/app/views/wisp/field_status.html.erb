@@ -153,7 +153,8 @@ Cost ($): <br/>
       g.theme_37signals();
 
       g.data("Allowable Depletion", <%= @ad_data.to_s %>);
-      g.data("Projected", <%= @projected_ad_data.to_s %>)
+      g.data("Projected", <%= @projected_ad_data.to_s %>);
+      g.labels = {1:'Jul 06',3:'Jul 08',5:'Jul 10',7:'Jul 12'};
 
       g.draw();
     </script>
@@ -165,7 +166,6 @@ Cost ($): <br/>
 <p>In inches, based on the mean adjusted ET of the last four rainless days.</p>
 <b>7/11/2011: -0.15</b> <br/>
 <b>7/12/2011: -0.30</b> <br/>
-<b>7/13/2011: -0.45</b> <br/>
 <br/>
 <br/>
 <br/>

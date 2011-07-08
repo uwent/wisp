@@ -43,8 +43,17 @@ class WispController < ApplicationController
     logger.info @farm_id
     logger.info @field_id
     logger.info @pivot_id
-    @ad_data = ad_data(@field_id,'2011-05-01','2011-06-01')
-    @projected_ad_data = projected_ad(@ad_data,@field_id)
+    @ad_data = ad_data(@field_id,'2011-07-05','2011-07-13')
+    # @projected_ad_data = projected_ad(@ad_data,@field_id)
+    @projected_ad_data = [-0.25,-0.25]
+    @ad_data[-1] = -0.3
+    @ad_data[-2] = -0.15
+    start_date = Date.parse('2011-07-05')
+    end_date = Date.parse('2011-07-13')
+    @dates = {}
+    day = 0
+    (start_date..end_date).each { |date| @dates[day] = date.strftime('%b %d'); day += 1 }
+    puts @dates.inspect
   end
 
   def farm_status
