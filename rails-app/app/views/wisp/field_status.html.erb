@@ -153,12 +153,12 @@ Cost ($): <br/>
                    '#999999', '#3a5b87', 'black'],
           marker_color: '#aea9a9',
           font_color: 'black',
-          background_colors: ['#A0bff6', '#e9edf8']
+          background_colors: ['#d0e0f8', '#f0f0ff']
         });
 
       g.data("Allowable Depletion", <%= @ad_data.to_s %>);
-      g.data("Projected", <%= @projected_ad_data.to_s %>);
-      g.labels = {1:'Jul 06',3:'Jul 08',5:'Jul 10',7:'Jul 12'};
+      g.hide_legend = true
+      g.labels = {1:'Jul 06',3:'Jul 08',5:'Jul 10',7:'Projected'};
 
       g.draw();
     </script>
