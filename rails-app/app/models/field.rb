@@ -56,13 +56,13 @@ class Field < ActiveRecord::Base
   end
   
   def initial_ad
-    unless (current_crop && current_crop.max_root_zone_depth && field_capacity && permanent_wilting_point &&
+    unless (current_crop && current_crop.max_root_zone_depth && field_capacity && perm_wilting_pt &&
       current_crop.max_allowable_depletion_frac && current_crop.initial_soil_moisture)
       return -999.0
     end
     mrzd = current_crop.max_root_zone_depth
 
-    taw = calc_taw(field_capacity, permanent_wilting_point, mrzd)
+    taw = calc_taw(field_capacity, perm_wilting_pt, mrzd)
     mad_frac = current_crop.max_allowable_depletion_frac
     
     pct_mad_min = calc_pct_moisture_at_ad_min(field_capacity, calc_ad_max_inches(mad_frac,taw), mrzd)
