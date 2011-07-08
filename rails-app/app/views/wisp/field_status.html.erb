@@ -7,11 +7,21 @@
   <%= jqgrid_stylesheets.html_safe -%>
   <style type="text/css">
 	h2 {text-align:center;}
+	#fieldSelectionBox
+	{
+		position:absolute;
+		left:275px;
+		top:90px;
+		width:200px;
+		padding:2px;
+		margin:0px;
+	}
+
 	#fieldDataBox
 	{
 		position:absolute;
 		left:275px;
-		top:200px;
+		top:150px;
 		width:200px;
 		padding:2px;
 		border:1px solid gray;
@@ -66,6 +76,14 @@
 		margin:0px;
 	}
 	
+	#imageADBox
+	{
+		position:absolute;
+		left:875px;
+		top:375px;
+		width:300px;
+	}
+	
 	</style>
    </style>
 <% end %>
@@ -81,13 +99,14 @@
 <% end %>
 
 <h2>WISP Field Status</h2>
-<div style="display:inline">
+<div id="fieldSelectionBox">
 Choose a different field
 <%= form_tag "/wisp/field_status" do %>
-  <%= select_tag "field_id", options_from_collection_for_select(@pivot.fields,"id","name") %><br/>
+  <%= select_tag "field_id", options_from_collection_for_select(@pivot.fields,"id","name") %> 
   <%= submit_tag "Go" %>
 <% end %>
 </div>
+
 <div id="fieldDataBox">
 <h2>Field Data</h2>
 Farm name:<%= @farm.name if @farm %><br/>
@@ -141,8 +160,12 @@ Cost ($): <br/>
 </div>
 
 <div id="projectedADBox">
+	<%= image_tag "pivot.manip.small.jpg", :width => 300  %>
 <h2>Projected Allowable Depletion</h2>
-<br/>
+<p>In inches, based on the mean adjusted ET of the last four rainless days.</p>
+<b>7/11/2011: -0.15</b> <br/>
+<b>7/12/2011: -0.30</b> <br/>
+<b>7/13/2011: -0.45</b> <br/>
 <br/>
 <br/>
 <br/>
