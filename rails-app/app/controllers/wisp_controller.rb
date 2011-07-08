@@ -13,6 +13,9 @@ class WispController < ApplicationController
     @crop = Crop.find(@crop_id) if @crop_id
     @crops = Crop.where(:field_id => @field_id)
     # FIXME: Need to filter everything below pivot for current year
+    if params[:ajax]
+      render :layout => false
+    end
   end
 
   def crop_setup_grid
@@ -57,6 +60,9 @@ class WispController < ApplicationController
   end
 
   def farm_status
+    if params[:ajax]
+      render :layout => false
+    end
   end
 
   def report_setup

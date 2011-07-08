@@ -34,16 +34,23 @@ class CropsController < ApplicationController
   end
 
   def post_data
-    attribs = {}
-    for col_name in COLUMN_NAMES
-      attribs[col_name] = params[col_name] unless col_name == :id
-    end
-    if params[:oper] && params[:oper] == "add"
-      puts "adding a crop..."
-      attribs[:field_id] = @field_id
-      Crop.create(attribs)
+    if params[:oper] == "del"
+      farm = Farm.find(params[:id])
+      if farm.group == @group
+        farm.destroy
+      end
     else
-      Crop.find(params[:id]).update_attributes(attribs)
+      attribs = {}
+      for col_name in COLUMN_NAMES
+        attribs[col_name] = params[col_name] unless col_name == :id
+      end
+      if params[:oper] && params[:oper] == "add"
+        puts "adding a crop..."
+        attribs[:field_id] = @field_id
+        Crop.create(attribs)
+      else
+        Crop.find(params[:id]).update_attributes(attribs)
+      end
     end
     render :nothing => true
   end

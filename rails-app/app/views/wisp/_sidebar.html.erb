@@ -20,9 +20,9 @@
                 var farm_id = $('#farm option:selected').val();
                 if (farm_id != 0) {
                   // do an Ajax call to set the farm. Throw away the (nonexistent) output.
-                  $('#ajax_output').load('/wisp/set_farm',{farm_id:farm_id});
+                  $('#content').load(window.location.href,{farm_id:farm_id,ajax:true});
                   // refresh the current page
-                  window.location.href = window.location.href;
+                  // window.location.href = window.location.href + "?preserve_farm=true"
                 }
               });
             });

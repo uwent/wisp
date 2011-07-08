@@ -34,19 +34,26 @@ class FarmsController < ApplicationController
   end # index
   
   def post_data
-    attribs = {}
-    for col_name in COLUMN_NAMES
-      attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem
-    end
-    if params[:oper] && params[:oper] == "add"
-      # if no year supplied, use current one
-      unless attribs[:year]
-        attribs[:year] = Time.now.year
+    if params[:oper] == "del"
+      farm = Farm.find(params[:id])
+      if farm.group == @group
+        farm.destroy
       end
-      attribs[:group_id] = @group[:id]
-      Farm.create(attribs)
     else
-      Farm.find(params[:id]).update_attributes(attribs)
+      attribs = {}
+      for col_name in COLUMN_NAMES
+        attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem
+      end
+      if params[:oper] == "add"
+        # if no year supplied, use current one
+        unless attribs[:year]
+          attribs[:year] = Time.now.year
+        end
+        attribs[:group_id] = @group[:id]
+        Farm.create(attribs)
+      else
+        Farm.find(params[:id]).update_attributes(attribs)
+      end
     end
     render :nothing => true
   end

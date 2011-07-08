@@ -11,7 +11,7 @@ class Field < ActiveRecord::Base
   include ETCalculator
   
   belongs_to :pivot
-  has_many :crops
+  has_many :crops, :dependent => :destroy
   has_many :field_daily_weather, :autosave => true, :dependent => :destroy
   
   def et_method
@@ -48,7 +48,7 @@ class Field < ActiveRecord::Base
   
   def create_crop
     puts "create crop"
-    crops << Crop.new(:name => 'New crop', :variety => '')
+    crops << Crop.new(:name => "New crop (field: #{name})", :variety => '')
   end
   
   def date_endpoints    
@@ -96,6 +96,7 @@ class Field < ActiveRecord::Base
   
   # hook method for FDW objects to alert us of their (newly changed?) AD
   def update_fdw(field_daily_wx)
+    puts "field#update_fdw: wx calling us has #{field_daily_wx.field.inspect}"
     day = fdw_index(field_daily_wx.date)
     return unless day
     puts "updating field daily wx for day #{day}"

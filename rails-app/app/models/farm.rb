@@ -1,7 +1,7 @@
 class Farm < ActiveRecord::Base
   belongs_to :group
   belongs_to :et_method
-  has_many :pivots
+  has_many :pivots, :dependent => :destroy
   
   after_create :create_new_default_pivot
   
@@ -15,7 +15,7 @@ class Farm < ActiveRecord::Base
   end
   
   def create_new_default_pivot
-    pivots << Pivot.create(:name => 'New pivot')
+    pivots << Pivot.create(:name => "New pivot (farm: #{name})")
     save!
   end
 end

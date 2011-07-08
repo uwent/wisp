@@ -32,15 +32,24 @@ class FieldsController < ApplicationController
   end
 
   def post_data
-    attribs = {}
-    for col_name in COLUMN_NAMES
-      attribs[col_name] = params[col_name] unless col_name == :id
-    end
-    if params[:oper] && params[:oper] == "add"
-      attribs[:pivot_id] = @pivot_id
-      Field.create(attribs)
+    if params[:oper] == "del"
+      field = Field.find(params[:id])
+      # check that we're in the right hierarchy, and not some random id
+      if field.pivot == @pivot
+        field.destroy
+      end
     else
-      Field.find(params[:id]).update_attributes(attribs)
+    
+      attribs = {}
+      for col_name in COLUMN_NAMES
+        attribs[col_name] = params[col_name] unless col_name == :id
+      end
+      if params[:oper] && params[:oper] == "add"
+        attribs[:pivot_id] = @pivot_id
+        Field.create(attribs)
+      else
+        Field.find(params[:id]).update_attributes(attribs)
+      end
     end
     render :nothing => true
   end
