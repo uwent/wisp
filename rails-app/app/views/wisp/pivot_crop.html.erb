@@ -14,7 +14,6 @@
   		top:130px;
   		width:920px;
   		padding:2px;
-  		border:1px solid gray;
   		margin:0px;
   	}
   	.field {
@@ -28,7 +27,6 @@
   		top:325px;
   		width:920px;
   		padding:2px;
-  		border:1px solid gray;
   		margin:0px;
   	}
   	#cropsDataBox
@@ -38,7 +36,6 @@
   		top:500px;
   		width:920px;
   		padding:2px;
-  		border:1px solid gray;
   		margin:0px;
   	}
 		
@@ -127,7 +124,7 @@
     <%= f.submit %>
   </div>
 	<% end %>
-<table border="1">
+<table border="0">
   <tr>
   	<td><%= button_to "Delete this pivot", :controller => 'pivots', :action => :destroy, :id => @pivot[:id], :confirm => "Are you sure?"%></td>
     <td>Select A Different Pivot
