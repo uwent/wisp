@@ -4,11 +4,10 @@ class CropsController < ApplicationController
   COLUMN_NAMES = [:name,
     :variety,
     :emergence_date,
-    # :end_date,
+    :initial_soil_moisture,
     :harvest_or_kill_date,
     :max_root_zone_depth,
-    # :max_allowable_depletion_frac,
-    :max_allowable_depletion_inches,
+    :max_allowable_depletion_frac,
     :notes
   ]
   

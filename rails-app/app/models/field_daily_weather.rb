@@ -37,7 +37,7 @@ class FieldDailyWeather < ActiveRecord::Base
     if previous_day
       previous_ad = previous_day.ad
     else
-      puts "using field's initial value of #{field.inital_ad}"
+      puts "using field's initial value of #{field.initial_ad}"
       previous_ad = field.initial_ad
     end
     if ref_et && previous_ad && field && field.field_capacity && field.perm_wilting_pt && field.current_crop && field.current_crop.max_root_zone_depth

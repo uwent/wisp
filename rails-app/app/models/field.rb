@@ -48,7 +48,7 @@ class Field < ActiveRecord::Base
   
   def create_crop
     puts "create crop"
-    crops << Crop.new(:name => 'New crop')
+    crops << Crop.new(:name => 'New crop', :variety => '')
   end
   
   def date_endpoints    
@@ -56,9 +56,20 @@ class Field < ActiveRecord::Base
   end
   
   def initial_ad
-    # FIXME: What's the initial AD?
-    puts "Returning bogus number for initial field AD"
-    5.0
+    unless (current_crop && current_crop.max_root_zone_depth && field_capacity && permanent_wilting_point &&
+      current_crop.max_allowable_depletion_frac && current_crop.initial_soil_moisture)
+      return -999.0
+    end
+    mrzd = current_crop.max_root_zone_depth
+
+    taw = calc_taw(field_capacity, permanent_wilting_point, mrzd)
+    mad_frac = current_crop.max_allowable_depletion_frac
+    
+    pct_mad_min = calc_pct_moisture_at_ad_min(field_capacity, calc_ad_max_inches(mad_frac,taw), mrzd)
+    
+    obs_pct_moisture = current_crop.initial_soil_moisture
+    calc_daily_ad_from_moisture(mad_frac,taw,mrzd,pct_mad_min,obs_pct_moisture)
+    
   end
   
   def update_canopy(emergence_date)

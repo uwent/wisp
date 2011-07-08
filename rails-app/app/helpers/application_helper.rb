@@ -31,6 +31,10 @@ module ApplicationHelper
   end
   
   def abr(date)
-    date.strftime('%D')
+    if date
+      date.strftime('%D')
+    else
+      ""
+    end
   end
 end

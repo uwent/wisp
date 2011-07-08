@@ -19,5 +19,3 @@ user = User.create!( :id => 1, :email => 'anonymous@mailinator.com', :identifier
 group = Group.create(:id => 1, :description => 'Default Group')
 membership = Membership.create(:id => 1, :group_id => group[:id], :user_id => user[:id], :is_admin => true)
 farm = Farm.create(:id => 1, :name => 'Default Farm', :group_id => group[:id])
-pivot = Pivot.create(:id => 1, :name => 'Default Pivot', :farm_id => farm[:id])
-Field.create(:id => 1, :name => 'Default Field', :pivot_id => pivot[:id])
