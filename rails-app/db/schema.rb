@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110531234143) do
+ActiveRecord::Schema.define(:version => 20110710151042) do
 
   create_table "blogs", :force => true do |t|
     t.date     "date"
@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(:version => 20110531234143) do
     t.string   "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float    "initial_soil_moisture"
   end
 
   create_table "et_methods", :force => true do |t|

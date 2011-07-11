@@ -5,7 +5,6 @@ class CreateCrops < ActiveRecord::Migration
       t.string :name
       t.string :variety
       t.date :emergence_date
-      t.float :initial_soil_moisture
       t.date :end_date
       t.date :harvest_or_kill_date
       t.float :max_root_zone_depth

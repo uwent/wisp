@@ -1,7 +1,8 @@
 class CropsController < ApplicationController
   before_filter :ensure_signed_in, :current_user, :get_current_ids
   
-  COLUMN_NAMES = [:name,
+  COLUMN_NAMES = [
+    :name,
     :variety,
     :emergence_date,
     :initial_soil_moisture,
@@ -21,7 +22,6 @@ class CropsController < ApplicationController
     @crops = Crop.where(:field_id => @field_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
-    puts "getting crops for field #{@field_id}, found #{@crops.size} entries"
     @crops ||= []
 
     respond_to do |format|
