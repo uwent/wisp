@@ -23,8 +23,8 @@
       imgpath: '/images/jqgrid',
       sortname: '',
       viewrecords: true,
-      height: 70,
-      width: 900,
+      height: 110,
+      width: 918,
       sortorder: '',
       gridview: false,
       scrollrows: true,
@@ -43,7 +43,7 @@
       
       subGrid:false,
       
-      caption: "Crops"
+      caption: "Crops <%= @field ? " for #{@field.name}" : '(select field above)' %>"
     })
     .navGrid('#crop_setup_pager',
       {edit:false,add:true,del:true,search:false,refresh:true},

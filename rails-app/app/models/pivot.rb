@@ -6,6 +6,6 @@ class Pivot < ActiveRecord::Base
   after_create :create_new_default_field
   
   def create_new_default_field
-    fields << Field.create(:name => "New field (field: #{name})")
+    fields << Field.create(:name => "New field (pivot: #{name})")
   end
 end

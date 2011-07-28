@@ -51,8 +51,12 @@ class Field < ActiveRecord::Base
     crops << Crop.new(:name => "New crop (field: #{name})", :variety => '')
   end
   
-  def date_endpoints    
-    [Date.civil(year,START_DATE[0],START_DATE[1]),Date.civil(year,END_DATE[0],END_DATE[1])]
+  def date_endpoints
+    year ||= Time.now.year
+    puts "date_endpoints: #{year} / #{START_DATE[0]} / #{START_DATE[1]}"
+    ep1 = Date.civil(year,*START_DATE)
+    ep2 = Date.civil(year,*END_DATE)
+    [ep1,ep2]
   end
   
   def initial_ad

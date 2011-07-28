@@ -9,7 +9,6 @@
     <% if @group %>
       <li>
         <% if @farm %>
-          <p>farm is <set><%= @farm.name %></p>
           <%= select_tag "farm", options_from_collection_for_select(Farm.my_farms(@group[:id]),"id","name",@farm[:id])%>
         <% else %>
           <%= select_tag "farm", options_from_collection_for_select(Farm.my_farms(@group[:id]),"id","name")%>

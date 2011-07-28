@@ -1,17 +1,57 @@
 class PivotsController < ApplicationController
   before_filter :ensure_signed_in, :current_user, :get_current_farm # sets @farm_id
   
+  COLUMN_NAMES = [:name,
+     :latitude, :longitude, :equipment,
+    :pump_capacity, :some_energy_rate_metric, :cropping_year, :notes
+    ]
+  
   # GET /pivots
   # GET /pivots.xml
   def index
     @pivots = Pivot.find(:all, :conditions => ['farm_id = ?', @farm_id])
     session[:farm_id] = @farm_id
     @farm = Farm.find(@farm_id)
+    if params[:pivot_id]
+      @pivot = @pivots.find { |f| f[:id] == params[:pivot_id] } || @pivots.first
+    else
+      @pivot = @pivots.first
+    end
 
+    @pivots = Pivot.where(:farm_id => @farm_id).order(:name) do
+      paginate :page => params[:page], :per_page => params[:rows]
+    end
+    puts "getting pivots for pivot #{@pivot_id}, found #{@pivots.size} entries"
+    @pivots ||= []
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @pivots }
+      columns = COLUMN_NAMES; columns << :id
+      format.json { render :json => @pivots.to_jqgrid_json(columns,params[:page], params[:rows],@pivots.size) }
     end
+  end
+
+  def post_data
+    if params[:oper] == "del"
+      pivot = Pivot.find(params[:id])
+      # check that we're in the right hierarchy, and not some random id
+      if pivot.farm == @farm
+        pivot.destroy
+      end
+    else
+    
+      attribs = {}
+      for col_name in COLUMN_NAMES
+        attribs[col_name] = params[col_name] unless col_name == :id
+      end
+      if params[:oper] && params[:oper] == "add"
+        attribs[:farm_id] = @farm_id
+        Pivot.create(attribs)
+      else
+        Pivot.find(params[:id]).update_attributes(attribs)
+      end
+    end
+    render :nothing => true
   end
 
   # GET /pivots/1

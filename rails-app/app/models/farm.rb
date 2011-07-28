@@ -2,6 +2,7 @@ class Farm < ActiveRecord::Base
   belongs_to :group
   belongs_to :et_method
   has_many :pivots, :dependent => :destroy
+  validates :year, :presence => true
   
   after_create :create_new_default_pivot
   

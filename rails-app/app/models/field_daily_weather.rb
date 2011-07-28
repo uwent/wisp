@@ -28,14 +28,14 @@ class FieldDailyWeather < ActiveRecord::Base
   
   # We've changed, so notify our field so it can recalculate
   def results_to_field
-    puts "fdw#results_to_field: we #{self.id} are calling #{field.inspect}"
+    # puts "fdw#results_to_field: we #{self.id} are calling #{field.inspect}"
     if field && (ref_et || rain || irrigation || entered_pct_moisture)
       field.update_fdw(self)
     end
   end
   
   def update_balances(previous_day)
-    "fdw#update_balances: we (#{self.id}) have a field of #{self.field.inspect}";$stdout.flush
+    # puts "fdw#update_balances: we (#{self.id}) have a field of #{self.field.inspect}";$stdout.flush
     if previous_day
       previous_ad = previous_day.ad
     else
@@ -51,9 +51,9 @@ class FieldDailyWeather < ActiveRecord::Base
       puts "fdw#update_balances #{self.inspect} No field"; return unless field
       puts "fdw#update_balances #{self.inspect} No crop"; return unless field.current_crop
       puts "fdw#update_balances #{self.inspect} Missing value, could not calculate."
-      puts "ref_et: #{ref_et}  previous_ad: #{previous_ad}  field.field_capacity: #{field.field_capacity}"
-      puts "field.perm_wilting_pt: #{field.perm_wilting_pt}"
-      puts "field.current_crop.max_root_zone_depth: #{field.current_crop.max_root_zone_depth} "
+      # puts "ref_et: #{ref_et}  previous_ad: #{previous_ad}  field.field_capacity: #{field.field_capacity}"
+      # puts "field.perm_wilting_pt: #{field.perm_wilting_pt}"
+      # puts "field.current_crop.max_root_zone_depth: #{field.current_crop.max_root_zone_depth} "
     end
   end
 end
