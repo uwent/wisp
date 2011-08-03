@@ -35,25 +35,25 @@ class FieldDailyWeather < ActiveRecord::Base
   end
   
   def update_balances(previous_day)
-    # puts "fdw#update_balances: we (#{self.id}) have a field of #{self.field.inspect}";$stdout.flush
+    feeld = self.field
+    # puts "fdw#update_balances: we (#{self.id}) have a field of #{feeld.inspect}";$stdout.flush
     if previous_day
+      puts "\nprevious_day passed in, using #{previous_day.inspect}"
       previous_ad = previous_day.ad
     else
-      puts "using field's initial value of #{field.initial_ad}"
-      previous_ad = field.initial_ad
+      puts "\nusing field's initial value of #{feeld.initial_ad}"
+      previous_ad = feeld.initial_ad
     end
-    if ref_et && previous_ad && field && field.field_capacity && field.perm_wilting_pt && field.current_crop && field.current_crop.max_root_zone_depth
-      adj_et = field.et_method.adj_et(self)
-      delta_storage = calc_change_in_daily_storage(rain, irrigation, adj_et)
-      total_available_water = calc_taw(field.field_capacity, field.perm_wilting_pt, field.current_crop.max_root_zone_depth)
-      ad = calc_daily_ad(previous_ad, delta_storage, field.current_crop.max_allowable_depletion_frac, total_available_water)
-    else
-      puts "fdw#update_balances #{self.inspect} No field"; return unless field
-      puts "fdw#update_balances #{self.inspect} No crop"; return unless field.current_crop
-      puts "fdw#update_balances #{self.inspect} Missing value, could not calculate."
-      # puts "ref_et: #{ref_et}  previous_ad: #{previous_ad}  field.field_capacity: #{field.field_capacity}"
-      # puts "field.perm_wilting_pt: #{field.perm_wilting_pt}"
-      # puts "field.current_crop.max_root_zone_depth: #{field.current_crop.max_root_zone_depth} "
+    requirements = [ "ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
+    requirements.each do |cond|
+      unless eval(cond)
+        puts "\n#{cond} was not set -- needed to update balances"
+        return
+      end
     end
+    adj_et = feeld.et_method.adj_et(self)
+    delta_storage = calc_change_in_daily_storage(rain, irrigation, adj_et)
+    total_available_water = calc_taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
+    ad = calc_daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
   end
 end

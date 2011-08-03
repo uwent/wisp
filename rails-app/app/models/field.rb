@@ -26,7 +26,10 @@ class Field < ActiveRecord::Base
   # given a date:
   # look for the latest crop in the current year whose emergence date is past
   def current_crop
-    (crops.sort { |a, b| b.emergence_date <=> a.emergence_date }).first
+    sorted = crops.sort do |a, b|
+      b.emergence_date <=> a.emergence_date
+    end
+    sorted.first
   end
   
   def year
@@ -41,19 +44,19 @@ class Field < ActiveRecord::Base
   end
   
   def create_field_daily_weather
-    puts "create_fdw"
+    # puts "create_fdw"
     start_date,end_date = date_endpoints
     (start_date..end_date).each {|date| field_daily_weather << FieldDailyWeather.new(:date => date)}
   end
   
   def create_crop
-    puts "create crop"
-    crops << Crop.new(:name => "New crop (field: #{name})", :variety => '')
+    # puts "create crop"
+    crops << Crop.new(:name => "New crop (field: #{name})", :variety => 'A variety', :emergence_date => Date.today)
   end
   
   def date_endpoints
     year ||= Time.now.year
-    puts "date_endpoints: #{year} / #{START_DATE[0]} / #{START_DATE[1]}"
+    # puts "date_endpoints: #{year} / #{START_DATE[0]} / #{START_DATE[1]}"
     ep1 = Date.civil(year,*START_DATE)
     ep2 = Date.civil(year,*END_DATE)
     [ep1,ep2]
