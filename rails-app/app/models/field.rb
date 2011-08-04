@@ -103,10 +103,13 @@ class Field < ActiveRecord::Base
   
   # hook method for FDW objects to alert us of their (newly changed?) AD
   def update_fdw(field_daily_wx)
-    puts "field#update_fdw: wx calling us has #{field_daily_wx.field.inspect}"
-    day = fdw_index(field_daily_wx.date)
-    return unless day
-    puts "updating field daily wx for day #{day}"
-    field_daily_wx.update_balances(day == 0 ? nil : field_daily_weather[day-1])
+    # puts "field#update_fdw: wx calling us has #{field_daily_wx.field.inspect}"
+    # day = fdw_index(field_daily_wx.date)
+    # unless day
+    #   puts "Could not calculate the index for the field_daily_wx"
+    #   return
+    # end
+    # puts "updating field daily wx for day #{day}"
+    # field_daily_wx.update_balances(day == 0 ? nil : field_daily_weather[day-1])
   end
 end

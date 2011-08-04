@@ -4,64 +4,83 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   WILT = 0.2
   ET = 0.2
   INITIAL_AD = 0.5
+
   def setup
-    @field = Field.create(:perm_wilting_pt => WILT,:pivot_id => Pivot.first[:id])
-    @field.crops << crops(:default)
+    @field = create_field_with_crop
   end
-  test "fixtures are set up to do something useful" do
-    assert(@field, "Should be a field")
-    first_crop = @field.crops.first
-    assert(first_crop,"Field should have a crop")
-    assert(first_crop.emergence_date, "Crop should have an emergence date")
-    assert(first_crop.max_root_zone_depth, "Crop should have a max root zone depth")
-    assert(first_crop.max_allowable_depletion_frac, "Crop should have a fractional max allowable depletion")
-  end
-  
+
   def create_field_with_crop
-    crop = Crop.new(
+    field = Field.create(
+      :name => 'test field', :perm_wilting_pt => WILT, :field_capacity => 0.5,
+      :pivot => pivots(:one) # rick's farm, which has LAI ET method
+    )
+    field.crops.first.update_attributes({
+      :name => 'test crop',
       :emergence_date => Date.civil(2011,05,01),
       :max_root_zone_depth => 20,
       :max_allowable_depletion_frac => 0.5,
-      :initial_soil_moisture => 0.5)
-    field = Field.new(:perm_wilting_pt => WILT)
-    field.crops << crop
-    field.create_field_daily_weather
-    field.save!
-    field
+      :initial_soil_moisture => 0.5
+      })
+     field.save!
+     field
   end
   
-  test "update_balances can be called" do
-    field = create_field_with_crop
-    assert(field.field_daily_weather.first, "Field should have had daily weather")
-  end
-  
+  # test "update_balances can be called" do
+  #   field = create_field_with_crop
+  #   assert(field.field_daily_weather.first, "Field should have had daily weather")
+  # end
+  # 
   test "update_balances does something useful" do
-    field = create_field_with_crop
-    fdw_first = field.field_daily_weather.first
+    fdw_first = @field.field_daily_weather.first
+    puts "FDW's field looks like #{@field.inspect}"
+    puts "and its first crop looks like #{@field.current_crop.inspect}"
     assert(fdw_first.field, "Field daily weather should have a field! #{fdw_first.inspect}")
     fdw_first.ad = INITIAL_AD
-    fdw_first.save!
+    fdw_first.save!                        
     puts "\nsaved the first day, it's now #{fdw_first.inspect}"
-    fdw_second = field.field_daily_weather[1]
+    fdw_second = @field.field_daily_weather[1]
     assert(fdw_second.field, "Field daily weather should have a field! #{fdw_second.inspect}")
     assert_nil(fdw_second.ad)
     fdw_second.ref_et = ET
     puts "\nabout to save the second day's weather (#{fdw_second.inspect})"; $stdout.flush
     fdw_second.save!
-    assert(fdw_second.ad, "Should have updated the second fdw to have an ad balance")
+    assert(fdw_second.ad, "Should have updated the second fdw to have an ad balance, but it's #{fdw_second.inspect}")
   end
   
-  test "update_balances does something correct" do
-    field = create_field_with_crop
-    fdw_first = field.field_daily_weather.first
-    fdw_first.ad = INITIAL_AD
-    fdw_first.save!
-    fdw_second = field.field_daily_weather[1]
-    assert_nil(fdw_second.ad)
-    fdw_second.ref_et = ET
-    fdw_second.save!
-    assert(fdw_second.ad, "Should have updated the second fdw to have an ad balance")
-    assert_equal(INITIAL_AD - ET, fdw_second.ad,"AD should be the starting value minus ET")
+  test "newly-created fdw should have zero rain and irrig" do
+    fdw = FieldDailyWeather.create(:date => '2011-05-01')
+    assert_equal(0.0, fdw.rain)
+    assert_equal(0.0, fdw.irrigation)
   end
+  
+  # test "update_balances does something correct" do
+  #   field = create_field_with_crop
+  #   fdw_first = field.field_daily_weather.first
+  #   fdw_first.ad = INITIAL_AD
+  #   fdw_first.save!
+  #   fdw_second = field.field_daily_weather[1]
+  #   assert_nil(fdw_second.ad)
+  #   fdw_second.ref_et = ET
+  #   fdw_second.save!
+  #   assert(fdw_second.ad, "Should have updated the second fdw to have an ad balance")
+  #   assert_equal(INITIAL_AD - ET, fdw_second.ad,"AD should be the starting value minus ET")
+  # end
+  # 
+  # test "previous and next work" do
+  #   fdw_first = FieldDailyWeather.first
+  #   fdw_second = FieldDailyWeather.where(:field_id => fdw_first[:field_id])[1]
+  #   assert_equal([], FieldDailyWeather.previous(fdw_first),"First FDW, should have no pred")
+  #   assert_equal([fdw_second], FieldDailyWeather.next(fdw_first),"Second FDW should have first one as pred")
+  #   assert_equal([fdw_first], FieldDailyWeather.previous(fdw_second),"First FDW should have second one as succ")
+  # end
+  # 
+  # test "pred and succ work" do
+  #   fdw_first = FieldDailyWeather.first
+  #   fdw_second = FieldDailyWeather.where(:field_id => fdw_first[:field_id])[1]
+  #   assert_nil(fdw_first.pred,"First FDW, should have no pred")
+  #   assert_equal(fdw_second, fdw_first.succ,"Second FDW should have first one as pred")
+  #   assert_equal(fdw_first, fdw_second.pred,"First FDW should have second one as succ")
+  # end 
+  
   
 end

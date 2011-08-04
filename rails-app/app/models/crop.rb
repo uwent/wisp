@@ -7,6 +7,7 @@ class Crop < ActiveRecord::Base
     if emergence_date
       # puts "updating our field's canopy (#{field[:id]})"
       field.update_canopy(emergence_date)
+      logger.info "************************************* update canopy finished *****************"
     end
   end
 end
