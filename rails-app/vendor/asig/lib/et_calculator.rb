@@ -50,14 +50,14 @@ module ETCalculator
 	(0.000000000009*(days_since_emergence)**7.95)*(Math.exp(-0.1*(days_since_emergence)))
   end
   
-  # Return adjusted ET from the reference ET and the leaf area index
+  # Return adjusted ET from the reference ET and the days sinçe emergence
   # Crop coeff math is from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
   def adj_et_lai_corn(refET,days_since_emergence)
 	crop_coeff = 1.1*(1-Math.exp(-1.5*(calc_lai_corn(days_since_emergence))))
 	adjET = refET * crop_coeff
   end
 
-  # Return adjusted ET from the reference ET and the leaf area index
+  # Return adjusted ET from the reference ET if the leaf area index is already in hand
   # Crop coeff math is from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
   def adj_et_from_lai_corn(refET,lai)
 	crop_coeff = 1.1*(1-Math.exp(-1.5*(lai)))

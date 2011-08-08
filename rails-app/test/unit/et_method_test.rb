@@ -1,7 +1,7 @@
 require 'test_helper'
 
 class EtMethodTest < ActiveSupport::TestCase
-  DELTA = 0.01 # delta for floating-point equality tests
+  DELTA = 0.00001 # delta for floating-point equality tests
   def setup
     @adjET = nil
     @refET = 0.2
@@ -62,27 +62,47 @@ class EtMethodTest < ActiveSupport::TestCase
   end
   
   test "Midrange corn lai should agree" do
-    days_since_emergences = [0,1,10,11,29,48,79,80,160]
-    expected_lais = [0.0,0.0,0.00029509,0.00056963,0.20934018,1.71987480,4.06866074,4.06866610,0.33750846]
-    ii=0
-    for days_since_emergence in days_since_emergences
-      lai = @pcm.calc_lai_corn(days_since_emergence)
-      assert_in_delta(expected_lais[ii],lai, DELTA, "Wrong LAI refurned for days_since_emergence #{days_since_emergence}; expected #{expected_lais[ii]} and was #{lai}")
-      ii += 1
+    # Pair up a day-since-emergence with the expected LAI for that day
+    expected_lais_for_day = {
+      0 => 0.0, 1 => 0.0, 10 => 0.00029509,
+      11 => 0.00056963, 29 => 0.20934018,
+      48 => 1.71987480, 79 => 4.06866074,
+      100 => 3.245620, 160 => 0.33750846
+    }
+    expected_lais_for_day.each do |day,expected_lai|
+      lai = @pcm.calc_lai_corn(day)
+      assert_in_delta(expected_lai,lai, DELTA, "Wrong LAI refurned for days_since_emergence #{day}; expected #{expected_lai} and was #{lai}")
     end
   end
 
-  test "Midrange corn lai adjET should agree" do
-    days_since_emergences = [0,1,10,11,29,48,79,80,160]
-    ref_et = 0.32
-    expected_adj_ets = [0.0,0.0,0.0,0.0,0.09,0.2,0.35,0.35,0.14]
-    ii=0
-    for days_since_emergence in days_since_emergences
-      adj_et = @pcm.adj_et_lai_corn(ref_et, days_since_emergence)
-      assert_in_delta(expected_adj_ets[ii],adj_et, DELTA, "Wrong adjusted ET refurned for days_since_emergence #{days_since_emergence}; expected #{expected_adj_ets[ii]} and was #{adj_et}")
-      ii+=1
+  def run_corn_lai_adj_et_test(ref_et,expected_adj_ets_for_day)
+    # Pair up a day-since-emergence with the expected crop/adjusted ET for that day
+    expected_adj_ets_for_day.each do |day,expected_adj_et|
+      adj_et = @pcm.adj_et_lai_corn(ref_et, day)
+      assert_in_delta(expected_adj_et,adj_et, DELTA, "Wrong adjusted ET refurned for days_since_emergence #{day}; expected #{expected_adj_et} and was #{adj_et}")
     end
   end
-
   
+  test "Corn lai adjET should agree when high ET" do
+    ref_et = 0.32
+    expected_adj_ets_for_day = {
+      # These numbers are straight out of John's spreadsheet -- just pegged the
+      # "AWON Reference ET (in/day)" column all the way down
+      0 => 0.0, 1 => 0.0, 10 => 0.000156, 11 => 0.000301, 
+      29 => 0.094860, 48 => 0.325323, 79 => 0.351213, 
+      100 => 0.349295, 160 => 0.139834
+    }
+    run_corn_lai_adj_et_test(ref_et,expected_adj_ets_for_day)
+  end
+
+  test "Corn lai adjET should agree when low ET" do
+    ref_et = 0.01
+    expected_adj_ets_for_day = {
+      # Numbers out of spreadsheet as before
+      0 => 0.0, 10 => 0.000005, 30 => 0.003417,
+      60 => 0.010887, 100 => 0.010915,
+      160 => 0.004370
+    }
+    run_corn_lai_adj_et_test(ref_et,expected_adj_ets_for_day)
+  end
 end
