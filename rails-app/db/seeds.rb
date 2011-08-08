@@ -18,4 +18,4 @@ user = User.create!( :id => 1, :email => 'anonymous@mailinator.com', :identifier
 # remaining IDs are set to 1 just as a convenience
 group = Group.create(:id => 1, :description => 'Default Group')
 membership = Membership.create(:id => 1, :group_id => group[:id], :user_id => user[:id], :is_admin => true)
-farm = Farm.create(:id => 1, :name => 'Default Farm', :group_id => group[:id], :year => Time.now.year)
+farm = Farm.create(:id => 1, :name => 'Default Farm', :group_id => group[:id], :year => Time.now.year, :et_method_id => 2)

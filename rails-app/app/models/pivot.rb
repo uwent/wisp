@@ -6,6 +6,9 @@ class Pivot < ActiveRecord::Base
   after_create :create_new_default_field
   
   def create_new_default_field
-    fields << Field.create(:name => "New field (pivot: #{name})")
+    fields << Field.create(:name => "New field (pivot: #{name})",
+      # grabbed these numbers from John's spreadsheet
+      :field_capacity => 0.31, :perm_wilting_pt => 0.14,
+      )
   end
 end

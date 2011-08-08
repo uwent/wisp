@@ -61,28 +61,28 @@ class EtMethodTest < ActiveSupport::TestCase
     end
   end
   
-  #   test "Midrange corn lai should agree" do
-  # days_since_emergences = [0,1,10,11,29,48,79,80,160]
-  # expected_lais = [0.0,0.0,0.00029509,0.00056963,0.20934018,1.71987480,4.06866074,4.06866610,0.33750846]
-  # ii=0
-  # for days_since_emergence in days_since_emergences
-  #   lai = @pcm.calc_lai_corn(days_since_emergence)
-  #   assert_in_delta(expected_lais[ii],lai, DELTA, "Wrong LAI refurned for days_since_emergence #{days_since_emergence}; expected #{expected_lais[ii]} and was #{lai}")
-  #   ii += 1
-  # end
-  #   end
+  test "Midrange corn lai should agree" do
+    days_since_emergences = [0,1,10,11,29,48,79,80,160]
+    expected_lais = [0.0,0.0,0.00029509,0.00056963,0.20934018,1.71987480,4.06866074,4.06866610,0.33750846]
+    ii=0
+    for days_since_emergence in days_since_emergences
+      lai = @pcm.calc_lai_corn(days_since_emergence)
+      assert_in_delta(expected_lais[ii],lai, DELTA, "Wrong LAI refurned for days_since_emergence #{days_since_emergence}; expected #{expected_lais[ii]} and was #{lai}")
+      ii += 1
+    end
+  end
 
-  #   test "Midrange corn lai adjET should agree" do
-  # days_since_emergences = [0,1,10,11,29,48,79,80,160]
-  # ref_et = 0.32
-  # expected_adj_ets = [0.0,0.0,0.0,0.0,0.09,0.2,0.35,0.35,0.14]
-  # ii=0
-  # for days_since_emergence in days_since_emergences
-  #   adj_et = @pcm.adj_et_lai_corn(ref_et, days_since_emergence)
-  #   assert_in_delta(expected_adj_ets[ii],adj_et, DELTA, "Wrong adjusted ET refurned for days_since_emergence #{days_since_emergence}; expected #{expected_adj_ets[ii]} and was #{adj_et}")
-  #   ii+=1
-  # end
-  #   end
-  
+  test "Midrange corn lai adjET should agree" do
+    days_since_emergences = [0,1,10,11,29,48,79,80,160]
+    ref_et = 0.32
+    expected_adj_ets = [0.0,0.0,0.0,0.0,0.09,0.2,0.35,0.35,0.14]
+    ii=0
+    for days_since_emergence in days_since_emergences
+      adj_et = @pcm.adj_et_lai_corn(ref_et, days_since_emergence)
+      assert_in_delta(expected_adj_ets[ii],adj_et, DELTA, "Wrong adjusted ET refurned for days_since_emergence #{days_since_emergence}; expected #{expected_adj_ets[ii]} and was #{adj_et}")
+      ii+=1
+    end
+  end
+
   
 end

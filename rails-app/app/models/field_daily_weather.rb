@@ -32,10 +32,9 @@ class FieldDailyWeather < ActiveRecord::Base
   end
     
   def update_balances(previous_day=nil)
-    
     previous_day ||= self.pred
     feeld = self.field
-    # puts "fdw#update_balances: we (#{self.id}) have a field of #{feeld.inspect}";$stdout.flush
+    # puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
     if previous_day
       # puts "\nprevious_day passed in, using #{previous_day.inspect}"
       previous_ad = previous_day.ad
@@ -44,17 +43,24 @@ class FieldDailyWeather < ActiveRecord::Base
       previous_ad = feeld.initial_ad
     end
     requirements = [ "ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
+    errors = []
     requirements.each do |cond|
       unless eval(cond)
-        puts("\n#{self[:id]}: #{cond} was not set -- needed to update balances.\n  #{self.inspect}\n  #{self.field.inspect}\n  #{self.field.current_crop.inspect}") if self[:id]
-        return
+        errors << cond
       end
     end
-    adj_et = feeld.et_method.adj_et(self)
+    if errors.size > 0
+      logger.info "#{self[:id]} could not update balances.\n  #{self.inspect}\n  #{self.field.inspect}\n  #{self.field.current_crop.inspect}"
+      logger.info "   Reasons: " + errors.join(", ")
+      return
+    end
+    self[:adj_et] = feeld.et_method.adj_et(self)
     delta_storage = calc_change_in_daily_storage(rain, irrigation, adj_et)
+    # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}" unless adj_et && delta_storage
     unless delta_storage == 0
       total_available_water = calc_taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
-      ad = calc_daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+      self[:ad] = calc_daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+      # puts "\n***** got through update_balance, we're now #{self.inspect}"
     end
   end
   

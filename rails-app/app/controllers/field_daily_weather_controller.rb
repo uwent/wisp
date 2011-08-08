@@ -1,6 +1,16 @@
 class FieldDailyWeatherController < ApplicationController
   before_filter :ensure_signed_in
   protect_from_forgery :except => [:post_data]
+  COLUMN_NAMES = [
+    :ref_et, 
+    :rain, 
+    :irrigation, 
+    :entered_pct_moisture, 
+    :entered_pct_cover, 
+    :leaf_area_index, 
+    :ad, 
+    :notes
+    ]
   
   # GET /field_daily_weather
   # GET /field_daily_weather.xml
@@ -59,11 +69,11 @@ class FieldDailyWeatherController < ApplicationController
   end # index
   
   def post_data
-    field_daily_weather_params = { :rain => params[:rain], :irrigation=> params[:irrigation],
-      :entered_pct_moisture => params[:entered_pct_moisture],
-      :entered_pct_cover => params[:entered_pct_cover],
-      :leaf_area_index => params[:leaf_area_index] }
-      FieldDailyWeather.find(params[:id]).update_attributes(field_daily_weather_params)
+    attribs = {}
+    for col_name in COLUMN_NAMES
+      attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem
+    end
+    FieldDailyWeather.find(params[:id]).update_attributes(attribs)
     render :nothing => true
   end
 

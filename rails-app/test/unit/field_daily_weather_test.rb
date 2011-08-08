@@ -31,18 +31,22 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   # end
   # 
   test "update_balances does something useful" do
-    fdw_first = @field.field_daily_weather.first
-    puts "FDW's field looks like #{@field.inspect}"
-    puts "and its first crop looks like #{@field.current_crop.inspect}"
+    fdw_first = @field.field_daily_weather[50]
+    # puts "************************************************************************"; $stdout.flush
+    # puts "************************************************************************"; $stdout.flush
+    # puts "************************************************************************"; $stdout.flush
+    # puts "FDW's field looks like #{@field.inspect}"; $stdout.flush
+    # puts "and its first crop looks like #{@field.current_crop.inspect}"; $stdout.flush
     assert(fdw_first.field, "Field daily weather should have a field! #{fdw_first.inspect}")
     fdw_first.ad = INITIAL_AD
+    fdw_first.ref_et = ET - 0.01
     fdw_first.save!                        
-    puts "\nsaved the first day, it's now #{fdw_first.inspect}"
-    fdw_second = @field.field_daily_weather[1]
+    # puts "\nsaved the first day, it's now #{fdw_first.inspect}"; $stdout.flush
+    fdw_second = fdw_first.succ
     assert(fdw_second.field, "Field daily weather should have a field! #{fdw_second.inspect}")
     assert_nil(fdw_second.ad)
     fdw_second.ref_et = ET
-    puts "\nabout to save the second day's weather (#{fdw_second.inspect})"; $stdout.flush
+    # puts "\nabout to save the second day's weather (#{fdw_second.inspect})"; $stdout.flush
     fdw_second.save!
     assert(fdw_second.ad, "Should have updated the second fdw to have an ad balance, but it's #{fdw_second.inspect}")
   end
@@ -53,34 +57,34 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert_equal(0.0, fdw.irrigation)
   end
   
-  # test "update_balances does something correct" do
-  #   field = create_field_with_crop
-  #   fdw_first = field.field_daily_weather.first
-  #   fdw_first.ad = INITIAL_AD
-  #   fdw_first.save!
-  #   fdw_second = field.field_daily_weather[1]
-  #   assert_nil(fdw_second.ad)
-  #   fdw_second.ref_et = ET
-  #   fdw_second.save!
-  #   assert(fdw_second.ad, "Should have updated the second fdw to have an ad balance")
-  #   assert_equal(INITIAL_AD - ET, fdw_second.ad,"AD should be the starting value minus ET")
-  # end
-  # 
-  # test "previous and next work" do
-  #   fdw_first = FieldDailyWeather.first
-  #   fdw_second = FieldDailyWeather.where(:field_id => fdw_first[:field_id])[1]
-  #   assert_equal([], FieldDailyWeather.previous(fdw_first),"First FDW, should have no pred")
-  #   assert_equal([fdw_second], FieldDailyWeather.next(fdw_first),"Second FDW should have first one as pred")
-  #   assert_equal([fdw_first], FieldDailyWeather.previous(fdw_second),"First FDW should have second one as succ")
-  # end
-  # 
-  # test "pred and succ work" do
-  #   fdw_first = FieldDailyWeather.first
-  #   fdw_second = FieldDailyWeather.where(:field_id => fdw_first[:field_id])[1]
-  #   assert_nil(fdw_first.pred,"First FDW, should have no pred")
-  #   assert_equal(fdw_second, fdw_first.succ,"Second FDW should have first one as pred")
-  #   assert_equal(fdw_first, fdw_second.pred,"First FDW should have second one as succ")
-  # end 
+  test "update_balances does something correct" do
+    field = create_field_with_crop
+    fdw_first = field.field_daily_weather[50]
+    fdw_first.ad = INITIAL_AD
+    fdw_first.save!
+    fdw_second = fdw_first.succ
+    assert_nil(fdw_second.ad)
+    fdw_second.ref_et = ET
+    fdw_second.save!
+    assert(fdw_second.ad, "Should have updated the second fdw to have an ad balance")
+    assert_in_delta(0.28996375716993095, fdw_second.ad, 2 ** -20)
+  end
+  
+  test "previous and next work" do
+    fdw_first = FieldDailyWeather.first
+    fdw_second = FieldDailyWeather.where(:field_id => fdw_first[:field_id])[1]
+    assert_equal([], FieldDailyWeather.previous(fdw_first),"First FDW, should have no pred")
+    assert_equal([fdw_second], FieldDailyWeather.next(fdw_first),"Second FDW should have first one as pred")
+    assert_equal([fdw_first], FieldDailyWeather.previous(fdw_second),"First FDW should have second one as succ")
+  end
+  
+  test "pred and succ work" do
+    fdw_first = FieldDailyWeather.first
+    fdw_second = FieldDailyWeather.where(:field_id => fdw_first[:field_id])[1]
+    assert_nil(fdw_first.pred,"First FDW, should have no pred")
+    assert_equal(fdw_second, fdw_first.succ,"Second FDW should have first one as pred")
+    assert_equal(fdw_first, fdw_second.pred,"First FDW should have second one as succ")
+  end 
   
   
 end

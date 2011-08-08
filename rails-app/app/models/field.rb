@@ -51,7 +51,8 @@ class Field < ActiveRecord::Base
   
   def create_crop
     # puts "create crop"
-    crops << Crop.new(:name => "New crop (field: #{name})", :variety => 'A variety', :emergence_date => Date.today)
+    crops << Crop.new(:name => "New crop (field: #{name})", :variety => 'A variety', :emergence_date => Date.today,
+      :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => self[:field_capacity])
   end
   
   def date_endpoints
