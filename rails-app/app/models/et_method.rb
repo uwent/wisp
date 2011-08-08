@@ -17,10 +17,8 @@ class PctCoverEtMethod < EtMethod
 end
 
 class LaiEtMethod < EtMethod
-  def bark
-    puts "bow wow!"
-  end
   def adj_et(day)
+    puts "LaiEtMethod#adj_et: day is #{day.inspect}"
     return nil unless day.ref_et && day.leaf_area_index
     adj_et_from_lai_corn(day.ref_et,day.leaf_area_index)
   end

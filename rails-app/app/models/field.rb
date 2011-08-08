@@ -15,8 +15,15 @@ class Field < ActiveRecord::Base
   has_many :field_daily_weather, :autosave => true, :dependent => :destroy
   
   def et_method
-    return nil unless pivot && pivot.farm
-    pivot.farm.et_method
+    raise "Error: Field with no parent pivot" unless pivot
+    raise "Error: Field with no parent farm" unless pivot.farm
+    if pivot.farm.et_method
+      return pivot.farm.et_method
+    else
+      # apparently during object construction the ID can be set, but the association isn't real
+      raise "Farm has no ET method set: #{pivot.farm.inspect}" unless pivot.farm[:et_method_id]
+      EtMethod.find(pivot.farm[:et_method_id])
+    end
   end
   
   #FIXME: this is just a placeholder hack for now, returning the one w/the
@@ -53,6 +60,7 @@ class Field < ActiveRecord::Base
     # puts "create crop"
     crops << Crop.new(:name => "New crop (field: #{name})", :variety => 'A variety', :emergence_date => Date.today,
       :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => self[:field_capacity])
+    update_canopy(Date.today)
   end
   
   def date_endpoints
@@ -64,6 +72,7 @@ class Field < ActiveRecord::Base
   end
   
   def initial_ad
+    puts "field#initial_ad called"
     unless (current_crop && current_crop.max_root_zone_depth && field_capacity && perm_wilting_pt &&
       current_crop.max_allowable_depletion_frac && current_crop.initial_soil_moisture)
       return -999.0
@@ -76,6 +85,7 @@ class Field < ActiveRecord::Base
     pct_mad_min = calc_pct_moisture_at_ad_min(field_capacity, calc_ad_max_inches(mad_frac,taw), mrzd)
     
     obs_pct_moisture = current_crop.initial_soil_moisture
+    puts "about to do the calc"
     calc_daily_ad_from_moisture(mad_frac,taw,mrzd,pct_mad_min,obs_pct_moisture)
     
   end
@@ -91,7 +101,9 @@ class Field < ActiveRecord::Base
       end
       save!
     elsif et_method.class == PctCoverEtMethod
-      # do the percent cover stuff here
+      raise "Haven't done percent cover yet!"
+    else
+      raise "Unknown ET Method for this field: #{et_method.inspect}"
     end
   end
   

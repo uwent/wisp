@@ -15,8 +15,8 @@ class ApplicationController < ActionController::Base
     sym = (klassname + '_id').to_sym
     id = params[sym] || session[sym]
     if id
-      puts "get_and_set: found the id for #{klass.to_s} in either params (#{params[sym]}) or session (#{session[sym]})"
-      puts "get_and_set: what about string key? (#{params.inspect})"
+      # puts "get_and_set: found the id for #{klass.to_s} in either params (#{params[sym]}) or session (#{session[sym]})"
+      # puts "get_and_set: what about string key? (#{params.inspect})"
       obj = klass.find(id)
     else
       plural = klass.to_s.downcase + 's'
@@ -40,9 +40,9 @@ class ApplicationController < ActionController::Base
       puts "get_current_ids: no group!"
       return
     end
-    puts "get_current_ids: before get_and_set, @farm is #{@farm ? @farm.name : "Not set"}"
+    # puts "get_current_ids: before get_and_set, @farm is #{@farm ? @farm.name : "Not set"}"
     @farm_id,@farm = get_and_set(Farm,Group,@group[:id],params[:preserve_farm]); return unless @farm_id
-    puts "get_current_ids: @farm is #{@farm.name}"
+    # puts "get_current_ids: @farm is #{@farm.name}"
   	@pivot_id,@pivot = get_and_set(Pivot,Farm,@farm_id); return unless @pivot_id
   	@field_id,@field = get_and_set(Field,Pivot,@pivot_id); return unless @field_id
     @crop_id,@crop = get_and_set(Crop,Field,@field_id)

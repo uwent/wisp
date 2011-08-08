@@ -5,11 +5,9 @@
 #
 #   cities = City.create({ :name => 'Chicago' }, { :name => 'Copenhagen' }])
 #   Mayor.create(:name => 'Daley', :city => cities.first)
-et_methods = EtMethod.create(
-  [
-    {:name => "Percent Cover", :description => "Uses regressions derived with WI A3600 tables", :type => "PctCoverEtMethod" },
-    {:name => "Leaf Area Index", :description => "Uses LAI measurements and to derive a crop coefficient", :type => "LaiEtMethod"}
-  ])
+require File.join(File.dirname(__FILE__),'..','app','models','et_method')
+PctCoverEtMethod.create(:name => "Percent Cover", :description => "Uses regressions derived with WI A3600 tables")
+LaiEtMethod.create(:name => "Leaf Area Index", :description => "Uses LAI measurements and to derive a crop coefficient")
 
 # note that this ID should be the same as AuthenticationHelper.SINGLE_USER_ID 
 user = User.create!( :id => 1, :email => 'anonymous@mailinator.com', :identifier_url => nil,

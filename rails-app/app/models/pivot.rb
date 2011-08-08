@@ -9,6 +9,8 @@ class Pivot < ActiveRecord::Base
     fields << Field.create(:name => "New field (pivot: #{name})",
       # grabbed these numbers from John's spreadsheet
       :field_capacity => 0.31, :perm_wilting_pt => 0.14,
+      # try this because we might not be saved and thus the association won't work yet...?
+      :pivot_id => self[:id]
       )
   end
 end

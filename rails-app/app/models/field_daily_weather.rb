@@ -7,8 +7,8 @@ class FieldDailyWeather < ActiveRecord::Base
   
   include ADCalculator
   # from the ActsAsAdjacent plugin, which (with this) we don't need
-  scope :previous, lambda { |i| {:limit => 1, :conditions => ["#{self.table_name}.id < ? and #{self.table_name}.field_id = ?", i.id,i.field_id], :order => "#{self.table_name}.id DESC"} }
-  scope :next, lambda { |i| {:limit => 1, :conditions => ["#{self.table_name}.id > ? and #{self.table_name}.field_id = ?", i.id,i.field_id], :order => "#{self.table_name}.id ASC"}}
+  scope :previous, lambda { |i| {:limit => 1, :conditions => ["#{self.table_name}.date < ? and #{self.table_name}.field_id = ?", i.date,i.field_id], :order => "#{self.table_name}.date DESC"} }
+  scope :next, lambda { |i| {:limit => 1, :conditions => ["#{self.table_name}.date > ? and #{self.table_name}.field_id = ?", i.date,i.field_id], :order => "#{self.table_name}.date ASC"}}
   
   def pct_moisture
     entered_pct_moisture || calculated_pct_moisture
@@ -32,6 +32,7 @@ class FieldDailyWeather < ActiveRecord::Base
   end
     
   def update_balances(previous_day=nil)
+    # puts "update_balances: previous_day is #{previous_day}"
     previous_day ||= self.pred
     feeld = self.field
     # puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
@@ -55,6 +56,7 @@ class FieldDailyWeather < ActiveRecord::Base
       return
     end
     self[:adj_et] = feeld.et_method.adj_et(self)
+    puts "update_balances: rain #{rain}, irrigation #{irrigation}, adj_et #{adj_et}"
     delta_storage = calc_change_in_daily_storage(rain, irrigation, adj_et)
     # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}" unless adj_et && delta_storage
     unless delta_storage == 0
@@ -65,9 +67,8 @@ class FieldDailyWeather < ActiveRecord::Base
   end
   
   def update_next_days_balances
-    next_day = self.succ
     if self[:ad]
-      next_day.save! # triggers the update_balances method
+      self.succ.save! # triggers the update_balances method
     end
   end
   

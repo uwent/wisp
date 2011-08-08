@@ -70,19 +70,29 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert_in_delta(0.28996375716993095, fdw_second.ad, 2 ** -20)
   end
   
+  def equal(fdw1,fdw2)
+    fdw1.attributes.each do |attr_name,attr_val|
+      assert_equal(attr_val,fdw2[attr_name],"#{attr_name} differs: #{attr_val} vs. #{fdw2[attr_name]}")
+    end
+  end
+  
+  def fdw1and2
+    fdw_first = FieldDailyWeather.where(:field_id => Field.first[:id]).order(:date).first
+    fdw_second = FieldDailyWeather.where(:field_id => fdw_first[:field_id], :date => fdw_first[:date] + 1).first
+    [fdw_first,fdw_second]
+  end
+  
   test "previous and next work" do
-    fdw_first = FieldDailyWeather.first
-    fdw_second = FieldDailyWeather.where(:field_id => fdw_first[:field_id])[1]
+    fdw_first,fdw_second = fdw1and2
     assert_equal([], FieldDailyWeather.previous(fdw_first),"First FDW, should have no pred")
     assert_equal([fdw_second], FieldDailyWeather.next(fdw_first),"Second FDW should have first one as pred")
     assert_equal([fdw_first], FieldDailyWeather.previous(fdw_second),"First FDW should have second one as succ")
   end
   
   test "pred and succ work" do
-    fdw_first = FieldDailyWeather.first
-    fdw_second = FieldDailyWeather.where(:field_id => fdw_first[:field_id])[1]
+    fdw_first,fdw_second = fdw1and2
     assert_nil(fdw_first.pred,"First FDW, should have no pred")
-    assert_equal(fdw_second, fdw_first.succ,"Second FDW should have first one as pred")
+    assert(equal(fdw_second, fdw_first.succ),"Second FDW should have first one as pred")
     assert_equal(fdw_first, fdw_second.pred,"First FDW should have second one as succ")
   end 
   
