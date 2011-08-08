@@ -1,4 +1,4 @@
-RailsApp::Application.routes.draw do |map|
+RailsApp::Application.routes.draw do
   match 'fdw/irrig_only/:id' => 'field_daily_weather#irrig_only'
 
   resources :field_daily_weather
@@ -76,7 +76,7 @@ RailsApp::Application.routes.draw do |map|
   root :to => "wisp#index"
   
   resource :session
-  map.signin '/signin', :controller => 'sessions', :action => 'signin'
+  match '/signin', :to => 'sessions#signin'
 
   # See how all your routes lay out with "rake routes"
 
