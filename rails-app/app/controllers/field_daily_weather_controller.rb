@@ -26,11 +26,13 @@ class FieldDailyWeatherController < ApplicationController
           @field_daily_weather += FieldDailyWeather.find_by_sql(qstr)
         end
       end
+      wx_size = @field_daily_weather.size
       puts "Irrig only present, found #{@field_daily_weather.size} records"
     else
       field_id = session[:field_id] || session[:field_id] = params[:field_id]
       @field_daily_weather = FieldDailyWeather.where(:field_id => field_id).order(:date)
-      # .paginate :page => params[:page], :per_page => params[:rows]
+      wx_size = @field_daily_weather.size
+      @field_daily_weather = @field_daily_weather.paginate(:page => params[:page], :per_page => params[:rows] || 7)
     end
     puts "getting daily wx for field #{field_id}, found #{@field_daily_weather.size} entries"
     @field_daily_weather ||= []
@@ -40,13 +42,13 @@ class FieldDailyWeatherController < ApplicationController
       format.xml  { render :xml => @field_daily_weather }
       if params[:irrig_only]
         format.json { render :json => @field_daily_weather.to_jqgrid_json([:field_name,:irrigation,:id], 
-                                                               params[:page], params[:rows],@field_daily_weather.size) }
+                                                               params[:page] || 1, params[:rows] || 7, wx_size) }
       else
         format.json { render :json => @field_daily_weather.to_jqgrid_json([:date,:ref_et,:rain,:irrigation,
                                                                            :pct_moisture,:entered_pct_cover,
                                                                            :leaf_area_index, :adj_et,
                                                                            :ad,:deep_drainage,:id], 
-                                                               params[:page], params[:rows],@field_daily_weather.size) }
+                                                               params[:page] || 1, params[:rows] || 7, wx_size) }
       end
     end
 
