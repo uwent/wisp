@@ -3,6 +3,11 @@
         <script type="text/javascript">
           var lastsel;
           
+          function displayCalcValues(rowid,response) {
+            $("#weather").trigger("reloadGrid");
+            return true;
+          }
+          
           jQuery(document).ready(function(){
           var mygrid = jQuery("#weather").jqGrid({
               url:'/field_daily_weather?q=1',
@@ -37,7 +42,7 @@
               onSelectRow: function(id){ 
                 if(id && id!==lastsel){ 
                   jQuery('#weather').restoreRow(lastsel);
-                  jQuery('#weather').editRow(id,true); 
+                  jQuery('#weather').editRow(id,true, '', '', '', '', displayCalcValues); 
                   lastsel=id; 
                 } 
               },             

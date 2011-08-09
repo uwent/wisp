@@ -74,7 +74,8 @@ class FieldDailyWeatherController < ApplicationController
     for col_name in COLUMN_NAMES
       attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem
     end
-    FieldDailyWeather.find(params[:id]).update_attributes(attribs)
+    fdw = FieldDailyWeather.find(params[:id])
+    fdw.update_attributes(attribs)
     render :nothing => true
   end
 

@@ -31,16 +31,12 @@ class FieldDailyWeather < ActiveRecord::Base
     # calc_TAW(1.0,1.0,1.0)
   end
     
-  def update_balances(previous_day=nil)
-    # puts "update_balances: previous_day is #{previous_day}"
-    previous_day ||= self.pred
+  def update_balances
     feeld = self.field
     # puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
-    if previous_day
-      # puts "\nprevious_day passed in, using #{previous_day.inspect}"
-      previous_ad = previous_day.ad
-    else
-      # puts "\nusing field's initial value of #{feeld.initial_ad}"
+    if (self.pred && self.pred.ad)
+      previous_ad = self.pred.ad
+    elsif feeld.current_crop && feeld.current_crop.emergence_date && self.date == feeld.current_crop.emergence_date
       previous_ad = feeld.initial_ad
     end
     requirements = [ "ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
@@ -51,7 +47,7 @@ class FieldDailyWeather < ActiveRecord::Base
       end
     end
     if errors.size > 0
-      logger.info "#{self[:id]} could not update balances.\n  #{self.inspect}\n  #{self.field.inspect}\n  #{self.field.current_crop.inspect}"
+      logger.info "#{self[:date]} could not update balances.\n  #{self.inspect}\n  #{self.field.inspect}\n  #{self.field.current_crop.inspect}"
       logger.info "   Reasons: " + errors.join(", ")
       return
     end
@@ -59,11 +55,9 @@ class FieldDailyWeather < ActiveRecord::Base
     puts "update_balances: rain #{rain}, irrigation #{irrigation}, adj_et #{adj_et}"
     delta_storage = calc_change_in_daily_storage(rain, irrigation, adj_et)
     # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}" unless adj_et && delta_storage
-    unless delta_storage == 0
-      total_available_water = calc_taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
-      self[:ad] = calc_daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
-      # puts "\n***** got through update_balance, we're now #{self.inspect}"
-    end
+    total_available_water = calc_taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
+    self[:ad] = calc_daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+    puts "\n***** got through update_balance, we're now #{self.inspect}"
   end
   
   def update_next_days_balances
