@@ -30,7 +30,6 @@ class FieldDailyWeatherController < ApplicationController
     else
       field_id = session[:field_id] || session[:field_id] = params[:field_id]
       @field_daily_weather = FieldDailyWeather.where(:field_id => field_id).order(:date)
-      puts @field_daily_weather.per_page
       # .paginate :page => params[:page], :per_page => params[:rows]
     end
     puts "getting daily wx for field #{field_id}, found #{@field_daily_weather.size} entries"
