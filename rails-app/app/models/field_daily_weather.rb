@@ -51,9 +51,9 @@ class FieldDailyWeather < ActiveRecord::Base
       logger.info "   Reasons: " + errors.join(", ")
       return
     end
-    self[:adj_et] = feeld.et_method.adj_et(self)
-    # puts "update_balances: rain #{rain}, irrigation #{irrigation}, adj_et #{adj_et}"
-    delta_storage = calc_change_in_daily_storage(rain, irrigation, adj_et)
+    return unless self[:adj_et] = feeld.et_method.adj_et(self)
+    # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
+    delta_storage = calc_change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
     # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}" unless adj_et && delta_storage
     total_available_water = calc_taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
     self[:ad] = calc_daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
@@ -62,7 +62,7 @@ class FieldDailyWeather < ActiveRecord::Base
   
   def update_next_days_balances
     if self[:ad]
-      self.succ.save! # triggers the update_balances method
+      self.succ.save! if self.succ # triggers the update_balances method
     end
   end
   

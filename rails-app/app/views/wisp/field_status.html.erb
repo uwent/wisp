@@ -21,8 +21,9 @@
 	{
 		position:absolute;
 		left:275px;
-		top:150px;
+		top:170px;
 		width:200px;
+		height:200px;
 		padding:2px;
 		border:1px solid gray;
 		margin:0px;
@@ -32,7 +33,7 @@
 	{
 		position:absolute;
 		left:500px;
-		top:130px;
+		top:150px;
 		width:510px;
 		padding:2px;
 		margin:0px;
@@ -47,8 +48,9 @@
 	{
 		position:absolute;
 		left:1025px;
-		top:150px;
+		top:170px;
 		width:170px;
+		height:200px;
 		padding:2px;
 		border:1px solid gray;
 		margin:0px;
@@ -58,7 +60,7 @@
 	{
 		position:absolute;
 		left:275px;
-		top:375px;
+		top:400px;
 		width:575px;
 		padding:2px;
 		border:1px solid gray;
@@ -69,8 +71,9 @@
 	{
 		position:absolute;
 		left:875px;
-		top:375px;
+		top:400px;
 		width:300px;
+		height:300px;
 		padding:2px;
 		border:1px solid gray;
 		margin:0px;
@@ -115,12 +118,7 @@ Field name/soil: <%= @field.name %><br/>
 Crop: <%= (@field.current_crop.name + " " + @field.current_crop.variety) %><br/>
 Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %><br/>
 Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>
-Initial soil moisture: <%= @field_weather_data.first.pct_moisture  if @field_weather_data && @field_weather_data.size > 0 %><br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
+Initial soil moisture: <%= @field_weather_data.first.pct_moisture  if @field_weather_data && @field_weather_data.size > 0 %>
 </div>
 
 <%= render :partial => 'wisp/partials/field_daily_wx'%>
@@ -135,10 +133,6 @@ Drainage (in):<br/>
 Power (kWH): <br/>
 Run time (hours): <br/>
 Cost ($): <br/>
-<br/>
-<br/>
-<br/>
-<br/>
 </div>
 
 <div id="graphBox">
@@ -172,7 +166,4 @@ Cost ($): <br/>
 <p>In inches, based on the mean adjusted ET of the last four rainless days.</p>
 <b><%= @dates[-2].strftime('%b %d')%>: <%= sprintf("%0.2f",@projected_ad_data[-2]) %></b> <br/>
 <b><%= @dates[-1].strftime('%b %d')%>: <%= sprintf("%0.2f",@projected_ad_data[-1]) %></b> <br/>
-<br/>
-<br/>
-<br/>
 </div>

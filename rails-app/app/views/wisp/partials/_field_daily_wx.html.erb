@@ -8,6 +8,10 @@
           // }
           function displayCalcValues(rowid,response) {
             $("#weather").trigger("reloadGrid");
+            if (g) {
+              alert("I have a graph!");
+              g.draw();
+            }
             return true;
           }
           var mygrid;
@@ -19,19 +23,28 @@
               colNames:['Date','rET','Rain','Irrig','% Mois',
                 '% Cov','LAI','Adj. ET','AD','Deep Dr','ID'],
               colModel:[{name:'date', index:'date',width:80},
-                {name:'ref_et', index:'ref_et',width:47,editable:true, align:'right'},
-                {name:'rain', index:'rain',width:47,editable:true, align:'right'},
-                {name:'irrigation', index:'irrigation',width:47,editable:true, align:'right'},
+                {name:'ref_et', index:'ref_et',width:47,editable:true, align:'right',
+                 formatter:'number', formatoptions:{decimalPlaces:2}},
+                {name:'rain', index:'rain',width:47,editable:true, align:'right',
+                 formatter:'number', formatoptions:{decimalPlaces:1}},
+                {name:'irrigation', index:'irrigation',width:47,editable:true, align:'right',
+                 formatter:'number', formatoptions:{decimalPlaces:1}},
                 {name:'pct_moisture', index:'pct_moisture',width:47,
-                 editable:true, align:'right'},
+                 editable:true, align:'right',
+                 formatter:'number', formatoptions:{decimalPlaces:2}},
                 {name:'entered_pct_cover', index:'entered_pct_cover',width:47,
-                 editable:true, align:'right'},
+                 editable:true, align:'right',
+                 formatter:'number', formatoptions:{decimalPlaces:2}},
                 {name:'leaf_area_index', index:'leaf_area_index',width:47,
-                  editable:true, align:'right'},
-                {name:'adj_et', index:'adj_et',width:47, align:'right'},
-                {name:'ad', index:'ad',width:47, align:'right'},
-                {name:'deep_drainage', index:'deep_drainage',width:47, align:'right'},
-                {name:'id', index:'id',width:1}
+                  editable:true, align:'right',
+                 formatter:'number', formatoptions:{decimalPlaces:2}},
+                {name:'adj_et', index:'adj_et',width:47, align:'right',
+                 formatter:'number', formatoptions:{decimalPlaces:2}},
+                {name:'ad', index:'ad',width:47, align:'right',
+                 formatter:'number', formatoptions:{decimalPlaces:2}},
+                {name:'deep_drainage', index:'deep_drainage',width:47, align:'right',
+                 formatter:'number', formatoptions:{decimalPlaces:1}},
+                {name:'id', index:'id',width:1}           
               ],
               pager: '#weather_pager',
               // rowNum:7,
