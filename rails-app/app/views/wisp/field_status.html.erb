@@ -156,9 +156,11 @@ Cost ($): <br/>
           background_colors: ['#d0e0f8', '#f0f0ff']
         });
 
-      g.data("Allowable Depletion", <%= @ad_data.to_s.gsub('nil','null') %>);
+      g.data("Allowable Depletion", <%= @ad_data.to_s.gsub('nil','null') %>,'blue');
+      <% @ad_data += @projected_ad_data %>
+      g.data("Projected AD", <%= @ad_data.to_s.gsub('nil','null') %>,'yellow');
       g.hide_legend = true
-      g.labels = {1:'Jul 06',3:'Jul 08',5:'Jul 10',6:'Today',7:'Projected'};
+      g.labels = {<%= @date_str %>};
 
       g.draw();
     </script>
@@ -168,8 +170,8 @@ Cost ($): <br/>
 	<%= image_tag "pivot.manip.small.jpg", :width => 300  %>
 <h2>Projected Allowable Depletion</h2>
 <p>In inches, based on the mean adjusted ET of the last four rainless days.</p>
-<b>7/11/2011: -0.15</b> <br/>
-<b>7/12/2011: -0.30</b> <br/>
+<b><%= @dates[-2].strftime('%b %d')%>: <%= sprintf("%0.2f",@projected_ad_data[-2]) %></b> <br/>
+<b><%= @dates[-1].strftime('%b %d')%>: <%= sprintf("%0.2f",@projected_ad_data[-1]) %></b> <br/>
 <br/>
 <br/>
 <br/>

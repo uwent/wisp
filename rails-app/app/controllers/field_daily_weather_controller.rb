@@ -32,7 +32,9 @@ class FieldDailyWeatherController < ApplicationController
       field_id = session[:field_id] || session[:field_id] = params[:field_id]
       @field_daily_weather = FieldDailyWeather.where(:field_id => field_id).order(:date)
       wx_size = @field_daily_weather.size
-      @field_daily_weather = @field_daily_weather.paginate(:page => params[:page], :per_page => params[:rows] || 7)
+      page_size = params[:rows] || 7
+      page = params[:page] || FieldDailyWeather.page_for(page_size,@field_daily_weather.first.date)
+      @field_daily_weather = @field_daily_weather.paginate(:page => page, :per_page => page_size)
     end
     puts "getting daily wx for field #{field_id}, found #{@field_daily_weather.size} entries"
     @field_daily_weather ||= []
@@ -48,7 +50,7 @@ class FieldDailyWeatherController < ApplicationController
                                                                            :pct_moisture,:entered_pct_cover,
                                                                            :leaf_area_index, :adj_et,
                                                                            :ad,:deep_drainage,:id], 
-                                                               params[:page] || 1, params[:rows] || 7, wx_size) }
+                                                               page, page_size, wx_size) }
       end
     end
 

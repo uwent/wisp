@@ -59,17 +59,13 @@ class WispController < ApplicationController
     @field = Field.find(@field_id) if @field_id
     logger.info @farm_id
     logger.info @field_id
-    logger.info @pivot_id
-    @ad_data = ad_data(@field_id,'2011-07-05','2011-07-13')
-    # @projected_ad_data = projected_ad(@ad_data,@field_id)
-    @ad_data = [0.0,-0.15,-0.3] unless @ad_data
-    @projected_ad_data = [@ad_data[-1],-0.25]
-    start_date = Date.parse('2011-07-05')
-    end_date = Date.parse('2011-07-13')
-    @dates = {}
-    day = 0
-    (start_date..end_date).each { |date| @dates[day] = date.strftime('%b %d'); day += 1 }
-    puts @dates.inspect
+    logger.info @pivot_id 
+    start_date = Date.today - 6
+    end_date = Date.today
+    @ad_data = ad_data(@field_id,start_date,end_date)
+    @projected_ad_data = projected_ad(@ad_data,@field_id)
+    @dates,@date_str = make_dates(start_date,end_date)
+    # puts @dates.inspect
     if params[:ajax]
       render :layout => false
     end
@@ -119,4 +115,25 @@ class WispController < ApplicationController
     projected_ad_data << last_day - increment
     projected_ad_data << projected_ad_data[-1] - increment
   end
+  
+  def make_dates(start_date,today_date)
+    day = 0
+    dates = []
+    date_str = ''
+    (start_date..(today_date - 1)).each do |date|
+      dates << date
+      date_str += "#{day}: '#{date.strftime('%b %d')}',"
+      day += 1
+    end
+    dates << Date.today
+    date_str += "#{day}: 'Today',"
+    day += 1
+    dates << Date.today + 1
+    date_str += "#{day}: '#{(Date.today + 1).strftime('%b %d')}',"
+    day += 1
+    dates << Date.today + 1
+    date_str += "#{day}: '#{(Date.today + 2).strftime('%b %d')}',"
+    [dates,date_str]
+  end
+  
 end

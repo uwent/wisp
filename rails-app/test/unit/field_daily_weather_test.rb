@@ -1,9 +1,10 @@
 require 'test_helper'
 
 class FieldDailyWeatherTest < ActiveSupport::TestCase
-  WILT = 0.2
+  WILT = 0.14
   ET = 0.2
-  INITIAL_AD = 0.5
+  INITIAL_AD = 0.31
+  MID_AD = -0.47
 
   def setup
     @field = create_field_with_crop
@@ -59,15 +60,33 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   
   test "update_balances does something correct" do
     field = create_field_with_crop
-    fdw_first = field.field_daily_weather[50]
-    fdw_first.ad = INITIAL_AD
+    fdw_first = (field.field_daily_weather.select { |fdw| fdw.date == Date.parse('2011-06-19') }).first
+    assert(fdw_first)
+    fdw_first.ad = MID_AD
     fdw_first.save!
     fdw_second = fdw_first.succ
     assert_nil(fdw_second.ad)
     fdw_second.ref_et = ET
     fdw_second.save!
     assert(fdw_second.ad, "Should have updated the second fdw to have an ad balance")
-    assert_in_delta(0.28996375716993095, fdw_second.ad, 2 ** -20)
+    assert_in_delta(-0.68, fdw_second.ad,0.01)
+  end
+  
+  test "update_balances is correct over an interval" do
+    field = create_field_with_crop
+    date = Date.parse('2011-06-19')
+    fdw = (field.field_daily_weather.select { |fdw| fdw.date == date }).first
+    assert(fdw)
+    fdw.ad = 0.0
+    fdw.save!
+    span = 19 # days
+    span.times do
+      fdw = fdw.succ
+      fdw.ref_et = ET
+      fdw.save!
+    end
+    assert_equal(date + span, fdw.date)
+    assert_in_delta(-4.12, fdw.ad, 0.025)
   end
   
   def equal(fdw1,fdw2)
@@ -96,5 +115,22 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert_equal(fdw_first, fdw_second.pred,"First FDW should have second one as succ")
   end 
   
+  test "todays_page works for day 0" do
+    first_field = Field.first
+    assert(first_field.field_daily_weather.size > 0,'First field has no fdw!')
+    start_date = first_field.field_daily_weather.first.date
+    assert_equal(0, FieldDailyWeather.page_for(7,start_date,first_field.field_daily_weather.first.date))
+    assert_equal(0, FieldDailyWeather.page_for(7,start_date,first_field.field_daily_weather.first.date + 6))
+  end
+  
+  test "todays_page works with no date passed in" do
+    fdw = @field.field_daily_weather
+    assert(fdw.size > 0,'First field has no fdw!')
+    page_num = FieldDailyWeather.page_for(7,fdw.first.date)
+    assert(page_num)
+    index = page_num * 7
+    assert(index < fdw.size, "Index #{index} larger than fdw size #{fdw.size}")
+    (fdw[index,index+6]).detect { |wx| wx.date == Date.today }
+  end
   
 end

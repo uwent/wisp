@@ -52,12 +52,12 @@ class FieldDailyWeather < ActiveRecord::Base
       return
     end
     self[:adj_et] = feeld.et_method.adj_et(self)
-    puts "update_balances: rain #{rain}, irrigation #{irrigation}, adj_et #{adj_et}"
+    # puts "update_balances: rain #{rain}, irrigation #{irrigation}, adj_et #{adj_et}"
     delta_storage = calc_change_in_daily_storage(rain, irrigation, adj_et)
     # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}" unless adj_et && delta_storage
     total_available_water = calc_taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
     self[:ad] = calc_daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
-    puts "\n***** got through update_balance, we're now #{self.inspect}"
+    # puts "\n***** got through update_balance, we're now #{self.inspect}"
   end
   
   def update_next_days_balances
@@ -78,5 +78,10 @@ class FieldDailyWeather < ActiveRecord::Base
   
   def succ
     FieldDailyWeather.next(self).first
+  end
+  
+  def self.page_for(rows_per_page,start_date,date=nil)
+    date ||= Date.today
+    ((date - start_date) / rows_per_page).to_i
   end
 end

@@ -2,30 +2,37 @@
 
         <script type="text/javascript">
           var lastsel;
-          
+          // Example of how to set the pager to a given page in JS
+          // function page5() {
+          //   mygrid.setGridParam({page:5}).trigger('reloadGrid');
+          // }
           function displayCalcValues(rowid,response) {
             $("#weather").trigger("reloadGrid");
             return true;
           }
-          
+          var mygrid;
           jQuery(document).ready(function(){
-          var mygrid = jQuery("#weather").jqGrid({
+            mygrid = jQuery("#weather").jqGrid({
               url:'/field_daily_weather?q=1',
               editurl:'/field_daily_weather/post_data',
               datatype: "json",
-              colNames:['Date','rET','Rain','Irrig','% Mois','% Cov','LAI','Adj. ET','AD','Deep Dr','ID'],
+              colNames:['Date','rET','Rain','Irrig','% Mois',
+                '% Cov','LAI','Adj. ET','AD','Deep Dr','ID'],
               colModel:[{name:'date', index:'date',width:80},
-                             {name:'ref_et', index:'ref_et',width:47,editable:true, align:'right'},
-                             {name:'rain', index:'rain',width:47,editable:true, align:'right'},
-                             {name:'irrigation', index:'irrigation',width:47,editable:true, align:'right'},
-                             {name:'pct_moisture', index:'pct_moisture',width:47,editable:true, align:'right'},
-                             {name:'entered_pct_cover', index:'entered_pct_cover',width:47,editable:true, align:'right'},
-                             {name:'leaf_area_index', index:'leaf_area_index',width:47,editable:true, align:'right'},
-                             {name:'adj_et', index:'adj_et',width:47, align:'right'},
-                             {name:'ad', index:'ad',width:47, align:'right'},
-                             {name:'deep_drainage', index:'deep_drainage',width:47, align:'right'},
-                             {name:'id', index:'id',width:1}
-                             ],
+                {name:'ref_et', index:'ref_et',width:47,editable:true, align:'right'},
+                {name:'rain', index:'rain',width:47,editable:true, align:'right'},
+                {name:'irrigation', index:'irrigation',width:47,editable:true, align:'right'},
+                {name:'pct_moisture', index:'pct_moisture',width:47,
+                 editable:true, align:'right'},
+                {name:'entered_pct_cover', index:'entered_pct_cover',width:47,
+                 editable:true, align:'right'},
+                {name:'leaf_area_index', index:'leaf_area_index',width:47,
+                  editable:true, align:'right'},
+                {name:'adj_et', index:'adj_et',width:47, align:'right'},
+                {name:'ad', index:'ad',width:47, align:'right'},
+                {name:'deep_drainage', index:'deep_drainage',width:47, align:'right'},
+                {name:'id', index:'id',width:1}
+              ],
               pager: '#weather_pager',
               // rowNum:7,
               rowList:[7,245],
@@ -46,17 +53,21 @@
                   lastsel=id; 
                 } 
               },             
-              
-              
+
+
               subGrid:false,
-              
+
               caption: "Edit Observed Values Below"
             })
             .navGrid('#weather_pager',
               {edit:false,add:false,del:false,search:false,refresh:true},
               {afterSubmit:function(r,data){return true;(r,data,'edit');}}
             )
-            .navButtonAdd("#weather_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
+            .navButtonAdd("#weather_pager",{caption:"",title:"Toggle Search Toolbar",
+              buttonicon :'ui-icon-search', onClickButton:function(){
+                mygrid[0].toggleToolbar() 
+              } 
+            })
             
             
             mygrid.filterToolbar();mygrid[0].toggleToolbar()
@@ -65,5 +76,7 @@
 
         <table id="weather" class="scroll" cellpadding="0" cellspacing="0"></table>
         <div id="weather_pager" class="scroll" style="text-align:center;"></div>
+        <!-- This button jumps to Page 5; you could populate a week dropdown the same way -->
+        <!-- <button onclick="page5();"/> -->
       
 </div>

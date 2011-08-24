@@ -72,7 +72,7 @@ class Field < ActiveRecord::Base
   end
   
   def initial_ad
-    puts "field#initial_ad called"
+    # puts "field#initial_ad called"
     unless (current_crop && current_crop.max_root_zone_depth && field_capacity && perm_wilting_pt &&
       current_crop.max_allowable_depletion_frac && current_crop.initial_soil_moisture)
       return -999.0
@@ -85,7 +85,7 @@ class Field < ActiveRecord::Base
     pct_mad_min = calc_pct_moisture_at_ad_min(field_capacity, calc_ad_max_inches(mad_frac,taw), mrzd)
     
     obs_pct_moisture = current_crop.initial_soil_moisture
-    puts "about to do the calc"
+    # puts "about to do the calc"
     calc_daily_ad_from_moisture(mad_frac,taw,mrzd,pct_mad_min,obs_pct_moisture)
     
   end
