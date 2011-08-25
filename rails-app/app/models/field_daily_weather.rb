@@ -33,12 +33,9 @@ class FieldDailyWeather < ActiveRecord::Base
     
   def update_balances
     feeld = self.field
-    # puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
-    if (self.pred && self.pred.ad)
-      previous_ad = self.pred.ad
-    elsif feeld.current_crop && feeld.current_crop.emergence_date && self.date == feeld.current_crop.emergence_date
-      previous_ad = feeld.initial_ad
-    end
+    return unless self[:adj_et] = feeld.et_method.adj_et(self)
+    puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
+    previous_ad = find_previous_ad
     requirements = [ "ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
     errors = []
     requirements.each do |cond|
@@ -51,7 +48,6 @@ class FieldDailyWeather < ActiveRecord::Base
       logger.info "   Reasons: " + errors.join(", ")
       return
     end
-    return unless self[:adj_et] = feeld.et_method.adj_et(self)
     # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
     delta_storage = calc_change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
     # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}" unless adj_et && delta_storage
@@ -79,9 +75,27 @@ class FieldDailyWeather < ActiveRecord::Base
   def succ
     FieldDailyWeather.next(self).first
   end
+ 
+  def find_previous_ad
+    feeld = self.field
+    if (self.pred && self.pred.ad)
+      previous_ad = self.pred.ad
+    elsif feeld.current_crop && feeld.current_crop.emergence_date && self.date == feeld.current_crop.emergence_date
+      previous_ad = feeld.initial_ad
+    else
+      last_with_ad = FieldDailyWeather.where("field_id = #{field[:id]} and ad is not null").order('date desc').first
+      if last_with_ad
+        previous_ad = last_with_ad[:ad]
+      else
+        previous_ad = feeld.initial_ad
+      end
+    end
+    
+  end 
   
   def self.page_for(rows_per_page,start_date,date=nil)
     date ||= Date.today
-    ((date - start_date) / rows_per_page).to_i
+    # Numb-nuts JS programmers start arrays at 1...
+    ((date - start_date) / rows_per_page).to_i + 1
   end
 end

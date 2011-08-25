@@ -15,6 +15,9 @@ class FieldDailyWeatherController < ApplicationController
   # GET /field_daily_weather
   # GET /field_daily_weather.xml
   def index
+    page = -1
+    page_size = -1
+    wx_size = -1
     if params[:irrig_only]
       @field_daily_weather = []
       if params[:id]
@@ -32,13 +35,21 @@ class FieldDailyWeatherController < ApplicationController
       field_id = session[:field_id] || session[:field_id] = params[:field_id]
       @field_daily_weather = FieldDailyWeather.where(:field_id => field_id).order(:date)
       wx_size = @field_daily_weather.size
-      page_size = params[:rows] || 7
-      page = params[:page] || FieldDailyWeather.page_for(page_size,@field_daily_weather.first.date)
+      if params[:rows]
+        if params[:rows].to_i == 20 # Stupid default value passed, means first refresh
+          page_size = 7
+          page = FieldDailyWeather.page_for(page_size,@field_daily_weather.first.date)
+        else
+          page_size = params[:rows]
+          page = params[:page] || 1
+        end
+      else
+        page = params[:page] || 1
+      end
+      puts "\n****\nfdw#index full; page is #{page}, page_size is #{page_size}, #{wx_size} records"; $stdout.flush
       @field_daily_weather = @field_daily_weather.paginate(:page => page, :per_page => page_size)
     end
-    puts "getting daily wx for field #{field_id}, found #{@field_daily_weather.size} entries"
     @field_daily_weather ||= []
-
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @field_daily_weather }
