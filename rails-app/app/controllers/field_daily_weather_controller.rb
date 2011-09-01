@@ -46,7 +46,7 @@ class FieldDailyWeatherController < ApplicationController
       else
         page = params[:page] || 1
       end
-      puts "\n****\nfdw#index full; page is #{page}, page_size is #{page_size}, #{wx_size} records"; $stdout.flush
+    # puts "\n****\nfdw#index full; page is #{page}, page_size is #{page_size}, #{wx_size} records"; $stdout.flush
       @field_daily_weather = @field_daily_weather.paginate(:page => page, :per_page => page_size)
     end
     @field_daily_weather ||= []

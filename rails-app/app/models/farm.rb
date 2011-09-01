@@ -22,7 +22,7 @@ class Farm < ActiveRecord::Base
   end
   
   def create_default_data
-    puts self.inspect
+  # puts self.inspect
     raise "Could not set default ET method" unless self[:et_method_id]
     pivots << Pivot.create(:name => "New pivot (farm: #{name})", :farm_id => self[:id])
   end

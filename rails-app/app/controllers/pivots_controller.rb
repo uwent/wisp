@@ -21,7 +21,7 @@ class PivotsController < ApplicationController
     @pivots = Pivot.where(:farm_id => @farm_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
-    puts "getting pivots for pivot #{@pivot_id}, found #{@pivots.size} entries"
+  # puts "getting pivots for pivot #{@pivot_id}, found #{@pivots.size} entries"
     @pivots ||= []
     respond_to do |format|
       format.html # index.html.erb

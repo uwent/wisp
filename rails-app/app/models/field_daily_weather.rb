@@ -33,9 +33,11 @@ class FieldDailyWeather < ActiveRecord::Base
     
   def update_balances
     feeld = self.field
-    return unless self[:adj_et] = feeld.et_method.adj_et(self)
-    puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
+    return unless ref_et > 0.0
+    (puts "couldn't calculate adj_et";$stdout.flush; return) unless feeld.et_method.update_adj_et_single_day(self)
+    # puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
     previous_ad = find_previous_ad
+  # puts "Got previous AD of #{previous_ad}"
     requirements = [ "ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
     errors = []
     requirements.each do |cond|
@@ -48,12 +50,12 @@ class FieldDailyWeather < ActiveRecord::Base
       logger.info "   Reasons: " + errors.join(", ")
       return
     end
-    # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
+  # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
     delta_storage = calc_change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
-    # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}" unless adj_et && delta_storage
+  # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
     total_available_water = calc_taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
     self[:ad] = calc_daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
-    # puts "\n***** got through update_balance, we're now #{self.inspect}"
+  # puts "\n***** got through update_balance, AD is now #{self[:ad]}"
   end
   
   def update_next_days_balances
@@ -79,14 +81,18 @@ class FieldDailyWeather < ActiveRecord::Base
   def find_previous_ad
     feeld = self.field
     if (self.pred && self.pred.ad)
+    # puts "previous AD from preceding fdw"
       previous_ad = self.pred.ad
     elsif feeld.current_crop && feeld.current_crop.emergence_date && self.date == feeld.current_crop.emergence_date
+    # puts "previous AD from field (we're at the emergence date)"
       previous_ad = feeld.initial_ad
     else
       last_with_ad = FieldDailyWeather.where("field_id = #{field[:id]} and ad is not null").order('date desc').first
       if last_with_ad
+      # puts "previous AD some prior record (#{last_with_ad.date})"
         previous_ad = last_with_ad[:ad]
       else
+      # puts "previous AD from field (could not find a prior fdw)"
         previous_ad = feeld.initial_ad
       end
     end

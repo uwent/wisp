@@ -55,7 +55,7 @@ class WispController < ApplicationController
     # puts "field_status"
     @farm = Farm.find(@farm_id) if @farm_id
     @pivot = Pivot.find(@pivot_id) if @pivot_id
-    puts "FIELD_STATUS*****: #{@pivot.name}" if @pivot
+    # puts "FIELD_STATUS*****: #{@pivot.name}" if @pivot
     @field = Field.find(@field_id) if @field_id
     logger.info @farm_id
     logger.info @field_id
@@ -109,7 +109,7 @@ class WispController < ApplicationController
     projected_ad_data = []
     return unless ad_data.size > 0
     # 0..ad_data.size.times {projected_ad_data << 0.0}
-    puts "projected_ad: #{ad_data.size} AD records"
+    # puts "projected_ad: #{ad_data.size} AD records"
     last_day = ad_data[-1] || 0.0
     increment = last_day / 3.0
     projected_ad_data << last_day - increment

@@ -45,26 +45,32 @@ class Field < ActiveRecord::Base
   end
 
   def create_dependent_objects
-    create_field_daily_weather
     create_crop
+    create_field_daily_weather
     save!
   end
   
   def create_field_daily_weather
     # puts "create_fdw"
     start_date,end_date = date_endpoints
-    (start_date..end_date).each {|date| field_daily_weather << FieldDailyWeather.new(:date => date)}
+    (start_date..end_date).each do |date|
+      # Could use update_canopy for this, but why go 'round twice? Still, there's a smell.
+      days_since_emergence = date - crops.first.emergence_date
+      lai = days_since_emergence >= 0 ? calc_lai_corn(days_since_emergence) : 0.0
+      field_daily_weather << FieldDailyWeather.new(
+        :date => date, :ref_et => 0.0, :adj_et => 0.0, :leaf_area_index => lai
+      )
+    end
   end
   
   def create_crop
     # puts "create crop"
-    crops << Crop.new(:name => "New crop (field: #{name})", :variety => 'A variety', :emergence_date => Date.today,
-      :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => self[:field_capacity])
-    update_canopy(Date.today)
+    crops << Crop.new(:name => "New crop (field: #{name})", :variety => 'A variety', :emergence_date => date_endpoints.first,
+      :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self[:field_capacity])
   end
   
   def date_endpoints
-    year ||= Time.now.year
+    year = Time.now.year
     # puts "date_endpoints: #{year} / #{START_DATE[0]} / #{START_DATE[1]}"
     ep1 = Date.civil(year,*START_DATE)
     ep2 = Date.civil(year,*END_DATE)
@@ -81,6 +87,7 @@ class Field < ActiveRecord::Base
 
     taw = calc_taw(field_capacity, perm_wilting_pt, mrzd)
     mad_frac = current_crop.max_allowable_depletion_frac
+  # puts "Field#calc_taw returns #{taw}; max allowable depletion frac is #{mad_frac}"
     
     pct_mad_min = calc_pct_moisture_at_ad_min(field_capacity, calc_ad_max_inches(mad_frac,taw), mrzd)
     

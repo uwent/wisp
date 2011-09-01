@@ -20,7 +20,7 @@ class FieldsController < ApplicationController
     @fields = Field.where(:pivot_id => @pivot_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
-    puts "getting fields for pivot #{@pivot_id}, found #{@fields.size} entries"
+  # puts "getting fields for pivot #{@pivot_id}, found #{@fields.size} entries"
     @fields ||= []
 
     respond_to do |format|

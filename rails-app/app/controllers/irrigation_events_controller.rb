@@ -5,7 +5,7 @@ class IrrigationEventsController < ApplicationController
     @irrig_events = IrrigationEvent.where(:pivot_id => pivot_id).order(:date) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
-    puts "getting irrig events field #{pivot_id}, found #{@irrig_events.size} entries"
+  # puts "getting irrig events field #{pivot_id}, found #{@irrig_events.size} entries"
     @irrig_events ||= []
 
     respond_to do |format|

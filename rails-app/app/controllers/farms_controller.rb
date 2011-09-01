@@ -21,7 +21,7 @@ class FarmsController < ApplicationController
     @farms = Farm.where(:group_id => group_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
-    puts "getting farms for group #{group_id}, found #{@farms.size} entries"
+  # puts "getting farms for group #{group_id}, found #{@farms.size} entries"
     @farms ||= []
 
     respond_to do |format|

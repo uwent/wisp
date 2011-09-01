@@ -45,7 +45,7 @@ class CropsController < ApplicationController
         attribs[col_name] = params[col_name] unless col_name == :id
       end
       if params[:oper] && params[:oper] == "add"
-        puts "adding a crop..."
+      # puts "adding a crop..."
         attribs[:field_id] = @field_id
         Crop.create(attribs)
       else
