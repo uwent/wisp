@@ -54,7 +54,13 @@ class FieldDailyWeather < ActiveRecord::Base
     delta_storage = calc_change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
   # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
     total_available_water = calc_taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
+    dd = delta_storage + previous_ad
+    if dd > total_available_water
+      self[:deep_drainage] = dd
+    end
     self[:ad] = calc_daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+    self[:calculated_pct_moisture] = calc_pct_moisture_from_ad(feeld.perm_wilting_pt, feeld.field_capacity, feeld.current_crop.max_allowable_depletion_frac,
+      self[:ad], feeld.current_crop.max_root_zone_depth)
   # puts "\n***** got through update_balance, AD is now #{self[:ad]}"
   end
   
