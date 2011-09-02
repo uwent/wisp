@@ -30,7 +30,17 @@ class FieldDailyWeather < ActiveRecord::Base
     # Here's an example of how to call one of the module methods
     # calc_TAW(1.0,1.0,1.0)
   end
-    
+
+  # mad_frac: Max allowable depletion as a fraction (0-1.0, usually 0.5)
+  # taw: total available water, in inches
+  # fc: field capacity, as a fraction
+  # ad: current allowable depletion, in inches
+  # mrzd: max root zone depth, in inches
+  def moisture(mad_frac,taw,pwp,fc,ad,mrzd)
+    ad_max = calc_ad_max_inches(mad_frac, taw)
+    calc_pct_moisture_from_ad(pwp,fc,ad_max,ad,mrzd)
+  end
+  
   def update_balances
     feeld = self.field
     return unless ref_et > 0.0
@@ -59,8 +69,16 @@ class FieldDailyWeather < ActiveRecord::Base
       self[:deep_drainage] = dd
     end
     self[:ad] = calc_daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
-    self[:calculated_pct_moisture] = calc_pct_moisture_from_ad(feeld.perm_wilting_pt, feeld.field_capacity, feeld.current_crop.max_allowable_depletion_frac,
-      self[:ad], feeld.current_crop.max_root_zone_depth)
+    self[:calculated_pct_moisture] = moisture(
+      feeld.current_crop.max_allowable_depletion_frac,
+      total_available_water,
+      feeld.perm_wilting_pt,
+      feeld.field_capacity,
+      self[:ad],
+      feeld.current_crop.max_root_zone_depth
+    )
+    # calc_pct_moisture_from_ad(feeld.perm_wilting_pt, feeld.field_capacity, feeld.current_crop.max_allowable_depletion_frac,
+    #   self[:ad], feeld.current_crop.max_root_zone_depth)
   # puts "\n***** got through update_balance, AD is now #{self[:ad]}"
   end
   

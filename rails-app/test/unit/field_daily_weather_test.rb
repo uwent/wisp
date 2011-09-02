@@ -1,13 +1,14 @@
 require 'test_helper'
 
 class FieldDailyWeatherTest < ActiveSupport::TestCase
+  include ADCalculator
   WILT = 0.14
   ET = 0.2
   INITIAL_AD = 0.31
   MID_AD = -0.47
   FC = 0.5
-  MRZD = 20
-  SOIL_MOISTURE=0.5
+  MRZD = 36
+  SOIL_MOISTURE=23
   MAD_FRAC=0.5
 
   def setup
@@ -33,7 +34,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   
   def create_spreadsheet_field_with_crop
     create_field_with_crop({:perm_wilting_pt => WILT, :field_capacity => 0.31},
-      {:max_root_zone_depth => 36, :initial_soil_moisture => 0.31})
+      {:max_root_zone_depth => 36, :initial_soil_moisture => 31.0})
   end
   
   test "update_balances does something useful" do
@@ -72,7 +73,22 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     fdw_second.save!
     assert(fdw_second.ad, "Should have updated the second fdw to have an ad balance")
     assert_in_delta(-0.68, fdw_second.ad,0.01)
-    
+    assert_in_delta(20.62, fdw_second.pct_moisture, 0.01)
+  end
+  
+  test "moisture_at_ad_min is correct" do
+    field = create_field_with_crop
+    field.field_capacity = 0.31
+    field.save!
+    crop = field.current_crop
+    fc = field.field_capacity
+    pwp = field.perm_wilting_pt
+    mrzd = crop.max_root_zone_depth
+    assert_equal(0.31, fc)
+    assert_equal(36.0, mrzd)
+    ad_max = calc_ad_max_inches(crop.max_allowable_depletion_frac,calc_taw(fc,pwp,mrzd))
+    assert_in_delta(3.06, ad_max, 0.01)
+    assert_in_delta(22.5, calc_pct_moisture_at_ad_min(fc, ad_max, mrzd), 0.01)
   end
   
   test "update_balances is correct over an interval" do
@@ -148,12 +164,13 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     fdw[0].ref_et = ET
     assert(fdw[0].save)
     n_days.times { |day|  fdw[day].ref_et = ET; fdw[day].save! }
-    puts fdw[32].inspect
-    puts fdw[33].inspect
-    n_days.times { |day| assert_equal(0.31,fdw[day].ad,"Wrong AD number for day #{day}") }
-  end
-  
-  test "initial AD is correct" do
-    
+    # this is effed: why should I have to offset it by three places?
+    spreadsheet_numbers = [3.06, 3.06, 3.06,
+      3.06, 3.06, 3.06, 3.06, 3.06, 3.06, 3.06, 3.06, 3.06, 3.06, 
+      3.06, 3.06, 3.06, 3.05, 3.05, 3.05, 3.04, 3.03, 3.02, 3.00,
+      2.99, 2.96, 2.93, 2.90, 2.85, 2.80, 2.74, 2.67, 2.60, 2.51,
+      2.41, 2.30, 2.19, 2.06, 1.92, 1.77, 1.62, 1.46, 1.29, 1.11
+     ]
+    n_days.times { |day| assert_in_delta(spreadsheet_numbers[day], fdw[day].ad, 0.01,"Wrong AD number for day #{day}") }
   end
 end
