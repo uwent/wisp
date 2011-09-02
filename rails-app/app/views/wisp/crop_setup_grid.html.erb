@@ -32,9 +32,11 @@
       rownumbers: false,
       multiselect: false,
       
-      onSelectRow: function(id){ 
-        if(id && id!==lastsel){ 
-          jQuery('#crop_setup').restoreRow(lastsel);
+      onSelectRow: function(id){
+        if(id){
+          if (id!==lastsel){
+            jQuery('#crop_setup').restoreRow(lastsel);
+          } 
           jQuery('#crop_setup').editRow(id,true); 
           lastsel=id; 
         } 
