@@ -56,7 +56,7 @@ class Field < ActiveRecord::Base
     (start_date..end_date).each do |date|
       # Could use update_canopy for this, but why go 'round twice? Still, there's a smell.
       days_since_emergence = date - crops.first.emergence_date
-      lai = days_since_emergence >= 0 ? calc_lai_corn(days_since_emergence) : 0.0
+      lai = days_since_emergence >= 0 ? lai_corn(days_since_emergence) : 0.0
       field_daily_weather << FieldDailyWeather.new(
         :date => date, :ref_et => 0.0, :adj_et => 0.0, :leaf_area_index => lai
       )
@@ -85,15 +85,15 @@ class Field < ActiveRecord::Base
     end
     mrzd = current_crop.max_root_zone_depth
 
-    taw = calc_taw(field_capacity, perm_wilting_pt, mrzd)
+    taw = taw(field_capacity, perm_wilting_pt, mrzd)
     mad_frac = current_crop.max_allowable_depletion_frac
-  # puts "Field#calc_taw returns #{taw}; max allowable depletion frac is #{mad_frac}"
+  # puts "Field#taw returns #{taw}; max allowable depletion frac is #{mad_frac}"
     
-    pct_mad_min = calc_pct_moisture_at_ad_min(field_capacity, calc_ad_max_inches(mad_frac,taw), mrzd)
+    pct_mad_min = pct_moisture_at_ad_min(field_capacity, ad_max_inches(mad_frac,taw), mrzd)
     
     obs_pct_moisture = current_crop.initial_soil_moisture
     # puts "about to do the calc"
-    calc_daily_ad_from_moisture(mad_frac,taw,mrzd,pct_mad_min,obs_pct_moisture)
+    daily_ad_from_moisture(mad_frac,taw,mrzd,pct_mad_min,obs_pct_moisture)
     
   end
   
@@ -102,7 +102,7 @@ class Field < ActiveRecord::Base
       days_since_emergence = 0
       field_daily_weather.each do |fdw|
         next unless fdw.date >= emergence_date
-        fdw.leaf_area_index = calc_lai_corn(days_since_emergence)
+        fdw.leaf_area_index = lai_corn(days_since_emergence)
         fdw.save!
         days_since_emergence += 1
       end

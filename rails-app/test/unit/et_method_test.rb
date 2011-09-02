@@ -70,7 +70,7 @@ class EtMethodTest < ActiveSupport::TestCase
       100 => 3.245620, 160 => 0.33750846
     }
     expected_lais_for_day.each do |day,expected_lai|
-      lai = @pcm.calc_lai_corn(day)
+      lai = @pcm.lai_corn(day)
       assert_in_delta(expected_lai,lai, DELTA, "Wrong LAI refurned for days_since_emergence #{day}; expected #{expected_lai} and was #{lai}")
     end
   end

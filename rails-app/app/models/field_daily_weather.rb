@@ -28,7 +28,7 @@ class FieldDailyWeather < ActiveRecord::Base
   
   def crop_coeff
     # Here's an example of how to call one of the module methods
-    # calc_TAW(1.0,1.0,1.0)
+    # TAW(1.0,1.0,1.0)
   end
 
   # mad_frac: Max allowable depletion as a fraction (0-1.0, usually 0.5)
@@ -37,8 +37,8 @@ class FieldDailyWeather < ActiveRecord::Base
   # ad: current allowable depletion, in inches
   # mrzd: max root zone depth, in inches
   def moisture(mad_frac,taw,pwp,fc,ad,mrzd)
-    ad_max = calc_ad_max_inches(mad_frac, taw)
-    calc_pct_moisture_from_ad(pwp,fc,ad_max,ad,mrzd)
+    ad_max = ad_max_inches(mad_frac, taw)
+    pct_moisture_from_ad(pwp,fc,ad_max,ad,mrzd)
   end
   
   def update_balances
@@ -61,14 +61,14 @@ class FieldDailyWeather < ActiveRecord::Base
       return
     end
   # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
-    delta_storage = calc_change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
+    delta_storage = change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
   # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
-    total_available_water = calc_taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
+    total_available_water = taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
     dd = delta_storage + previous_ad
     if dd > total_available_water
       self[:deep_drainage] = dd
     end
-    self[:ad] = calc_daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+    self[:ad] = daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
     self[:calculated_pct_moisture] = moisture(
       feeld.current_crop.max_allowable_depletion_frac,
       total_available_water,
@@ -77,7 +77,7 @@ class FieldDailyWeather < ActiveRecord::Base
       self[:ad],
       feeld.current_crop.max_root_zone_depth
     )
-    # calc_pct_moisture_from_ad(feeld.perm_wilting_pt, feeld.field_capacity, feeld.current_crop.max_allowable_depletion_frac,
+    # pct_moisture_from_ad(feeld.perm_wilting_pt, feeld.field_capacity, feeld.current_crop.max_allowable_depletion_frac,
     #   self[:ad], feeld.current_crop.max_root_zone_depth)
   # puts "\n***** got through update_balance, AD is now #{self[:ad]}"
   end

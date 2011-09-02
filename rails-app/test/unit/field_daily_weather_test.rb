@@ -86,9 +86,9 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     mrzd = crop.max_root_zone_depth
     assert_equal(0.31, fc)
     assert_equal(36.0, mrzd)
-    ad_max = calc_ad_max_inches(crop.max_allowable_depletion_frac,calc_taw(fc,pwp,mrzd))
+    ad_max = ad_max_inches(crop.max_allowable_depletion_frac,taw(fc,pwp,mrzd))
     assert_in_delta(3.06, ad_max, 0.01)
-    assert_in_delta(22.5, calc_pct_moisture_at_ad_min(fc, ad_max, mrzd), 0.01)
+    assert_in_delta(22.5, pct_moisture_at_ad_min(fc, ad_max, mrzd), 0.01)
   end
   
   test "update_balances is correct over an interval" do

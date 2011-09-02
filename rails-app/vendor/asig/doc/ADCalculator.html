@@ -62,19 +62,19 @@
 				<h3 class="section-header">Methods</h3>
 				<ul class="link-list">
 					
-					<li><a href="#method-i-calc_Change_In_Daily_Storage">#calc_Change_In_Daily_Storage</a></li>
+					<li><a href="#method-i-Change_In_Daily_Storage">#Change_In_Daily_Storage</a></li>
 					
-					<li><a href="#method-i-calc_Daily_Deep_Drainage_Volume">#calc_Daily_Deep_Drainage_Volume</a></li>
+					<li><a href="#method-i-Daily_Deep_Drainage_Volume">#Daily_Deep_Drainage_Volume</a></li>
 					
-					<li><a href="#method-i-calc_Daily_RAW">#calc_Daily_RAW</a></li>
+					<li><a href="#method-i-Daily_RAW">#Daily_RAW</a></li>
 					
-					<li><a href="#method-i-calc_Daily_TWC">#calc_Daily_TWC</a></li>
+					<li><a href="#method-i-Daily_TWC">#Daily_TWC</a></li>
 					
-					<li><a href="#method-i-calc_Pct_Moisture_At_Raw_Min">#calc_Pct_Moisture_At_Raw_Min</a></li>
+					<li><a href="#method-i-Pct_Moisture_At_Raw_Min">#Pct_Moisture_At_Raw_Min</a></li>
 					
-					<li><a href="#method-i-calc_RAW_Max">#calc_RAW_Max</a></li>
+					<li><a href="#method-i-RAW_Max">#RAW_Max</a></li>
 					
-					<li><a href="#method-i-calc_TAW">#calc_TAW</a></li>
+					<li><a href="#method-i-TAW">#TAW</a></li>
 					
 				</ul>
 			</div>
@@ -148,11 +148,11 @@
 
 		
 			<div id="calc-hange-n-aily-torage-method" class="method-detail ">
-				<a name="method-i-calc_Change_In_Daily_Storage"></a>
+				<a name="method-i-Change_In_Daily_Storage"></a>
 
 				<div class="method-heading">
 				
-					<span class="method-name">calc_Change_In_Daily_Storage</span><span
+					<span class="method-name">Change_In_Daily_Storage</span><span
 						class="method-args">(daily_Rain, daily_Irrig, adj_ET)</span>
 					<span class="method-click-advice">click to toggle source</span>
 				
@@ -174,9 +174,12 @@ P Kaarakka
 </td></tr>
 </table>
 <p>
-daily_Rain is accumulated rainfall for the day in inches daily_Irrigation
-is accumulated irigation for the day in inches adj_ET is calculated in
-module EtCalculator Result is in inches of water
+daily_Rain is accumulated rainfall for the day in inches
+ daily_Irrigation
+is accumulated irigation for the day in inches
+ adj_ET is calculated in
+module EtCalculator
+ Result is in inches of water
 </p>
 					
 
@@ -185,7 +188,7 @@ module EtCalculator Result is in inches of water
 						id="calc-hange-n-aily-torage-source">
 <pre>
     <span class="ruby-comment cmt"># File lib/ad_calculator.rb, line 52</span>
-52:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">calc_Change_In_Daily_Storage</span>(<span class="ruby-identifier">daily_Rain</span>, <span class="ruby-identifier">daily_Irrig</span>, <span class="ruby-identifier">adj_ET</span>)
+52:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">Change_In_Daily_Storage</span>(<span class="ruby-identifier">daily_Rain</span>, <span class="ruby-identifier">daily_Irrig</span>, <span class="ruby-identifier">adj_ET</span>)
 53:     <span class="ruby-identifier">delta_Stor</span> = (<span class="ruby-identifier">daily_Rain</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">daily_Irrig</span>) <span class="ruby-operator">-</span> <span class="ruby-identifier">adjET</span>
 54:   <span class="ruby-keyword kw">end</span></pre>
 					</div>
@@ -199,11 +202,11 @@ module EtCalculator Result is in inches of water
 
 		
 			<div id="calc-aily-eep-rainage-olume-method" class="method-detail ">
-				<a name="method-i-calc_Daily_Deep_Drainage_Volume"></a>
+				<a name="method-i-Daily_Deep_Drainage_Volume"></a>
 
 				<div class="method-heading">
 				
-					<span class="method-name">calc_Daily_Deep_Drainage_Volume</span><span
+					<span class="method-name">Daily_Deep_Drainage_Volume</span><span
 						class="method-args">(raw_Max, prev_Daily_RAW, delta_Stor)</span>
 					<span class="method-click-advice">click to toggle source</span>
 				
@@ -225,9 +228,11 @@ P Kaarakka
 </td></tr>
 </table>
 <p>
-raw_Max is calculated in calc_Max_RAW_Inches prev_Daily_RAW is previous
-day&#8217;s daily RAW delta_Stor is calculated in <a
-href="ADCalculator.html#method-i-calc_Change_In_Daily_Storage">calc_Change_In_Daily_Storage</a>
+raw_Max is calculated in Max_RAW_Inches
+ prev_Daily_RAW is previous
+day&#8217;s daily RAW
+ delta_Stor is calculated in <a
+href="ADCalculator.html#method-i-Change_In_Daily_Storage">Change_In_Daily_Storage</a>
 Result is in inches/day
 </p>
 					
@@ -237,7 +242,7 @@ Result is in inches/day
 						id="calc-aily-eep-rainage-olume-source">
 <pre>
      <span class="ruby-comment cmt"># File lib/ad_calculator.rb, line 103</span>
-103:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">calc_Daily_Deep_Drainage_Volume</span>(<span class="ruby-identifier">raw_Max</span>, <span class="ruby-identifier">prev_Daily_RAW</span>, <span class="ruby-identifier">delta_Stor</span>)
+103:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">Daily_Deep_Drainage_Volume</span>(<span class="ruby-identifier">raw_Max</span>, <span class="ruby-identifier">prev_Daily_RAW</span>, <span class="ruby-identifier">delta_Stor</span>)
 104:     <span class="ruby-identifier">temp_DDV</span> = <span class="ruby-identifier">prev_Daily_RAW</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">delta_Stor</span>
 105:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">temp_DDV</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">raw_Max</span>
 106:       <span class="ruby-identifier">ddv</span> = <span class="ruby-identifier">temp_DDV</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">raw_Max</span>
@@ -256,11 +261,11 @@ Result is in inches/day
 
 		
 			<div id="calc-aily--method" class="method-detail ">
-				<a name="method-i-calc_Daily_RAW"></a>
+				<a name="method-i-Daily_RAW"></a>
 
 				<div class="method-heading">
 				
-					<span class="method-name">calc_Daily_RAW</span><span
+					<span class="method-name">Daily_RAW</span><span
 						class="method-args">(raw_Max, prev_Daily_RAW, delta_Stor)</span>
 					<span class="method-click-advice">click to toggle source</span>
 				
@@ -282,10 +287,12 @@ P Kaarakka
 </td></tr>
 </table>
 <p>
-RAW is Readily Available Water raw_Max is calculated in
-calc_Max_RAW_Inches prev_Daily_RAW is previous day&#8217;s daily RAW
+RAW is Readily Available Water
+ raw_Max is calculated in
+Max_RAW_Inches
+ prev_Daily_RAW is previous day&#8217;s daily RAW
 delta_Stor is calculated in <a
-href="ADCalculator.html#method-i-calc_Change_In_Daily_Storage">calc_Change_In_Daily_Storage</a>
+href="ADCalculator.html#method-i-Change_In_Daily_Storage">Change_In_Daily_Storage</a>
 Result is in inches of water
 </p>
 					
@@ -295,7 +302,7 @@ Result is in inches of water
 						id="calc-aily--source">
 <pre>
     <span class="ruby-comment cmt"># File lib/ad_calculator.rb, line 64</span>
-64:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">calc_Daily_RAW</span>(<span class="ruby-identifier">raw_Max</span>, <span class="ruby-identifier">prev_Daily_RAW</span>, <span class="ruby-identifier">delta_Stor</span>)
+64:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">Daily_RAW</span>(<span class="ruby-identifier">raw_Max</span>, <span class="ruby-identifier">prev_Daily_RAW</span>, <span class="ruby-identifier">delta_Stor</span>)
 65:     <span class="ruby-identifier">temp_Raw</span> = <span class="ruby-identifier">prev_Daily_RAW</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">delta_Stor</span>
 66:     <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">temp_Raw</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">raw_Max</span>
 67:       <span class="ruby-identifier">raw</span> = <span class="ruby-identifier">raw_Max</span>
@@ -314,11 +321,11 @@ Result is in inches of water
 
 		
 			<div id="calc-aily--method" class="method-detail ">
-				<a name="method-i-calc_Daily_TWC"></a>
+				<a name="method-i-Daily_TWC"></a>
 
 				<div class="method-heading">
 				
-					<span class="method-name">calc_Daily_TWC</span><span
+					<span class="method-name">Daily_TWC</span><span
 						class="method-args">(pwp, pct_Moisture_At_Raw_Min, raw, mrzd, pct_Moisture_Obs)</span>
 					<span class="method-click-advice">click to toggle source</span>
 				
@@ -340,11 +347,16 @@ P Kaarakka
 </td></tr>
 </table>
 <p>
-TWC is Total Available Water pwp is permanent wilting point mrzd is
-managed root zone depth pct_Moisture_At_Raw_Min is calculated in <a
-href="ADCalculator.html#method-i-calc_Pct_Moisture_At_Raw_Min">calc_Pct_Moisture_At_Raw_Min</a>
-raw is current day&#8217;s RAW pct_Moisture_Obs is observed soil moisture
-for the day Result is in percent
+TWC is Total Available Water
+ pwp is permanent wilting point
+ mrzd is
+managed root zone depth
+ pct_Moisture_At_Raw_Min is calculated in <a
+href="ADCalculator.html#method-i-Pct_Moisture_At_Raw_Min">Pct_Moisture_At_Raw_Min</a>
+raw is current day&#8217;s RAW
+ pct_Moisture_Obs is observed soil moisture
+for the day
+ Result is in percent
 </p>
 					
 
@@ -353,7 +365,7 @@ for the day Result is in percent
 						id="calc-aily--source">
 <pre>
     <span class="ruby-comment cmt"># File lib/ad_calculator.rb, line 83</span>
-83:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">calc_Daily_TWC</span>(<span class="ruby-identifier">pwp</span>, <span class="ruby-identifier">pct_Moisture_At_Raw_Min</span>, <span class="ruby-identifier">raw</span>, <span class="ruby-identifier">mrzd</span>, <span class="ruby-identifier">pct_Moisture_Obs</span>)
+83:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">Daily_TWC</span>(<span class="ruby-identifier">pwp</span>, <span class="ruby-identifier">pct_Moisture_At_Raw_Min</span>, <span class="ruby-identifier">raw</span>, <span class="ruby-identifier">mrzd</span>, <span class="ruby-identifier">pct_Moisture_Obs</span>)
 84:     <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">pct_Moisture_Obs</span> <span class="ruby-operator">&gt;</span> <span class="ruby-value">0</span>) 
 85:       <span class="ruby-identifier">pct_Moisture_Obs</span>
 86:     <span class="ruby-keyword kw">else</span> 
@@ -376,11 +388,11 @@ for the day Result is in percent
 
 		
 			<div id="calc-ct-oisture-t-aw-in-method" class="method-detail ">
-				<a name="method-i-calc_Pct_Moisture_At_Raw_Min"></a>
+				<a name="method-i-Pct_Moisture_At_Raw_Min"></a>
 
 				<div class="method-heading">
 				
-					<span class="method-name">calc_Pct_Moisture_At_Raw_Min</span><span
+					<span class="method-name">Pct_Moisture_At_Raw_Min</span><span
 						class="method-args">(fc, raw_Max, mrzd)</span>
 					<span class="method-click-advice">click to toggle source</span>
 				
@@ -403,8 +415,11 @@ P Kaarakka
 </table>
 <p>
 This should be recalculated and saved whenever soils, crop, or root zone
-depth are changed fc is field capacity mrzd is managed root zone depth
-rawMax is calculated in calc_Max_RAW_Inches Result is in percent
+depth are changed
+ fc is field capacity
+ mrzd is managed root zone depth
+rawMax is calculated in Max_RAW_Inches
+ Result is in percent
 </p>
 					
 
@@ -413,7 +428,7 @@ rawMax is calculated in calc_Max_RAW_Inches Result is in percent
 						id="calc-ct-oisture-t-aw-in-source">
 <pre>
     <span class="ruby-comment cmt"># File lib/ad_calculator.rb, line 42</span>
-42:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">calc_Pct_Moisture_At_Raw_Min</span>(<span class="ruby-identifier">fc</span>, <span class="ruby-identifier">raw_Max</span>, <span class="ruby-identifier">mrzd</span>)
+42:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">Pct_Moisture_At_Raw_Min</span>(<span class="ruby-identifier">fc</span>, <span class="ruby-identifier">raw_Max</span>, <span class="ruby-identifier">mrzd</span>)
 43:     <span class="ruby-identifier">pct_Moisture_At_Raw_Min</span> = (<span class="ruby-identifier">fc</span> <span class="ruby-operator">-</span> (<span class="ruby-identifier">raw_Max</span><span class="ruby-operator">/</span><span class="ruby-identifier">mrzd</span>)) * <span class="ruby-value">100</span>
 44:   <span class="ruby-keyword kw">end</span></pre>
 					</div>
@@ -427,11 +442,11 @@ rawMax is calculated in calc_Max_RAW_Inches Result is in percent
 
 		
 			<div id="calc-ax-method" class="method-detail ">
-				<a name="method-i-calc_RAW_Max"></a>
+				<a name="method-i-RAW_Max"></a>
 
 				<div class="method-heading">
 				
-					<span class="method-name">calc_RAW_Max</span><span
+					<span class="method-name">RAW_Max</span><span
 						class="method-args">(mad_Frac, taw)</span>
 					<span class="method-click-advice">click to toggle source</span>
 				
@@ -454,8 +469,12 @@ P Kaarakka
 </table>
 <p>
 This should be recalculated and saved whenever soils, crop, or root zone
-depth are changed RAW is Readily Available Water madFrac is fractional
-form of Maximum Allowable Depletion taw is Total Available Water Result
+depth are changed
+ RAW is Readily Available Water
+ madFrac is fractional
+form of Maximum Allowable Depletion
+ taw is Total Available Water
+ Result
 is in inches of water
 </p>
 					
@@ -465,7 +484,7 @@ is in inches of water
 						id="calc-ax-source">
 <pre>
     <span class="ruby-comment cmt"># File lib/ad_calculator.rb, line 30</span>
-30:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">calc_RAW_Max</span>(<span class="ruby-identifier">mad_Frac</span>, <span class="ruby-identifier">taw</span>)
+30:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">RAW_Max</span>(<span class="ruby-identifier">mad_Frac</span>, <span class="ruby-identifier">taw</span>)
 31:     <span class="ruby-identifier">raw_Max</span> = <span class="ruby-identifier">mad_Frac</span> * <span class="ruby-identifier">taw</span>
 32:   <span class="ruby-keyword kw">end</span></pre>
 					</div>
@@ -479,11 +498,11 @@ is in inches of water
 
 		
 			<div id="calc--method" class="method-detail ">
-				<a name="method-i-calc_TAW"></a>
+				<a name="method-i-TAW"></a>
 
 				<div class="method-heading">
 				
-					<span class="method-name">calc_TAW</span><span
+					<span class="method-name">TAW</span><span
 						class="method-args">(fc, pwp, mrzd)</span>
 					<span class="method-click-advice">click to toggle source</span>
 				
@@ -506,8 +525,13 @@ P Kaarakka
 </table>
 <p>
 This should be recalculated and saved whenever soils, crop, or root zone
-depth are changed TAW is Total Available Water fc is field capacity pwp
-is permanent wilting point mrzd is managed root zone depth Result is
+depth are changed
+ TAW is Total Available Water
+ fc is field capacity
+ pwp
+is permanent wilting point
+ mrzd is managed root zone depth
+ Result is
 inches of water
 </p>
 					
@@ -517,7 +541,7 @@ inches of water
 						id="calc--source">
 <pre>
     <span class="ruby-comment cmt"># File lib/ad_calculator.rb, line 18</span>
-18:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">calc_TAW</span>(<span class="ruby-identifier">fc</span>, <span class="ruby-identifier">pwp</span>, <span class="ruby-identifier">mrzd</span>)
+18:   <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">TAW</span>(<span class="ruby-identifier">fc</span>, <span class="ruby-identifier">pwp</span>, <span class="ruby-identifier">mrzd</span>)
 19:     <span class="ruby-identifier">taw</span> = (<span class="ruby-identifier">fc</span> <span class="ruby-operator">-</span> <span class="ruby-identifier">pwp</span>)*<span class="ruby-identifier">mrzd</span>
 20:   <span class="ruby-keyword kw">end</span></pre>
 					</div>
