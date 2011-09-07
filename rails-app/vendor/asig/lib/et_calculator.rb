@@ -46,7 +46,7 @@ module ETCalculator
   end #adj_et_pct_cover
 
   # LAI growth curve function for corn from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
-  def calc_lai_corn(days_since_emergence)
+  def lai_corn(days_since_emergence)
 	(0.000000000009*(days_since_emergence)**7.95)*(Math.exp(-0.1*(days_since_emergence)))
   end
   
