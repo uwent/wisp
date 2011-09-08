@@ -60,17 +60,16 @@
               autowidth: false,
               rownumbers: false,
               multiselect: false,
-              onSelectRow: function(id){ 
-                if(id && id!==lastsel){ 
-                  jQuery('#weather').restoreRow(lastsel);
+              onSelectRow: function(id){
+                if(id){
+                  if (id!==lastsel){
+                    jQuery('#weather').restoreRow(lastsel);
+                  } 
                   jQuery('#weather').editRow(id,true, '', '', '', '', displayCalcValues); 
                   lastsel=id; 
                 } 
               },             
-
-
               subGrid:false,
-
               caption: "Edit Observed Values Below"
             })
             .navGrid('#weather_pager',

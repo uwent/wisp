@@ -57,13 +57,15 @@ class WispController < ApplicationController
     @pivot = Pivot.find(@pivot_id) if @pivot_id
     # puts "FIELD_STATUS*****: #{@pivot.name}" if @pivot
     @field = Field.find(@field_id) if @field_id
+    @field_weather_data = @field.field_daily_weather
     logger.info @farm_id
     logger.info @field_id
     logger.info @pivot_id 
-    start_date = Date.today - 6
-    end_date = Date.today
-    @ad_data = ad_data(@field_id,start_date,end_date)
-    @projected_ad_data = projected_ad(@ad_data,@field_id)
+    start_date = Date.today - 7
+    end_date = Date.today - 1
+    @ad_recs = fdw_for(@field_id,start_date,end_date)
+    @ad_data = @ad_recs.collect { |fdw| fdw.ad }
+    @projected_ad_data = FieldDailyWeather.projected_ad(@ad_recs)
     @dates,@date_str = make_dates(start_date,end_date)
     # puts @dates.inspect
     if params[:ajax]
@@ -98,41 +100,27 @@ class WispController < ApplicationController
   end
   
   private
-  def ad_data(field_id,start_date,end_date)
-    recs = FieldDailyWeather.where(
+  def fdw_for(field_id,start_date,end_date)
+    FieldDailyWeather.where(
       "field_id=? and date >= ? and date <= ?",field_id,start_date,end_date
-      ).sort {|fdw,fdw2| fdw[:date] <=> fdw2[:date]}
-    recs.collect { |e| e.ad }
+    ).sort {|fdw,fdw2| fdw[:date] <=> fdw2[:date]}
   end
   
-  def projected_ad(ad_data,field_id)
-    projected_ad_data = []
-    return unless ad_data.size > 0
-    # 0..ad_data.size.times {projected_ad_data << 0.0}
-    # puts "projected_ad: #{ad_data.size} AD records"
-    last_day = ad_data[-1] || 0.0
-    increment = last_day / 3.0
-    projected_ad_data << last_day - increment
-    projected_ad_data << projected_ad_data[-1] - increment
-  end
-  
-  def make_dates(start_date,today_date)
+  # Usually start_date will be a week ago and finish_date will be yesterday
+  def make_dates(start_date,finish_date)
     day = 0
     dates = []
     date_str = ''
-    (start_date..(today_date - 1)).each do |date|
+    (start_date..(finish_date)).each do |date|
       dates << date
       date_str += "#{day}: '#{date.strftime('%b %d')}',"
       day += 1
     end
-    dates << Date.today
+    dates << finish_date + 1
     date_str += "#{day}: 'Today',"
     day += 1
-    dates << Date.today + 1
-    date_str += "#{day}: '#{(Date.today + 1).strftime('%b %d')}',"
-    day += 1
-    dates << Date.today + 1
-    date_str += "#{day}: '#{(Date.today + 2).strftime('%b %d')}',"
+    dates << finish_date + 1
+    date_str += "#{day}: '#{(finish_date + 2).strftime('%b %d')}',"
     [dates,date_str]
   end
   

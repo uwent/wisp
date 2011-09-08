@@ -58,8 +58,8 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert_equal(0.0, fdw.rain)
     assert_equal(0.0, fdw.irrigation)
   end
-  
-  test "update_balances does something correct" do
+
+  def two_day_balance
     field = create_field_with_crop
     field.field_capacity = 0.31
     field.save!
@@ -70,10 +70,29 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     fdw_second = fdw_first.succ
     assert_nil(fdw_second.ad)
     fdw_second.ref_et = ET
+    puts "saving fdw_second"; $stdout.flush; FieldDailyWeather.debug_on
     fdw_second.save!
-    assert(fdw_second.ad, "Should have updated the second fdw to have an ad balance")
+    [fdw_first,fdw_second]
+  end
+
+  test "update_balances does something correct" do
+    fdw_first,fdw_second = two_day_balance
+    assert(fdw_second.ad, "Should have updated the second fdw to have an ad balance\n#{fdw_first.inspect}\n#{fdw_second.inspect}")
     assert_in_delta(-0.68, fdw_second.ad,0.01)
     assert_in_delta(20.62, fdw_second.pct_moisture, 0.01)
+  end
+  
+  test "balance_calcs works" do
+    fdw_first,fdw_second = two_day_balance
+    expected_attribs = [:adj_et,:deep_drainage,:calculated_pct_moisture,:ad]
+    attribs = fdw_second.balance_calcs
+    assert_equal(expected_attribs.size, attribs.size,"Wrong number of attribs returned by balance_calcs")
+    expected_attribs.each { |attrib| assert(attribs[attrib], "Expected #{attrib} in the balance_calcs has") }
+    assert(attribs, "balance_calcs should have returned something")
+    assert_equal(Hash, attribs.class, "balance_calcs should have returned a Hash")
+    puts attribs.inspect
+    puts fdw_second.inspect
+    attribs.each { |attrib,val| assert_equal(fdw_second[attrib], val,"FDW should have had same value for #{attrib.to_s}") }
   end
   
   test "moisture_at_ad_min is correct" do
@@ -98,8 +117,6 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert(fdw)
     fdw.ad = MID_AD
     fdw.save!
-    puts field.inspect
-    puts fdw.inspect
     span = 19 # days
     span.times do
       fdw = fdw.succ
@@ -172,5 +189,27 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
       2.41, 2.30, 2.19, 2.06, 1.92, 1.77, 1.62, 1.46, 1.29, 1.11
      ]
     n_days.times { |day| assert_in_delta(spreadsheet_numbers[day], fdw[day].ad, 0.01,"Wrong AD number for day #{day}") }
+  end
+  
+  test "can call fdw#summary" do
+    field_id = Field.first[:id]
+    assert(FieldDailyWeather.summary(field_id), "Failure message.")
+  end
+  
+  test "projected_ad works" do
+    field = create_spreadsheet_field_with_crop
+    assert_not_nil(field.field_daily_weather)
+    assert_not_nil(field.field_daily_weather[-1])
+    fdw = field.field_daily_weather[-7..-1]
+    fdw.each { |e| e.ref_et = ET; e.save! }
+    adj_ets = fdw.collect { |e| e.adj_et }
+    max_adj_et = adj_ets.max
+    # set the last day's AD balance to a known quantity
+    known_ad = 2.0
+    fdw[-1].ad = known_ad
+    assert_not_nil(fdw)
+    projected = FieldDailyWeather.projected_ad(fdw)
+    assert_not_nil(projected)
+    assert_equal([known_ad - max_adj_et, known_ad - 2*max_adj_et],projected)
   end
 end

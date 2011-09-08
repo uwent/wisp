@@ -163,7 +163,7 @@ Cost ($): <br/>
 <div id="projectedADBox">
 	<%= image_tag "pivot.manip.small.jpg", :width => 300  %>
 <h2>Projected Allowable Depletion</h2>
-<p>In inches, based on the mean adjusted ET of the last four rainless days.</p>
+<p>In inches, based on the max adjusted ET in the past week (i.e., worst case).</p>
 <b><%= @dates[-2].strftime('%b %d')%>: <%= sprintf("%0.2f",@projected_ad_data[-2]) %></b> <br/>
 <b><%= @dates[-1].strftime('%b %d')%>: <%= sprintf("%0.2f",@projected_ad_data[-1]) %></b> <br/>
 </div>
