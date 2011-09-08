@@ -1,4 +1,5 @@
 require 'ad_calculator'
+
 class FieldDailyWeather < ActiveRecord::Base
   belongs_to :field
   before_create :zero_rain_and_irrig
@@ -154,8 +155,7 @@ class FieldDailyWeather < ActiveRecord::Base
       end
     end
     
-  end 
-  
+  end
   # CLASS METHODS
   
   def self.page_for(rows_per_page,start_date,date=nil)
@@ -166,7 +166,7 @@ class FieldDailyWeather < ActiveRecord::Base
   
   def self.summary(field_id)
     query = <<-END
-    select sum(rain) as rain, sum(irrigation) as irrigation, sum(deep_drainage) as deep_drainage
+    select sum(rain) as rain, sum(irrigation) as irrigation, sum(deep_drainage) as deep_drainage, sum(adj_et) as adj_et
     from field_daily_weather where field_id=#{field_id}
     END
     find_by_sql(query).first
@@ -185,7 +185,11 @@ class FieldDailyWeather < ActiveRecord::Base
     [fdw[-1].ad - max_adj_et, fdw[-1].ad - 2*max_adj_et]
   end
   
-  
+  def self.fdw_for(field_id,start_date,end_date)
+    where(
+      "field_id=? and date >= ? and date <= ?",field_id,start_date,end_date
+    ).sort {|fdw,fdw2| fdw[:date] <=> fdw2[:date]}
+  end
   
   def self.debug_on
     @@debug = true

@@ -1,5 +1,7 @@
 require "ad_calculator"
 require "et_calculator"
+require 'net/http'
+require 'uri'
 
 class Field < ActiveRecord::Base
   after_create :create_dependent_objects
@@ -113,6 +115,39 @@ class Field < ActiveRecord::Base
       raise "Unknown ET Method for this field: #{et_method.inspect}"
     end
   end
+
+  def get_et
+    return unless pivot.latitude && pivot.longitude
+    start_date = field_daily_weather[0].date.to_s
+    end_date = field_daily_weather[-1].date.to_s
+    
+    # http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=90.8
+    vals = {}
+    begin
+      url = URI.parse("http://www.soils.wisc.edu")
+      res = Net::HTTP.start(url.host, url.port) {|http|
+        http.get("/asig/rails/wimnext-rails/et/get_et_series?" + 
+          "start_date=#{start_date}&end_date=#{end_date}&latitude=#{pivot.latitude}&longitude=#{pivot.longitude}"
+        )
+      }
+      vals = {}
+      res.body.split("\n").each do |line|
+        if line =~ /([\d]{4}-[\d]{2}-[\d]{2}),([\d].[\d]+)[^\d]/
+          vals[$1] = $2.to_f
+        end
+      end
+    rescue Exception => e
+      logger.info "Could not get ETs from the net; connected? (#{e.to_s})"
+    end
+    field_daily_weather.each do |fdw|
+      if fdw.ref_et == nil || fdw.ref_et == 0.0
+        if vals[fdw.date.to_s]
+          fdw.ref_et = vals[fdw.date.to_s]
+          fdw.save!
+        end
+      end
+    end
+  end
   
   def fdw_index(date)
     # why the *^$@ can't I just subtract the database field instead of this rigamarole?
@@ -131,5 +166,8 @@ class Field < ActiveRecord::Base
     # end
     # puts "updating field daily wx for day #{day}"
     # field_daily_wx.update_balances(day == 0 ? nil : field_daily_weather[day-1])
+  end
+  
+  def problem
   end
 end

@@ -10,9 +10,8 @@ class Farm < ActiveRecord::Base
     Farm.find(:all, :conditions => ['group_id = ?',group_id])
   end
   
-  def problem
-    # FIXME: Should have code in here to actually iterate through the fields and detect problems!
-    rand > 0.5 ? "Yes": ""
+  def problems
+    fields.inject([]) { |problems, field| problems << field.problem }
   end
   
   def set_default_et_method

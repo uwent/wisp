@@ -63,11 +63,18 @@ class WispController < ApplicationController
     logger.info @pivot_id 
     start_date = Date.today - 7
     end_date = Date.today - 1
-    @ad_recs = fdw_for(@field_id,start_date,end_date)
+    @ad_recs = FieldDailyWeather.fdw_for(@field_id,start_date,end_date)
+    # now that we've got the last week's fdw recs, check if any need ET
+    @ad_recs.each do |adr|
+      if adr.ref_et == nil || adr.ref_et == 0.0
+        @field.get_et
+        break
+      end
+    end
     @ad_data = @ad_recs.collect { |fdw| fdw.ad }
     @projected_ad_data = FieldDailyWeather.projected_ad(@ad_recs)
     @dates,@date_str = make_dates(start_date,end_date)
-    # puts @dates.inspect
+    @summary_data = FieldDailyWeather.summary(@field.id)
     if params[:ajax]
       render :layout => false
     end
@@ -100,27 +107,22 @@ class WispController < ApplicationController
   end
   
   private
-  def fdw_for(field_id,start_date,end_date)
-    FieldDailyWeather.where(
-      "field_id=? and date >= ? and date <= ?",field_id,start_date,end_date
-    ).sort {|fdw,fdw2| fdw[:date] <=> fdw2[:date]}
-  end
+
   
   # Usually start_date will be a week ago and finish_date will be yesterday
   def make_dates(start_date,finish_date)
     day = 0
     dates = []
     date_str = ''
-    (start_date..(finish_date)).each do |date|
+    (start_date..(finish_date + 2)).each do |date|
       dates << date
-      date_str += "#{day}: '#{date.strftime('%b %d')}',"
+      if date == finish_date
+        date_str += "#{day}: 'Today',"
+      else
+        date_str += "#{day}: '#{date.strftime('%b %d')}',"
+      end
       day += 1
     end
-    dates << finish_date + 1
-    date_str += "#{day}: 'Today',"
-    day += 1
-    dates << finish_date + 1
-    date_str += "#{day}: '#{(finish_date + 2).strftime('%b %d')}',"
     [dates,date_str]
   end
   

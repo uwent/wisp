@@ -125,14 +125,16 @@ Initial soil moisture: <%= @field_weather_data.first.pct_moisture  if @field_wea
 
 <div id="summaryDataBox">
 <h2>Summary Data</h2>
-Rainfall (in):<br/>
-Irrigation (in):<br/>
-Irrig. (gal x 1K):<br/>
-ET (in):<br/>
-Drainage (in):<br/>
+<table border="0">
+<tr><th>Rainfall (in):</th><td> <%= sprintf("%0.2f",@summary_data[:rain]) %></td></tr>
+<tr><th>Irrigation (in):</th><td><%= sprintf("%0.2f",@summary_data[:irrigation]) %></td></tr>
+<tr><th>ET (in):</th><td> <%= sprintf("%0.2f",@summary_data[:adj_et]) %></td></tr>
+<tr><th>Drainage (in):</th><td> <%= sprintf("%0.2f",@summary_data[:deep_drainage]) %></td></tr>
+</table>
+<!-- Irrig. (gal x 1K):<br/>
 Power (kWH): <br/>
 Run time (hours): <br/>
-Cost ($): <br/>
+Cost ($): <br/> -->
 </div>
 
 <div id="graphBox">
