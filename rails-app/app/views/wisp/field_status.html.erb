@@ -9,12 +9,7 @@
 	h2 {text-align:center;}
 	#fieldSelectionBox
 	{
-		position:absolute;
-		left:275px;
-		top:90px;
-		width:200px;
-		padding:2px;
-		margin:0px;
+	  text-align: center;
 	}
 
 	#fieldDataBox
@@ -95,6 +90,53 @@
   <%= javascript_include_tag 'bluff/js-class.js'  %>
   <%= javascript_include_tag 'bluff/excanvas.js'  %>
   <%= javascript_include_tag 'bluff/bluff-min.js' %>
+  <script type="text/javascript">
+    function plotGraph() {
+      var g = new Bluff.Line('example', '575x300');
+      var ad_data;
+      var projected_ad_data = [];
+      g.title = 'Allowable Depletion';
+      g.tooltips = true;
+      g.set_theme({
+          colors: ['#202020', 'white', '#a21764', '#8ab438',
+                   '#999999', '#3a5b87', 'black'],
+          marker_color: '#aea9a9',
+          font_color: 'black',
+          background_colors: ['#d0e0f8', '#f0f0ff']
+        });
+        $.ajax(
+        { 
+            type: "GET",
+            url: "projection_data", 
+            dataType: "json",
+            async: false,
+            success: function(json)
+            {
+              ad_data = json['ad_data'];
+              prj_data = json['projected_ad_data'];
+              for (var ii=0,len=ad_data.length; ii<len; ii++) {
+                projected_ad_data.push(ad_data[ii]);
+              }
+              for (ii=0,len=prj_data.length; ii<len; ii++) {
+                projected_ad_data.push(prj_data[ii]);
+              }
+            }, /* success: */
+            error: function(xhr, textStatus, errorThrown)
+            { 
+                alert(textStatus + ' ' + errorThrown);
+                ad_data = [];
+                projected_ad_data = [];
+            } /* error: */
+        });/* $.ajax */
+      g.data("Allowable Depletion", ad_data,'blue');
+      g.data("Projected AD", projected_ad_data,'yellow');
+      g.hide_legend = true
+      g.labels = {<%= @date_str %>};
+      g.draw();
+    }
+    jQuery(document).ready(plotGraph);
+  </script>
+  
 <% end %>
 
 <% content_for :welcome do %>
@@ -103,10 +145,8 @@
 
 <h2>WISP Field Status</h2>
 <div id="fieldSelectionBox">
-Choose a different field
 <%= form_tag "/wisp/field_status" do %>
-  <%= select_tag "field_id", options_from_collection_for_select(@pivot.fields,"id","name") %> 
-  <%= submit_tag "Go" %>
+  <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field),{ :onchange => "this.form.submit();"} %> 
 <% end %>
 </div>
 
@@ -140,32 +180,16 @@ Cost ($): <br/> -->
 <div id="graphBox">
   <canvas id="example" width="400" height="300"></canvas>
 
-    <script type="text/javascript">
-      var g = new Bluff.Line('example', '575x300');
-      g.title = 'Allowable Depletion';
-      g.tooltips = true;
-      g.set_theme({
-          colors: ['#202020', 'white', '#a21764', '#8ab438',
-                   '#999999', '#3a5b87', 'black'],
-          marker_color: '#aea9a9',
-          font_color: 'black',
-          background_colors: ['#d0e0f8', '#f0f0ff']
-        });
-
-      g.data("Allowable Depletion", <%= @ad_data.to_s.gsub('nil','null') %>,'blue');
-      <% @ad_data += @projected_ad_data %>
-      g.data("Projected AD", <%= @ad_data.to_s.gsub('nil','null') %>,'yellow');
-      g.hide_legend = true
-      g.labels = {<%= @date_str %>};
-
-      g.draw();
-    </script>
 </div>
 
 <div id="projectedADBox">
 	<%= image_tag "pivot.manip.small.jpg", :width => 300  %>
 <h2>Projected Allowable Depletion</h2>
 <p>In inches, based on the max adjusted ET in the past week (i.e., worst case).</p>
+<table>
+  <tr><th><%= @dates[-2].strftime('%b %d')%>:</th><td id="proj_ad_1"><%= sprintf("%0.2f",@projected_ad_data[-2]) %></td></tr>
+  <tr><th><%= @dates[-1].strftime('%b %d')%>:</th><td id="proj_ad_2"><%= sprintf("%0.2f",@projected_ad_data[-1]) %></td></tr>
+</table>
 <b><%= @dates[-2].strftime('%b %d')%>: <%= sprintf("%0.2f",@projected_ad_data[-2]) %></b> <br/>
 <b><%= @dates[-1].strftime('%b %d')%>: <%= sprintf("%0.2f",@projected_ad_data[-1]) %></b> <br/>
 </div>

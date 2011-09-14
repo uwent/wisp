@@ -8,11 +8,7 @@
           // }
           function displayCalcValues(rowid,response) {
             $("#weather").trigger("reloadGrid");
-            if (g) {
-              // put in something to redo the graph here -- should be "pull"
-              // for data, with JSON/AJAX
-              g.draw();
-            }
+            plotGraph();
             return true;
           }
           var mygrid;

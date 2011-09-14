@@ -50,8 +50,7 @@ class WispController < ApplicationController
 
   def lookup
   end
-
-  def field_status
+  def field_status_data
     # puts "field_status"
     @farm = Farm.find(@farm_id) if @farm_id
     @pivot = Pivot.find(@pivot_id) if @pivot_id
@@ -64,6 +63,14 @@ class WispController < ApplicationController
     start_date = Date.today - 7
     end_date = Date.today - 1
     @ad_recs = FieldDailyWeather.fdw_for(@field_id,start_date,end_date)
+    @ad_data = @ad_recs.collect { |fdw| fdw.ad }
+    @projected_ad_data = FieldDailyWeather.projected_ad(@ad_recs)
+    @dates,@date_str = make_dates(start_date,end_date)
+    @summary_data = FieldDailyWeather.summary(@field.id)
+  end
+
+  def field_status
+    field_status_data
     # now that we've got the last week's fdw recs, check if any need ET
     @ad_recs.each do |adr|
       if adr.ref_et == nil || adr.ref_et == 0.0
@@ -71,12 +78,15 @@ class WispController < ApplicationController
         break
       end
     end
-    @ad_data = @ad_recs.collect { |fdw| fdw.ad }
-    @projected_ad_data = FieldDailyWeather.projected_ad(@ad_recs)
-    @dates,@date_str = make_dates(start_date,end_date)
-    @summary_data = FieldDailyWeather.summary(@field.id)
     if params[:ajax]
       render :layout => false
+    end
+  end
+  
+  def projection_data
+    field_status_data
+    respond_to do |format|
+      format.json { render :json => {:ad_data => @ad_data,:projected_ad_data => @projected_ad_data}} 
     end
   end
 
@@ -116,7 +126,7 @@ class WispController < ApplicationController
     date_str = ''
     (start_date..(finish_date + 2)).each do |date|
       dates << date
-      if date == finish_date
+      if date == finish_date + 1
         date_str += "#{day}: 'Today',"
       else
         date_str += "#{day}: '#{date.strftime('%b %d')}',"
