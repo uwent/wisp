@@ -118,6 +118,7 @@ class Field < ActiveRecord::Base
 
   def get_et
     return unless pivot.latitude && pivot.longitude
+    logger.info "Starting get_et"
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
     
@@ -147,6 +148,7 @@ class Field < ActiveRecord::Base
         end
       end
     end
+    logger.info "done with get_et"
   end
   
   def fdw_index(date)
