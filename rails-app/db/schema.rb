@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110710151042) do
+ActiveRecord::Schema.define(:version => 20110922182337) do
 
   create_table "blogs", :force => true do |t|
     t.date     "date"
@@ -84,6 +84,7 @@ ActiveRecord::Schema.define(:version => 20110710151042) do
     t.string   "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float    "target_ad_pct"
   end
 
   create_table "groups", :force => true do |t|

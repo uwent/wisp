@@ -95,7 +95,8 @@
       var g = new Bluff.Line('example', '575x300');
       var ad_data;
       var projected_ad_data = [];
-      g.title = 'Allowable Depletion';
+      var target_ad_data = [];
+      g.title = 'Allowable Depletion (in)';
       g.tooltips = true;
       g.set_theme({
           colors: ['#202020', 'white', '#a21764', '#8ab438',
@@ -114,11 +115,17 @@
             {
               ad_data = json['ad_data'];
               prj_data = json['projected_ad_data'];
+              targ_data = json['target_ad_data'];
               for (var ii=0,len=ad_data.length; ii<len; ii++) {
                 projected_ad_data.push(ad_data[ii]);
               }
               for (ii=0,len=prj_data.length; ii<len; ii++) {
                 projected_ad_data.push(prj_data[ii]);
+              }
+              if (targ_data != null) {
+                for (ii=0,len=targ_data.length; ii<len; ii++) {
+                  target_ad_data.push(targ_data[ii]);
+                }
               }
             }, /* success: */
             error: function(xhr, textStatus, errorThrown)
@@ -128,9 +135,12 @@
                 projected_ad_data = [];
             } /* error: */
         });/* $.ajax */
+      g.data("Projected AD", projected_ad_data,'#26c202');
       g.data("Allowable Depletion", ad_data,'blue');
-      g.data("Projected AD", projected_ad_data,'yellow');
-      g.hide_legend = true
+      if (targ_data != null) {
+        g.data("Target AD",target_ad_data,'gray');
+      }
+      g.hide_legend = false
       g.labels = {<%= @date_str %>};
       g.draw();
     }
@@ -156,9 +166,12 @@ Farm name:<%= @farm.name if @farm %><br/>
 Pivot name: <%= @pivot.name if @pivot %><br/>
 Field name/soil: <%= @field.name %><br/>
 Crop: <%= (@field.current_crop.name + " " + @field.current_crop.variety) %><br/>
-Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %><br/>
+Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %> in<br/>
 Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>
-Initial soil moisture: <%= @field_weather_data.first.pct_moisture  if @field_weather_data && @field_weather_data.size > 0 %>
+Initial soil moisture: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
+<% if @field.target_ad_pct %>
+  Target AD: <%= sprintf("%0.0f",100*@field.target_ad_pct) %> %
+<% end %>
 </div>
 
 <%= render :partial => 'wisp/partials/field_daily_wx'%>

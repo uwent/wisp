@@ -7,7 +7,7 @@
               url:'/fields?q=1',
               editurl:'/fields/post_data',
               datatype: "json",
-              colNames:['Name','Area','Soil Type','Field Capacity','Permanent Wilting Point','ET Stn','Rain Stn','Soil Mois. Stn','Notes',' '],
+              colNames:['Name','Area','Soil Type','Field Capacity','Permanent Wilting Point','ET Stn','Rain Stn','Soil Mois. Stn','Target AD','Notes',' '],
               colModel:[{name:'name', index:'name',width:83,editable:true},
                              {name:'area', index:'area',width:20,editable:true, align:'right'},
                              {name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'},
@@ -16,6 +16,8 @@
                              {name:'ref_et_station_id', index:'ref_et_station_id',width:25,editable:true, align:'right'},
                              {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right'},
                              {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:47,editable:true, align:'right'},
+                             {name:'target_ad_pct',
+                             index:'target_ad_pct',width:22,editable:true, align:'right'},
                              {name:'notes', index:'notes',width:87,editable:true, align:'right'},
                              {name:'id', index:'id',width:1}
                              ],

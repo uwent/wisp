@@ -67,6 +67,8 @@ class WispController < ApplicationController
     @projected_ad_data = FieldDailyWeather.projected_ad(@ad_recs)
     @dates,@date_str = make_dates(start_date,end_date)
     @summary_data = FieldDailyWeather.summary(@field.id)
+    @target_ad_data = target_ad_data(@field,@ad_data)
+    puts @target_ad_data.inspect
   end
 
   def field_status
@@ -86,10 +88,20 @@ class WispController < ApplicationController
   def projection_data
     field_status_data
     respond_to do |format|
-      format.json { render :json => {:ad_data => @ad_data,:projected_ad_data => @projected_ad_data}} 
+      format.json { render :json => {:ad_data => @ad_data,:projected_ad_data => @projected_ad_data,
+        :target_ad_data => @target_ad_data}} 
     end
   end
 
+  # Make a line for the Target AD value for this field
+  # We just use the length of projected_ad_data
+  def target_ad_data(field,ad_data)
+    return nil unless field.target_ad_pct
+    ret = []
+    (ad_data.length + 2).times { ret << field.target_ad_pct * field.ad_max }
+    ret
+  end
+  
   def farm_status
     if params[:ajax]
       render :layout => false

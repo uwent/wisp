@@ -86,7 +86,6 @@ class Field < ActiveRecord::Base
       return -999.0
     end
     mrzd = current_crop.max_root_zone_depth
-
     taw = taw(field_capacity, perm_wilting_pt, mrzd)
     mad_frac = current_crop.max_allowable_depletion_frac
   # puts "Field#taw returns #{taw}; max allowable depletion frac is #{mad_frac}"
@@ -168,6 +167,13 @@ class Field < ActiveRecord::Base
     # end
     # puts "updating field daily wx for day #{day}"
     # field_daily_wx.update_balances(day == 0 ? nil : field_daily_weather[day-1])
+  end
+  
+  # return the Max AD (in inches)
+  def ad_max
+    taw = taw(field_capacity, perm_wilting_pt, current_crop.max_root_zone_depth)
+    mad_frac = current_crop.max_allowable_depletion_frac
+    ad_max_inches(mad_frac,taw)
   end
   
   def problem
