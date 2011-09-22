@@ -16,9 +16,9 @@
 	{
 		position:absolute;
 		left:275px;
-		top:170px;
+		top:150px;
 		width:200px;
-		height:200px;
+		height:220px;
 		padding:2px;
 		border:1px solid gray;
 		margin:0px;
@@ -29,7 +29,7 @@
 		position:absolute;
 		left:500px;
 		top:150px;
-		width:510px;
+		width:690px;
 		padding:2px;
 		margin:0px;
 	}
@@ -37,18 +37,6 @@
 	#tableDataBox table tr td.editable
 	{
 		background:white
-	}
-
-	#summaryDataBox
-	{
-		position:absolute;
-		left:1025px;
-		top:170px;
-		width:170px;
-		height:200px;
-		padding:2px;
-		border:1px solid gray;
-		margin:0px;
 	}
 
 	#graphBox
@@ -96,7 +84,7 @@
       var ad_data;
       var projected_ad_data = [];
       var target_ad_data = [];
-      g.title = 'Allowable Depletion (in)';
+      g.title = 'Allowable Depletion (inches)';
       g.tooltips = true;
       g.set_theme({
           colors: ['#202020', 'white', '#a21764', '#8ab438',
@@ -161,7 +149,7 @@
 </div>
 
 <div id="fieldDataBox">
-<h2>Field Data</h2>
+<h2 style="padding:5px">Field Data</h2>
 Farm name:<%= @farm.name if @farm %><br/>
 Pivot name: <%= @pivot.name if @pivot %><br/>
 Field name/soil: <%= @field.name %><br/>
@@ -176,31 +164,23 @@ Initial soil moisture: <%= sprintf("%0.0f",@field_weather_data.first.pct_moistur
 
 <%= render :partial => 'wisp/partials/field_daily_wx'%>
 
-<div id="summaryDataBox">
-<h2>Summary Data</h2>
-<table border="0">
-<tr><th>Rainfall (in):</th><td> <%= sprintf("%0.2f",@summary_data[:rain] || 0.0) %></td></tr>
-<tr><th>Irrigation (in):</th><td><%= sprintf("%0.2f",@summary_data[:irrigation] || 0.0) %></td></tr>
-<tr><th>ET (in):</th><td> <%= sprintf("%0.2f",@summary_data[:adj_et] || 0.0) %></td></tr>
-<tr><th>Drainage (in):</th><td> <%= sprintf("%0.2f",@summary_data[:deep_drainage] || 0.0) %></td></tr>
-</table>                                                                
-<!-- Irrig. (gal x 1K):<br/>
-Power (kWH): <br/>
-Run time (hours): <br/>
-Cost ($): <br/> -->
-</div>
-
 <div id="graphBox">
   <canvas id="example" width="400" height="300"></canvas>
 
 </div>
 
 <div id="projectedADBox">
-	<%= image_tag "pivot.manip.small.jpg", :width => 300  %>
-<h2>Projected Allowable Depletion</h2>
+<h2 style="padding:5px">Summary Data</h2>
+<table border="0" width="50%">
+  <tr><th>Rainfall:</th><td> <%= sprintf("%0.2f",@summary_data[:rain] || 0.0) %> in.</td></tr>
+  <tr><th>Irrigation:</th><td><%= sprintf("%0.2f",@summary_data[:irrigation] || 0.0) %> in.</td></tr>
+  <tr><th>ET:</th><td> <%= sprintf("%0.2f",@summary_data[:adj_et] || 0.0) %> in.</td></tr>
+  <tr><th>Drainage:</th><td> <%= sprintf("%0.2f",@summary_data[:deep_drainage] || 0.0) %> in.</td></tr>
+</table>      
+<h2 style="padding-top:50px;padding-bottom:5px">Projected Allowable Depletion</h2>
 <p>In inches, based on the max adjusted ET in the past week (i.e., worst case).</p>
-<table>
-  <tr><th><%= @dates[-2].strftime('%b %d')%>:</th><td id="proj_ad_1"><%= sprintf("%0.2f",@projected_ad_data[-2]) %></td></tr>
-  <tr><th><%= @dates[-1].strftime('%b %d')%>:</th><td id="proj_ad_2"><%= sprintf("%0.2f",@projected_ad_data[-1]) %></td></tr>
+<table width="35%">
+  <tr><th><%= @dates[-2].strftime('%b %d')%>:</th><td id="proj_ad_1"><%= sprintf("%0.2f",@projected_ad_data[-2]) %> in.</td></tr>
+  <tr><th><%= @dates[-1].strftime('%b %d')%>:</th><td id="proj_ad_2"><%= sprintf("%0.2f",@projected_ad_data[-1]) %> in.</td></tr>
 </table>
 </div>
