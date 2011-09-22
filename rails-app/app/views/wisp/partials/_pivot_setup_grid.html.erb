@@ -20,13 +20,13 @@
               // t.integer  "cropping_year"
               // t.string   "notes"
               // 
-              colNames:['Name','Latitude','Longitude','Equipment','Pump Capacity','Energy Metric','Cropping Year','Notes',' '],
+              colNames:['Name','Lat.','Long.','Equipment','Pump Capacity','Energy','Crop Yr','Notes',' '],
               // colNames:['Name',' '],
               colModel:[ {name:'name', index:'name',width:83,editable:true},
-                         {name:'latitude', index:'latitude',width:20,editable:true, align:'right'},
-                         {name:'longitude', index:'longitude',width:47,editable:true, align:'right'},
+                         {name:'latitude', index:'latitude',width:30,editable:true, align:'right'},
+                         {name:'longitude', index:'longitude',width:30,editable:true, align:'right'},
                          {name:'equipment', index:'equipment',width:55,editable:true, align:'right'},
-                         {name:'pump_capacity', index:'pump_capacity',width:87,editable:true, align:'right'},
+                         {name:'pump_capacity', index:'pump_capacity',width:55,editable:true, align:'right'},
                          {name:'some_energy_rate_metric', index:'some_energy_rate_metric',width:25,editable:true, align:'right'},
                          {name:'cropping_year', index:'cropping_year',width:30,editable:true, align:'right'},
                          {name:'notes', index:'notes',width:87,editable:true, align:'right'},
