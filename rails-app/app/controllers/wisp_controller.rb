@@ -98,7 +98,7 @@ class WispController < ApplicationController
   def target_ad_data(field,ad_data)
     return nil unless field.target_ad_pct
     ret = []
-    (ad_data.length + 2).times { ret << field.target_ad_pct * field.ad_max }
+    (ad_data.length + 2).times { ret << (field.target_ad_pct / 100.0) * field.ad_max }
     ret
   end
   
@@ -108,6 +108,12 @@ class WispController < ApplicationController
     end
   end
 
+  # Ajax-accessible summary/projected box
+  def summary_box
+    field_status_data
+    render :partial => 'wisp/partials/summary_box'
+  end
+  
   def report_setup
   end
   

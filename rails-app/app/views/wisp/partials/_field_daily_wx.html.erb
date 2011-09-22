@@ -9,6 +9,7 @@
           function displayCalcValues(rowid,response) {
             $("#weather").trigger("reloadGrid");
             plotGraph();
+            $('#projectedADBox').load("/wisp/summary_box");
             return true;
           }
           var mygrid;
@@ -49,7 +50,7 @@
               imgpath: '/images/jqgrid',
               sortname: '',
               viewrecords: true,
-              height: 150,
+              height: 158,
               sortorder: '',
               gridview: false,
               scrollrows: true,
