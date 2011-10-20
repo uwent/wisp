@@ -37,4 +37,9 @@ module ApplicationHelper
       ""
     end
   end
+  
+  def image_folder_path(folder)
+    path = image_path(folder)
+    path.gsub(/[^\d][\d]+$/,'')
+  end
 end

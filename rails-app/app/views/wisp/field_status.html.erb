@@ -143,7 +143,7 @@
 
 <h2>WISP Field Status</h2>
 <div id="fieldSelectionBox">
-<%= form_tag "/wisp/field_status" do %>
+<%= form_tag(url_for :controller => "wisp", :action => :field_status) do %>
   <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field),{ :onchange => "this.form.submit();"} %> 
 <% end %>
 </div>

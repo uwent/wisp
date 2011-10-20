@@ -4,7 +4,7 @@
           var lastsel;
           jQuery(document).ready(function(){
             // Load the dependent field and crop grids with appropriate values
-            $('#fieldDataGrid').load('/wisp/field_setup_grid',{pivot_id:<%=@pivot_id%>});
+            $('#fieldDataGrid').load('<%= url_for :controller => "wisp", :action => :field_setup_grid %>',{pivot_id:<%=@pivot_id%>});
             
           var mygrid = jQuery("#pivot_setup").jqGrid({
               url:'<%= url_for :controller => "pivots", :q => 1 %>',
@@ -35,7 +35,7 @@
               pager: '#pivot_setup_pager',
               rowNum:180,
               rowList:[180],
-              imgpath: '/images/jqgrid',
+              imgpath: '<%= image_folder_path("jqgrid") %>',
               sortname: '',
               viewrecords: true,
               height: 110,
@@ -52,7 +52,7 @@
                   jQuery('#pivot_setup').restoreRow(lastsel);
                   jQuery('#pivot_setup').editRow(id,true); 
                   lastsel=id;
-                  $('#fieldDataGrid').load('/wisp/field_setup_grid',{pivot_id:id});
+                  $('#fieldDataGrid').load('<%= url_for :controller => "wisp", :action => :field_setup_grid %>',{pivot_id:id});
                 } 
               },             
               

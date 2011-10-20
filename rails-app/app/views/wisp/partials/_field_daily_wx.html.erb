@@ -9,7 +9,7 @@
           function displayCalcValues(rowid,response) {
             $("#weather").trigger("reloadGrid");
             plotGraph();
-            $('#projectedADBox').load("/wisp/summary_box");
+            $('#projectedADBox').load("<%= url_for :controller => 'wisp', :action => :summary_box %>");
             return true;
           }
           var mygrid;
@@ -47,7 +47,7 @@
               pager: '#weather_pager',
               rowNum:7,
               rowList:[7,153],
-              imgpath: '/images/jqgrid',
+              imgpath: '<%= image_folder_path("jqgrid") %>',
               sortname: '',
               viewrecords: true,
               height: 158,

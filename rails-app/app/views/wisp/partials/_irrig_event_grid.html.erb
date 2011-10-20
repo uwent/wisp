@@ -14,7 +14,7 @@
               pager: '#irrig_events_pager',
               rowNum:180,
               rowList:[180],
-              imgpath: '/images/jqgrid',
+              imgpath: '<%= image_folder_path("jqgrid") %>',
               sortname: '',
               viewrecords: true,
               height: 100,
@@ -31,14 +31,14 @@
                   ids=0; 
                   if(jQuery("#irrig_events_details").getGridParam('records') >0 ) 
                   { 
-                    jQuery("#irrig_events_details").setGridParam({url:"/field_daily_weather?irrig_only=true&q=1&id="+ids,page:1})
+                    jQuery("#irrig_events_details").setGridParam({url:"<%= url_for :controller => 'field_daily_weather', :irrig_only => true, :q => 1 %>&id="+ids,page:1})
                     .setCaption("Field Irrigation Events: "+ids)
                     .trigger('reloadGrid'); 
                   } 
                 } 
                 else 
                 { 
-                  jQuery("#irrig_events_details").setGridParam({url:"/field_daily_weather?irrig_only=true&q=1&id="+ids,page:1})
+                  jQuery("#irrig_events_details").setGridParam({url:"<%= url_for :controller => 'field_daily_weather', :irrig_only => true, :q => 1 %>&id="+ids,page:1})
                   .setCaption("Field Irrigation Events : "+ids)
                   .trigger('reloadGrid'); 
                 } 
