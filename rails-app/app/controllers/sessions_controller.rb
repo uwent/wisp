@@ -1,3 +1,4 @@
+# after http://blog.sethladd.com/2010/09/ruby-rails-openid-and-google.html
 class SessionsController < ApplicationController
   skip_before_filter :verify_authenticity_token
   def new
@@ -22,12 +23,13 @@ class SessionsController < ApplicationController
                                :first_name => ax.get_single('http://axschema.org/namePerson/first'),
                                :last_name => ax.get_single('http://axschema.org/namePerson/last'))
          session[:user_id] = user.id
-         if user.first_name.blank?
-           redirect_to(user_additional_info_path(user))
-         else
-           redirect_to(session[:redirect_to] || root_path)
-         end
+         # if user.first_name.blank?
+           # redirect_to(user_additional_info_path(user))
+         # else
+         redirect_to(session[:redirect_to] || root_path)
+         # end
        when :failure
+         logger.warn 'OpenID auth failed!'
          render :action => 'problem'
        end
      else
@@ -39,6 +41,8 @@ class SessionsController < ApplicationController
     session[:user_id] = nil
     if params[:redirect]
       redirect_to :controller => params[:redirect]
+    else
+      redirect_to :controller => 'wisp', :action => :index
     end
   end
 

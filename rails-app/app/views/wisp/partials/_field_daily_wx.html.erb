@@ -15,8 +15,8 @@
           var mygrid;
           jQuery(document).ready(function(){
             mygrid = jQuery("#weather").jqGrid({
-              url:'/field_daily_weather?q=1',
-              editurl:'/field_daily_weather/post_data',
+              url:'<%= url_for :controller => "field_daily_weather", :q => 1 %>',
+              editurl:'<%= url_for :controller => "field_daily_weather", :action  => :post_data %>',
               datatype: "json",
               colNames:['Date','Ref. ET','Rainfall','Irrigation','% Moist.',
                 '% Cover','LAI','Adj. ET','AD','Deep Drain','ID'],
@@ -45,7 +45,7 @@
                 {name:'id', index:'id',width:1}           
               ], 
               pager: '#weather_pager',
-              // rowNum:7,
+              rowNum:7,
               rowList:[7,153],
               imgpath: '/images/jqgrid',
               sortname: '',

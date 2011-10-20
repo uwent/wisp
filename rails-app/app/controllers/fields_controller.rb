@@ -1,9 +1,8 @@
 class FieldsController < ApplicationController
-  before_filter :ensure_signed_in, :current_user, :get_current_ids
+  before_filter :ensure_signed_in, :current_user, :get_current_ids, :except => :post_data
  
-  COLUMN_NAMES = [:name,:area,:soil_type,:field_capacity,:perm_wilting_pt,
-                  :ref_et_station_id,:rain_station_id,:soil_moisture_station_id,
-                  :target_ad_pct,:notes]
+  COLUMN_NAMES = [:name,:area,:soil_type,:field_capacity,:perm_wilting_pt,:target_ad_pct,
+                  :ref_et_station_id,:rain_station_id,:soil_moisture_station_id,:notes]
   # GET /fields
   # GET /fields.xml
   def index

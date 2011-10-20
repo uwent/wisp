@@ -159,7 +159,7 @@ class FieldDailyWeather < ActiveRecord::Base
   # CLASS METHODS
   
   def self.page_for(rows_per_page,start_date,date=nil)
-    date ||= Date.today
+    date ||= today_or_latest(1)
     # Numb-nuts JS programmers start arrays at 1...
     ((date - start_date) / rows_per_page).to_i + 1
   end

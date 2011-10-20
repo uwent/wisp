@@ -1,5 +1,6 @@
 class PivotsController < ApplicationController
-  before_filter :ensure_signed_in, :current_user, :get_current_farm # sets @farm_id
+  # get_current_farm sets farm_id
+  before_filter :ensure_signed_in, :current_user, :get_current_farm, :except => :post_data
   
   COLUMN_NAMES = [:name,
      :latitude, :longitude, :equipment,

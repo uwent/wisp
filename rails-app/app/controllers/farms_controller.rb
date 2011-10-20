@@ -1,6 +1,6 @@
 class FarmsController < ApplicationController
   COLUMN_NAMES = [:name,:et_method_id,:notes]
-  before_filter :ensure_signed_in, :current_user, :get_group
+  before_filter :ensure_signed_in, :current_user, :get_group, :except => :post_data
   
   # GET /farms
   # GET /farms.xml

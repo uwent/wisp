@@ -5,16 +5,24 @@
           jQuery(document).ready(function(){
             
           var mygrid = jQuery("#farm_setup").jqGrid({
-              url:'/farms?q=1',
-              editurl:'/farms/post_data',
+              url: '<%= url_for :controller => "farms", :action => :index, :q => 1 %>',
+              // '/farms?q=1',
+              editurl:'<%= url_for :controller => "farms", :action => :post_data %>',
               datatype: "json",
               colNames:['Name','ET Method','Notes','Problem?',' '],
-              colModel:[{name:'name', index:'name',width:83,editable:true},
-                             {name:'et_method_id', index:'et_method_id',width:87,editable:true, align:'right'},
-                             {name:'notes', index:'notes',width:87,editable:true, align:'right'},
-                             {name:'problem', index:'problem',width:20, align:'right'},
-                             {name:'id', index:'id',width:1}
-                             ],
+              colModel:[
+                {name:'name', index:'name',width:83,editable:true},
+                {
+                  name:'et_method_id',index:'et_method_id', width:50,resizable:true,   
+                  align:"left",sorttype:"text",editable:true,edittype:"select",
+                  formatter:'select',
+                  editoptions:   
+                    { value:"1:Percent Cover;2:Leaf Area Index"},editrules:{required:true}
+                },
+                {name:'notes', index:'notes',width:87,editable:true, align:'right'},
+                {name:'problem', index:'problem',width:20, align:'right'},
+                {name:'id', index:'id',width:1}
+              ],
               pager: '#farm_setup_pager',
               rowNum:180,
               rowList:[180],

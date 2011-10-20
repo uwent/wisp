@@ -1,5 +1,5 @@
 module AuthenticationHelper
-  USING_OPENID = false
+  USING_OPENID = true
   SINGLE_USER_ID = 1
   def signed_in?
     # puts "signed_in?: session[:user_id] is #{session[:user_id]}"

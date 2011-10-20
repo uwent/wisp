@@ -7,8 +7,8 @@
             $('#fieldDataGrid').load('/wisp/field_setup_grid',{pivot_id:<%=@pivot_id%>});
             
           var mygrid = jQuery("#pivot_setup").jqGrid({
-              url:'/pivots?q=1',
-              editurl:'/pivots/post_data',
+              url:'<%= url_for :controller => "pivots", :q => 1 %>',
+              editurl:'<%= url_for :controller => "pivots", :action  => :post_data %>',
               datatype: "json",
               // t.integer  "farm_id"
               // t.string   "name"

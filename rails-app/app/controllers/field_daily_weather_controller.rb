@@ -41,11 +41,12 @@ class FieldDailyWeatherController < ApplicationController
           page = FieldDailyWeather.page_for(page_size,@field_daily_weather.first.date)
         else
           page_size = params[:rows]
-          page = params[:page] || 1
+          page = params[:page] || calc_page(@field_daily_weather,current_day,page_size)
         end
       else
-        page = params[:page] || 1
+        page = params[:page] || calc_page(@field_daily_weather,current_day,page_size)
       end
+      logger.info "fdw#index: page_size #{page_size}, current_day #{current_day}, page #{page}"
     # puts "\n****\nfdw#index full; page is #{page}, page_size is #{page_size}, #{wx_size} records"; $stdout.flush
       @field_daily_weather = @field_daily_weather.paginate(:page => page, :per_page => page_size)
     end
@@ -63,6 +64,12 @@ class FieldDailyWeatherController < ApplicationController
                                                                            :ad,:deep_drainage,:id], 
                                                                page, page_size, wx_size) }
       end
+    end
+    
+    def calc_page(fdw,date,page_size)
+      days = date - fdw.first.date
+      days = 7 if days < 7
+      days / page_size
     end
 
     # in the example, this goes in the block on the query

@@ -3,8 +3,8 @@
           var lastsel;
           jQuery(document).ready(function(){
           var mygrid = jQuery("#irrig_events").jqGrid({
-              url:'/irrigation_events?q=1',
-              editurl:'/irrigation_events/post_irrig_data',
+              url:'<%= url_for :controller => "irrigation_events", :q => 1 %>',
+              editurl:'<%= url_for :controller => "irrigation_events", :action => :post_irrig_data %>',
               datatype: "json",
               colNames:['Date','Inches Applied','ID'],
               colModel:[{name:'date', index:'date',width:83},

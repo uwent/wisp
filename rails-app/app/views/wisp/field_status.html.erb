@@ -96,7 +96,7 @@
         $.ajax(
         { 
             type: "GET",
-            url: "projection_data", 
+            url: '<%= url_for :action => :projection_data, :cur_date => @cur_date %>', 
             dataType: "json",
             async: false,
             success: function(json)
@@ -158,7 +158,7 @@ Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field
 Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>
 Initial soil moisture: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
 <% if @field.target_ad_pct %>
-  Target AD: <%= sprintf("%0.0f",100*@field.target_ad_pct) %> %
+  Target AD: <%= sprintf("%0.0f",@field.target_ad_pct) %>% of max allowable
 <% end %>
 </div>
 

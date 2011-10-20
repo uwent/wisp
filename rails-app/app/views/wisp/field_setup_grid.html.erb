@@ -4,8 +4,8 @@
             $('#cropDataGrid').load('/wisp/crop_setup_grid',{field_id:<%=@field_id%>});
             
           var mygrid = jQuery("#field_setup").jqGrid({
-              url:'/fields?q=1',
-              editurl:'/fields/post_data',
+              url:'<%= url_for :controller => "fields", :q => 1 %>',
+              editurl:'<%= url_for :controller => "fields", :action  => :post_data %>',
               datatype: "json",
               colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD (%)','ET Stn','Rain Stn','Soil Moist. Stn','Notes',' '],
               colModel:[{name:'name', index:'name',width:83,editable:true},

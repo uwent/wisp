@@ -48,4 +48,25 @@ class ApplicationController < ActionController::Base
     @crop_id,@crop = get_and_set(Crop,Field,@field_id)
   end
   
+  def current_day
+    # There will always be a field around with field ID 1
+    session[:today] || today_or_latest(1)
+  end
+  
+  def today_or_latest(field_id)
+    query = <<-END
+      select max(date) as date from field_daily_weather where field_id=#{field_id}
+    END
+    latest = FieldDailyWeather.find_by_sql(query).first.date
+    today = Date.today
+    unless latest
+      return today
+    end
+    if today > latest
+      return latest
+    else
+      return today
+    end
+  end
+  
 end

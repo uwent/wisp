@@ -45,6 +45,7 @@
   <%= jqgrid_javascripts.html_safe %>
   <script type="text/javascript">
     jQuery(document).ready(function(){
+      $('#fieldDataGrid').load('/wisp/field_setup_grid');
       $('#cropDataGrid').load('/wisp/crop_setup_grid');
     });
   </script>

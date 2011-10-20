@@ -63,6 +63,7 @@ class Field < ActiveRecord::Base
         :date => date, :ref_et => 0.0, :adj_et => 0.0, :leaf_area_index => lai
       )
     end
+    field_daily_weather[0].calculated_pct_moisture = 100*self[:field_capacity]
   end
   
   def create_crop
@@ -116,7 +117,9 @@ class Field < ActiveRecord::Base
   end
 
   def get_et
-    return unless pivot.latitude && pivot.longitude
+    unless pivot.latitude && pivot.longitude
+      logger.info "get_et: no lat/long for pivot"
+    end
     logger.info "Starting get_et"
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s

@@ -15,13 +15,18 @@ class Farm < ActiveRecord::Base
   end
   
   def set_default_et_method
-    unless self[:et_method_id]
-      et_method = (EtMethod.all.select {|etm| etm.class == LaiEtMethod}).first
+    if self[:et_method_id]
+      logger.info "That's odd, et_method_id was set to #{et_method_id} coming into Farm.create"
+    else
+      self[:et_method_id] = EtMethod.find_by_type('LaiEtMethod')[:id]
+      logger.info "et_method_id now #{self[:et_method_id]}"
+      raise "Could not find LAI ET method to set as default" unless self[:et_method_id]
     end
+    logger.warn "Farm#set_default_et_method: #{self.inspect}" 
   end
   
   def create_default_data
-  # puts self.inspect
+    logger.warn "Farm#create_default_data: #{self.inspect}" 
     raise "Could not set default ET method" unless self[:et_method_id]
     pivots << Pivot.create(:name => "New pivot (farm: #{name})", :farm_id => self[:id])
   end
