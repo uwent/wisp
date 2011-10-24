@@ -1,6 +1,7 @@
 class FarmsController < ApplicationController
   COLUMN_NAMES = [:name,:et_method_id,:notes]
-  before_filter :ensure_signed_in, :current_user, :get_group, :except => :post_data
+  before_filter :ensure_signed_in, :except => :post_data
+  before_filter :current_user, :get_group
   
   # GET /farms
   # GET /farms.xml
@@ -16,7 +17,7 @@ class FarmsController < ApplicationController
   # GET /field_daily_weather
   # GET /field_daily_weather.xml
   def index
-    group_id = @group[:id]
+    if @group then group_id = @group[:id] else group_id = 1 end
     # FIXME: Don't forget to insert year here!
     @farms = Farm.where(:group_id => group_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
@@ -48,6 +49,14 @@ class FarmsController < ApplicationController
         # if no year supplied, use current one
         unless attribs[:year]
           attribs[:year] = Time.now.year
+        end
+        unless @group
+          # DANGER! FIX ME!                
+          begin
+            @group = Group.find(params[:group])
+          rescue
+            flash[:warning] = "Data error; group not found"
+          end
         end
         attribs[:group_id] = @group[:id]
         Farm.create(attribs)

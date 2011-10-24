@@ -27,7 +27,13 @@ class FieldsController < ApplicationController
       format.html # index.html.erb
       format.xml  { render :xml => @fields }
       columns = COLUMN_NAMES; columns << :id
-      format.json { render :json => @fields.to_jqgrid_json(columns,params[:page], params[:rows],@fields.size) }
+      format.json do
+        json = @fields.to_jqgrid_json(columns,params[:page], params[:rows],@fields.size)
+        logger.info "first field: " + @fields.first.inspect
+        logger.info "first field keys: " + @fields.first.attributes.symbolize_keys.inspect
+        logger.info "json: " + json.inspect
+        render :json => json
+      end
     end
   end
 

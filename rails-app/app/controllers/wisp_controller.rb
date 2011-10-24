@@ -155,7 +155,7 @@ class WispController < ApplicationController
     date_str = ''
     (start_date..(finish_date + 2)).each do |date|
       dates << date
-      if date == finish_date + 1
+      if date == Date.today
         date_str += "#{day}: 'Today',"
       else
         date_str += "#{day}: '#{date.strftime('%b %d')}',"

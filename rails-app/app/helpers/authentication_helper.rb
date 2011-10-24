@@ -2,7 +2,7 @@ module AuthenticationHelper
   USING_OPENID = true
   SINGLE_USER_ID = 1
   def signed_in?
-    # puts "signed_in?: session[:user_id] is #{session[:user_id]}"
+    logger.info "signed_in?: session[:user_id] is #{session[:user_id]}"
     !session[:user_id].nil?
   end
   

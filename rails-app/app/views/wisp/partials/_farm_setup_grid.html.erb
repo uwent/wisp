@@ -7,7 +7,7 @@
           var mygrid = jQuery("#farm_setup").jqGrid({
               url: '<%= url_for :controller => "farms", :action => :index, :q => 1 %>',
               // '/farms?q=1',
-              editurl:'<%= url_for :controller => "farms", :action => :post_data %>',
+              editurl:'<%= url_for :controller => "farms", :action => :post_data, :group => @group %>',
               datatype: "json",
               colNames:['Name','ET Method','Notes','Problem?',' '],
               colModel:[
