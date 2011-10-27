@@ -234,9 +234,9 @@ h1 {
 #footer p {
 	margin-top: 0.5em;
 }
-.wisp_description ul {
+#wisp_description ul {
   list-style-type: disc;
 }
-.wisp_description ol {
+#wisp_description ol {
   list-style-type: decimal;
 }
