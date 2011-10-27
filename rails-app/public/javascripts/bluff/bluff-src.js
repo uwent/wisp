@@ -613,7 +613,7 @@ Bluff.Base = new JS.Class({
     this._spread = this._spread > 0 ? this._spread : 1;
     
     var power = Math.round(Math.LOG10E*Math.log(this._spread));
-    this._significant_digits = Math.pow(10, 3 - power);
+    this._significant_digits = Math.pow(10, 2 - power);
   },
   
   // Calculates size of drawable area, general font dimensions, etc.

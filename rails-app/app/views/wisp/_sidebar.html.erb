@@ -24,13 +24,6 @@
                   // window.location.href = window.location.href + "?preserve_farm=true"
                 }
               });
-              $("#date_input").change(function(){
-                var cur_date = $('#date_input').val();
-                url = '<%= url_for :action => :field_status %>' + '?cur_date=' + cur_date;
-                // would be nice to do something nice and Ajax-y but I'm tired of fighthing with it.
-                // use replace insted of href so the "back" history doesn't accumulate.
-                window.location.replace(url);
-              });
             });
           </script>
       </li>
@@ -40,8 +33,6 @@
     <li><%= link_to "Pivots, Fields, and Crops", :controller => 'wisp', :action => :pivot_crop %></li>
     <li><%= link_to "Multi-Edit Daily Data", :controller => 'wisp', :action => :weather %></li>
     <li><%= link_to "Report Setup", :controller => 'wisp', :action => :report_setup %></li>
-    <li>Change date (e.g. 2011-06-01)</li>
-    <li><input name="date_input" id="date_input" class='date_input' size="20"></input></li>
   </ul>
 <% (0..15).each do %>
 <br/>
