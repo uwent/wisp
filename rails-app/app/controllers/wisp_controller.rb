@@ -1,9 +1,15 @@
 class WispController < ApplicationController
   before_filter :ensure_signed_in, :except => [:index]
-  before_filter :current_user, :get_current_ids, :except => [:index, :set_farm, :set_pivot, :set_field, :set_crop]
+  before_filter :current_user, :get_current_ids, :except => [:index, :home, :set_farm, :set_pivot, :set_field, :set_crop]
+
   def index
   end
 
+  def home
+    index
+    render :template => 'wisp/index'
+  end
+  
   def pivot_crop
     @farm = Farm.find(@farm_id) if @farm_id
     @pivot = Pivot.find(@pivot_id) if @pivot_id

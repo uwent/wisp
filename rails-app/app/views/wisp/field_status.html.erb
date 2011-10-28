@@ -161,13 +161,14 @@
 
 <div id="fieldDataBox">
 <h2 style="padding:5px">Field Data</h2>
-Farm name:<%= @farm.name if @farm %><br/>
-Pivot name: <%= @pivot.name if @pivot %><br/>
-Field name/soil: <%= @field.name %><br/>
-Crop: <%= (@field.current_crop.name + " " + @field.current_crop.variety) %><br/>
+Farm:<%= truncate(@farm.name, :length => 28) if @farm %><br/>
+Pivot: <%= truncate(@pivot.name, :length => 28) if @pivot %><br/>
+Field/soil: <%= truncate(@field.name, :length => 20) %><br/>
+Crop: <%= truncate((@field.current_crop.name + " " + @field.current_crop.variety), :length => 28) %><br/>   
 Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %> in<br/>
 Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>
-Initial soil moisture: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
+Total AD: <%= sprintf("%0.0f",@field.ad_max) %> in.<br/>
+Init. soil moist.: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
 <% if @field.target_ad_pct %>
   Target AD: <%= sprintf("%0.0f",@field.target_ad_pct) %>% of max allowable
 <% end %>
