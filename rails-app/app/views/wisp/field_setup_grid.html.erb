@@ -1,7 +1,7 @@
         <script type="text/javascript">
           var lastsel;
           jQuery(document).ready(function(){
-            $('#cropDataGrid').load('/wisp/crop_setup_grid',{field_id:<%=@field_id%>});
+            $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:<%=@field_id%>});
             
           var mygrid = jQuery("#field_setup").jqGrid({
               url:'<%= url_for :controller => "fields", :q => 1 %>',
@@ -41,7 +41,7 @@ index:'target_ad_pct',width:50,editable:true, align:'right'},
                   jQuery('#field_setup').restoreRow(lastsel);
                   jQuery('#field_setup').editRow(id,true); 
                   lastsel=id;
-                  $('#cropDataGrid').load('/wisp/crop_setup_grid',{field_id:id});
+                  $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:id});
                 } 
               },             
               
