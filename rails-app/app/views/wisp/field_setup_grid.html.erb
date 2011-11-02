@@ -1,67 +1,67 @@
-        <script type="text/javascript">
-          var lastsel;
-          jQuery(document).ready(function(){
-            $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:<%=@field_id%>});
-            
-          var mygrid = jQuery("#field_setup").jqGrid({
-              url:'<%= url_for :controller => "fields", :q => 1 %>',
-              editurl:'<%= url_for :controller => "fields", :action  => :post_data %>',
-              datatype: "json",
-              colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD (%)','ET Stn','Rain Stn','Soil Moist. Stn','Notes',' '],
-              colModel:[{name:'name', index:'name',width:83,editable:true},
-                             {name:'area', index:'area',width:20,editable:true, align:'right'},
-                             {name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'},
-                             {name:'field_capacity', index:'field_capacity',width:50,editable:true, align:'right'},
-                             {name:'perm_wilting_pt', index:'perm_wilting_pt',width:45,editable:true, align:'right'},
-                             {name:'target_ad_pct',
+<script type="text/javascript">
+  var lastsel;
+  jQuery(document).ready(function(){
+    $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:<%=@field_id%>});
+    
+  var mygrid = jQuery("#field_setup").jqGrid({
+      url:'<%= url_for :controller => "fields", :q => 1 %>',
+      editurl:'<%= url_for :controller => "fields", :action  => :post_data %>',
+      datatype: "json",
+      colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD (%)','ET Stn','Rain Stn','Soil Moist. Stn','Notes',' '],
+      colModel:[{name:'name', index:'name',width:83,editable:true},
+                     {name:'area', index:'area',width:20,editable:true, align:'right'},
+                     {name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'},
+                     {name:'field_capacity', index:'field_capacity',width:50,editable:true, align:'right'},
+                     {name:'perm_wilting_pt', index:'perm_wilting_pt',width:45,editable:true, align:'right'},
+                     {name:'target_ad_pct',
 index:'target_ad_pct',width:50,editable:true, align:'right'},
-                             {name:'ref_et_station_id', index:'ref_et_station_id',width:25,editable:true, align:'right'},
-                             {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right'},
-                             {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:50,editable:true, align:'right'},
-                             {name:'notes', index:'notes',width:87,editable:true, align:'right'},
-                             {name:'id', index:'id',width:1}
-                             ],
-              pager: '#field_setup_pager',
-              rowNum:180,
-              rowList:[180],
-              imgpath: '<%= image_folder_path("jqgrid") %>',
-              sortname: '',
-              viewrecords: true,
-              height: 110,
-              width: 918,
-              sortorder: '',
-              gridview: false,
-              scrollrows: true,
-              autowidth: false,
-              rownumbers: false,
-              multiselect: false,
-              
-              onSelectRow: function(id){ 
-                if(id && id!==lastsel){ 
-                  jQuery('#field_setup').restoreRow(lastsel);
-                  jQuery('#field_setup').editRow(id,true); 
-                  lastsel=id;
-                  $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:id});
-                } 
-              },             
-              
-              
-              subGrid:false,
-              
-              caption: "Fields <%= @pivot ? "for #{@pivot.name}" : '(select pivot above)' %>"
-            })
-            .navGrid('#field_setup_pager',
-              {edit:false,add:true,del:true,search:false,refresh:true},
-              {afterSubmit:function(r,data){return true;(r,data,'edit');}},
-              {afterSubmit:function(r,data){return true;(r,data,'add');}},
-              {afterSubmit:function(r,data){return true;(r,data,'delete');}}
-            )
-            .navButtonAdd("#field_setup_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
-            
-            
-            mygrid.filterToolbar();mygrid[0].toggleToolbar()
-          });
-        </script>
+                     {name:'ref_et_station_id', index:'ref_et_station_id',width:25,editable:true, align:'right'},
+                     {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right'},
+                     {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:50,editable:true, align:'right'},
+                     {name:'notes', index:'notes',width:87,editable:true, align:'right'},
+                     {name:'id', index:'id',width:1}
+                     ],
+      pager: '#field_setup_pager',
+      rowNum:180,
+      rowList:[180],
+      imgpath: '<%= image_folder_path("jqgrid") %>',
+      sortname: '',
+      viewrecords: true,
+      height: 110,
+      width: 918,
+      sortorder: '',
+      gridview: false,
+      scrollrows: true,
+      autowidth: false,
+      rownumbers: false,
+      multiselect: false,
+      
+      onSelectRow: function(id){ 
+        if(id && id!==lastsel){ 
+          jQuery('#field_setup').restoreRow(lastsel);
+          jQuery('#field_setup').editRow(id,true); 
+          lastsel=id;
+          $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:id});
+        } 
+      },             
+      
+      
+      subGrid:false,
+      
+      caption: "Fields <%= @pivot ? "for #{@pivot.name}" : '(select pivot above)' %>"
+    })
+    .navGrid('#field_setup_pager',
+      {edit:false,add:true,del:true,search:false,refresh:true},
+      {afterSubmit:function(r,data){return true;(r,data,'edit');}},
+      {afterSubmit:function(r,data){return true;(r,data,'add');}},
+      {afterSubmit:function(r,data){return true;(r,data,'delete');}}
+    )
+    .navButtonAdd("#field_setup_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
+    
+    
+    mygrid.filterToolbar();mygrid[0].toggleToolbar()
+  });
+</script>
 
-        <table id="field_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
-        <div id="field_setup_pager" class="scroll" style="text-align:center;"></div>
+<table id="field_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
+<div id="field_setup_pager" class="scroll" style="text-align:center;"></div>

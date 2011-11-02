@@ -1,4 +1,3 @@
-
 <script type="text/javascript">
   var lastsel;
   jQuery(document).ready(function(){
@@ -6,7 +5,7 @@
       url:'<%= url_for :controller => "crops", :q => 1 %>',
       editurl:'<%= url_for :controller => "crops", :action  => :post_data %>',
       datatype: "json",
-      colNames:['Crop','Variety','Emergence Date','Initial Soil Moist.','Harvest/Kill Date','Mgd. Rootzone Depth','AD Frac.','Notes',' '],
+      colNames:['Crop','Variety','Emergence Date','Init Soil Moist. (%)','Harvest/Kill Date','Mgd. RZ (in)','AD Frac.','Notes',' '],
       colModel:[ {name:'name', index:'name',width:83,editable:true},
                  {name:'variety', index:'variety',width:47,editable:true, align:'right'},
                  {name:'emergence_date', index:'emergence_date',width:47,editable:true, align:'right'},

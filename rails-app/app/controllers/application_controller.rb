@@ -3,8 +3,11 @@ class ApplicationController < ActionController::Base
   include AuthenticationHelper
   
   def self.set_default_filters
-    exception = AuthenticationHelper::USING_OPENID ? :post_data : nil
-    before_filter :ensure_signed_in, :except => exception
+    if AuthenticationHelper::USING_OPENID
+      before_filter :ensure_signed_in, :except => :post_data # At least until I figure out how to get the grids to deal
+    else
+      before_filter :ensure_signed_in
+    end
     before_filter :current_user, :get_current_ids
   end
   
