@@ -2,8 +2,15 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   include AuthenticationHelper
   
+  def self.set_default_filters
+    exception = AuthenticationHelper::USING_OPENID ? :post_data : nil
+    before_filter :ensure_signed_in, :except => exception
+    before_filter :current_user, :get_current_ids
+  end
+  
   private
   def get_group
+    logger.info "get_group"
     unless @current_user
       return nil
     end
@@ -31,13 +38,14 @@ class ApplicationController < ActionController::Base
   end
   
   def get_current_ids
+    logger.info "get_current_ids"
     get_group
     unless @current_user
-      puts "get_current_ids: no user!"
+      logger.warn "get_current_ids: no user!"
       return 
     end
     unless @group
-      puts "get_current_ids: no group!"
+      logger.warn "get_current_ids: no group!"
       return
     end
     # puts "get_current_ids: before get_and_set, @farm is #{@farm ? @farm.name : "Not set"}"

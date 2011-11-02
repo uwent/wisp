@@ -1,5 +1,5 @@
 class FieldsController < ApplicationController
-  before_filter :ensure_signed_in, :current_user, :get_current_ids, :except => :post_data
+  set_default_filters
  
   COLUMN_NAMES = [:name,:area,:soil_type,:field_capacity,:perm_wilting_pt,:target_ad_pct,
                   :ref_et_station_id,:rain_station_id,:soil_moisture_station_id,:notes]

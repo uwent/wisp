@@ -1,5 +1,5 @@
 class CropsController < ApplicationController
-  before_filter :ensure_signed_in, :current_user, :get_current_ids, :except => :post_data
+  set_default_filters
   
   COLUMN_NAMES = [
     :name,

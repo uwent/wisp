@@ -1,7 +1,6 @@
 class FarmsController < ApplicationController
   COLUMN_NAMES = [:name,:et_method_id,:notes]
-  before_filter :ensure_signed_in, :except => :post_data
-  before_filter :current_user, :get_group
+  set_default_filters
   
   # GET /farms
   # GET /farms.xml
@@ -37,6 +36,7 @@ class FarmsController < ApplicationController
   def post_data
     if params[:oper] == "del"
       farm = Farm.find(params[:id])
+      session.each {|key,value| logger.info "session #{key} == #{value}"}
       if farm.group == @group
         farm.destroy
       end
