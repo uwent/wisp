@@ -39,7 +39,9 @@ index:'target_ad_pct',width:50,editable:true, align:'right'},
       onSelectRow: function(id){ 
         if(id && id!==lastsel){ 
           jQuery('#field_setup').restoreRow(lastsel);
+          alert('calling editRow');
           jQuery('#field_setup').editRow(id,true); 
+          alert('finished editRow');
           lastsel=id;
           $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:id});
         } 
