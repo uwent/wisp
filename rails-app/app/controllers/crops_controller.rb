@@ -49,7 +49,7 @@ class CropsController < ApplicationController
         attribs[:field_id] = @field_id
         Crop.create(attribs)
       else
-        Crop.find(params[:id]).update_attributes(attribs)
+        Crop.find(params[:id]).do_attribs(attribs)
       end
     end
     render :nothing => true
