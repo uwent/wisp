@@ -57,10 +57,8 @@ class WispController < ApplicationController
   def lookup
   end
   def field_status_data(cur_date=nil)
-    # puts "field_status"
     @farm = Farm.find(@farm_id) if @farm_id
     @pivot = Pivot.find(@pivot_id) if @pivot_id
-    # puts "FIELD_STATUS*****: #{@pivot.name}" if @pivot
     @field = Field.find(@field_id) if @field_id
     @field_weather_data = @field.field_daily_weather
     start_date=nil
@@ -75,14 +73,12 @@ class WispController < ApplicationController
       end_date = today_or_latest(@field_id) - 1
     end
     start_date = end_date - 6
-    logger.info "wisp#field_status_data: start_date #{start_date}, end_date #{end_date}"
     @ad_recs = FieldDailyWeather.fdw_for(@field_id,start_date,end_date)
     @ad_data = @ad_recs.collect { |fdw| fdw.ad }
     @projected_ad_data = FieldDailyWeather.projected_ad(@ad_recs)
     @dates,@date_str = make_dates(start_date,end_date)
     @summary_data = FieldDailyWeather.summary(@field.id)
     @target_ad_data = target_ad_data(@field,@ad_data)
-    logger.info "dates #{@dates.inspect}, date_str #{@date_str.inspect}, ad_data #{@ad_data.inspect}, target #{@target_ad_data.inspect}"
   end
 
   def field_status

@@ -10,7 +10,7 @@ class Crop < ActiveRecord::Base
     puts attribs.inspect; $stdout.flush
     puts self.inspect; $stdout.flush
     [:emergence_date, :max_root_zone_depth, :max_allowable_depletion_frac,
-      :max_allowable_depletion_inches, :initial_soil_moisture].each do |attrib_name|
+      :initial_soil_moisture].each do |attrib_name|
       if self[attrib_name].to_s != attribs[attrib_name].to_s
         return true
       end
@@ -23,7 +23,7 @@ class Crop < ActiveRecord::Base
     @dont_update_canopy = !(must_update_canopy?(attribs))
     update_attributes(attribs)
     @dont_update_canopy = true
-    puts "done updating"; $stdout.flush
+    # puts "done updating"; $stdout.flush
   end
   
   def update_field_with_emergence_date

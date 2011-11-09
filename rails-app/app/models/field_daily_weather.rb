@@ -18,7 +18,8 @@ class FieldDailyWeather < ActiveRecord::Base
   end
   
   def pct_moisture=(moisture)
-    entered_pct_moisture = moisture
+    self[:entered_pct_moisture] = moisture
+    logger.info "I now have an entered pct moisture"
   end
   
   def pct_cover
@@ -43,45 +44,61 @@ class FieldDailyWeather < ActiveRecord::Base
     ad_max = ad_max_inches(mad_frac, taw)
     pct_moisture_from_ad(pwp,fc,ad_max,ad,mrzd)
   end
+
+  def ad_from_moisture(taw)
+    # AD == (moisture - pct_moisture_at_ad_min) * mrzd.
+    fc = field.field_capacity
+    mrzd = field.current_crop.max_root_zone_depth
+    mad_frac = field.current_crop.max_allowable_depletion_frac
+    mad_in = ad_max_inches(mad_frac,taw)
+    # daily_ad_from_moisture(mad_frac,taw,mrzd,pct_moisture_at_ad_min,entered_pct_moisture)
+    # logger.info "ad_from_moisture: #{fc}, #{mad_in}, #{mrzd}, #{pct_moisture}, #{pct_moisture_at_ad_min(fc, mad_in, mrzd)}"
+    mrzd * (pct_moisture - pct_moisture_at_ad_min(fc, mad_in, mrzd))/100
+  end
   
   # TODO: Why does this work, while the one using balance_calcs doesn't? FIXME
   def old_update_balances
     feeld = self.field
-    return unless ref_et > 0.0
-    (puts "couldn't calculate adj_et";$stdout.flush; return) unless (self[:adj_et] = feeld.et_method.calc_adj_ET(self))
-    # puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
-    previous_ad = find_previous_ad
-  # puts "Got previous AD of #{previous_ad}"
-    requirements = [ "ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
-    errors = []
-    requirements.each do |cond|
-      unless eval(cond)
-        errors << cond
-      end
-    end
-    if errors.size > 0
-      logger.info "#{self[:date]} could not update balances.\n  #{self.inspect}\n  #{self.field.inspect}\n  #{self.field.current_crop.inspect}"
-      logger.info "   Reasons: " + errors.join(", ")
-      return
-    end
-  # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
-    delta_storage = change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
-  # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
     total_available_water = taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
-    dd = delta_storage + previous_ad
-    self[:deep_drainage] = (dd > total_available_water ? dd  - total_available_water : 0.0)
-    self[:ad] = daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
-    self[:calculated_pct_moisture] = moisture(
-      feeld.current_crop.max_allowable_depletion_frac,
-      total_available_water,
-      feeld.perm_wilting_pt,
-      feeld.field_capacity,
-      self[:ad],
-      feeld.current_crop.max_root_zone_depth
-    )
-    # pct_moisture_from_ad(feeld.perm_wilting_pt, feeld.field_capacity, feeld.current_crop.max_allowable_depletion_frac,
-    #   self[:ad], feeld.current_crop.max_root_zone_depth)
-  # puts "\n***** got through update_balance, AD is now #{self[:ad]}"
+    if entered_pct_moisture
+      self[:calculated_pct_moisture] = entered_pct_moisture
+      self[:ad] = [ad_from_moisture(total_available_water),total_available_water].min
+      self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
+    else
+      return unless ref_et > 0.0
+      (puts "couldn't calculate adj_et";$stdout.flush; return) unless (self[:adj_et] = feeld.et_method.calc_adj_ET(self))
+      # puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
+      previous_ad = find_previous_ad
+    # puts "Got previous AD of #{previous_ad}"
+      requirements = [ "ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
+      errors = []
+      requirements.each do |cond|
+        unless eval(cond)
+          errors << cond
+        end
+      end
+      if errors.size > 0
+        logger.info "#{self[:date]} could not update balances.\n  #{self.inspect}\n  #{self.field.inspect}\n  #{self.field.current_crop.inspect}"
+        logger.info "   Reasons: " + errors.join(", ")
+        return
+      end
+    # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
+      delta_storage = change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
+    # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
+    
+      dd = delta_storage + previous_ad
+      self[:deep_drainage] = (dd > total_available_water ? dd  - total_available_water : 0.0)
+      # FIXME: Entered percent moisture obviates these. Just check that there's a value?
+      self[:ad] = daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+      self[:calculated_pct_moisture] = moisture(
+        feeld.current_crop.max_allowable_depletion_frac,
+        total_available_water,
+        feeld.perm_wilting_pt,
+        feeld.field_capacity,
+        self[:ad],
+        feeld.current_crop.max_root_zone_depth
+      )
+    end
   end
   
   def update_balances

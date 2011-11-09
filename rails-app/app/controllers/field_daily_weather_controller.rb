@@ -5,7 +5,7 @@ class FieldDailyWeatherController < ApplicationController
     :ref_et, 
     :rain, 
     :irrigation, 
-    :entered_pct_moisture, 
+    :pct_moisture, 
     :entered_pct_cover, 
     :leaf_area_index, 
     :ad, 
@@ -95,7 +95,10 @@ class FieldDailyWeatherController < ApplicationController
       attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem
     end
     fdw = FieldDailyWeather.find(params[:id])
+    # logger.info "fdw was #{fdw.inspect}"
+    # logger.info "new attribs are #{attribs.inspect}"
     fdw.update_attributes(attribs)
+    # logger.info "fdw now #{fdw.inspect}"
     render :nothing => true
   end
 
