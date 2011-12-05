@@ -97,6 +97,12 @@ class FieldDailyWeatherController < ApplicationController
     fdw = FieldDailyWeather.find(params[:id])
     # logger.info "fdw was #{fdw.inspect}"
     # logger.info "new attribs are #{attribs.inspect}"
+    # Percent moisture is special -- if the user entered an updated value, it's sacred
+    if attribs[:pct_moisture]
+      if attribs[:pct_moisture].to_f == fdw.pct_moisture.to_f # it's not changing
+        attribs.delete(:pct_moisture) # so we don't need to update it and trigger sacredness
+      end
+    end
     fdw.update_attributes(attribs)
     # logger.info "fdw now #{fdw.inspect}"
     render :nothing => true
