@@ -35,9 +35,15 @@ class CropsController < ApplicationController
 
   def post_data
     if params[:oper] == "del"
-      farm = Farm.find(params[:id])
-      if farm.group == @group
-        farm.destroy
+      crop = Crop.find(params[:id])
+      if crop.field == @field
+        crop.destroy
+        if session[:crop_id] == params[:id] # we just destroyed the current crop
+          session.delete(:crop_id)
+          get_current_ids
+        end
+      else
+        logger.warn "Attempt to destroy crop #{params[:id]}, whose field is not #{@field}"
       end
     else
       attribs = {}

@@ -39,6 +39,12 @@ class FarmsController < ApplicationController
       session.each {|key,value| logger.info "session #{key} == #{value}"}
       if farm.group == @group
         farm.destroy
+        if session[:farm_id] == params[:id] # we just destroyed the current farm
+          session.delete(:farm_id)
+          get_current_ids
+        end
+      else
+        logger.warn "Attempt to destroy farm #{params[:id]}, whose group #{farm.group} is not #{@group}"  
       end
     else
       attribs = {}

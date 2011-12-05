@@ -40,9 +40,14 @@ class FieldsController < ApplicationController
       # check that we're in the right hierarchy, and not some random id
       if field.pivot == @pivot
         field.destroy
+        if session[:field_id] == params[:id] # we just destroyed the current field
+          session.delete(:field_id)
+          get_current_ids
+        end
+      else
+        logger.warn "Attempt to destroy field #{params[:id]}, whose pivot #{field.pivot} is not #{@pivot}"
       end
     else
-    
       attribs = {}
       for col_name in COLUMN_NAMES
         attribs[col_name] = params[col_name] unless col_name == :id
