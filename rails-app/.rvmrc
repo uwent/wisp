@@ -1,7 +1,7 @@
 
 if [[ -d "${rvm_path:-$HOME/.rvm}/environments" \
-  && -s "${rvm_path:-$HOME/.rvm}/environments/ruby-1.9.2-p0@rails3" ]] ; then
-  \. "${rvm_path:-$HOME/.rvm}/environments/ruby-1.9.2-p0@rails3"
+  && -s "${rvm_path:-$HOME/.rvm}/environments/ruby-1.9.2-p180@rails3" ]] ; then
+  \. "${rvm_path:-$HOME/.rvm}/environments/ruby-1.9.2-p180@rails3"
 else
-  rvm --create  "ruby-1.9.2-p0@rails3"
+  rvm --create  "ruby-1.9.2-p180@rails3"
 fi
