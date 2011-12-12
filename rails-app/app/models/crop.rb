@@ -1,4 +1,7 @@
+require 'owned'
+
 class Crop < ActiveRecord::Base
+  include Owned
   belongs_to :field
   after_save :update_field_with_emergence_date
   # Only go through the painful process of updating the canopy and recalcing all balances if needed
@@ -32,5 +35,10 @@ class Crop < ActiveRecord::Base
       field.update_canopy(emergence_date)
       logger.info "************************************* update canopy finished *****************"
     end
+  end
+  
+  # Implement the Owned interface
+  def owner
+    field.pivot.farm.group
   end
 end

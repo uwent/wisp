@@ -26,7 +26,7 @@ class FieldsController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @fields }
-      columns = COLUMN_NAMES; columns << :id
+      columns = COLUMN_NAMES; columns << :id; columns << :pivot_id
       format.json do
         json = @fields.to_jqgrid_json(columns,params[:page], params[:rows],@fields.size)
         render :json => json

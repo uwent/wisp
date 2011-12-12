@@ -13,7 +13,6 @@ class ApplicationController < ActionController::Base
   
   private
   def get_group
-    logger.info "get_group"
     unless @current_user
       return nil
     end
@@ -41,7 +40,6 @@ class ApplicationController < ActionController::Base
   end
   
   def get_current_ids
-    logger.info "get_current_ids"
     get_group
     unless @current_user
       logger.warn "get_current_ids: no user!"
@@ -78,6 +76,11 @@ class ApplicationController < ActionController::Base
     else
       return today
     end
+  end
+  
+  # debugging
+  def log_current_ids
+    logger.info "group_id #{@group_id}, @current_user #{@current_user}, @farm_id #{@farm_id}, @field_id #{@field_id}"
   end
   
 end

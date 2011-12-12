@@ -1,5 +1,7 @@
 class CropsController < ApplicationController
   set_default_filters
+  before_filter(:only => [:post_data, :show, :edit, :update, :destroy]) {|controller| @crop = Crop.find(params[:id]) if (params[:id] && params[:id] != '_empty')}
+  before_filter(:only => [:post_data, :destroy]) {|controller| @crop.auth(@group,:destroy) if @crop}
   
   COLUMN_NAMES = [
     :name,
@@ -27,35 +29,34 @@ class CropsController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @crops }
-      columns = COLUMN_NAMES; columns << :id
+      columns = COLUMN_NAMES; columns << :id; columns << :field_id
       format.json { render :json => @crops.to_jqgrid_json(columns,params[:page], params[:rows],@crops.size) }
     end
 
   end
 
   def post_data
-    if params[:oper] == "del"
-      crop = Crop.find(params[:id])
-      if crop.field == @field
-        crop.destroy
-        if session[:crop_id] == params[:id] # we just destroyed the current crop
-          session.delete(:crop_id)
-          get_current_ids
-        end
-      else
-        logger.warn "Attempt to destroy crop #{params[:id]}, whose field is not #{@field}"
+    log_current_ids
+    if "del" == params[:oper]
+      # crop = Crop.find(params[:id])
+      @crop.destroy
+      if session[:crop_id] == params[:id] # we just destroyed the current crop
+        session.delete(:crop_id)
+        get_current_ids
       end
     else
       attribs = {}
       for col_name in COLUMN_NAMES
         attribs[col_name] = params[col_name] unless col_name == :id
       end
-      if params[:oper] && params[:oper] == "add"
-      logger.info "\n*********************adding a crop. Group_id #{@group_id}, farm_id #{@farm_id}, field_id #{@field_id}"
+      if "add" == params[:oper]
+        get_current_ids
+        attribs.delete(:id) # this will be empty anyway, or the even-more-useless "_empty"
+        logger.info "\n******adding a crop. Group_id #{@group_id}, farm_id #{@farm_id}, field_id #{@field_id}"
         attribs[:field_id] = @field_id
         Crop.create(attribs)
       else
-        Crop.find(params[:id]).do_attribs(attribs)
+        @crop.do_attribs(attribs)
       end
     end
     render :nothing => true
@@ -64,8 +65,6 @@ class CropsController < ApplicationController
   # GET /crops/1
   # GET /crops/1.xml
   def show
-    @crop = Crop.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @crop }
@@ -85,7 +84,6 @@ class CropsController < ApplicationController
 
   # GET /crops/1/edit
   def edit
-    @crop = Crop.find(params[:id])
   end
 
   # POST /crops
@@ -108,8 +106,7 @@ class CropsController < ApplicationController
   # PUT /crops/1
   # PUT /crops/1.xml
   def update
-    @crop = Crop.find(params[:id])
-	@crop.field_id = @field_id
+  	@crop.field_id = @field_id
 
     respond_to do |format|
       if @crop.update_attributes(params[:crop])
@@ -125,7 +122,6 @@ class CropsController < ApplicationController
   # DELETE /crops/1
   # DELETE /crops/1.xml
   def destroy
-    @crop = Crop.find(params[:id])
     @crop.destroy
 
     respond_to do |format|
@@ -136,10 +132,11 @@ class CropsController < ApplicationController
 
   private
   def get_current_ids
+    logger.info "crops_controller#get_current_ids: session is #{session.inspect}"
     group = @current_user.groups.first
     @farm_id = params[:farm_id] || session[:farm_id] || Farm.my_farms(group[:id]).first # what to do if no farms yet?
-	@pivot_id = params[:pivot_id] || session[:pivot_id]
-	@field_id = params[:field_id] || session[:field_id]
+  	@pivot_id = params[:pivot_id] || session[:pivot_id]
+  	@field_id = params[:field_id] || session[:field_id]
   end
   
 end

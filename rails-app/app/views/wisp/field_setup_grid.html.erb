@@ -1,5 +1,22 @@
 <script type="text/javascript">
   var lastsel;
+  function set_current_field(field_id) {
+    $.ajax(
+    { 
+        type: "GET",
+        url: '<%= url_for :controller => 'wisp', :action => :set_field %>' + '?field_id=' + field_id, 
+        dataType: "json",
+        async: false,
+        success: function()
+        {
+          
+        },
+        error: function(xhr, textStatus, errorThrown)
+        { 
+            alert(textStatus + ' ' + errorThrown);
+        } /* error: */
+    });/* $.ajax */
+  }
   jQuery(document).ready(function(){
     $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:<%=@field_id%>});
     
@@ -7,7 +24,7 @@
       url:'<%= url_for :controller => "fields", :q => 1 %>',
       editurl:'<%= url_for :controller => "fields", :action  => :post_data %>',
       datatype: "json",
-      colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD (%)','ET Stn','Rain Stn','Soil Moist. Stn','Notes',' '],
+      colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD (%)','ET Stn','Rain Stn','Soil Moist. Stn','Notes',' ',' '],
       colModel:[{name:'name', index:'name',width:83,editable:true},
                      {name:'area', index:'area',width:20,editable:true, align:'right'},
                      {name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'},
@@ -19,7 +36,8 @@ index:'target_ad_pct',width:50,editable:true, align:'right'},
                      {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right'},
                      {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:50,editable:true, align:'right'},
                      {name:'notes', index:'notes',width:87,editable:true, align:'right'},
-                     {name:'id', index:'id',width:1}
+                     {name:'id', index:'id',width:1,hidden:true},
+                     {name:'pivot_id',index:'pivot_id',width:1,hidden:true,editable:true}
                      ],
       pager: '#field_setup_pager',
       rowNum:180,
@@ -41,6 +59,7 @@ index:'target_ad_pct',width:50,editable:true, align:'right'},
           jQuery('#field_setup').restoreRow(lastsel);
           jQuery('#field_setup').editRow(id,true); 
           lastsel=id;
+          set_current_field(id);
           $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:id});
         } 
       },             

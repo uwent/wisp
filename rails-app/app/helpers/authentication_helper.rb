@@ -7,13 +7,11 @@ module AuthenticationHelper
   end
   
   def current_user
-    logger.info "current_user: starting with #{@current_user.inspect}"
   	if signed_in?
   		@current_user ||= User.find(session[:user_id])
   	else
   		@current_user = nil
   	end
-    # puts "current_user: now #{@current_user.inspect}"
     @current_user
   end
   

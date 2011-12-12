@@ -131,7 +131,7 @@ class WispController < ApplicationController
   end
   
   def set_farm
-    puts "SET_FARM: setting the ids to #{params[:farm_id]}"
+    logger.info "SET_FARM: setting the ids to #{params[:farm_id]}"
     session[:farm_id] = @farm_id = params[:farm_id]
     if @farm_id
       @farm = Farm.find(@farm_id)
@@ -144,7 +144,13 @@ class WispController < ApplicationController
   end
   
   def set_field
-    render :nothing => true
+    logger.info "set field with id #{params[:id]}"
+    if params[:field_id]
+      @field_id =  params[:field_id]
+      @field = Field.find(@field_id)
+      session[:field_id] = @field_id
+    end
+    render :json => {:field_id => params[:field_id]}
   end
   
   private
