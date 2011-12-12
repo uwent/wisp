@@ -19,7 +19,7 @@ class FieldDailyWeather < ActiveRecord::Base
   
   def pct_moisture=(moisture)
     self[:entered_pct_moisture] = moisture
-    # logger.info "I now have an entered pct moisture: " + Kernel.caller.join("\n")
+    logger.info "I now have an entered pct moisture: "
   end
   
   def pct_cover

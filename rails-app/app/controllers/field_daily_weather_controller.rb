@@ -1,6 +1,7 @@
 class FieldDailyWeatherController < ApplicationController
   before_filter :ensure_signed_in
   protect_from_forgery :except => [:post_data]
+  MOISTURE_EPSILON = 0.01 # Amount by which an incoming pct moist must differ to be treated as "new"
   COLUMN_NAMES = [
     :ref_et, 
     :rain, 
@@ -11,6 +12,10 @@ class FieldDailyWeatherController < ApplicationController
     :ad, 
     :notes
     ]
+  
+  def moisture_changed?(old,incoming)
+    (old - incoming).abs > MOISTURE_EPSILON
+  end
   
   # GET /field_daily_weather
   # GET /field_daily_weather.xml
@@ -99,8 +104,10 @@ class FieldDailyWeatherController < ApplicationController
     # logger.info "new attribs are #{attribs.inspect}"
     # Percent moisture is special -- if the user entered an updated value, it's sacred
     if attribs[:pct_moisture]
-      if attribs[:pct_moisture].to_f == fdw.pct_moisture.to_f # it's not changing
+      unless moisture_changed?(attribs[:pct_moisture].to_f,fdw.pct_moisture.to_f) # it's not changing
         attribs.delete(:pct_moisture) # so we don't need to update it and trigger sacredness
+      else
+        logger.info "new moisture is #{attribs[:pct_moisture].to_f} and old was #{fdw.pct_moisture.to_f}, setting it"
       end
     end
     fdw.update_attributes(attribs)
