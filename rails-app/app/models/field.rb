@@ -47,29 +47,44 @@ class Field < ActiveRecord::Base
   end
 
   def create_dependent_objects
+    # puts "CDO...#{self.inspect}, fdw #{field_daily_weather.size} records" if et_method.class == PctCoverEtMethod
     create_crop
+    # puts "...crops are #{crops.inspect}" if et_method.class == PctCoverEtMethod
     create_field_daily_weather
+    # puts "...fdw now #{field_daily_weather.size} records" if et_method.class == PctCoverEtMethod
+    crops.each { |crop| crop.dont_update_canopy = false }
     save!
   end
   
   def create_field_daily_weather
-    # puts "create_fdw"
     start_date,end_date = date_endpoints
+    # puts "create_fdw for #{start_date}, #{end_date}"
+    pct_cover = nil
+    lai = nil
     (start_date..end_date).each do |date|
       # Could use update_canopy for this, but why go 'round twice? Still, there's a smell.
       days_since_emergence = date - crops.first.emergence_date
-      lai = days_since_emergence >= 0 ? lai_corn(days_since_emergence) : 0.0
+      if et_method.class == LaiEtMethod
+        lai = days_since_emergence >= 0 ? lai_corn(days_since_emergence) : 0.0
+        pct_cover = nil
+      elsif et_method.class == PctCoverEtMethod
+        pct_cover = 0.0 # Should this be pre-calculated somehow?
+        lai = nil
+      end
       field_daily_weather << FieldDailyWeather.new(
-        :date => date, :ref_et => 0.0, :adj_et => 0.0, :leaf_area_index => lai
+        :date => date, :ref_et => 0.0, :adj_et => 0.0, :leaf_area_index => lai, :calculated_pct_cover => pct_cover
       )
     end
+    # Shouldn't initial soil moisture go in here?
     field_daily_weather[0].calculated_pct_moisture = 100*self[:field_capacity]
   end
   
   def create_crop
     # puts "create crop"
     crops << Crop.new(:name => "New crop (field: #{name})", :variety => 'A variety', :emergence_date => date_endpoints.first,
-      :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self[:field_capacity])
+      :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self[:field_capacity],
+      :dont_update_canopy => true) # TODO: take this back out?
+    # puts "crop created"
   end
   
   def date_endpoints
@@ -110,7 +125,12 @@ class Field < ActiveRecord::Base
       end
       save!
     elsif et_method.class == PctCoverEtMethod
-      raise "Haven't done percent cover yet!"
+      puts "update_canopy: percent cover about to trigger balance cascade starting with " +field_daily_weather.inspect
+      days_since_emergence = 0
+      FieldDailyWeather.defer_balances
+      et_method.interpolate_pct_cover(field_daily_weather)
+      FieldDailyWeather.undefer_balances
+      field_daily_weather.first.save!
     else
       raise "Unknown ET Method for this field: #{et_method.inspect}"
     end

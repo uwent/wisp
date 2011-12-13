@@ -18,13 +18,13 @@ ricks_other_farm:
   group: ricks
   year: 2011
   name: This is Also Rick's Farm
-  et_method: pct_cover
+  et_method_id: 2 # pct_cover
   notes: 
 
 finns_farm:
   group: finns
   year: 2011
   name: The Finn Farm
-  et_method: pct_cover
+  et_method_id: 2 # pct_cover
   notes: 
 

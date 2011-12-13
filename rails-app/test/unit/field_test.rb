@@ -4,6 +4,7 @@ class FieldTest < ActiveSupport::TestCase
   
   def setup
     @pcf = fields(:one)
+    @pct_cover_method = EtMethod.find_by_type('PctCoverEtMethod')
   end
   
   test "et_method method works" do
@@ -78,7 +79,7 @@ class FieldTest < ActiveSupport::TestCase
   end
   
   test "can create a season's worth of field daily weather" do
-    field = Field.create(:pivot_id => Farm.first.pivots.first[:id])
+    field = Field.create(:pivot_id => Farm.first.pivots.first[:id],:field_capacity => 0.4, :perm_wilting_pt => 0.13)
     FieldDailyWeather.destroy_all
     field = Field.find(field[:id])
     start_date,end_date = field.date_endpoints
@@ -91,14 +92,14 @@ class FieldTest < ActiveSupport::TestCase
   end
   
   test "ensure that field_daily_weather recs are created after field is created" do
-    field = Field.create(:pivot_id => Farm.first.pivots.first[:id])
+    field = Field.create(:pivot_id => Farm.first.pivots.first[:id], :field_capacity => 0.4, :perm_wilting_pt => 0.13)
     start_date,end_date = field.date_endpoints
     n_days = 1 + (end_date - start_date)
     assert_equal(n_days, field.field_daily_weather.size)
   end
   
   test "field_daily_weather for a field all gets deleted when the field goes away" do
-    field = Field.create(:pivot_id => Farm.first.pivots.first[:id])
+    field = Field.create(:pivot_id => Farm.first.pivots.first[:id],:field_capacity => 0.4, :perm_wilting_pt => 0.13)
     fdw = FieldDailyWeather.where(:field_id => field[:id])
     start_date,end_date = field.date_endpoints
     n_days = 1 + (end_date - start_date)
@@ -128,13 +129,13 @@ class FieldTest < ActiveSupport::TestCase
   def check_field_has_no_lai(field,emergence_date)
     fdw_emergence_date = (field.field_daily_weather.find_all {|fdw| fdw.date == emergence_date}).first
     assert(fdw_emergence_date, "Should be a wx record for emergence date")
-    assert_nil(fdw_emergence_date.leaf_area_index,"Should start out with nothing for LAI on emergence date")
+    assert_equal(0.0,fdw_emergence_date.leaf_area_index,"Should start out with nothing for LAI on emergence date")
   end
 
   def setup_field_with_emergence
     farm = Farm.first
     assert_equal(LaiEtMethod, farm.et_method.class)
-    field = Field.create(:pivot_id => farm.pivots.first[:id])
+    field = Field.create(:pivot_id => farm.pivots.first[:id],:field_capacity => 0.4, :perm_wilting_pt => 0.13)
     emergence_date = Date.civil(2011,05,01)
     check_field_has_no_lai(field,emergence_date)
     [field,emergence_date]
@@ -168,4 +169,22 @@ class FieldTest < ActiveSupport::TestCase
     assert_equal(emergence_date - start_date, field.fdw_index(emergence_date))
   end
   
+  def setup_pct_cover_field_with_emergence
+    farm = farms(:ricks_other_farm)
+    assert_equal(PctCoverEtMethod, farm.et_method.class,farm.et_method)
+    field = Field.create(:pivot_id => farm.pivots.first[:id],:field_capacity => 0.4, :perm_wilting_pt => 0.13)
+    emergence_date = Date.civil(2011,05,01)
+    [field,emergence_date]
+  end
+  
+  test "I can get a farm with percent cover" do
+    field,emergence_date = setup_pct_cover_field_with_emergence
+    assert_equal(field.et_method.class, PctCoverEtMethod,field.pivot.farm.inspect)
+  end
+  
+  test "I can automatically set a range of percent cover" do
+    FieldDailyWeather.destroy_all
+    field,emergence_date = setup_pct_cover_field_with_emergence
+    assert_equal(0.0, field.field_daily_weather[0].pct_cover,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+  end
 end

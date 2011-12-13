@@ -7,6 +7,15 @@ class FieldDailyWeather < ActiveRecord::Base
   after_update :update_next_days_balances
   
   @@debug = nil
+  @@do_balances = true
+  
+  def self.defer_balances
+    @@do_balances = false
+  end
+  
+  def self.undefer_balances
+    @@do_balances = true
+  end
   
   include ADCalculator
   # from the ActsAsAdjacent plugin, which (with this) we don't need
@@ -23,8 +32,10 @@ class FieldDailyWeather < ActiveRecord::Base
   end
   
   def pct_cover
-    if entered_pct_cover then return entered_pct_cover; else raise 'pct_cover not yet implemented'; end
+    entered_pct_cover || calculated_pct_cover
   end
+  
+  # FIXME: Need to have a one-way assignment as with pct_moisture.
   
   # def leaf_area_index
   #   if leaf_area_index then return leaf_area_index; else raise 'leaf_area_index not yet implemented'; end
@@ -133,7 +144,7 @@ class FieldDailyWeather < ActiveRecord::Base
   end
   
   def update_next_days_balances
-    if self[:ad]
+    if self[:ad] && @@do_balances
       self.succ.save! if self.succ # triggers the update_balances method
     end
     false

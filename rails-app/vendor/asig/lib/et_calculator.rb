@@ -18,8 +18,8 @@ module ETCalculator
     case coeffIndex
       when 0  # Get zero %cover adj_et
         case ref_et
-		  when 0.0 
-			return 0.0	
+      when 0.0 
+      return 0.0  
           when 0..0.159
             adj_etLow = 0.0
           when 0.160..0.319
@@ -47,21 +47,21 @@ module ETCalculator
 
   # LAI growth curve function for corn from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
   def lai_corn(days_since_emergence)
-	(0.000000000009*(days_since_emergence)**7.95)*(Math.exp(-0.1*(days_since_emergence)))
+  (0.000000000009*(days_since_emergence)**7.95)*(Math.exp(-0.1*(days_since_emergence)))
   end
   
   # Return adjusted ET from the reference ET and the days sinçe emergence
   # Crop coeff math is from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
   def adj_et_lai_corn(ref_et,days_since_emergence)
-	crop_coeff = 1.1*(1-Math.exp(-1.5*(calc_lai_corn(days_since_emergence))))
-	adj_et = ref_et * crop_coeff
+  crop_coeff = 1.1*(1-Math.exp(-1.5*(lai_corn(days_since_emergence))))
+  adj_et = ref_et * crop_coeff
   end
 
   # Return adjusted ET from the reference ET if the leaf area index is already in hand
   # Crop coeff math is from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
   def adj_et_from_lai_corn(ref_et,lai)
-	crop_coeff = 1.1*(1-Math.exp(-1.5*(lai)))
-	adj_et = ref_et * crop_coeff
+  crop_coeff = 1.1*(1-Math.exp(-1.5*(lai)))
+  adj_et = ref_et * crop_coeff
   end
 
   # Duck Typing at work here; "day" can be anything that responds to the methods "ref_et", "lai", and "pctCover".
@@ -84,6 +84,66 @@ module ETCalculator
   # adj_et=(et_value) method
   def update_adj_et_single_day(day)
     day.adj_et =  calc_adj_ET(day)
+  end
+  
+  #
+  # Percent Cover methods
+  #
+  def find_entered_pct_covers(wx_arr)
+    res = []
+    day = 0
+    wx_arr.each do |weather_day|
+      if weather_day.respond_to?('[]') && (pc = weather_day[:entered_pct_cover])
+        res << {day => pc}
+      end
+      day += 1
+    end
+    res
+  end
+  
+  def linear_increment(start_val,finish_val,n_vals)
+    (finish_val - start_val) / (n_vals - 1)
+  end
+  
+  
+  def apply_increment(wx_arr,start_val,increment,n_vals)
+    (0..n_vals).each do |ii|
+      
+    end
+  end
+  
+  def interpolate_pct_cover(wx_arr)
+    entered_pts = find_entered_pct_covers(wx_arr)
+    # If no points have been entered, nothing to interpolate
+    return unless entered_pts.size > 0
+    if entered_pts.size == 1 # so, something like [{day => pct_cover}]
+      # If there's only one entered point, if it's the first one we got nothin'!
+      return if entered_pts[0].keys.first == 0
+    end
+    # Add zero for the first day's value if none was explicitly entered
+    unless entered_pts[0].keys.first == 0
+      entered_pts = [{0 => 0.0}] + entered_pts
+    end
+
+    (0..entered_pts.size-2).each do |ii|
+      first = entered_pts[ii]
+      first_day = first.keys.first # there's only one
+      first_val = first[first_day] # the value for that day
+      second = entered_pts[ii+1]
+      second_day = second.keys.first
+      second_val = second[second_day]
+      incr = linear_increment(first_val,second_val,1+second_day - first_day)
+      val = first_val
+      # Note that this sets the calculated_pct_cover fields of the days with entered_pct_cover,
+      # but should be to the same value
+      (first_day..second_day).each do |ii|
+        wx_arr[ii][:calculated_pct_cover] = val
+        val += incr
+        if wx_arr[ii].respond_to?('save!')
+          wx_arr[ii].save!
+        end
+      end
+    end
   end
   
 end # module EtCalculator

@@ -79,7 +79,7 @@ class EtMethodTest < ActiveSupport::TestCase
     # Pair up a day-since-emergence with the expected crop/adjusted ET for that day
     expected_adj_ets_for_day.each do |day,expected_adj_et|
       adj_et = @pcm.adj_et_lai_corn(ref_et, day)
-      assert_in_delta(expected_adj_et,adj_et, DELTA, "Wrong adjusted ET refurned for days_since_emergence #{day}; expected #{expected_adj_et} and was #{adj_et}")
+      assert_in_delta(expected_adj_et,adj_et, DELTA, "Wrong adjusted ET returned for days_since_emergence #{day}; expected #{expected_adj_et} and was #{adj_et}")
     end
   end
   
@@ -104,5 +104,91 @@ class EtMethodTest < ActiveSupport::TestCase
       160 => 0.004370
     }
     run_corn_lai_adj_et_test(ref_et,expected_adj_ets_for_day)
+  end
+  
+
+  test "I can get entered percent covers" do
+    wx = [{:entered_pct_cover => 0}, {},{:entered_pct_cover => nil},{:entered_pct_cover => 20.0},{:entered_pct_cover => nil}]
+    assert((found = @pcm.find_entered_pct_covers(wx)),"Should have returned something from find_entered_pct_covers")
+    assert_equal(Array, found.class)
+    assert_equal(2, found.size)
+  end
+  
+  test "empty wx arr and ones with no pct covers entered are unchanged by interpolation" do
+    wx = []
+    @pcm.interpolate_pct_cover(wx)
+    assert_equal([], wx)
+    wx = [{:calculated_pct_cover => 0.0}, {:calculated_pct_cover => 10.0}, {:calculated_pct_cover => 30.0}]
+    wx_2 = wx.clone
+    assert_equal(wx_2, wx)
+    @pcm.interpolate_pct_cover(wx)
+    assert_equal(wx_2, wx)
+  end
+  
+  test "linear_increment works" do
+    li = @pcm.linear_increment(0.0,4.0,5.0)
+    assert_in_delta(1.0, li, 0.00001)
+    li = @pcm.linear_increment(0,4,5)
+    assert_in_delta(1.0, li, 0.00001)
+  end
+  
+  test "linear interpolation works on two entered points" do
+    wx =  [{:calculated_pct_cover => 12.0},
+          {:calculated_pct_cover => 1.0, :entered_pct_cover => 1.0},
+          {:calculated_pct_cover => 3.0},
+          {:calculated_pct_cover => 3.0},
+          {:calculated_pct_cover => 3.0},
+          {:calculated_pct_cover => 3.0, :entered_pct_cover => 5.0}
+    ]
+    @pcm.interpolate_pct_cover(wx)
+    expected = [0.0,1.0,2.0,3.0,4.0,5.0]
+    ii = 0
+    wx.each { |w| assert_equal(expected[ii], w[:calculated_pct_cover],"wrong number on #{ii}th day"); ii+=1 }
+  end
+  
+  test "linear interpolation works on many entered points, down as well as up" do
+    wx =  [{:calculated_pct_cover => 12.0},
+          {:calculated_pct_cover => 1.0, :entered_pct_cover => 1.0},
+          {:calculated_pct_cover => nil},
+          {:calculated_pct_cover => nil},
+          {:calculated_pct_cover => nil},
+          {:calculated_pct_cover => 3.0, :entered_pct_cover => 5.0},
+          {:calculated_pct_cover => nil},
+          {:calculated_pct_cover => nil},
+          {:calculated_pct_cover => nil},
+          {:calculated_pct_cover => nil, :entered_pct_cover => 1.0},
+          {:calculated_pct_cover => nil},
+          {:calculated_pct_cover => nil, :entered_pct_cover => 0.0}
+    ]
+    @pcm.interpolate_pct_cover(wx)
+    expected = [0.0,1.0,2.0,3.0,4.0,5.0,4.0,3.0,2.0,1.0,0.5,0.0]
+    ii = 0
+    wx.each { |w| assert_equal(expected[ii], w[:calculated_pct_cover],"wrong number on #{ii}th day"); ii+=1 }
+  end
+  
+  class Wx < Hash
+    attr_accessor :saved
+    def save!
+      @saved = true
+    end
+  end
+  
+  test "ensure save! works" do
+    w = Wx.new
+    w.save!
+    assert(w.saved, "Should have saved it")
+  end
+    
+  test "save gets called when we interpolate" do
+    wx = []
+    w = Wx.new
+    w[:calculated_pct_cover] = 0.0
+    wx << w
+    w = Wx.new
+    w[:entered_pct_cover] = 0.0
+    wx << w
+    assert(w.respond_to?('save!'), "Wxes don't respond to save as they should!")
+    @pcm.interpolate_pct_cover(wx)
+    wx.each { |w| assert(w.saved, "Should have been saved") }
   end
 end
