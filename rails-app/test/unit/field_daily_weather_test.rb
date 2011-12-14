@@ -70,7 +70,6 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     fdw_second = fdw_first.succ
     assert_nil(fdw_second.ad)
     fdw_second.ref_et = ET
-    puts "saving fdw_second"; $stdout.flush; FieldDailyWeather.debug_on
     fdw_second.save!
     [fdw_first,fdw_second]
   end
@@ -90,8 +89,8 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     expected_attribs.each { |attrib| assert(attribs[attrib], "Expected #{attrib} in the balance_calcs has") }
     assert(attribs, "balance_calcs should have returned something")
     assert_equal(Hash, attribs.class, "balance_calcs should have returned a Hash")
-    puts attribs.inspect
-    puts fdw_second.inspect
+    # puts attribs.inspect
+    # puts fdw_second.inspect
     attribs.each { |attrib,val| assert_equal(fdw_second[attrib], val,"FDW should have had same value for #{attrib.to_s}") }
   end
   

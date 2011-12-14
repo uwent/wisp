@@ -125,10 +125,10 @@ class Field < ActiveRecord::Base
       end
       save!
     elsif et_method.class == PctCoverEtMethod
-      puts "update_canopy: percent cover about to trigger balance cascade starting with " +field_daily_weather.inspect
+      # puts "update_canopy: percent cover about to trigger balance cascade starting with " +field_daily_weather.inspect
       days_since_emergence = 0
       FieldDailyWeather.defer_balances
-      et_method.interpolate_pct_cover(field_daily_weather)
+      et_method.interpolate_pct_cover(field_daily_weather) # FIXME: This will fail, this method no longer exists!
       FieldDailyWeather.undefer_balances
       field_daily_weather.first.save!
     else
@@ -197,6 +197,32 @@ class Field < ActiveRecord::Base
     taw = taw(field_capacity, perm_wilting_pt, current_crop.max_root_zone_depth)
     mad_frac = current_crop.max_allowable_depletion_frac
     ad_max_inches(mad_frac,taw)
+  end
+  
+  def pct_cover_changed(fdw)
+    # could re-interpolate everything, but let's just do the ones around the new point
+    midpoint_pct_cover = fdw.pct_cover
+    fdw_index = field_daily_weather.index {|an_fdw| an_fdw[:date] == fdw[:date]}
+    first_fdw,last_fdw = surrounding(field_daily_weather,fdw_index,:entered_pct_cover)
+    # puts "fdw_index: #{fdw_index} first_fdw: #{first_fdw} last_fdw: #{last_fdw} midpoint: #{midpoint_pct_cover}fdw: #{fdw.date}, #{fdw.calculated_pct_cover}, #{fdw.entered_pct_cover}, #{fdw.pct_cover}"
+    FieldDailyWeather.defer_balances
+    linear_interpolation(field_daily_weather,first_fdw,fdw_index,:entered_pct_cover,:calculated_pct_cover)
+    if field_daily_weather[last_fdw][:entered_pct_cover]
+      linear_interpolation(field_daily_weather,fdw_index,last_fdw,:entered_pct_cover,:calculated_pct_cover)
+    else
+      # go one week from last-entered value
+      field_daily_weather[fdw_index+1..fdw_index+6].each do |extrapolated_fdw|
+        extrapolated_fdw[:calculated_pct_cover] = midpoint_pct_cover
+        extrapolated_fdw.save!
+      end
+    end
+    FieldDailyWeather.undefer_balances
+    # NOW trigger the whole mess!
+    # field_daily_weather[first_fdw].save!
+  end
+  
+  def weather_for(date)
+    field_daily_weather.select { |fdw| fdw.date == date }
   end
   
   def problem

@@ -10,8 +10,8 @@ class Crop < ActiveRecord::Base
   
   # Do we really need to update the canopy?
   def must_update_canopy?(attribs)
-    puts attribs.inspect; $stdout.flush
-    puts self.inspect; $stdout.flush
+    # puts attribs.inspect; $stdout.flush
+    # puts self.inspect; $stdout.flush
     [:emergence_date, :max_root_zone_depth, :max_allowable_depletion_frac,
       :initial_soil_moisture].each do |attrib_name|
       if self[attrib_name].to_s != attribs[attrib_name].to_s

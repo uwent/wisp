@@ -4,10 +4,14 @@ class FieldDailyWeather < ActiveRecord::Base
   belongs_to :field
   before_create :zero_rain_and_irrig
   before_update :old_update_balances
-  after_update :update_next_days_balances
+  after_update :update_next_days_balances, :update_pct_covers
   
   @@debug = nil
   @@do_balances = true
+  
+  def et_method
+    field.et_method
+  end
   
   def self.defer_balances
     @@do_balances = false
@@ -35,7 +39,23 @@ class FieldDailyWeather < ActiveRecord::Base
     entered_pct_cover || calculated_pct_cover
   end
   
-  # FIXME: Need to have a one-way assignment as with pct_moisture.
+  def entered_pct_cover=(new_value)
+    return unless new_value # don't overwrite an entered value, e.g. from mindless grid update
+    if read_attribute(:entered_pct_cover) # if we already have a value...(otherwise, just record the new value)
+      # check that it's different from existing
+      return unless (new_value.to_f - read_attribute(:entered_pct_cover).to_f).abs > 0.00001
+    end
+    @need_pct_cover_update = true
+    write_attribute(:entered_pct_cover,new_value)
+  end
+  
+  # This gets called after we're updated (i.e., the field's array of FDW objects has our new entered_pct_cover value, if any)
+  def update_pct_covers
+    if @need_pct_cover_update
+      @need_pct_cover_update = false
+      field.pct_cover_changed(self)
+    end
+  end
   
   # def leaf_area_index
   #   if leaf_area_index then return leaf_area_index; else raise 'leaf_area_index not yet implemented'; end
@@ -77,7 +97,7 @@ class FieldDailyWeather < ActiveRecord::Base
       self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
     else
       return unless ref_et > 0.0
-      (puts "couldn't calculate adj_et";$stdout.flush; return) unless (self[:adj_et] = feeld.et_method.calc_adj_ET(self))
+      (puts "couldn't calculate adj_et";$stdout.flush; return) unless (self[:adj_et] = feeld.et_method.adj_et(self))
       # puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
       previous_ad = find_previous_ad
     # puts "Got previous AD of #{previous_ad}"
@@ -93,7 +113,7 @@ class FieldDailyWeather < ActiveRecord::Base
         logger.info "   Reasons: " + errors.join(", ")
         return
       end
-    # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
+      # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
       delta_storage = change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
     # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
     
@@ -121,8 +141,7 @@ class FieldDailyWeather < ActiveRecord::Base
     # print " #{self.date.yday} "; $stdout.flush
     # deb_puts "balance_calcs for #{self.date} (#{self.field.name})"
     ret = {}
-    ret[:adj_et] = field.et_method.calc_adj_ET(self)
-    # deb_puts "no adj_et! #{self[:date]}" if ret[:adj_et] == 0.0 or ret[:adj_et] == nil
+    ret[:adj_et] = field.et_method.adj_et(self)
     previous_ad = find_previous_ad
     # deb_puts "no previous ad" unless previous_ad
     if ret[:adj_et] && previous_ad
@@ -185,6 +204,22 @@ class FieldDailyWeather < ActiveRecord::Base
     
   end
   # CLASS METHODS
+  def self.today_or_latest(field_id)
+    query = <<-END
+      select max(date) as date from field_daily_weather where field_id=#{field_id}
+    END
+    latest = FieldDailyWeather.find_by_sql(query).first.date
+    today = Date.today
+    unless latest
+      return today
+    end
+    if today > latest
+      return latest
+    else
+      return today
+    end
+  end
+  
   
   def self.page_for(rows_per_page,start_date,date=nil)
     date ||= today_or_latest(1)

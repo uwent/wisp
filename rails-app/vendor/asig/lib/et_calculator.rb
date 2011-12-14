@@ -64,19 +64,15 @@ module ETCalculator
   adj_et = ref_et * crop_coeff
   end
 
-  # Duck Typing at work here; "day" can be anything that responds to the methods "ref_et", "lai", and "pctCover".
+  # Duck Typing at work here; "day" can be anything that responds to the methods:
+  # "et_method", "ref_et", "leaf_area_index", and "pct_cover".
   # So an ActiveRecord class instance with those table columns will work, or a mock object for testing,
   # or wrapper around some other class that calls them referenceET and leafAreaIndex.
-  # This is a function returning the adjusted ET; it makes use of Ruby's "last-executed statement" return
-  # value feature to avoid having to initialize a variable and explicitly return it
   def calc_adj_ET(day)
-    # look at LAI first; since pctCover is (???) more likely to have default values automatically calculated,
-    # if LAI is present it means the user wants us to use it
-    # This is a bug -- the mere presence of a number here shouldn't be used to drive this. For now, just assume LAI.
-    if day.leaf_area_index
-      adj_et_from_lai_corn(day.ref_et,day.leaf_area_index)
+    if day.respond_to?('et_method')
+      day.et_method.adj_et(day)
     else
-      adj_et_pct_cover(day.ref_et,day.pct_cover)
+      raise "Can't get ET method"
     end
   end
   
@@ -89,14 +85,25 @@ module ETCalculator
   #
   # Percent Cover methods
   #
-  def find_entered_pct_covers(wx_arr)
-    res = []
-    day = 0
-    wx_arr.each do |weather_day|
-      if weather_day.respond_to?('[]') && (pc = weather_day[:entered_pct_cover])
-        res << {day => pc}
+  def surrounding(wx_arr,start,parameter)
+    max_index = wx_arr.size - 1
+    return nil if max_index < 2 || start > max_index || start < 0
+    res = [0,max_index]
+    if start > 0
+      (start - 1).downto(0) do |ii|
+        if wx_arr[ii].respond_to?('[]') && (wx_arr[ii][parameter])
+          res[0] = ii
+          break
+        end
       end
-      day += 1
+    end
+    if start < max_index
+      (start + 1).upto(max_index) do |ii|
+        if wx_arr[ii].respond_to?('[]') && (wx_arr[ii][parameter])
+          res[1] = ii
+          break
+        end
+      end
     end
     res
   end
@@ -105,43 +112,18 @@ module ETCalculator
     (finish_val - start_val) / (n_vals - 1)
   end
   
-  
-  def apply_increment(wx_arr,start_val,increment,n_vals)
-    (0..n_vals).each do |ii|
-      
-    end
-  end
-  
-  def interpolate_pct_cover(wx_arr)
-    entered_pts = find_entered_pct_covers(wx_arr)
-    # If no points have been entered, nothing to interpolate
-    return unless entered_pts.size > 0
-    if entered_pts.size == 1 # so, something like [{day => pct_cover}]
-      # If there's only one entered point, if it's the first one we got nothin'!
-      return if entered_pts[0].keys.first == 0
-    end
-    # Add zero for the first day's value if none was explicitly entered
-    unless entered_pts[0].keys.first == 0
-      entered_pts = [{0 => 0.0}] + entered_pts
-    end
-
-    (0..entered_pts.size-2).each do |ii|
-      first = entered_pts[ii]
-      first_day = first.keys.first # there's only one
-      first_val = first[first_day] # the value for that day
-      second = entered_pts[ii+1]
-      second_day = second.keys.first
-      second_val = second[second_day]
-      incr = linear_increment(first_val,second_val,1+second_day - first_day)
-      val = first_val
+  def linear_interpolation(wx_arr,start,finish,entered_method,calc_method)
+    return unless wx_arr && wx_arr.size > 2
+    return if start >= finish && start < 0 && finish > wx_arr.size - 1
+    start_val = wx_arr[start][entered_method] || wx_arr[start][calc_method] || 0.0
+    finish_val = wx_arr[finish][entered_method] || wx_arr[finish][calc_method] || 0.0
+    incr = linear_increment(start_val,finish_val,1 + finish - start)
+    start.upto(finish).each do |ii|
       # Note that this sets the calculated_pct_cover fields of the days with entered_pct_cover,
       # but should be to the same value
-      (first_day..second_day).each do |ii|
-        wx_arr[ii][:calculated_pct_cover] = val
-        val += incr
-        if wx_arr[ii].respond_to?('save!')
-          wx_arr[ii].save!
-        end
+      wx_arr[ii][calc_method] = start_val + (ii - start)*incr
+      if wx_arr[ii].respond_to?('save!')
+        wx_arr[ii].save!
       end
     end
   end

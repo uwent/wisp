@@ -186,5 +186,12 @@ class FieldTest < ActiveSupport::TestCase
     FieldDailyWeather.destroy_all
     field,emergence_date = setup_pct_cover_field_with_emergence
     assert_equal(0.0, field.field_daily_weather[0].pct_cover,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+    field.field_daily_weather[9].entered_pct_cover = 9.0
+    field.field_daily_weather[9].save!
+    field = Field.find(field[:id])
+    assert_in_delta(1.0, field.field_daily_weather[1].pct_cover, 0.00001,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+    assert_in_delta(8.0, field.field_daily_weather[8].pct_cover, 0.00001,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+    puts field.field_daily_weather[0..15].collect {|fdw| [fdw.id,fdw.date,fdw.pct_cover].join(" ")}.join("\n")
+    assert_in_delta(9.0, field.field_daily_weather[15].pct_cover, 0.00001,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
   end
 end

@@ -64,7 +64,7 @@ class FieldDailyWeatherController < ApplicationController
                                                                params[:page] || 1, params[:rows] || 7, wx_size) }
       else
         format.json { render :json => @field_daily_weather.to_jqgrid_json([:date,:ref_et,:rain,:irrigation,
-                                                                           :pct_moisture,:entered_pct_cover,
+                                                                           :pct_moisture,:pct_cover,
                                                                            :leaf_area_index, :adj_et,
                                                                            :ad,:deep_drainage,:id], 
                                                                page, page_size, wx_size) }

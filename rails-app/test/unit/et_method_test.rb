@@ -109,19 +109,23 @@ class EtMethodTest < ActiveSupport::TestCase
 
   test "I can get entered percent covers" do
     wx = [{:entered_pct_cover => 0}, {},{:entered_pct_cover => nil},{:entered_pct_cover => 20.0},{:entered_pct_cover => nil}]
-    assert((found = @pcm.find_entered_pct_covers(wx)),"Should have returned something from find_entered_pct_covers")
+    assert((found = @pcm.surrounding(wx,2,:entered_pct_cover)),"Should have returned something from surrounding")
     assert_equal(Array, found.class)
     assert_equal(2, found.size)
+  end
+ 
+  def interp(arr,start,finish)
+    @pcm.linear_interpolation(arr,start,finish,:entered_pct_cover,:calculated_pct_cover)
   end
   
   test "empty wx arr and ones with no pct covers entered are unchanged by interpolation" do
     wx = []
-    @pcm.interpolate_pct_cover(wx)
+    interp(wx,0,0)
     assert_equal([], wx)
     wx = [{:calculated_pct_cover => 0.0}, {:calculated_pct_cover => 10.0}, {:calculated_pct_cover => 30.0}]
     wx_2 = wx.clone
     assert_equal(wx_2, wx)
-    @pcm.interpolate_pct_cover(wx)
+    interp(wx,0,2)
     assert_equal(wx_2, wx)
   end
   
@@ -138,10 +142,11 @@ class EtMethodTest < ActiveSupport::TestCase
           {:calculated_pct_cover => 3.0},
           {:calculated_pct_cover => 3.0},
           {:calculated_pct_cover => 3.0},
-          {:calculated_pct_cover => 3.0, :entered_pct_cover => 5.0}
+          {:calculated_pct_cover => 3.0, :entered_pct_cover => 5.0},
+          {:calculated_pct_cover => 30.0, :entered_pct_cover => 100.0}
     ]
-    @pcm.interpolate_pct_cover(wx)
-    expected = [0.0,1.0,2.0,3.0,4.0,5.0]
+    interp(wx,1,5)
+    expected = [12.0,1.0,2.0,3.0,4.0,5.0,30.0]
     ii = 0
     wx.each { |w| assert_equal(expected[ii], w[:calculated_pct_cover],"wrong number on #{ii}th day"); ii+=1 }
   end
@@ -160,10 +165,11 @@ class EtMethodTest < ActiveSupport::TestCase
           {:calculated_pct_cover => nil},
           {:calculated_pct_cover => nil, :entered_pct_cover => 0.0}
     ]
-    @pcm.interpolate_pct_cover(wx)
-    expected = [0.0,1.0,2.0,3.0,4.0,5.0,4.0,3.0,2.0,1.0,0.5,0.0]
+    interp(wx,1,5)
+    interp(wx,5,9)
+    expected = [12.0,1.0,2.0,3.0,4.0,5.0,4.0,3.0,2.0,1.0,0.5,0.0,nil,0.0]
     ii = 0
-    wx.each { |w| assert_equal(expected[ii], w[:calculated_pct_cover],"wrong number on #{ii}th day"); ii+=1 }
+    wx.each { |w| assert_in_delta(expected[ii], wx[ii][:calculated_pct_cover],0.00001,"for the #{ii}th value")}
   end
   
   class Wx < Hash
@@ -181,14 +187,27 @@ class EtMethodTest < ActiveSupport::TestCase
     
   test "save gets called when we interpolate" do
     wx = []
-    w = Wx.new
-    w[:calculated_pct_cover] = 0.0
-    wx << w
-    w = Wx.new
-    w[:entered_pct_cover] = 0.0
-    wx << w
-    assert(w.respond_to?('save!'), "Wxes don't respond to save as they should!")
-    @pcm.interpolate_pct_cover(wx)
+    0.upto(2) do |ii|
+      w = Wx.new
+      w[:entered_pct_cover] = 0.0
+      wx << w
+    end
+    interp(wx,0,2)
     wx.each { |w| assert(w.saved, "Should have been saved") }
+  end
+  
+  test "surrounding works" do
+    wx = []
+    res = nil
+    assert_nothing_raised(Exception) { res = @pcm.surrounding(wx,4,:foo)}
+    assert_nil(res)
+    wx = [{:foo => 10.0}]
+    assert_nil(@pcm.surrounding(wx,0,:foo))
+    wx << {:foo => 20.0}
+    assert_nil(@pcm.surrounding(wx,0,:foo))
+    wx = [{:foo => 5.0}] + wx
+    assert_equal([0,2], @pcm.surrounding(wx,1,:foo))
+    wx = [{:foo => nil}, {:foo => 0.0}, {:foo => nil}, {:foo => 0.0}, {:foo => 0.0}, {:foo => nil}]
+    assert_equal([1,3], @pcm.surrounding(wx,2,:foo))
   end
 end
