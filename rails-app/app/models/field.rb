@@ -116,6 +116,7 @@ class Field < ActiveRecord::Base
   
   def update_canopy(emergence_date)
     if et_method.class == LaiEtMethod
+      # FIXME: Would probably speed up creating new fields and crops A LOT if we did defer_balances here!
       days_since_emergence = 0
       field_daily_weather.each do |fdw|
         next unless fdw.date >= emergence_date
@@ -125,11 +126,16 @@ class Field < ActiveRecord::Base
       end
       save!
     elsif et_method.class == PctCoverEtMethod
-      # puts "update_canopy: percent cover about to trigger balance cascade starting with " +field_daily_weather.inspect
-      days_since_emergence = 0
+      # There is no automatic canopy calculation for % cover, at least not now. So just set everything that's nil to 0.0.
       FieldDailyWeather.defer_balances
-      et_method.interpolate_pct_cover(field_daily_weather) # FIXME: This will fail, this method no longer exists!
+      field_daily_weather.each do |fdw|
+        unless fdw.pct_cover # don't bother if already set; checks both calculated and entered
+          fdw.calculated_pct_cover = 0.0
+          fdw.save!
+        end
+      end
       FieldDailyWeather.undefer_balances
+      # Now that we've gone through and saved everything, we can trigger once through for AD balances
       field_daily_weather.first.save!
     else
       raise "Unknown ET Method for this field: #{et_method.inspect}"
