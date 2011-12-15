@@ -2,6 +2,23 @@
 
         <script type="text/javascript">
           var lastsel;
+          var isLai = <%= @field.et_method.method_name == "LAI" ? 'true' : 'false' %>;
+          var laiFormatter,pctCoverFormatter;
+          var laiIsEditable,pctCoverIsEditable;
+          if (isLai) {
+            laiFormatter = 'number';
+            laiIsEditable = true;
+            pctCoverFormatter = dashesFormatter;
+            pctCoverIsEditable = false;
+          } else {
+            laiFormatter = dashesFormatter;
+            laiIsEditable = false;
+            pctCoverFormatter = 'number';
+            pctCoverIsEditable = true;
+          }
+          function dashesFormatter(cellvalue, options, rowObject) {
+            return '--';
+          }
           // Example of how to set the pager to a given page in JS
           // function page5() {
           //   mygrid.setGridParam({page:5}).trigger('reloadGrid');
@@ -16,7 +33,7 @@
           jQuery(document).ready(function(){
             mygrid = jQuery("#weather").jqGrid({
               url:'<%= url_for :controller => "field_daily_weather", :q => 1 %>',
-              editurl:'<%= url_for :controller => "field_daily_weather", :action  => :post_data %>',
+              editurl:'<%= url_for :controller => "field_daily_weather", :action  => :post_data, :parent_id => @field %>',
               datatype: "json",
               colNames:['Date','Ref. ET','Rainfall','Irrigation','% Moist.',
                 '% Cover','LAI','Adj. ET','AD','Deep Drain','ID'],
@@ -31,11 +48,11 @@
                  editable:true, align:'right',
                  formatter:'number', formatoptions:{decimalPlaces:2}},
                 {name:'entered_pct_cover', index:'entered_pct_cover',width:67,
-                 editable:true, align:'right',
-                 formatter:'number', formatoptions:{decimalPlaces:2}},
+                 editable:pctCoverIsEditable, align:'right',
+                 formatter:pctCoverFormatter, formatoptions:{decimalPlaces:2}},
                 {name:'leaf_area_index', index:'leaf_area_index',width:57,
-                  editable:true, align:'right',
-                 formatter:'number', formatoptions:{decimalPlaces:2}},
+                  editable:laiIsEditable, align:'right',
+                 formatter:laiFormatter, formatoptions:{decimalPlaces:2}},
                 {name:'adj_et', index:'adj_et',width:67, align:'right',
                  formatter:'number', formatoptions:{decimalPlaces:2}},
                 {name:'ad', index:'ad',width:57, align:'right',
@@ -73,9 +90,6 @@
               {edit:false,add:false,del:false,search:false,refresh:true},
               {afterSubmit:function(r,data){return true;(r,data,'edit');}}
             )
-            
-            
-            
             mygrid.filterToolbar();mygrid[0].toggleToolbar()
           });
         </script>
