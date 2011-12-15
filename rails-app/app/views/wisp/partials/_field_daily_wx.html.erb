@@ -73,11 +73,7 @@
               {edit:false,add:false,del:false,search:false,refresh:true},
               {afterSubmit:function(r,data){return true;(r,data,'edit');}}
             )
-            .navButtonAdd("#weather_pager",{caption:"",title:"Toggle Search Toolbar",
-              buttonicon :'ui-icon-search', onClickButton:function(){
-                mygrid[0].toggleToolbar() 
-              } 
-            })
+            
             
             
             mygrid.filterToolbar();mygrid[0].toggleToolbar()
