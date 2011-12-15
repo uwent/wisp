@@ -85,20 +85,20 @@ module ETCalculator
   #
   # Percent Cover methods
   #
-  def surrounding(wx_arr,start,parameter)
+  def surrounding(wx_arr,middle,parameter)
     max_index = wx_arr.size - 1
-    return nil if max_index < 2 || start > max_index || start < 0
+    return nil if max_index < 2 || middle > max_index || middle < 0
     res = [0,max_index]
-    if start > 0
-      (start - 1).downto(0) do |ii|
+    if middle > 0
+      (middle - 1).downto(0) do |ii|
         if wx_arr[ii].respond_to?('[]') && (wx_arr[ii][parameter])
           res[0] = ii
           break
         end
       end
     end
-    if start < max_index
-      (start + 1).upto(max_index) do |ii|
+    if middle < max_index
+      (middle + 1).upto(max_index) do |ii|
         if wx_arr[ii].respond_to?('[]') && (wx_arr[ii][parameter])
           res[1] = ii
           break
