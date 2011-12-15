@@ -41,13 +41,12 @@ class PivotsController < ApplicationController
         pivot.destroy
       end
     else
-    
       attribs = {}
       for col_name in COLUMN_NAMES
         attribs[col_name] = params[col_name] unless col_name == :id
       end
       if params[:oper] && params[:oper] == "add"
-        attribs[:farm_id] = @farm_id
+        set_parent_id(attribs,params,:farm_id,@farm_id)
         Pivot.create(attribs)
       else
         Pivot.find(params[:id]).update_attributes(attribs)

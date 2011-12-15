@@ -8,7 +8,7 @@
             
           var mygrid = jQuery("#pivot_setup").jqGrid({
               url:'<%= url_for :controller => "pivots", :q => 1 %>',
-              editurl:'<%= url_for :controller => "pivots", :action  => :post_data %>',
+              editurl:'<%= url_for :controller => "pivots", :action  => :post_data, :parent_id => @farm_id %>',
               datatype: "json",
               // t.integer  "farm_id"
               // t.string   "name"

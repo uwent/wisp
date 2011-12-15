@@ -22,7 +22,7 @@
     
   var mygrid = jQuery("#field_setup").jqGrid({
       url:'<%= url_for :controller => "fields", :q => 1 %>',
-      editurl:'<%= url_for :controller => "fields", :action  => :post_data %>',
+      editurl:'<%= url_for :controller => "fields", :action  => :post_data, :parent_id => @pivot_id %>',
       datatype: "json",
       colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD (%)','ET Stn','Rain Stn','Soil Moist. Stn','Notes',' ',' '],
       colModel:[{name:'name', index:'name',width:83,editable:true},

@@ -53,7 +53,7 @@ class FieldsController < ApplicationController
         attribs[col_name] = params[col_name] unless col_name == :id
       end
       if params[:oper] && params[:oper] == "add"
-        attribs[:pivot_id] = @pivot_id
+        set_parent_id(attribs,params,:pivot_id,@pivot_id)
         Field.create(attribs)
       else
         Field.find(params[:id]).update_attributes(attribs)

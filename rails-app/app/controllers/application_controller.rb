@@ -23,8 +23,8 @@ class ApplicationController < ActionController::Base
     klassname = klass.to_s.downcase
     sym = (klassname + '_id').to_sym
     id = params[sym] || session[sym]
-    if id
-      # puts "get_and_set: found the id for #{klass.to_s} in either params (#{params[sym]}) or session (#{session[sym]})"
+    if id && id != ''
+      # puts "get_and_set: found the id (#{id.inspect}) for #{klass.to_s} in either params (#{params[sym]}) or session (#{session[sym]})"
       # puts "get_and_set: what about string key? (#{params.inspect})"
       obj = klass.find(id)
     else
@@ -83,4 +83,10 @@ class ApplicationController < ActionController::Base
     logger.info "group_id #{@group_id}, @current_user #{@current_user}, @farm_id #{@farm_id}, @field_id #{@field_id}"
   end
   
+  def set_parent_id(attribs,params,parent_id_sym,parent_var)
+    parent_id = attribs[parent_id_sym]
+    if parent_id == nil || parent_id == '' || parent_id == '_empty'
+      attribs[parent_id_sym] = params[:parent_id] == '' ? parent_var : params[:parent_id]
+    end
+  end
 end

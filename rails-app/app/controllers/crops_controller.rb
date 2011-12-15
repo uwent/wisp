@@ -50,10 +50,7 @@ class CropsController < ApplicationController
         attribs[col_name] = params[col_name] unless col_name == :id
       end
       if "add" == params[:oper]
-        get_current_ids
-        attribs.delete(:id) # this will be empty anyway, or the even-more-useless "_empty"
-        logger.info "\n******adding a crop. Group_id #{@group_id}, farm_id #{@farm_id}, field_id #{@field_id}"
-        attribs[:field_id] = @field_id
+        set_parent_id(attribs,params,:field_id,@field_id)
         Crop.create(attribs)
       else
         @crop.do_attribs(attribs)

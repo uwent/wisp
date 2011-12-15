@@ -7,9 +7,9 @@
           var mygrid = jQuery("#farm_setup").jqGrid({
               url: '<%= url_for :controller => "farms", :action => :index, :q => 1 %>',
               // '/farms?q=1',
-              editurl:'<%= url_for :controller => "farms", :action => :post_data, :group => @group %>',
+              editurl:'<%= url_for :controller => "farms", :action => :post_data, :parent_id => @group %>',
               datatype: "json",
-              colNames:['Name','ET Method','Notes','Problem?',' '],
+              colNames:['Name','ET Method','Notes','Problem?','',''],
               colModel:[
                 {name:'name', index:'name',width:83,editable:true},
                 {
@@ -21,7 +21,8 @@
                 },
                 {name:'notes', index:'notes',width:87,editable:true, align:'right'},
                 {name:'problem', index:'problem',width:20, align:'right'},
-                {name:'id', index:'id',width:1}
+                {name:'group_id', index: 'group_id',width:1,hidden:true,editable:true},
+                {name:'id', index:'id',hidden:true}
               ],
               pager: '#farm_setup_pager',
               rowNum:180,

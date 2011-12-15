@@ -27,7 +27,7 @@ class FarmsController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @farms }
-      format.json { render :json => @farms.to_jqgrid_json([:name,:et_method_id,:notes,:problem,:id], 
+      format.json { render :json => @farms.to_jqgrid_json([:name,:et_method_id,:notes,:problem,:group_id,:id], 
                                                              params[:page], params[:rows],@farms.size) }
     end
     
@@ -57,14 +57,8 @@ class FarmsController < ApplicationController
           attribs[:year] = Time.now.year
         end
         unless @group
-          # DANGER! FIX ME!                
-          begin
-            @group = Group.find(params[:group])
-          rescue
-            flash[:warning] = "Data error; group not found"
-          end
+          set_parent_id(attribs,params,:group_id,@group_id)          
         end
-        attribs[:group_id] = @group[:id]
         Farm.create(attribs)
       else
         Farm.find(params[:id]).update_attributes(attribs)
