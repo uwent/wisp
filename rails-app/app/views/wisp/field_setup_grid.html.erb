@@ -75,9 +75,6 @@ index:'target_ad_pct',width:50,editable:true, align:'right'},
       {afterSubmit:function(r,data){return true;(r,data,'add');}},
       {afterSubmit:function(r,data){return true;(r,data,'delete');}}
     )
-    .navButtonAdd("#field_setup_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
-    
-    
     mygrid.filterToolbar();mygrid[0].toggleToolbar()
   });
 </script>
