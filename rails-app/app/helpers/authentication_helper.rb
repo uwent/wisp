@@ -16,7 +16,7 @@ module AuthenticationHelper
   end
   
   def ensure_signed_in
-    # puts "ensure_signed_in"
+    logger.info "ensure_signed_in"
     if USING_OPENID
       unless signed_in?
         session[:redirect_to] = request.request_uri

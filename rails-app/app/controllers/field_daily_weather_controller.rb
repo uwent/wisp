@@ -35,7 +35,7 @@ class FieldDailyWeatherController < ApplicationController
         end
       end
       wx_size = @field_daily_weather.size
-      puts "Irrig only present, found #{@field_daily_weather.size} records"
+      # puts "Irrig only present, found #{@field_daily_weather.size} records"
     else
       field_id = session[:field_id] || session[:field_id] = params[:field_id]
       @field_daily_weather = FieldDailyWeather.where(:field_id => field_id).order(:date)

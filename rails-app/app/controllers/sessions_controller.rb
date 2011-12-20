@@ -30,6 +30,7 @@ class SessionsController < ApplicationController
          # end
        when :failure
          logger.warn 'OpenID auth failed!'
+         logger.warn openid.inspect
          render :action => 'problem'
        end
      else
