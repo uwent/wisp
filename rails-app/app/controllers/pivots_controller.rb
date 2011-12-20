@@ -130,15 +130,8 @@ class PivotsController < ApplicationController
   
   private
   def get_current_farm
-    @group = @current_user.groups.first
     @farm_id = params[:farm_id] || session[:farm_id] || params[:parent_id]
-    if @farm_id
-      @farm = Farm.find(@farm_id)
-    else
-      @farm = Farm.my_farms(@group[:id]).first
-      @farm_id = @farm[:id]
-    end
-    @farms = Farm.where(:group_id => @group[:id])
-    
+    @farm = Farm.find(@farm_id)
+    @group = @farm.group
   end
 end
