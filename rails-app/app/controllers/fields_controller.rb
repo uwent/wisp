@@ -35,6 +35,7 @@ class FieldsController < ApplicationController
   end
 
   def post_data
+    @pivot = Pivot.find(params[:parent_id])
     if params[:oper] == "del"
       field = Field.find(params[:id])
       # check that we're in the right hierarchy, and not some random id
