@@ -2,8 +2,8 @@
   var lastsel;
   jQuery(document).ready(function(){
   var mygrid = jQuery("#crop_setup").jqGrid({
-      url:'<%= url_for :controller => "crops", :q => 1 %>',
-      editurl: '<%= url_for :controller => "crops", :action  => :post_data, :parent_id => @field_id %>',
+      url:'<%= grid_data_url "crops", nil %>',
+      editurl: '<%= grid_post_data_url "crops", @field %>',
       datatype: "json",
       colNames:['Crop','Variety','Emergence Date','Init Soil Moist. (%)','Harvest/Kill Date','Mgd. RZ (in)','AD Frac.','Notes',' ',' '],
       colModel:[ {name:'name', index:'name',width:83,editable:true},

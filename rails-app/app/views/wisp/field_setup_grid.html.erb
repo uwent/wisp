@@ -4,7 +4,7 @@
     $.ajax(
     { 
         type: "GET",
-        url: '<%= url_for :controller => 'wisp', :action => :set_field %>' + '?field_id=' + field_id, 
+        url: '<%= url_for merge_usuals(:controller => 'wisp', :action => :set_field) %>', 
         dataType: "json",
         async: false,
         success: function()
@@ -12,8 +12,10 @@
           
         },
         error: function(xhr, textStatus, errorThrown)
-        { 
-            alert(textStatus + ' ' + errorThrown);
+        {
+          alert('got an ajax error back, here is xhr');
+          alert(xhr);
+          alert(textStatus + ' ' + errorThrown);
         } /* error: */
     });/* $.ajax */
   }
@@ -21,8 +23,8 @@
     $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:<%=@field_id%>});
     
   var mygrid = jQuery("#field_setup").jqGrid({
-      url:'<%= url_for :controller => "fields", :q => 1 %>',
-      editurl:'<%= url_for :controller => "fields", :action  => :post_data, :parent_id => @pivot_id %>',
+      url:'<%= grid_data_url "fields", @pivot %>',
+      editurl:'<%= grid_post_data_url "fields", @pivot %>',
       datatype: "json",
       colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD (%)','ET Stn','Rain Stn','Soil Moist. Stn','Notes',' ',' '],
       colModel:[{name:'name', index:'name',width:83,editable:true},

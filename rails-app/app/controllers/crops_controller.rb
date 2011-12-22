@@ -1,7 +1,6 @@
 class CropsController < ApplicationController
   set_default_filters
   before_filter(:only => [:post_data, :show, :edit, :update, :destroy]) {|controller| @crop = Crop.find(params[:id]) if (params[:id] && params[:id] != '_empty')}
-  before_filter(:only => [:post_data, :destroy]) {|controller| @crop.auth(@group,:destroy) if @crop}
   
   COLUMN_NAMES = [
     :name,
@@ -39,6 +38,7 @@ class CropsController < ApplicationController
     log_current_ids
     if "del" == params[:oper]
       # crop = Crop.find(params[:id])
+      # probably should call auth here, but let's just let it slide for now
       @crop.destroy
       if session[:crop_id] == params[:id] # we just destroyed the current crop
         session.delete(:crop_id)

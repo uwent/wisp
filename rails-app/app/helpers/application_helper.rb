@@ -42,4 +42,28 @@ module ApplicationHelper
     path = image_path(folder)
     path.gsub(/[^\d][\d]+$/,'')
   end
+  
+  def merge_usuals(args)
+    puts "merge_usuals: @user #{@user}, @user_id #{@user_id}, @current_user #{@current_user}"
+    args.merge(
+      :user_id => @user || @current_user,
+      :group_id => @group,
+      :farm_id => @farm,
+      :pivot_id => @pivot,
+      :field_id => @field,
+      :crop_id => @crop
+      )
+  end
+  
+  def url_with_usuals(args)
+    url_for(merge_usuals(args))
+  end
+  
+  def grid_data_url(what,parent_object)
+    url_with_usuals :controller => what.to_s, :q => 1, :parent_id => parent_object
+  end
+  
+  def grid_post_data_url(what,parent_object)
+    url_with_usuals :controller => what.to_s, :action  => :post_data, :parent_id => parent_object
+  end
 end
