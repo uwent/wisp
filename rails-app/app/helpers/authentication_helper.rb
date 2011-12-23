@@ -8,11 +8,11 @@ module AuthenticationHelper
   
   def current_user
   	if signed_in?
-  		@current_user ||= User.find(session[:user_id])
+  		@user ||= User.find(session[:user_id])
   	else
-  		@current_user = nil
+  		@user = nil
   	end
-    @current_user
+    @user
   end
   
   def ensure_signed_in

@@ -6,23 +6,11 @@ class FieldsController < ApplicationController
   # GET /fields
   # GET /fields.xml
   def index
-	@fields = Field.find(:all, :conditions => ['pivot_id = ?', @pivot_id])
-    session[:farm_id] = @farm_id
-    session[:pivot_id] = @pivot_id
-    @farm = Farm.find(@farm_id)
-    @pivot = Pivot.find(@pivot_id)
-    if params[:field_id]
-      @field = @fields.find { |f| f[:id] == params[:field_id] } || @fields.first
-    else
-      @field = @fields.first
-    end
-	
+    get_current_ids
     @fields = Field.where(:pivot_id => @pivot_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
-  # puts "getting fields for pivot #{@pivot_id}, found #{@fields.size} entries"
     @fields ||= []
-
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @fields }
@@ -36,6 +24,7 @@ class FieldsController < ApplicationController
 
   def post_data
     @pivot = Pivot.find(params[:parent_id])
+    session[:pivot_id] = params[:parent_id]
     if params[:oper] == "del"
       field = Field.find(params[:id])
       # check that we're in the right hierarchy, and not some random id

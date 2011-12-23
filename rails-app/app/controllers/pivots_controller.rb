@@ -11,6 +11,7 @@ class PivotsController < ApplicationController
   # GET /pivots
   # GET /pivots.xml
   def index
+    get_current_ids
     @pivots = Pivot.find(:all, :conditions => ['farm_id = ?', @farm_id])
     session[:farm_id] = @farm_id
     @farm = Farm.find(@farm_id)
@@ -34,6 +35,8 @@ class PivotsController < ApplicationController
   end
 
   def post_data
+    @farm = Farm.find(params[:parent_id])
+    session[:farm_id] = params[:parent_id]
     if params[:oper] == "del"
       pivot = Pivot.find(params[:id])
       # check that we're in the right hierarchy, and not some random id

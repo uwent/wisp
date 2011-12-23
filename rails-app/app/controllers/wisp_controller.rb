@@ -1,6 +1,6 @@
 class WispController < ApplicationController
-  before_filter :ensure_signed_in, :except => [:index]
-  before_filter :current_user, :get_current_ids, :except => [:index, :home, :set_farm, :set_pivot, :set_field, :set_crop]
+  before_filter :ensure_signed_in, :only => [:farm_status, :pivot_crop, :field_status]
+  before_filter :current_user, :get_current_ids, :except => :index
 
   def index
   end
@@ -28,7 +28,8 @@ class WispController < ApplicationController
     @farm = Farm.find(@farm_id) if @farm_id
     @pivot = Pivot.find(@pivot_id) if @pivot_id
     @pivots = Pivot.where(:farm_id => @farm_id)
-    @field = Field.find(@field_id) if @field_id
+    @field = @pivot.fields.first
+    @field_id = @field[:id]
     @fields = Field.where(:pivot_id => @pivot_id)
     @crop = Crop.find(@crop_id) if @crop_id
     @crops = Crop.where(:field_id => @field_id)
@@ -41,7 +42,8 @@ class WispController < ApplicationController
     @pivots = Pivot.where(:farm_id => @farm_id)
     @field = Field.find(@field_id) if @field_id
     @fields = Field.where(:pivot_id => @pivot_id)
-    @crop = Crop.find(@crop_id) if @crop_id
+    @crop = @field.crops.first
+    @crop_id = @crop[:id]
     @crops = Crop.where(:field_id => @field_id)
     render :layout => false
   end

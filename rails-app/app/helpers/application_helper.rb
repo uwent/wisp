@@ -44,15 +44,16 @@ module ApplicationHelper
   end
   
   def merge_usuals(args)
-    puts "merge_usuals: @user #{@user}, @user_id #{@user_id}, @current_user #{@current_user}"
-    args.merge(
-      :user_id => @user || @current_user,
-      :group_id => @group,
-      :farm_id => @farm,
-      :pivot_id => @pivot,
-      :field_id => @field,
-      :crop_id => @crop
+    ret = args.merge(
+      :user_id => @user[:id],
+      :group_id => @group[:id],
+      :farm_id => @farm[:id],
+      :pivot_id => @pivot[:id],
+      :field_id => @field[:id],
+      :crop_id => @crop[:id]
       )
+    puts "mu: user_id #{ret[:user_id]}, group_id #{ret[:group_id]}, farm_id #{ret[:farm_id]}, pivot_id #{ret[:pivot_id]}, field_id #{ret[:field_id]}, crop_id #{ret[:crop_id]}"
+    ret
   end
   
   def url_with_usuals(args)
@@ -65,5 +66,16 @@ module ApplicationHelper
   
   def grid_post_data_url(what,parent_object)
     url_with_usuals :controller => what.to_s, :action  => :post_data, :parent_id => parent_object
+  end
+  
+  def grid_javascript_settings
+    ret = "\n// State variables:"
+    ret += "\nvar user_id = #{@user_id};" if @user_id
+    # ret += "\nvar group_id = #{@group_id};" if @group_id
+    ret += "\nvar farm_id = #{@farm_id};" if @farm_id
+    ret += "\nvar pivot_id = #{@pivot_id};" if @pivot_id
+    ret += "\nvar field_id = #{@field_id};" if @field_id
+    ret += "\nvar crop_id = #{@crop_id};" if @crop_id
+    ret
   end
 end

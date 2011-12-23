@@ -34,6 +34,8 @@ class FarmsController < ApplicationController
   end # index
   
   def post_data
+    @group = Group.find(params[:parent_id])
+    session[:group_id] = params[:parent_id]
     if params[:oper] == "del"
       farm = Farm.find(params[:id])
       session.each {|key,value| logger.info "session #{key} == #{value}"}

@@ -33,7 +33,7 @@
   	{
   		position:absolute;
   		left:275px;
-  		top:520px;
+  		top:590px;
   		width:920px;
   		padding:2px;
   		margin:0px;
@@ -45,8 +45,8 @@
   <%= jqgrid_javascripts.html_safe %>
   <script type="text/javascript">
     jQuery(document).ready(function(){
-      $('#fieldDataGrid').load('<%= url_for merge_usuals(:controller => "wisp", :action => :field_setup_grid) %>');
-      $('#cropDataGrid').load('<%= url_for merge_usuals(:controller => "wisp", :action => :crop_setup_grid) %>');
+      // $('#fieldDataGrid').load('<%= url_for merge_usuals(:controller => "wisp", :action => :field_setup_grid) %>');
+      // $('#cropDataGrid').load('<%= url_for merge_usuals(:controller => "wisp", :action => :crop_setup_grid, :thing => 'this') %>');
     });
   </script>
 <% end %>

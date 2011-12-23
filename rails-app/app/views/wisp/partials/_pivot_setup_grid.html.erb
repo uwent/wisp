@@ -3,11 +3,11 @@
         <script type="text/javascript">
           var lastsel;
           jQuery(document).ready(function(){
+            <%= grid_javascript_settings %>
             // Load the dependent field and crop grids with appropriate values
-            $('#fieldDataGrid').load('<%= url_for :controller => "wisp", :action => :field_setup_grid %>',{pivot_id:<%=@pivot_id%>});
-            
+            $('#fieldDataGrid').load('<%= url_for merge_usuals(:controller => "wisp", :action => :field_setup_grid) %>',{pivot_id:<%=@pivot_id%>});
           var mygrid = jQuery("#pivot_setup").jqGrid({
-              url:'<%= url_for :controller => "pivots", :q => 1 %>',
+              url:'<%= url_for merge_usuals(:controller => "pivots", :q => 1) %>',
               editurl:'<%= url_for :controller => "pivots", :action  => :post_data, :parent_id => @farm_id %>',
               datatype: "json",
               // t.integer  "farm_id"
@@ -52,7 +52,9 @@
                   jQuery('#pivot_setup').restoreRow(lastsel);
                   jQuery('#pivot_setup').editRow(id,true); 
                   lastsel=id;
-                  $('#fieldDataGrid').load('<%= url_for :controller => "wisp", :action => :field_setup_grid %>',{pivot_id:id});
+                  pivot_id=id;
+                  $('#fieldDataGrid').load('<%= url_for :controller => "wisp", :action => :field_setup_grid %>',
+                    {pivot_id:id,user_id:user_id, farm_id:farm_id,pivot_id:pivot_id,field_id:field_id,crop_id:crop_id});
                 } 
               },             
               

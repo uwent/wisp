@@ -3,20 +3,15 @@ class ApplicationController < ActionController::Base
   include AuthenticationHelper
   
   def self.set_default_filters
-    if AuthenticationHelper::USING_OPENID
-      before_filter :ensure_signed_in, :except => :post_data # At least until I figure out how to get the grids to deal
-    else
-      before_filter :ensure_signed_in
-    end
-    before_filter :current_user, :get_current_ids
+    :get_current_ids
   end
   
   private
   def get_group
-    unless @current_user
+    unless @user
       return nil
     end
-    @group = @current_user.groups.first
+    @group = @user.groups.first
   end
   
   def get_and_set(klass,parent_klass,parent_id,preserve_session=nil)
@@ -24,7 +19,7 @@ class ApplicationController < ActionController::Base
     sym = (klassname + '_id').to_sym
     id = params[sym] || session[sym]
     if id && id != ''
-      # puts "get_and_set: found the id (#{id.inspect}) for #{klass.to_s} in either params (#{params[sym]}) or session (#{session[sym]})"
+      puts "get_and_set: found the id (#{id.inspect}) for #{klass.to_s} in either params (#{params[sym]}) or session (#{session[sym]})"
       # puts "get_and_set: what about string key? (#{params.inspect})"
       obj = klass.find(id)
     else
@@ -40,16 +35,10 @@ class ApplicationController < ActionController::Base
   end
   
   def get_current_ids
-    get_group
-    unless @current_user
-      logger.warn "get_current_ids: no user!"
-      return 
-    end
-    unless @group
-      logger.warn "get_current_ids: no group!"
-      return
-    end
-    # puts "get_current_ids: before get_and_set, @farm is #{@farm ? @farm.name : "Not set"}"
+    @user_id = params[:user_id] || session[:user_id]
+    @user = User.find(@user_id)
+    @group = @user.groups.first # someday this might change if we let users belong to > 1 groups
+    puts "get_current_ids: before get_and_set, @farm is #{@farm ? @farm.name : "Not set"}"
     @farm_id,@farm = get_and_set(Farm,Group,@group[:id],params[:preserve_farm]); return unless @farm_id
     # puts "get_current_ids: @farm is #{@farm.name}"
   	@pivot_id,@pivot = get_and_set(Pivot,Farm,@farm_id); return unless @pivot_id
@@ -80,7 +69,7 @@ class ApplicationController < ActionController::Base
   
   # debugging
   def log_current_ids
-    logger.info "group_id #{@group_id}, @current_user #{@current_user}, @farm_id #{@farm_id}, @field_id #{@field_id}"
+    logger.info "group_id #{@group_id}, @user #{@user}, @farm_id #{@farm_id}, @field_id #{@field_id}"
   end
   
   def set_parent_id(attribs,params,parent_id_sym,parent_var)

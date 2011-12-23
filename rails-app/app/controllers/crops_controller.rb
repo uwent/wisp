@@ -16,13 +16,17 @@ class CropsController < ApplicationController
   # GET /crops
   # GET /crops.xml
   def index
+    get_current_ids
     # @farm = Farm.find(@farm_id)
     # @pivot = Pivot.find(@pivot_id)
+    puts "crops#index: #{params.inspect}"
     @field = Field.find(@field_id)
 
     @crops = Crop.where(:field_id => @field_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
+    @crop = @crops.first
+    @crop_id = @crop[:id]
     @crops ||= []
 
     respond_to do |format|
@@ -35,7 +39,8 @@ class CropsController < ApplicationController
   end
 
   def post_data
-    log_current_ids
+    @field = Field.find(params[:parent_id])
+    session[:field_id] = params[:parent_id]
     if "del" == params[:oper]
       # crop = Crop.find(params[:id])
       # probably should call auth here, but let's just let it slide for now
@@ -128,12 +133,12 @@ class CropsController < ApplicationController
   end
 
   private
-  def get_current_ids
-    logger.info "crops_controller#get_current_ids: session is #{session.inspect}"
-    group = @current_user.groups.first
-    @farm_id = params[:farm_id] || session[:farm_id] || Farm.my_farms(group[:id]).first # what to do if no farms yet?
-  	@pivot_id = params[:pivot_id] || session[:pivot_id]
-  	@field_id = params[:field_id] || session[:field_id]
-  end
+  # def get_current_ids
+  #   logger.info "crops_controller#get_current_ids: session is #{session.inspect}"
+  #   group = @user.groups.first
+  #   @farm_id = params[:farm_id] || session[:farm_id] || Farm.my_farms(group[:id]).first # what to do if no farms yet?
+  #   @pivot_id = params[:pivot_id] || session[:pivot_id]
+  #   @field_id = params[:field_id] || session[:field_id]
+  # end
   
 end

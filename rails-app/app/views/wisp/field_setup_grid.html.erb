@@ -4,7 +4,10 @@
     $.ajax(
     { 
         type: "GET",
-        url: '<%= url_for merge_usuals(:controller => 'wisp', :action => :set_field) %>', 
+        <% args = merge_usuals(:controller => 'wisp', :action => :set_field)
+           args.delete(:field_id)
+        %>
+        url: '<%= url_for args %>' + '&field_id='+field_id, 
         dataType: "json",
         async: false,
         success: function()
@@ -20,7 +23,8 @@
     });/* $.ajax */
   }
   jQuery(document).ready(function(){
-    $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:<%=@field_id%>});
+    <%= grid_javascript_settings %>
+    $('#cropDataGrid').load('<%= url_for merge_usuals(:controller => 'wisp', :action => :crop_setup_grid) %>',{field_id:<%=@field_id%>});
     
   var mygrid = jQuery("#field_setup").jqGrid({
       url:'<%= grid_data_url "fields", @pivot %>',
@@ -38,7 +42,7 @@ index:'target_ad_pct',width:50,editable:true, align:'right'},
                      {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right'},
                      {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:50,editable:true, align:'right'},
                      {name:'notes', index:'notes',width:87,editable:true, align:'right'},
-                     {name:'id', index:'id',width:1,hidden:true},
+                     {name:'id', index:'id',width:1,hidden:false}, // FIXME: FOR DEBUG ONLY!
                      {name:'pivot_id',index:'pivot_id',width:1,hidden:true,editable:true}
                      ],
       pager: '#field_setup_pager',
@@ -47,7 +51,7 @@ index:'target_ad_pct',width:50,editable:true, align:'right'},
       imgpath: '<%= image_folder_path("jqgrid") %>',
       sortname: '',
       viewrecords: true,
-      height: 110,
+      height: 180,
       width: 918,
       sortorder: '',
       gridview: false,
@@ -61,8 +65,10 @@ index:'target_ad_pct',width:50,editable:true, align:'right'},
           jQuery('#field_setup').restoreRow(lastsel);
           jQuery('#field_setup').editRow(id,true); 
           lastsel=id;
+          field_id=id;
           set_current_field(id);
-          $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:id});
+          $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',
+            {field_id:id,pivot_id:pivot_id,user_id:user_id, farm_id:farm_id,pivot_id:pivot_id});
         } 
       },             
       
