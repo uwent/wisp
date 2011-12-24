@@ -7,6 +7,7 @@
   <%= jqgrid_stylesheets.html_safe -%>
   <style type="text/css">
 	h2 {text-align:center;}
+	
 	#fieldSelectionBox
 	{
 	  text-align: center;
@@ -70,6 +71,11 @@
 		width:300px;
 	}
 	
+	table.center
+	{
+	  margin-left:auto;
+	  margin-right:auto;
+	}
 	</style>
    </style>
 <% end %>
@@ -79,6 +85,7 @@
   <%= javascript_include_tag 'bluff/excanvas.js'  %>
   <%= javascript_include_tag 'bluff/bluff-min.js' %>
   <script type="text/javascript">
+    <%= grid_javascript_settings %>
     function plotGraph() {
       var g = new Bluff.Line('example', '575x275');
       var ad_data;
@@ -152,11 +159,28 @@
   <%= render :partial => 'sidebar' %>
 <% end %>
 
-<h2>WISP Field Status</h2>
+<h2 style="margin-top:0px;padding-top:0px">WISP Field Status</h2>
 <div id="fieldSelectionBox">
-<%= form_tag(url_for :controller => "wisp", :action => :field_status) do %>
-  <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field),{ :onchange => "this.form.submit();"} %> 
-<% end %>
+  <table class="center"><tr>
+    <td>
+      <td>
+        <%= form_tag(url_for :controller => "wisp", :action => :field_status, :pivot_id => "", :field_id => "") do %>
+          <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %> 
+        <% end %>      
+      </td>
+      
+    </td>
+    <td>
+      <%= form_tag(url_for :controller => "wisp", :action => :field_status, :field_id => "") do %>
+        <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot),{ :onchange => "this.form.submit();"} %> 
+      <% end %>      
+    </td>
+    <td>
+      <%= form_tag(url_for :controller => "wisp", :action => :field_status) do %>
+        <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field),{ :onchange => "this.form.submit();"} %> 
+      <% end %>
+    </td>
+  </tr></table>
 </div>
 
 <div id="fieldDataBox">

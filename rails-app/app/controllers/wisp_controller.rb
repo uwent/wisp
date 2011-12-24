@@ -96,8 +96,13 @@ class WispController < ApplicationController
       end
     end
     if params[:ajax]
-      render :layout => false
+      render :template => 'wisp/field_status', :layout => false
     end
+  end
+  
+  def field_status_from_javascript
+    "******* I AM A CAN OF TUNA **********"
+    field_status
   end
   
   def projection_data
@@ -118,6 +123,10 @@ class WispController < ApplicationController
   end
   
   def farm_status
+    get_current_ids
+    if @farm && !@group_id
+      @group_id = @farm.group[:id]
+    end
     if params[:ajax]
       render :layout => false
     end

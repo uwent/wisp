@@ -5,9 +5,9 @@
           jQuery(document).ready(function(){
             
           var mygrid = jQuery("#farm_setup").jqGrid({
-              url: '<%= url_for :controller => "farms", :action => :index, :q => 1 %>',
+              url: '<%= url_for merge_usuals(:controller => "farms", :action => :index, :q => 1) %>',
               // '/farms?q=1',
-              editurl:'<%= url_for :controller => "farms", :action => :post_data, :parent_id => @group %>',
+              editurl:'<%= url_for merge_usuals(:controller => "farms", :action => :post_data, :parent_id => @group) %>',
               datatype: "json",
               colNames:['Name','ET Method','Notes','Problem?','',''],
               colModel:[

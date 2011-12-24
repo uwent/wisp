@@ -32,8 +32,8 @@
           var mygrid;
           jQuery(document).ready(function(){
             mygrid = jQuery("#weather").jqGrid({
-              url:'<%= url_for :controller => "field_daily_weather", :q => 1 %>',
-              editurl:'<%= url_for :controller => "field_daily_weather", :action  => :post_data, :parent_id => @field %>',
+              url:'<%= url_for merge_usuals(:controller => "field_daily_weather", :q => 1) %>',
+              editurl:'<%= url_for merge_usuals(:controller => "field_daily_weather", :action  => :post_data, :parent_id => @field) %>',
               datatype: "json",
               colNames:['Date','Ref. ET','Rainfall','Irrigation','% Moist.',
                 '% Cover','LAI','Adj. ET','AD','Deep Drain','ID'],

@@ -38,6 +38,11 @@
   		padding:2px;
   		margin:0px;
   	}
+  	table.center
+  	{
+  	  margin-left:auto;
+  	  margin-right:auto;
+  	}
 		
    </style>
 <% end %>
@@ -56,7 +61,17 @@
   <%= render :partial => 'sidebar' %>
 <% end %>
 
-<h2 class="pagehead">WISP Pivot, Field and Crops Data for farm <%= @pivot.farm.name %></h2>
+<table class="center"><tr>
+  <td><h2 class="pagehead">WISP Pivot, Field and Crops Data for</h2>
+  </td>
+  <td>
+    <%= form_tag(url_for(:controller => "wisp", :action => :pivot_crop, :pivot_id => "", :field_id => ""), :method => 'GET') do %>
+      <input type="hidden" name="pivot_id" value=""></input>
+      <input type="hidden" name="field_id" value=""></input>
+      <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %> 
+    <% end %>      
+  </td>
+</tr></table>
 
 <div id="pivotDataBox">
 	<%= render :partial => '/wisp/partials/pivot_setup_grid'%>

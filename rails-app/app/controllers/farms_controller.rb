@@ -16,19 +16,22 @@ class FarmsController < ApplicationController
   # GET /field_daily_weather
   # GET /field_daily_weather.xml
   def index
+    get_current_ids
     if @group then group_id = @group[:id] else group_id = 1 end
     # FIXME: Don't forget to insert year here!
     @farms = Farm.where(:group_id => group_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
-  # puts "getting farms for group #{group_id}, found #{@farms.size} entries"
     @farms ||= []
 
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @farms }
-      format.json { render :json => @farms.to_jqgrid_json([:name,:et_method_id,:notes,:problem,:group_id,:id], 
-                                                             params[:page], params[:rows],@farms.size) }
+      format.json do
+        json = @farms.to_jqgrid_json([:name,:et_method_id,:notes,:problem,:group_id,:id], 
+                                     params[:page], params[:rows],@farms.size)
+        render :json => json
+      end
     end
     
   end # index
@@ -58,9 +61,9 @@ class FarmsController < ApplicationController
         unless attribs[:year]
           attribs[:year] = Time.now.year
         end
-        unless @group
-          set_parent_id(attribs,params,:group_id,@group_id)          
-        end
+        # unless @group
+          set_parent_id(attribs,params,:group_id,params[:parent_id])          
+        # end
         Farm.create(attribs)
       else
         Farm.find(params[:id]).update_attributes(attribs)

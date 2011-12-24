@@ -5,29 +5,6 @@
     <li><%= link_to "WISP Home", :controller => 'wisp', :action => :home %></li>
   </ul>
   <ul>
-    <!-- Only display the selectors if they're signed in -->
-    <% if @group %>
-      <li>
-        <% if @farm %>
-          <%= select_tag "farm", options_from_collection_for_select(Farm.my_farms(@group[:id]),"id","name",@farm[:id])%>
-        <% else %>
-          <%= select_tag "farm", options_from_collection_for_select(Farm.my_farms(@group[:id]),"id","name")%>
-        <% end %>
-          <script type="text/javascript">
-            $(document).ready(function(){
-              $("#farm").change(function() {
-                var farm_id = $('#farm option:selected').val();
-                if (farm_id != 0) {
-                  // do an Ajax call to set the farm. Throw away the (nonexistent) output.
-                  $('#content').load(window.location.href,{farm_id:farm_id,ajax:true});
-                  // refresh the current page
-                  // window.location.href = window.location.href + "?preserve_farm=true"
-                }
-              });
-            });
-          </script>
-      </li>
-    <% end %>
     <li><%= link_to "Farm Status", :controller => 'wisp', :action => :farm_status %></li>
     <li><%= link_to "Pivots, Fields, and Crops", :controller => 'wisp', :action => :pivot_crop %></li>
     <li><%= link_to "Field Status", :controller => 'wisp', :action => :field_status %></li>
