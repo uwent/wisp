@@ -1,10 +1,13 @@
 class Farm < ActiveRecord::Base
   belongs_to :group
   belongs_to :et_method
-  has_many :pivots, :dependent => :destroy
+  has_many :pivots
   validates :year, :presence => true
   before_create :set_default_et_method
   after_create :create_default_data
+  before_destroy :mother_may_i
+
+  @@clobberable = nil
   
   def self.my_farms(group_id)
     Farm.find(:all, :conditions => ['group_id = ?',group_id])
@@ -30,4 +33,19 @@ class Farm < ActiveRecord::Base
     raise "Could not set default ET method" unless self[:et_method_id]
     pivots << Pivot.create(:name => "New pivot (farm: #{name})", :farm_id => self[:id])
   end
+  
+  
+  def mother_may_i
+    if group.may_destroy(self)
+      @@clobberable = id
+      Pivot.destroy_all "farm_id = #{id}"
+      return true
+    else
+      return false
+    end
+  end
+  def may_destroy(pivot)
+    pivots.size > 1 || @@clobberable == id
+  end
+  
 end

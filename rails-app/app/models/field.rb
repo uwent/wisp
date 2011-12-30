@@ -5,6 +5,7 @@ require 'uri'
 
 class Field < ActiveRecord::Base
   after_create :create_dependent_objects
+  before_destroy :mother_may_i  # check with parent if it's OK to go
   
   START_DATE = [5,1]
   END_DATE = [9,30]
@@ -232,5 +233,9 @@ class Field < ActiveRecord::Base
   end
   
   def problem
+  end
+  
+  def mother_may_i
+    pivot.may_destroy(self)
   end
 end

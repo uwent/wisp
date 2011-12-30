@@ -12,4 +12,11 @@ class Group < ActiveRecord::Base
       :year => DateTime.now.year, :et_method_id => nil, :group_id => self[:id])
     farm.save!
   end
+  
+  
+  # You can't destroy the only farm in a group. There must always be at least one.
+  def may_destroy(farm) 
+    farms.size > 1
+  end
+  
 end
