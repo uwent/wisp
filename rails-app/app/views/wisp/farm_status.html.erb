@@ -45,8 +45,6 @@
 <div id="farmDataBox">
   <%= render :partial => '/wisp/partials/farm_setup_grid'%>
 </div>
-Group: <%= @group_id %>
-
 <div id="farmProblemsBox">
   <table width="100%" border="1" cellpadding="1" cellspacing="1" summary="Action Items for farm XXX">
     <tr>
@@ -58,5 +56,5 @@ Group: <%= @group_id %>
   </table>
 </div>
 <% content_for :footer do %>
-<%= render :partial => '/wisp/partials/debug'%>
+<!-- Nothing needed in here for now -->
 <% end %>
