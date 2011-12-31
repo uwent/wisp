@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20111212194645) do
+ActiveRecord::Schema.define(:version => 20111231202402) do
 
   create_table "blogs", :force => true do |t|
     t.date     "date"
@@ -74,7 +74,7 @@ ActiveRecord::Schema.define(:version => 20111212194645) do
 
   create_table "fields", :force => true do |t|
     t.string   "name"
-    t.integer  "soil_type"
+    t.integer  "soil_type_id"
     t.float    "area"
     t.float    "field_capacity"
     t.float    "perm_wilting_pt"
@@ -122,6 +122,15 @@ ActiveRecord::Schema.define(:version => 20111212194645) do
     t.float    "some_energy_rate_metric"
     t.integer  "cropping_year"
     t.string   "notes"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "soil_types", :force => true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.float    "field_capacity"
+    t.float    "perm_wilting_pt"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

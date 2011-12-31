@@ -17,3 +17,11 @@ user = User.create!( :id => 1, :email => 'anonymous@mailinator.com', :identifier
 group = Group.create(:id => 1, :description => 'Default Group')
 membership = Membership.create(:id => 1, :group_id => group[:id], :user_id => user[:id], :is_admin => true)
 farm = Farm.create(:id => 1, :name => 'Default Farm', :group_id => group[:id], :year => Time.now.year, :et_method_id => lai_id)
+
+SoilType.create(:name => 'Sand', :field_capacity => 0.10, :perm_wilting_pt => 0.04)
+SoilType.create(:name => 'Sandy Loam', :field_capacity => 0.15, :perm_wilting_pt => 0.05)
+SoilType.create(:name => 'Loam', :field_capacity => 0.24, :perm_wilting_pt => 0.08)
+SoilType.create(:name => 'Silt Loam', :field_capacity => 0.30, :perm_wilting_pt => 0.16)
+SoilType.create(:name => 'Silt', :field_capacity => 0.31, :perm_wilting_pt => 0.10)
+SoilType.create(:name => 'Clay Loam', :field_capacity => 0.34, :perm_wilting_pt => 0.15)
+SoilType.create(:name => 'Clay', :field_capacity => 0.37, :perm_wilting_pt => 0.20)

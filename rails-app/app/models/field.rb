@@ -14,6 +14,7 @@ class Field < ActiveRecord::Base
   include ETCalculator
   
   belongs_to :pivot
+  belongs_to :soil_type
   has_many :crops, :dependent => :destroy
   has_many :field_daily_weather, :autosave => true, :dependent => :destroy
   
