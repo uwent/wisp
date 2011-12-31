@@ -18,5 +18,5 @@
 <% end %>
   
   <% if AuthenticationHelper::USING_OPENID && signed_in? %>
-    <%= button_to "Logout " + current_user.email, :controller => 'sessions', :action => :destroy, :redirect => :wisp %>
+    <%= button_to "Logout " + current_user.email, :controller => 'sessions', :action => :destroy %>
   <% end %>

@@ -43,7 +43,7 @@ class SessionsController < ApplicationController
     if params[:redirect]
       redirect_to :controller => params[:redirect]
     else
-      redirect_to :controller => 'wisp', :action => :index
+      redirect_to :controller => 'wisp', :action => :home
     end
   end
 

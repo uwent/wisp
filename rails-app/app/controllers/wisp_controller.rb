@@ -1,6 +1,6 @@
 class WispController < ApplicationController
   before_filter :ensure_signed_in, :only => [:farm_status, :pivot_crop, :field_status]
-  before_filter :current_user, :get_current_ids, :except => :index
+  before_filter :current_user, :get_current_ids, :except => [:home,:index]
 
   def index
   end
