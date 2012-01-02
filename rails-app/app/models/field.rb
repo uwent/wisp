@@ -9,6 +9,8 @@ class Field < ActiveRecord::Base
   
   START_DATE = [5,1]
   END_DATE = [9,30]
+  DEFAULT_FIELD_CAPACITY = 0.31
+  DEFAULT_PERM_WILTING_PT = 0.14
   
   include ADCalculator
   include ETCalculator
@@ -47,6 +49,27 @@ class Field < ActiveRecord::Base
     return Time.now.year unless pivot && pivot.farm
     pivot.farm.year
   end
+  
+  def field_capacity
+    if (val = read_attribute(:field_capacity)) && val != 0.0
+      val
+    elsif soil_type
+      soil_type.field_capacity
+    else
+      DEFAULT_FIELD_CAPACITY
+    end
+  end
+  
+  def perm_wilting_pt
+    if (val = read_attribute(:perm_wilting_pt)) && val != 0.0
+      val
+    elsif soil_type
+      soil_type.perm_wilting_pt
+    else
+      DEFAULT_PERM_WILTING_PT
+    end
+  end
+      
 
   def create_dependent_objects
     # puts "CDO...#{self.inspect}, fdw #{field_daily_weather.size} records" if et_method.class == PctCoverEtMethod
@@ -78,13 +101,13 @@ class Field < ActiveRecord::Base
       )
     end
     # Shouldn't initial soil moisture go in here?
-    field_daily_weather[0].calculated_pct_moisture = 100*self[:field_capacity]
+    field_daily_weather[0].calculated_pct_moisture = 100*self.field_capacity
   end
   
   def create_crop
     # puts "create crop"
     crops << Crop.new(:name => "New crop (field: #{name})", :variety => 'A variety', :emergence_date => date_endpoints.first,
-      :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self[:field_capacity],
+      :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self.field_capacity,
       :dont_update_canopy => true) # TODO: take this back out?
     # puts "crop created"
   end

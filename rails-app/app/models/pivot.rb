@@ -10,8 +10,7 @@ class Pivot < ActiveRecord::Base
   
   def create_new_default_field
     fields << Field.create(:name => "New field (pivot: #{name})",
-      # grabbed these numbers from John's spreadsheet
-      :field_capacity => 0.31, :perm_wilting_pt => 0.14,
+      :soil_type_id => SoilType.first[:id],
       # try this because we might not be saved and thus the association won't work yet...?
       :pivot_id => self[:id]
       )

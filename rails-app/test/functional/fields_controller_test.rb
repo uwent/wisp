@@ -46,4 +46,19 @@ class FieldsControllerTest < ActionController::TestCase
 
     assert_redirected_to fields_path
   end
+  
+  test "get appropriate JSON when creating" do
+    post :post_data, :oper => 'add', :parent_id => Pivot.first[:id], :pivot_id => Pivot.first[:id]
+    assert_response :success
+    puts(response.body)
+    assert(json = JSON.parse(response.body))
+    assert_equal("New field", json['name'])
+  end
+  
+  test "column_names works" do
+    get :column_names
+    assert(json = JSON.parse(response.body), "should have returned some json there")
+    assert_equal('field_capacity', json['field_capacity'])
+  end
+  
 end

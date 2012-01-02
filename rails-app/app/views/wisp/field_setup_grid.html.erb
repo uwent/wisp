@@ -22,28 +22,29 @@
         } /* error: */
     });/* $.ajax */
   }
+  function createNewField() {
+    var fld={};
+    $.ajax(
+      {
+        type: "POST",
+        url: '<%= grid_post_data_url "fields", @pivot%>' + '&oper=add&id=_empty', 
+        dataType: "json",
+        async: false,
+        success: function(json) {
+          fld['name'] = json['name'];
+          fld['soil_type_id'] = json['soil_type_id'];
+          fld['pivot_id'] = json['pivot_id'];
+          fld['id'] = json['id'];
+        }
+      }
+    );
+    return fld;
+  }
   function addNewRow() {
-    alert('adding new row');
-    // jQuery('#field_setup').addRowData(10000,{name:'new field',field_capacity:0.42,perm_wilting_pt:0.12}, 0, -1);    
     var grid = $('#field_setup');
-    var total = grid.getGridParam('records');
-    var emptyItem = {
-      name:'New Field',
-      area:0.0,
-      soil_type:1,
-      field_capacity:0.0,
-      perm_wilting_pt:0.0,
-      target_ad_pct:0.0,
-      ref_et_station_id:0,
-      rain_station_id:0,
-      soil_moisture_station_id:0,
-      notes:'',
-      id:10000,
-      pivot_id: <%= @pivot[:id] %>
-    };
-    grid.addRowData(total + 1, emptyItem); // add a new row with empty data
-    // SetupActions(‘CodeGrid’, total + 1); // set up some CRUD buttons
-    grid.editRow(total + 1); // put new row into inline-edit mode
+    newField = createNewField();
+    grid.addRowData(newField['id'], newField); // add a new row with the new field's data
+    grid.editRow(newField['id'],true); // put new row into inline-edit mode
   }
   jQuery(document).ready(function(){
     <%= grid_javascript_settings %>
@@ -56,7 +57,16 @@
       colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD (%)','ET Stn','Rain Stn','Soil Moist. Stn','Notes',' ',' '],
       colModel:[{name:'name', index:'name',width:83,editable:true},
                      {name:'area', index:'area',width:20,editable:true, align:'right'},
-                     {name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'},
+                     {
+                       
+                         name:'soil_type_id',index:'soil_type_id', width:50,resizable:true,   
+                         align:"left",sorttype:"text",editable:true,edittype:"select",
+                         formatter:'select',
+                         editoptions:   // working example for ET methods is '1:Percent Cover;2:Leaf Area Index'
+                           { value:"1:Sand;2:Sandy Loam"},editrules:{required:true}
+
+                       // name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'
+                     },
                      {name:'field_capacity', index:'field_capacity',width:50,editable:true, align:'right'},
                      {name:'perm_wilting_pt', index:'perm_wilting_pt',width:45,editable:true, align:'right'},
                      {name:'target_ad_pct',

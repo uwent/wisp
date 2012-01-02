@@ -8,7 +8,7 @@ RailsApp::Application.routes.draw do
   resources :weather_stations
 
   resources :crops
-
+  
   resources :fields
 
   resources :irrigation_events

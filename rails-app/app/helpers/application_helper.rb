@@ -78,4 +78,23 @@ module ApplicationHelper
     ret += "\nvar crop_id = #{@crop_id};" if @crop_id
     ret
   end
+  
+  def so_far(str,delimiter=',')
+    if str == ''
+      str
+    else
+      str + delimiter
+    end
+  end
+  
+  # make COLUMN_NAMES available to Javascript
+  def column_names_to_s(controller_class)
+    '[' + controller_class::COLUMN_NAMES.inject("") {|str,col_sym| so_far(str) + "'#{col_sym.to_s}'"} + ']'
+  end
+  
+  def soil_types_for_select
+    # 1:Percent Cover;2:Leaf Area Index
+    SoilType.all.inject("") {|str,soil_type| so_far(str) + "#{soil_type[:id]}:#{soil_type.name}"}
+  end
+  
 end

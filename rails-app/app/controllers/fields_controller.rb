@@ -1,7 +1,7 @@
 class FieldsController < ApplicationController
   set_default_filters
  
-  COLUMN_NAMES = [:name,:area,:soil_type,:field_capacity,:perm_wilting_pt,:target_ad_pct,
+  COLUMN_NAMES = [:name,:area,:soil_type_id,:field_capacity,:perm_wilting_pt,:target_ad_pct,
                   :ref_et_station_id,:rain_station_id,:soil_moisture_station_id,:notes]
   # GET /fields
   # GET /fields.xml
@@ -42,16 +42,32 @@ class FieldsController < ApplicationController
       for col_name in COLUMN_NAMES
         attribs[col_name] = params[col_name] unless col_name == :id
       end
+      if attribs[:soil_type_id]
+        attribs[:soil_type_id] = attribs[:soil_type_id].to_i
+        attribs[:soil_type_id] = SoilType.first[:id] if attribs[:soil_type_id] == 0
+      end
       if params[:oper] && params[:oper] == "add"
         set_parent_id(attribs,params,:pivot_id,@pivot_id)
-        Field.create(attribs)
+        unless attribs[:soil_type_id]
+          unless attribs[:soil_type_id] != 0 && attribs[:soil_type_id] != ''
+            attribs[:soil_type_id] = SoilType.first[:id]
+          end
+        end
+        # Should do a method for this, perhaps with a block for the tests
+        unless attribs[:name] && attribs[:name] != ''
+          attribs[:name] = "New field"
+        end
+        field = Field.create(attribs)
       else
-        Field.find(params[:id]).update_attributes(attribs)
+        field = Field.find(params[:id])
+        field.update_attributes(attribs)
       end
     end
-    render :nothing => true
+    attrs = field.attributes.symbolize_keys
+    puts "**************\n" + attrs.inspect
+    render :json => attrs
   end
-
+  
   # GET /fields/1
   # GET /fields/1.xml
   def show
