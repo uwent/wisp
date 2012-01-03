@@ -94,7 +94,7 @@ module ApplicationHelper
   
   def soil_types_for_select
     # 1:Percent Cover;2:Leaf Area Index
-    SoilType.all.inject("") {|str,soil_type| so_far(str) + "#{soil_type[:id]}:#{soil_type.name}"}
+    SoilType.all.inject("") {|str,soil_type| so_far(str,';') + "#{soil_type[:id]}:#{soil_type.name}"}
   end
   
 end
