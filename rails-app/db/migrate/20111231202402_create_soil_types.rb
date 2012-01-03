@@ -8,6 +8,7 @@ class CreateSoilTypes < ActiveRecord::Migration
       t.timestamps
     end
     rename_column :fields, :soil_type, :soil_type_id
+    SoilType.initial_types.each {|it| SoilType.create(it)}
   end
 
   def self.down

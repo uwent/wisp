@@ -9,14 +9,6 @@ require File.join(File.dirname(__FILE__),'..','app','models','et_method')
 pct_cover_id = PctCoverEtMethod.create(:name => "Percent Cover", :description => "Uses regressions derived with WI A3600 tables")[:id]
 lai_id = LaiEtMethod.create(:name => "Leaf Area Index", :description => "Uses LAI measurements and to derive a crop coefficient")[:id]
 
-SoilType.create(:name => 'Sand', :field_capacity => 0.10, :perm_wilting_pt => 0.04)
-SoilType.create(:name => 'Sandy Loam', :field_capacity => 0.15, :perm_wilting_pt => 0.05)
-SoilType.create(:name => 'Loam', :field_capacity => 0.24, :perm_wilting_pt => 0.08)
-SoilType.create(:name => 'Silt Loam', :field_capacity => 0.30, :perm_wilting_pt => 0.16)
-SoilType.create(:name => 'Silt', :field_capacity => 0.31, :perm_wilting_pt => 0.10)
-SoilType.create(:name => 'Clay Loam', :field_capacity => 0.34, :perm_wilting_pt => 0.15)
-SoilType.create(:name => 'Clay', :field_capacity => 0.37, :perm_wilting_pt => 0.20)
-
 # note that this ID should be the same as AuthenticationHelper.SINGLE_USER_ID 
 user = User.create( :id => 1, :email => 'anonymous@mailinator.com', :identifier_url => nil,
    :first_name => 'Anonymous',  :last_name => 'User')

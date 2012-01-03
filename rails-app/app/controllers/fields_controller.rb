@@ -60,6 +60,7 @@ class FieldsController < ApplicationController
         field = Field.create(attribs)
       else
         field = Field.find(params[:id])
+        attribs = field.groom_for_defaults(attribs)
         field.update_attributes(attribs)
       end
     end

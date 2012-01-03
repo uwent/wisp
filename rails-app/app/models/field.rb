@@ -11,6 +11,7 @@ class Field < ActiveRecord::Base
   END_DATE = [9,30]
   DEFAULT_FIELD_CAPACITY = 0.31
   DEFAULT_PERM_WILTING_PT = 0.14
+  EPSILON = 0.0000001
   
   include ADCalculator
   include ETCalculator
@@ -261,5 +262,35 @@ class Field < ActiveRecord::Base
   
   def mother_may_i
     pivot.may_destroy(self)
+  end
+
+  def within_epsilon(val,other_val)
+    (val - other_val).abs < EPSILON
+  end
+  
+  # If the incoming attributes have an entry for attrib symbol, and it's the same value (within EPSILON)
+  # as the default value for our soil, delete the entry from the attributes.
+  def remove_incoming_if_default(my_soil,incoming_attribs,attrib_symbol)
+    if incoming_attribs[attrib_symbol] && within_epsilon(incoming_attribs[attrib_symbol].to_f,my_soil[attrib_symbol])
+      incoming_attribs.delete(attrib_symbol)
+    end
+    incoming_attribs
+  end                                                                                                      
+  
+  def groom_for_defaults(incoming_attribs)
+    my_soil = soil_type
+    if incoming_attribs[:soil_type_id].to_i == soil_type_id
+      # why set it if it hasn't changed? Just biff it
+      incoming_attribs.delete(:soil_type_id)
+    else
+      # If the user has changed the soil type, they're overwriting any explicit values they'd previously entered,
+      # whether implicitly via the soil type defaults, or explicity via newly-entered values.
+      # Note that we could also probably do with with soil_type_id=(), but this is already here.
+      self[:field_capacity] = nil
+      self[:perm_wilting_pt] = nil
+      my_soil = SoilType.find(incoming_attribs[:soil_type_id].to_i)
+    end
+    remove_incoming_if_default(my_soil,incoming_attribs,:field_capacity)
+    remove_incoming_if_default(my_soil,incoming_attribs,:perm_wilting_pt)
   end
 end

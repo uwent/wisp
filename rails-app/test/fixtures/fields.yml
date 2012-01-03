@@ -9,6 +9,7 @@ default:
   ref_et_station_id: 1
   rain_station_id: 1
   soil_moisture_station_id: 1
+  soil_type: sandy_loam
   name: Default Field
   notes: For testing and single-user mode
   

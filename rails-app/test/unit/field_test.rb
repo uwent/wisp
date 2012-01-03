@@ -128,15 +128,17 @@ class FieldTest < ActiveSupport::TestCase
 
   def check_field_has_no_lai(field,emergence_date)
     fdw_emergence_date = (field.field_daily_weather.find_all {|fdw| fdw.date == emergence_date}).first
-    assert(fdw_emergence_date, "Should be a wx record for emergence date")
+    assert(fdw_emergence_date, "Should be a wx record for emergence date #{emergence_date}, earliest #{field.field_daily_weather.first.date}")
     assert_equal(0.0,fdw_emergence_date.leaf_area_index,"Should start out with nothing for LAI on emergence date")
   end
 
   def setup_field_with_emergence
     farm = Farm.first
     assert_equal(LaiEtMethod, farm.et_method.class)
-    field = Field.create(:pivot_id => farm.pivots.first[:id],:field_capacity => 0.4, :perm_wilting_pt => 0.13)
-    emergence_date = Date.civil(2011,05,01)
+    field = Field.create(
+      :pivot_id => farm.pivots.first[:id],:field_capacity => 0.4, :perm_wilting_pt => 0.13,
+      :soil_type_id => SoilType.default_soil_type[:id])
+    emergence_date = Date.civil(Date.today.year,05,01)
     check_field_has_no_lai(field,emergence_date)
     [field,emergence_date]
   end
@@ -191,7 +193,197 @@ class FieldTest < ActiveSupport::TestCase
     field = Field.find(field[:id])
     assert_in_delta(1.0, field.field_daily_weather[1].pct_cover, 0.00001,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
     assert_in_delta(8.0, field.field_daily_weather[8].pct_cover, 0.00001,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
-    puts field.field_daily_weather[0..15].collect {|fdw| [fdw.id,fdw.date,fdw.pct_cover].join(" ")}.join("\n")
     assert_in_delta(9.0, field.field_daily_weather[15].pct_cover, 0.00001,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+  end
+  
+  def field_with_soil_type
+    Field.all.select {|field| field.soil_type }.first
+  end
+  
+  test "I can find a field with a soil type" do
+     assert(field_with_soil_type)
+  end
+  
+  test "remove_incoming_if_default: fc gets pulled when == to default" do
+    field = field_with_soil_type
+    assert(default_fc = field.soil_type.field_capacity)
+    assert(default_pwp = field.soil_type.perm_wilting_pt)
+    attribs = {:field_capacity => default_fc.to_s, :perm_wilting_pt => default_pwp.to_s}
+    field.remove_incoming_if_default(field.soil_type,attribs,:field_capacity)
+    assert_equal(attribs, {:perm_wilting_pt => default_pwp.to_s},attribs.inspect)
+  end
+  
+  test "remove_incoming_if_default: pwp gets pulled when == to default" do
+    field = field_with_soil_type
+    assert(default_fc = field.soil_type.field_capacity)
+    assert(default_pwp = field.soil_type.perm_wilting_pt)
+    attribs = {:field_capacity => default_fc.to_s, :perm_wilting_pt => default_pwp.to_s}
+    field.remove_incoming_if_default(field.soil_type,attribs,:perm_wilting_pt)
+    assert_equal({:field_capacity => default_fc.to_s}, attribs,attribs.inspect)
+  end
+  
+  test "riid: fc left alone when != to default" do
+    field = field_with_soil_type
+    assert(fc = field.soil_type.field_capacity + 10.0)
+    assert(default_pwp = field.soil_type.perm_wilting_pt)
+    attribs = {:field_capacity => fc.to_s, :perm_wilting_pt => default_pwp.to_s}
+    expected_attribs = {:field_capacity => fc.to_s, :perm_wilting_pt => default_pwp.to_s}
+    field.remove_incoming_if_default(field.soil_type,attribs,:field_capacity)
+    assert_equal(expected_attribs, attribs, attribs.inspect)
+    # and taking the other out still leaves non-default alone
+    field.remove_incoming_if_default(field.soil_type,attribs,:perm_wilting_pt)
+    assert_equal({:field_capacity => fc.to_s}, attribs)
+  end
+  
+  test "riid: pwp left alone when != to default" do
+    field = field_with_soil_type
+    assert(default_fc = field.soil_type.field_capacity)
+    assert(pwp = field.soil_type.perm_wilting_pt + 10.0)
+    attribs = {:field_capacity => default_fc.to_s, :perm_wilting_pt => pwp.to_s}
+    expected_attribs = {:field_capacity => default_fc.to_s, :perm_wilting_pt => pwp.to_s}
+    field.remove_incoming_if_default(field.soil_type,attribs,:perm_wilting_pt)
+    assert_equal(expected_attribs, attribs, attribs.inspect)
+    # and, as above, we can yank field capacity and it won't pull pwp
+    field.remove_incoming_if_default(field.soil_type,attribs,:field_capacity)
+    assert_equal({:perm_wilting_pt => pwp.to_s}, attribs)
+  end
+  
+  test "riid when both are different from default" do
+    field = field_with_soil_type
+    assert(fc = field.soil_type.field_capacity + 10.0)
+    assert(pwp = field.soil_type.perm_wilting_pt + 10.0)
+    attribs = {:field_capacity => fc.to_s, :perm_wilting_pt => pwp.to_s}
+    expected_attribs = {:field_capacity => fc.to_s, :perm_wilting_pt => pwp.to_s}
+    field.remove_incoming_if_default(field.soil_type,attribs,:field_capacity)
+    assert_equal(expected_attribs, attribs, attribs.inspect)
+    field.remove_incoming_if_default(field.soil_type,attribs,:perm_wilting_pt)
+    assert_equal(expected_attribs, attribs, attribs.inspect)
+  end
+  
+  test "groom_for_defaults: no changes, fc and pwp absent in existing record" do
+    assert(field = Field.create(:name => 'Test Field',:pivot_id => Pivot.first, :soil_type_id => SoilType.default_soil_type[:id]),"Could not create a field")
+    default_fc = field.soil_type.field_capacity
+    default_pwp = field.soil_type.perm_wilting_pt
+    assert_nil(field[:field_capacity])
+    assert_nil(field[:perm_wilting_pt])
+    incoming_attributes = {
+      :soil_type_id => field.soil_type[:id].to_s,
+      :field_capacity => field.field_capacity.to_s,
+      :perm_wilting_pt => field.perm_wilting_pt.to_s
+    }
+    field.groom_for_defaults(incoming_attributes)
+    assert_equal({}, incoming_attributes)
+  end
+  
+  test "groom_for_defaults: soil type changed, no other attribs supplied (existing record had nil fc/pwp)" do
+    nondefault_soil = SoilType.find(:first, :conditions => ['id != ?',SoilType.default_soil_type[:id]])
+    assert(field = Field.create(:name => 'Test Field',:pivot_id => Pivot.first, :soil_type_id => SoilType.default_soil_type[:id]),"Could not create a field")
+    default_fc = field.soil_type.field_capacity
+    default_pwp = field.soil_type.perm_wilting_pt
+    incoming_attributes = {:soil_type_id => nondefault_soil[:id]}
+    expected_attributes = {:soil_type_id => nondefault_soil[:id]}
+    field.groom_for_defaults(incoming_attributes)
+    assert_equal(expected_attributes, incoming_attributes)
+    assert_nil(field[:field_capacity])
+    assert_nil(field[:perm_wilting_pt])
+  end
+  
+  test "groom_for_defaults: soil type changed, pwp and fc supplied but == to new defaults (existing record had nil fc/pwp)" do
+    nondefault_soil = SoilType.find(:first, :conditions => ['id != ?',SoilType.default_soil_type[:id]])
+    assert(field = Field.create(:name => 'Test Field',:pivot_id => Pivot.first, :soil_type_id => SoilType.default_soil_type[:id]),"Could not create a field")
+    default_fc = field.soil_type.field_capacity
+    default_pwp = field.soil_type.perm_wilting_pt
+    incoming_attributes = {
+      :soil_type_id => nondefault_soil[:id],
+      :field_capacity => nondefault_soil.field_capacity,
+      :perm_wilting_pt => nondefault_soil.perm_wilting_pt
+    }
+    expected_attributes = {:soil_type_id => nondefault_soil[:id]}
+    field.groom_for_defaults(incoming_attributes)
+    assert_equal(expected_attributes, incoming_attributes)
+    assert_nil(field[:field_capacity])
+    assert_nil(field[:perm_wilting_pt])
+  end
+  
+  test "groom_for_defaults: soil type changed, pwp and fc supplied == to new defaults (existing record had fc/pwp)" do
+    nondefault_soil = SoilType.find(:first, :conditions => ['id != ?',SoilType.default_soil_type[:id]])
+    assert(
+      field = Field.create(
+        :name => 'Test Field',
+        :pivot_id => Pivot.first,
+        :soil_type_id => SoilType.default_soil_type[:id],
+        :field_capacity => 0.001,
+        :perm_wilting_pt => 0.002
+      ),
+      "Could not create a field")
+    incoming_attributes = {
+      :soil_type_id => nondefault_soil[:id].to_s,
+      :field_capacity => nondefault_soil.field_capacity.to_s,
+      :perm_wilting_pt => nondefault_soil.perm_wilting_pt.to_s
+    }
+    expected_attributes = {:soil_type_id => nondefault_soil[:id].to_s}
+    field.groom_for_defaults(incoming_attributes)
+    assert_equal(expected_attributes, incoming_attributes)
+    # Even though the field previously had an FC and a PWP, they should now be wiped out so that the new soil's defaults take over
+    assert_nil(field[:field_capacity])
+    assert_nil(field[:perm_wilting_pt])
+  end
+  
+  test "groom_for_defaults: soil type changed, pwp and fc supplied != to new defaults (existing record had fc/pwp)" do
+    nondefault_soil = SoilType.find(:first, :conditions => ['id != ?',SoilType.default_soil_type[:id]])
+    assert(
+      field = Field.create(
+        :name => 'Test Field',
+        :pivot_id => Pivot.first,
+        :soil_type_id => SoilType.default_soil_type[:id],
+        :field_capacity => 0.001,
+        :perm_wilting_pt => 0.002
+      ),
+      "Could not create a field")
+    incoming_attributes = {
+      :soil_type_id => nondefault_soil[:id].to_s,
+      :field_capacity => (nondefault_soil.field_capacity+0.4).to_s,
+      :perm_wilting_pt => (nondefault_soil.perm_wilting_pt+0.1).to_s
+    }
+    # same thing. Yes, it's duplication. Sue me.
+    expected_attributes = {
+      :soil_type_id => nondefault_soil[:id].to_s,
+      :field_capacity => (nondefault_soil.field_capacity+0.4).to_s,
+      :perm_wilting_pt => (nondefault_soil.perm_wilting_pt+0.1).to_s
+    }
+    field.groom_for_defaults(incoming_attributes)
+    assert_equal(expected_attributes, incoming_attributes)
+    # Even though the field previously had an FC and a PWP, they should now be wiped out (doesn't matter, they'll get overridden, but still.)
+    assert_nil(field[:field_capacity])
+    assert_nil(field[:perm_wilting_pt])
+  end
+  
+  
+  test "groom_for_defaults: soil type UNchanged, pwp and fc supplied == to old defaults (existing record had fc/pwp)" do
+    default_soil_id = SoilType.default_soil_type[:id]
+    assert(
+      field = Field.create(
+        :name => 'Test Field',
+        :pivot_id => Pivot.first,
+        :soil_type_id => default_soil_id,
+        :field_capacity => 0.001,
+        :perm_wilting_pt => 0.002
+      ),
+      "Could not create a field")
+    incoming_attributes = {
+      :soil_type_id => default_soil_id.to_s,
+      :field_capacity => 0.4.to_s,
+      :perm_wilting_pt => 0.1.to_s
+    }
+    expected_attributes = {
+      :field_capacity => 0.4.to_s,
+      :perm_wilting_pt => 0.1.to_s
+    }
+    field.groom_for_defaults(incoming_attributes)
+    assert_equal(expected_attributes, incoming_attributes)
+    assert_equal(0.001, field.field_capacity)
+    assert_equal(0.002, field.perm_wilting_pt)
+    assert_equal(0.001, field[:field_capacity])
+    assert_equal(0.002, field[:perm_wilting_pt])
   end
 end

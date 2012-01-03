@@ -63,7 +63,7 @@
                          align:"left",sorttype:"text",editable:true,edittype:"select",
                          formatter:'select',
                          editoptions:   // working example for ET methods is '1:Percent Cover;2:Leaf Area Index'
-                           { value:"1:Sand;2:Sandy Loam"},editrules:{required:true}
+                           { value:"<%= soil_types_for_select %>"},editrules:{required:true}
 
                        // name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'
                      },
