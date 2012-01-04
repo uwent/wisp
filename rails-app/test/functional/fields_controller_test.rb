@@ -55,10 +55,8 @@ class FieldsControllerTest < ActionController::TestCase
     assert_equal("New field", json['name'])
   end
   
-  test "column_names works" do
-    get :column_names
-    assert(json = JSON.parse(response.body), "should have returned some json there")
-    assert_equal('field_capacity', json['field_capacity'])
+  # let's just test this here, it's the first controller to use it
+  test "jsonify works" do
+    assert_equal({"expected_str" => "this", "expected_int" => "2"}, FieldsController.jsonify({:expected_str => 'this', :expected_int => 2}))
   end
-  
 end

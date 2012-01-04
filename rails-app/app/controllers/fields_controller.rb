@@ -44,14 +44,12 @@ class FieldsController < ApplicationController
       end
       if attribs[:soil_type_id]
         attribs[:soil_type_id] = attribs[:soil_type_id].to_i
-        attribs[:soil_type_id] = SoilType.first[:id] if attribs[:soil_type_id] == 0
+        attribs[:soil_type_id] = SoilType.default_soil_type[:id] if attribs[:soil_type_id] == 0
       end
       if params[:oper] && params[:oper] == "add"
         set_parent_id(attribs,params,:pivot_id,@pivot_id)
         unless attribs[:soil_type_id]
-          unless attribs[:soil_type_id] != 0 && attribs[:soil_type_id] != ''
-            attribs[:soil_type_id] = SoilType.first[:id]
-          end
+          attribs[:soil_type_id] = SoilType.default_soil_type[:id]
         end
         # Should do a method for this, perhaps with a block for the tests
         unless attribs[:name] && attribs[:name] != ''
@@ -65,7 +63,9 @@ class FieldsController < ApplicationController
       end
     end
     attrs = field.attributes.symbolize_keys
-    puts "**************\n" + attrs.inspect
+    attrs[:field_capacity] = field.field_capacity unless attrs[:field_capacity]
+    attrs[:perm_wilting_pt] = field.perm_wilting_pt unless attrs[:perm_wilting_pt]
+    attrs = ApplicationController.jsonify(attrs)
     render :json => attrs
   end
   

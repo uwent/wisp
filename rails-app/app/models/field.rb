@@ -288,6 +288,10 @@ class Field < ActiveRecord::Base
       # Note that we could also probably do with with soil_type_id=(), but this is already here.
       self[:field_capacity] = nil
       self[:perm_wilting_pt] = nil
+      # Get rid of FC and PWP if they correspond to the old soil's default values.
+      # The two remove_incoming lines that get called after this will get rid of ones == to NEW default values.
+      remove_incoming_if_default(my_soil,incoming_attribs,:field_capacity)
+      remove_incoming_if_default(my_soil,incoming_attribs,:perm_wilting_pt)
       my_soil = SoilType.find(incoming_attribs[:soil_type_id].to_i)
     end
     remove_incoming_if_default(my_soil,incoming_attribs,:field_capacity)

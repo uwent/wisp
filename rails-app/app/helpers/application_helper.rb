@@ -94,7 +94,18 @@ module ApplicationHelper
   
   def soil_types_for_select
     # 1:Percent Cover;2:Leaf Area Index
-    SoilType.all.inject("") {|str,soil_type| so_far(str,';') + "#{soil_type[:id]}:#{soil_type.name}"}
+    soils = SoilType.all
+    soils.inject("") {|str,soil_type| so_far(str,';') + "#{soil_type[:id]}:#{soil_type.name}"}
   end
   
+  def soil_characteristics
+    soils = SoilType.all
+    str = soils.inject("") do |str,soil_type|
+      so_far(str) + 
+        soil_type[:id].to_s + ':' + 
+        '{field_capacity:' + soil_type[:field_capacity].to_s + ',' +
+         'perm_wilting_pt:' + soil_type[:perm_wilting_pt].to_s + '}'
+    end
+    "{#{str}}"
+  end
 end

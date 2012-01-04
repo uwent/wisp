@@ -50,12 +50,13 @@ class PivotsController < ApplicationController
       end
       if params[:oper] && params[:oper] == "add"
         set_parent_id(attribs,params,:farm_id,@farm_id)
-        Pivot.create(attribs)
+        pivot = Pivot.create(attribs)
       else
-        Pivot.find(params[:id]).update_attributes(attribs)
+        pivot = Pivot.find(params[:id])
+        pivot.update_attributes(attribs)
       end
     end
-    render :nothing => true
+    render :json => ApplicationController.jsonify(pivot.attributes)
   end
 
   # GET /pivots/1

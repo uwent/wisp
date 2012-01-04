@@ -5,6 +5,10 @@ class ApplicationController < ActionController::Base
   def self.set_default_filters
     :get_current_ids
   end
+
+  def self.jsonify(hash)
+    hash.inject({}) {|ret,entry| ret.merge({entry[0].to_s => entry[1].to_s})}
+  end
   
   private
   def get_group
@@ -19,7 +23,7 @@ class ApplicationController < ActionController::Base
     sym = (klassname + '_id').to_sym
     id = params[sym] || session[sym]
     if id && id != ''
-      puts "get_and_set: found the id (#{id.inspect}) for #{klass.to_s} in either params (#{params[sym]}) or session (#{session[sym]})"
+      # puts "get_and_set: found the id (#{id.inspect}) for #{klass.to_s} in either params (#{params[sym]}) or session (#{session[sym]})"
       # puts "get_and_set: what about string key? (#{params.inspect})"
       obj = klass.find(id)
     else
@@ -38,7 +42,7 @@ class ApplicationController < ActionController::Base
     @user_id = params[:user_id] || session[:user_id]
     @user = User.find(@user_id)
     @group = @user.groups.first # someday this might change if we let users belong to > 1 groups
-    puts "get_current_ids: before get_and_set, @farm is #{@farm ? @farm.name : "Not set"}"
+    # puts "get_current_ids: before get_and_set, @farm is #{@farm ? @farm.name : "Not set"}"
     @farm_id,@farm = get_and_set(Farm,Group,@group[:id],params[:preserve_farm]); return unless @farm_id
     # puts "get_current_ids: @farm is #{@farm.name}"
   	@pivot_id,@pivot = get_and_set(Pivot,Farm,@farm_id); return unless @pivot_id
@@ -78,4 +82,5 @@ class ApplicationController < ActionController::Base
       attribs[parent_id_sym] = params[:parent_id] == '' ? parent_var : params[:parent_id]
     end
   end
+  
 end

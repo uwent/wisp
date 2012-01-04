@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  var lastsel;
+  var lastsel,curID;
   function set_current_field(field_id) {
     $.ajax(
     { 
@@ -31,20 +31,28 @@
         dataType: "json",
         async: false,
         success: function(json) {
-          fld['name'] = json['name'];
-          fld['soil_type_id'] = json['soil_type_id'];
-          fld['pivot_id'] = json['pivot_id'];
-          fld['id'] = json['id'];
+          fld = json;
         }
       }
     );
     return fld;
   }
+  function set_soil_characteristics(event) {
+    var soils = <%= soil_characteristics %>;
+    soil_id = this.value;
+    fc = soils[soil_id]['field_capacity'];
+    pwp = soils[soil_id]['perm_wilting_pt'];
+    $("#"+curID+"_field_capacity").val(fc);
+    $("#"+curID+"_perm_wilting_pt").val(pwp);
+  }
+
+  
   function addNewRow() {
     var grid = $('#field_setup');
     newField = createNewField();
-    grid.addRowData(newField['id'], newField); // add a new row with the new field's data
-    grid.editRow(newField['id'],true); // put new row into inline-edit mode
+    curID = newField['id'];
+    grid.addRowData(curID, newField); // add a new row with the new field's data
+    grid.editRow(curID,true); // put new row into inline-edit mode
   }
   jQuery(document).ready(function(){
     <%= grid_javascript_settings %>
@@ -63,7 +71,11 @@
                          align:"left",sorttype:"text",editable:true,edittype:"select",
                          formatter:'select',
                          editoptions:   // working example for ET methods is '1:Percent Cover;2:Leaf Area Index'
-                           { value:"<%= soil_types_for_select %>"},editrules:{required:true}
+                           { value:"<%= soil_types_for_select %>",dataEvents: [
+                                                 {  type: 'change',
+                                                    fn: set_soil_characteristics
+                                                 }
+                                              ]},editrules:{required:true}
 
                        // name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'
                      },
@@ -75,7 +87,7 @@ index:'target_ad_pct',width:50,editable:true, align:'right'},
                      {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right'},
                      {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:50,editable:true, align:'right'},
                      {name:'notes', index:'notes',width:87,editable:true, align:'right'},
-                     {name:'id', index:'id',width:1,hidden:false}, // FIXME: FOR DEBUG ONLY!
+                     {name:'id', index:'id',width:6,hidden:false,key:true}, // FIXME: FOR DEBUG ONLY!
                      {name:'pivot_id',index:'pivot_id',width:1,hidden:true,editable:true}
                      ],
       pager: '#field_setup_pager',
@@ -92,10 +104,11 @@ index:'target_ad_pct',width:50,editable:true, align:'right'},
       autowidth: false,
       rownumbers: false,
       multiselect: false,
-      
+        
       onSelectRow: function(id){ 
         if(id && id!==lastsel){ 
           jQuery('#field_setup').restoreRow(lastsel);
+          curID = id;
           jQuery('#field_setup').editRow(id,true); 
           lastsel=id;
           field_id=id;
@@ -122,5 +135,5 @@ index:'target_ad_pct',width:50,editable:true, align:'right'},
 
 <table id="field_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
 <div id="field_setup_pager" class="scroll" style="text-align:center;"></div>
-<button type="button" onclick="addNewRow();">Add New Field</button> 
+<button type="button" onclick="addNewRow();">Add New Field</button>
 <!-- $("#grid").addRowData(rowid,data, position, srcrowid); -->
