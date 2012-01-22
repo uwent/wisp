@@ -79,13 +79,14 @@
 
                        // name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'
                      },
-                     {name:'field_capacity', index:'field_capacity',width:50,editable:true, align:'right'},
-                     {name:'perm_wilting_pt', index:'perm_wilting_pt',width:45,editable:true, align:'right'},
-                     {name:'target_ad_pct',
-index:'target_ad_pct',width:50,editable:true, align:'right'},
-                     {name:'ref_et_station_id', index:'ref_et_station_id',width:25,editable:true, align:'right'},
-                     {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right'},
-                     {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:50,editable:true, align:'right'},
+                     {name:'field_capacity', index:'field_capacity',width:35,editable:true, align:'right'},
+                     {name:'perm_wilting_pt', index:'perm_wilting_pt',width:35,editable:true, align:'right'},
+                     {name:'target_ad_pct',index:'target_ad_pct',width:35,editable:true, align:'right'},
+                     // These three are hidden until we get these features running
+                     {name:'ref_et_station_id', index:'ref_et_station_id',width:25,editable:true, align:'right',hidden:true},
+                     {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right',hidden:true},
+                     {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:50,editable:true, align:'right',hidden:true},
+                     
                      {name:'notes', index:'notes',width:87,editable:true, align:'right'},
                      {name:'id', index:'id',width:6,hidden:false,key:true}, // FIXME: FOR DEBUG ONLY!
                      {name:'pivot_id',index:'pivot_id',width:1,hidden:true,editable:true}
