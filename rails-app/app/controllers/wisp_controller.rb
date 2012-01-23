@@ -73,6 +73,7 @@ class WispController < ApplicationController
       end
     else
       end_date = today_or_latest(@field_id) - 1
+      @cur_date = end_date.strftime("%Y-%m-%d")
     end
     start_date = end_date - 6
     @ad_recs = FieldDailyWeather.fdw_for(@field_id,start_date,end_date)
@@ -84,10 +85,10 @@ class WispController < ApplicationController
   end
 
   def field_status
-    logger.info "field_status"
+    # logger.info "field_status"
     @cur_date = params[:cur_date]
     session[:today] = @cur_date
-    field_status_data(@cur_date) # may be nil
+    field_status_data(@cur_date) # @cur_date may be nil, but will be set if so
     # now that we've got the last week's fdw recs, check if any need ET
     @ad_recs.each do |adr|
       if adr.ref_et == nil || adr.ref_et == 0.0

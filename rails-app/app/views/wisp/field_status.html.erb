@@ -180,6 +180,18 @@
         <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field),{ :onchange => "this.form.submit();"} %> 
       <% end %>
     </td>
+    <td>
+      <script>
+      $(function() {
+        <% if @cur_date %>
+          $( "#date_input" ).datepicker({dateFormat: 'yy-mm-dd', defaultDate:<%= @cur_date %>});
+        <% else %>
+          $( "#date_input" ).datepicker({dateFormat: 'yy-mm-dd'});
+        <% end %>
+      });
+      </script>
+      Date: <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>"></input>
+    </td>
   </tr></table>
 </div>
 
@@ -203,12 +215,6 @@ Init. soil moist.: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  
 
 <div id="graphBox">
   <canvas id="example" width="400" height="300"></canvas>
-  <script>
-  $(function() {
-      $( "#date_input" ).datepicker({dateFormat: 'yy-mm-dd'});
-  });
-  </script>
-  Click here to change the date: <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>"></input>
 </div>
 
 <div id="projectedADBox">
