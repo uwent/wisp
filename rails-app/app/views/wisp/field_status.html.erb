@@ -205,10 +205,10 @@ Init. soil moist.: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  
   <canvas id="example" width="400" height="300"></canvas>
   <script>
   $(function() {
-      $( "#date_input" ).datepicker();
+      $( "#date_input" ).datepicker({dateFormat: 'yy-mm-dd'});
   });
   </script>
-  Click here to change the date: <input name="date_input" id="date_input" class='date_input' size="20" value="<%= @cur_date %>"></input>
+  Click here to change the date: <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>"></input>
 </div>
 
 <div id="projectedADBox">
