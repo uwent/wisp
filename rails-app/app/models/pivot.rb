@@ -2,12 +2,19 @@ class Pivot < ActiveRecord::Base
   belongs_to :farm
   has_many :fields
   has_many :irrigation_events
+  before_save :set_cropping_year
   before_destroy :mother_may_i
   
   after_create :create_new_default_field
   
   @@clobberable = nil
   
+  def set_cropping_year
+    unless self[:cropping_year]
+      self[:cropping_year] = Time.now.year
+    end
+  end
+
   def create_new_default_field
     fields << Field.create(:name => "New field (pivot: #{name})",
       :soil_type_id => SoilType.default_soil_type[:id],

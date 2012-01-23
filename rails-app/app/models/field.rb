@@ -113,8 +113,9 @@ class Field < ActiveRecord::Base
     # puts "crop created"
   end
   
+  # When we're called with default params (e.g. when a Pivot is created, choose the dates for the season)
   def date_endpoints
-    year = Time.now.year
+    year = pivot.cropping_year || Time.now.year
     # puts "date_endpoints: #{year} / #{START_DATE[0]} / #{START_DATE[1]}"
     ep1 = Date.civil(year,*START_DATE)
     ep2 = Date.civil(year,*END_DATE)
