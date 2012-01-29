@@ -54,6 +54,15 @@
     grid.addRowData(curID, newField); // add a new row with the new field's data
     grid.editRow(curID,true); // put new row into inline-edit mode
   }
+  
+  // Convert fraction to percent for display
+  function pctFormat(cellvalue,options,rowObject) {
+    return((cellvalue * 100.0).toString());
+  }
+  
+  function pctUnformat(cellvalue,options,cell) {
+    return((cellvalue / 100.0).toString());
+  }
   jQuery(document).ready(function(){
     <%= grid_javascript_settings %>
     $('#cropDataGrid').load('<%= url_for merge_usuals(:controller => 'wisp', :action => :crop_setup_grid) %>',{field_id:<%=@field_id%>});
@@ -79,7 +88,7 @@
 
                        // name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'
                      },
-                     {name:'field_capacity', index:'field_capacity',width:35,editable:true, align:'right'},
+                     {name:'field_capacity', index:'field_capacity',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat},
                      {name:'perm_wilting_pt', index:'perm_wilting_pt',width:35,editable:true, align:'right'},
                      {name:'target_ad_pct',index:'target_ad_pct',width:35,editable:true, align:'right'},
                      // These three are hidden until we get these features running
