@@ -61,6 +61,14 @@ class Field < ActiveRecord::Base
     end
   end
   
+  def field_capacity_pct
+    field_capacity * 100.0
+  end
+  
+  def field_capacity_pct=(val)
+    write_attribute(:field_capacity, val.to_f / 100.0)
+  end
+  
   def perm_wilting_pt
     if (val = read_attribute(:perm_wilting_pt)) && val != 0.0
       val
@@ -70,8 +78,15 @@ class Field < ActiveRecord::Base
       DEFAULT_PERM_WILTING_PT
     end
   end
-      
 
+  def perm_wilting_pt_pct
+    perm_wilting_pt * 100.0
+  end
+
+  def perm_wilting_pt_pct=(val)
+    write_attribute(:perm_wilting_pt,val.to_f / 100.0)
+  end
+  
   def create_dependent_objects
     # puts "CDO...#{self.inspect}, fdw #{field_daily_weather.size} records" if et_method.class == PctCoverEtMethod
     create_crop

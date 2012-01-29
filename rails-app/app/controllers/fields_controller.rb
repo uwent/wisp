@@ -1,7 +1,7 @@
 class FieldsController < ApplicationController
   set_default_filters
  
-  COLUMN_NAMES = [:name,:area,:soil_type_id,:field_capacity,:perm_wilting_pt,:target_ad_pct,
+  COLUMN_NAMES = [:name,:area,:soil_type_id,:field_capacity_pct,:perm_wilting_pt_pct,:target_ad_pct,
                   :ref_et_station_id,:rain_station_id,:soil_moisture_station_id,:notes]
   # GET /fields
   # GET /fields.xml

@@ -386,4 +386,29 @@ class FieldTest < ActiveSupport::TestCase
     assert_equal(0.001, field[:field_capacity])
     assert_equal(0.002, field[:perm_wilting_pt])
   end
+  
+  test "field_capacity_pct works" do
+    assert(field = Field.first)
+    field_id = field[:id]
+    assert(fc = field.field_capacity)
+    assert_equal(fc * 100.0, field.field_capacity_pct)
+    field.field_capacity_pct = 20.0
+    field.save!
+    field_found = Field.find(field_id)
+    field.field_capacity = 10.0
+    assert_equal(0.2, field_found.field_capacity)
+  end
+  
+  test "perm_wilting_pt_pct works" do
+    assert(field = Field.first, "No field")
+    field_id = field[:id]
+    assert(pwp = field.perm_wilting_pt, "No PWP")
+    assert_not_equal(20.0, pwp)
+    assert_equal(pwp * 100.0, field.perm_wilting_pt_pct)
+    field.perm_wilting_pt_pct = 20.0
+    field.save!
+    field_found = Field.find(field_id)
+    assert_equal(0.2, field_found.perm_wilting_pt)
+    assert_equal(20.0, field_found.perm_wilting_pt_pct)
+  end
 end

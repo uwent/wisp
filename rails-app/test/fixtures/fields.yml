@@ -4,7 +4,7 @@ default:
   id: 1
   pivot_id: 1
   area: 1.5
-  field_capacity: 1.5
+  field_capacity: 0.10
   perm_wilting_pt: 1.5
   ref_et_station_id: 1
   rain_station_id: 1
@@ -15,7 +15,7 @@ default:
   
 one:
   area: 1.5
-  field_capacity: 1.5
+  field_capacity: 0.10
   perm_wilting_pt: 1.5
   ref_et_station_id: 1
   rain_station_id: 1
@@ -26,7 +26,7 @@ one:
 
 two:
   area: 1.5
-  field_capacity: 1.5
+  field_capacity: 0.10
   perm_wilting_pt: 1.5
   ref_et_station_id: 1
   rain_station_id: 1
