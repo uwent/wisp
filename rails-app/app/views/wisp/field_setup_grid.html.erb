@@ -57,12 +57,20 @@
   
   // Tag on percent sign for display
   function pctFormat(cellvalue,options,rowObject) {
-    return(pctUnformat(cellvalue)+'%');
+    if (cellvalue === undefined) {
+      return("");
+    } else {
+      return(pctUnformat(cellvalue)+'%');
+    }   
   }
   
   // Remove percent sign from displayed value
   function pctUnformat(cellvalue,options,cell) {
-    return cellvalue.replace("%","");
+    if (cellvalue === undefined) {
+      return("");
+    } else {
+      return cellvalue.replace("%","");
+    }
   }
   jQuery(document).ready(function(){
     <%= grid_javascript_settings %>
