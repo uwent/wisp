@@ -23,6 +23,7 @@ class FarmsController < ApplicationController
       paginate :page => params[:page], :per_page => params[:rows]
     end
     @farms ||= []
+    @et_methods = EtMethod.all
 
     respond_to do |format|
       format.html # index.html.erb
