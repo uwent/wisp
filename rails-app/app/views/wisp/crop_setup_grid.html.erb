@@ -48,7 +48,7 @@
       caption: "Crop <%= @field ? " for #{@field.name}" : '(select field above)' %>"
     })
     .navGrid('#crop_setup_pager',
-      {edit:false,add:false,del:false,search:false,refresh:true}, // Restore and and del someday!
+      {edit:false,add:true,del:false,search:false,refresh:true}, // Restore and and del someday!
       {afterSubmit:function(r,data){return true;(r,data,'edit');}},
       {afterSubmit:function(r,data){return true;(r,data,'add');}},
       {afterSubmit:function(r,data){return true;(r,data,'delete');}}
