@@ -103,8 +103,8 @@ module ApplicationHelper
     str = soils.inject("") do |str,soil_type|
       so_far(str) + 
         soil_type[:id].to_s + ':' + 
-        '{field_capacity:' + soil_type[:field_capacity].to_s + ',' +
-         'perm_wilting_pt:' + soil_type[:perm_wilting_pt].to_s + '}'
+        '{field_capacity_pct:' + (100*soil_type[:field_capacity]).to_s + ',' +
+         'perm_wilting_pt_pct:' + (100*soil_type[:perm_wilting_pt]).to_s + '}'
     end
     "{#{str}}"
   end

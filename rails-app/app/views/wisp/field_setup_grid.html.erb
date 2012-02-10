@@ -40,10 +40,10 @@
   function set_soil_characteristics(event) {
     var soils = <%= soil_characteristics %>;
     soil_id = this.value;
-    fc = soils[soil_id]['field_capacity'];
-    pwp = soils[soil_id]['perm_wilting_pt'];
-    $("#"+curID+"_field_capacity").val(fc);
-    $("#"+curID+"_perm_wilting_pt").val(pwp);
+    fc = soils[soil_id]['field_capacity_pct'];
+    pwp = soils[soil_id]['perm_wilting_pt_pct'];
+    $("#"+curID+"_field_capacity_pct").val(fc);
+    $("#"+curID+"_perm_wilting_pt_pct").val(pwp);
   }
 
   
