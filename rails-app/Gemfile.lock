@@ -62,6 +62,7 @@ GEM
       gem_plugin (~> 0.2.3)
     mongrel (1.2.0.pre2-x86-mingw32)
       gem_plugin (~> 0.2.3)
+    mysql2 (0.3.2)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
     net-sftp (2.0.5)
@@ -119,6 +120,7 @@ DEPENDENCIES
   asigbiophys!
   capistrano
   mongrel (= 1.2.0.pre2)
+  mysql2
   rack-openid
   rails (= 3.0.7)
   ruby-debug19

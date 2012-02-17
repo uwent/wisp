@@ -9,12 +9,9 @@ development:
   adapter: sqlite3
   database: db/development.sqlite3
   # adapter: mysql2
-  # encoding: utf8
-  # reconnect: false
-  # database: rails-app_development
-  # pool: 5
-  # username: root
-  # password:
+  # database: irrig_sched
+  # username: wayne
+  # password: agem.Data
   # host: localhost
 
 # Warning: The database defined as "test" will be erased and

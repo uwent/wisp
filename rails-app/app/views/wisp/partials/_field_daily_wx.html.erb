@@ -26,12 +26,13 @@
           function displayCalcValues(rowid,response) {
             $("#weather").trigger("reloadGrid");
             plotGraph();
-            $('#projectedADBox').load("<%= url_for :controller => 'wisp', :action => :summary_box %>");
+            showSummaryBox(cur_date);
             return true;
           }
           var mygrid;
           jQuery(document).ready(function(){
             mygrid = jQuery("#weather").jqGrid({
+              page: curPage(initial_date,cur_date),
               url:'<%= url_for merge_usuals(:controller => "field_daily_weather", :q => 1) %>',
               editurl:'<%= url_for merge_usuals(:controller => "field_daily_weather", :action  => :post_data, :parent_id => @field) %>',
               datatype: "json",
@@ -48,10 +49,10 @@
                  editable:true, align:'right',
                  formatter:'number', formatoptions:{decimalPlaces:2}},
                 {name:'entered_pct_cover', index:'entered_pct_cover',width:67,
-                 editable:pctCoverIsEditable, hidden:laiIsEditable,align:'right',
+                 editable:pctCoverIsEditable, align:'right',hidden:isLai,
                  formatter:pctCoverFormatter, formatoptions:{decimalPlaces:0}},
                 {name:'leaf_area_index', index:'leaf_area_index',width:57,
-                  editable:laiIsEditable, hidden:pctCoverIsEditable, align:'right',
+                  editable:laiIsEditable, align:'right', hidden:!(isLai),
                  formatter:laiFormatter, formatoptions:{decimalPlaces:2}},
                 {name:'adj_et', index:'adj_et',width:67, align:'right',
                  formatter:'number', formatoptions:{decimalPlaces:2}},
@@ -86,17 +87,16 @@
               subGrid:false,
               caption: "Edit Observed Values Below"
             })
-            .navGrid('#weather_pager',
-              {edit:false,add:false,del:false,search:false,refresh:true},
-              {afterSubmit:function(r,data){return true;(r,data,'edit');}}
-            )
-            mygrid.filterToolbar();mygrid[0].toggleToolbar()
+            // .navGrid('#weather_pager',
+            //   {edit:false,add:false,del:false,search:false,refresh:true},
+            //   {afterSubmit:function(r,data){return true;(r,data,'edit');}}
+            // )
+            mygrid.filterToolbar();mygrid[0].toggleToolbar();
+            // alert('jqGrid load');
           });
+          
         </script>
 
         <table id="weather" class="scroll" cellpadding="0" cellspacing="0"></table>
-        <div id="weather_pager" class="scroll" style="text-align:center;"></div>
-        <!-- This button jumps to Page 5; you could populate a week dropdown the same way -->
-        <!-- <button onclick="page5();"/> -->
       
 </div>

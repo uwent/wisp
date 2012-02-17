@@ -58,11 +58,8 @@ class WispController < ApplicationController
 
   def lookup
   end
-  def field_status_data(cur_date=nil)
-    @farm = Farm.find(@farm_id) if @farm_id
-    @pivot = Pivot.find(@pivot_id) if @pivot_id
-    @field = Field.find(@field_id) if @field_id
-    @field_weather_data = @field.field_daily_weather
+  
+  def date_strs(cur_date=nil)
     start_date=nil
     if (cur_date)
       begin
@@ -73,15 +70,26 @@ class WispController < ApplicationController
       end
     else
       end_date = today_or_latest(@field_id) - 1
-      @cur_date = end_date.strftime("%Y-%m-%d")
+      cur_date = end_date.strftime("%Y-%m-%d")
     end
+    return [start_date,end_date,cur_date]
+  end
+  
+  def field_status_data(cur_date=nil)
+    @farm = Farm.find(@farm_id) if @farm_id
+    @pivot = Pivot.find(@pivot_id) if @pivot_id
+    @field = Field.find(@field_id) if @field_id
+    @field_weather_data = @field.field_daily_weather
+    start_date,end_date,@cur_date = date_strs(cur_date)
     start_date = end_date - 6
     @ad_recs = FieldDailyWeather.fdw_for(@field_id,start_date,end_date)
     @ad_data = @ad_recs.collect { |fdw| fdw.ad }
     @projected_ad_data = FieldDailyWeather.projected_ad(@ad_recs)
-    @dates,@date_str = make_dates(start_date,end_date)
+    @dates,@date_str,@date_hash = make_dates(start_date,end_date)
+    puts "field_status_data: cur_date #{@cur_date}, dates #{@dates.inspect}"
     @summary_data = FieldDailyWeather.summary(@field.id)
     @target_ad_data = target_ad_data(@field,@ad_data)
+    @initial_date = @field_weather_data.first.date
   end
 
   def field_status
@@ -110,7 +118,7 @@ class WispController < ApplicationController
     field_status_data(params[:cur_date]) # may be nil
     respond_to do |format|
       format.json { render :json => {:ad_data => @ad_data,:projected_ad_data => @projected_ad_data,
-        :target_ad_data => @target_ad_data}} 
+        :target_ad_data => @target_ad_data, :labels => @date_hash}} 
     end
   end
 
@@ -135,7 +143,7 @@ class WispController < ApplicationController
 
   # Ajax-accessible summary/projected box
   def summary_box
-    field_status_data
+    field_status_data(params[:cur_date])
     render :partial => 'wisp/partials/summary_box'
   end
   
@@ -172,17 +180,20 @@ class WispController < ApplicationController
   def make_dates(start_date,finish_date)
     day = 0
     dates = []
+    date_hash = {}
     date_str = ''
     (start_date..(finish_date + 2)).each do |date|
       dates << date
       if date == Date.today
         date_str += "#{day}: 'Today',"
+        date_hash[day] = 'Today';
       else
         date_str += "#{day}: '#{date.strftime('%b %d')}',"
+        date_hash[day] = date.strftime('%b %d')
       end
       day += 1
     end
-    [dates,date_str]
+    [dates,date_str,date_hash]
   end
   
 end

@@ -72,9 +72,35 @@
             
             mygrid.filterToolbar();mygrid[0].toggleToolbar()
           });
+          
+          function addNewRow() {
+            var grid = $('#pivot_setup');
+            newPivot = createNewPivot();
+            curID = newPivot['id'];
+            grid.addRowData(curID, newPivot); // add a new row with the new field's data
+            grid.editRow(curID,true); // put new row into inline-edit mode
+          }
+
+          function createNewPivot() {
+            var pvt={};
+            $.ajax(
+              {
+                type: "POST",
+                url: '<%= grid_post_data_url "pivots", @farm %>' + '&oper=add&id=_empty', 
+                dataType: "json",
+                async: false,
+                success: function(json) {
+                  pvt = json;
+                }
+              }
+            );
+            return pvt;
+          }
         </script>
 
         <table id="pivot_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
+        <button type="button" onclick="createNewPivot();">Add New Pivot</button>
+        
         <div id="pivot_setup_pager" class="scroll" style="text-align:center;"></div>
       
 </div>

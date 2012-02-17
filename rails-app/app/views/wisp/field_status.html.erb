@@ -17,9 +17,9 @@
 	{
 		position:absolute;
 		left:275px;
-		top:153px;
+		top:173px;
 		width:200px;
-		height:223px;
+		height:203px;
 		padding:2px;
 		border:1px solid gray;
 		margin:0px;
@@ -29,7 +29,7 @@
 	{
 		position:absolute;
 		left:500px;
-		top:150px;
+		top:173px;
 		width:690px;
 		padding:2px;
 		margin:0px;
@@ -86,8 +86,26 @@
   <%= javascript_include_tag 'bluff/bluff-min.js' %>
   <script type="text/javascript">
     <%= grid_javascript_settings %>
+    var cur_date = '<%= @cur_date %>;'
+    var initial_date = '<%= @initial_date %>';
+    // Support Safari and other stupid browsers whose Date objects are nonstandard
+    function parseDate(input) {
+      var parts = input.match(/(\d+)/g);
+      return new Date(parts[0], parts[1]-1, parts[2]);
+    }
+    function curPage(initial_date_str,cur_date_str) {
+      initial_date_obj = parseDate(initial_date_str);
+      // set the global
+      cur_date = cur_date_str;
+      cur_date_obj = parseDate(cur_date_str);
+      days = (cur_date_obj.getTime() - initial_date_obj.getTime()) / (86400 * 1000);
+      return(Math.ceil(days / 7));
+    }
+    function showSummaryBox(date) {
+      $('#projectedADBox').load("<%= url_for :controller => 'wisp', :action => :summary_box %>?cur_date="+date);
+    }
     function plotGraph() {
-      var g = new Bluff.Line('example', '575x275');
+      var g = new Bluff.Line('example', '575x300');
       var ad_data;
       var projected_ad_data = [];
       var target_ad_data = [];
@@ -103,7 +121,7 @@
         $.ajax(
         { 
             type: "GET",
-            url: '<%= url_for :action => :projection_data, :cur_date => @cur_date %>', 
+            url: '<%= url_for :action => :projection_data %>?cur_date='+cur_date, 
             dataType: "json",
             async: false,
             success: function(json)
@@ -111,6 +129,7 @@
               ad_data = json['ad_data'];
               prj_data = json['projected_ad_data'];
               targ_data = json['target_ad_data'];
+              labels = json['labels'];
               for (var ii=0,len=ad_data.length; ii<len; ii++) {
                 projected_ad_data.push(ad_data[ii]);
               }
@@ -135,18 +154,20 @@
       if (targ_data != null) {
         g.data("Target AD",target_ad_data,'gray');
       }
-      g.hide_legend = false
-      g.labels = {<%= @date_str %>};
+      g.hide_legend = false;
+      g.labels = labels; // {<%= @date_str %>};
       g.draw();
     }
     jQuery(document).ready(function(){
       plotGraph();
+      showSummaryBox(cur_date);
+      
       $("#date_input").change(function(){
-        var cur_date = $('#date_input').val();
-        url = '<%= url_for :action => :field_status %>' + '?cur_date=' + cur_date;
-        // would be nice to do something nice and Ajax-y but I'm tired of fighthing with it.
-        // use replace insted of href so the "back" history doesn't accumulate.
-        window.location.replace(url);
+        cur_date = $('#date_input').val();
+        cur_page = curPage(initial_date,cur_date);
+        $("#weather").setGridParam({ page: cur_page }).trigger("reloadGrid");
+        plotGraph();
+        showSummaryBox(cur_date);
       });
       
     });
@@ -161,7 +182,8 @@
 
 <h2 style="margin-top:0px;padding-top:0px">WISP Field Status</h2>
 <div id="fieldSelectionBox">
-  <table class="center"><tr>
+  <table class="center" style="margin-top:10px">
+  <tr>
     <td>
       <td>
         <%= form_tag(url_for :controller => "wisp", :action => :field_status, :pivot_id => "", :field_id => "") do %>
@@ -207,7 +229,10 @@ Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.
 Total AD: <%= sprintf("%0.2f",@field.ad_max) %> in.<br/>
 Init. soil moist.: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
 <% if @field.target_ad_pct %>
-  Target AD: <%= sprintf("%0.0f",@field.target_ad_pct) %>% of max allowable
+  Target AD:
+  <%= form_tag(url_for(:controller => 'fields',:action => 'update', :id => @field)) do %>
+    <input name="field[target_ad_pct]" onclick="plotGraph();">% of max allowable
+  <% end %>
 <% end %>
 </div>
 
