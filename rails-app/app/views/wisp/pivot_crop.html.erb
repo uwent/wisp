@@ -24,7 +24,7 @@
   	{
   		position:absolute;
   		left:275px;
-  		top:325px;
+  		top:315px;
   		width:920px;
   		padding:2px;
   		margin:0px;
@@ -33,7 +33,7 @@
   	{
   		position:absolute;
   		left:275px;
-  		top:590px;
+  		top:550px;
   		width:920px;
   		padding:2px;
   		margin:0px;
@@ -48,12 +48,6 @@
 <% end %>
 <%= content_for :scripts do %>
   <%= jqgrid_javascripts.html_safe %>
-  <script type="text/javascript">
-    jQuery(document).ready(function(){
-      // $('#fieldDataGrid').load('<%= url_for merge_usuals(:controller => "wisp", :action => :field_setup_grid) %>');
-      // $('#cropDataGrid').load('<%= url_for merge_usuals(:controller => "wisp", :action => :crop_setup_grid, :thing => 'this') %>');
-    });
-  </script>
 <% end %>
 
 

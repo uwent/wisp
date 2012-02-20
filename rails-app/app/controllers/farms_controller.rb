@@ -62,15 +62,17 @@ class FarmsController < ApplicationController
         unless attribs[:year]
           attribs[:year] = Time.now.year
         end
+        attribs[:name] = 'New Farm'
         # unless @group
           set_parent_id(attribs,params,:group_id,params[:parent_id])          
         # end
-        Farm.create(attribs)
+        farm = Farm.create(attribs)
       else
-        Farm.find(params[:id]).update_attributes(attribs)
+        farm = Farm.find(params[:farm_id])
+        farm.update_attributes(attribs)
       end
     end
-    render :nothing => true
+    render :json => ApplicationController.jsonify(farm.attributes)
   end
 
   # GET /farms/1

@@ -52,6 +52,7 @@
     newField = createNewField();
     curID = newField['id'];
     grid.addRowData(curID, newField); // add a new row with the new field's data
+    addFieldDeleteButton(curID);
     grid.editRow(curID,true); // put new row into inline-edit mode
   }
   
@@ -72,6 +73,12 @@
       return cellvalue.replace("%","");
     }
   }
+  
+  function addFieldDeleteButton(cl) {
+    be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick=jQuery('#field_setup').delGridRow("+cl+");$('#field_setup').trigger('reloadGrid'); ></ids>"; 
+    jQuery("#field_setup").setRowData(cl,{act:be}) 
+  }
+  
   jQuery(document).ready(function(){
     <%= grid_javascript_settings %>
     $('#cropDataGrid').load('<%= url_for merge_usuals(:controller => 'wisp', :action => :crop_setup_grid) %>',{field_id:<%=@field_id%>});
@@ -80,7 +87,7 @@
       url:'<%= grid_data_url "fields", @pivot %>',
       editurl:'<%= grid_post_data_url "fields", @pivot %>',
       datatype: "json",
-      colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD','ET Stn','Rain Stn','Soil Moist. Stn','Notes',' ',' '],
+      colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD','ET Stn','Rain Stn','Soil Moist. Stn','Notes','Delete',' ',' '],
       colModel:[{name:'name', index:'name',width:83,editable:true},
                      {name:'area', index:'area',width:20,editable:true, align:'right'},
                      {
@@ -106,6 +113,7 @@
                      {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:50,editable:true, align:'right',hidden:true},
                      
                      {name:'notes', index:'notes',width:87,editable:true, align:'right'},
+                     {name:'act', index:'act', width:20},
                      {name:'id', index:'id',width:6,hidden:true,key:true},
                      {name:'pivot_id',index:'pivot_id',width:1,hidden:true,editable:true}
                      ],
@@ -134,8 +142,18 @@
           set_current_field(id);
           $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',
             {field_id:id,pivot_id:pivot_id,user_id:user_id, farm_id:farm_id,pivot_id:pivot_id});
-        } 
+        } else {
+          alert('cannot edit; id is '+id+' and lastsel is '+lastsel);
+        }
       },             
+      
+      loadComplete: function(){ 
+          var ids = jQuery("#field_setup").getDataIDs(); 
+          for(var i=0;i<ids.length;i++){ 
+              var cl = ids[i];
+              addFieldDeleteButton(cl); 
+          } 
+      },
       
       
       subGrid:false,
@@ -153,6 +171,6 @@
 </script>
 
 <table id="field_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
-<div id="field_setup_pager" class="scroll" style="text-align:center;"></div>
+<!-- <div id="field_setup_pager" class="scroll" style="text-align:center;"></div> -->
 <button type="button" onclick="addNewRow();">Add New Field</button>
 <!-- $("#grid").addRowData(rowid,data, position, srcrowid); -->

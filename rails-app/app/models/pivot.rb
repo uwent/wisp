@@ -11,7 +11,7 @@ class Pivot < ActiveRecord::Base
   
   def set_cropping_year
     unless self[:cropping_year]
-      self[:cropping_year] = Time.now.year
+      self[:cropping_year] = 2011 # FIXME: Should be Time.now.year
     end
   end
 

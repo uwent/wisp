@@ -50,6 +50,10 @@ class PivotsController < ApplicationController
       end
       if params[:oper] && params[:oper] == "add"
         set_parent_id(attribs,params,:farm_id,@farm_id)
+        attribs[:name] = "New pivot"
+        unless attribs[:cropping_year]
+          attribs[:cropping_year] = '2011'
+        end
         pivot = Pivot.create(attribs)
       else
         pivot = Pivot.find(params[:id])
