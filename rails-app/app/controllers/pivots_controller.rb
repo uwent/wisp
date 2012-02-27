@@ -15,10 +15,13 @@ class PivotsController < ApplicationController
     @pivots = Pivot.find(:all, :conditions => ['farm_id = ?', @farm_id])
     session[:farm_id] = @farm_id
     @farm = Farm.find(@farm_id)
+    @pivot = @pivots.first
     if params[:pivot_id]
-      @pivot = @pivots.find { |f| f[:id] == params[:pivot_id] } || @pivots.first
-    else
-      @pivot = @pivots.first
+      begin
+        @pivot = @pivots.find { |f| f[:id] == params[:pivot_id] }
+      rescue
+        logger.warn "Attempt to GET nonexistent pivot #{params[:pivot_id]}"
+      end
     end
 
     @pivots = Pivot.where(:farm_id => @farm_id).order(:name) do

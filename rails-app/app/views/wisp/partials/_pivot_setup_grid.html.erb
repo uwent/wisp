@@ -1,13 +1,78 @@
 <div id="pivotDataGrid">
 
         <script type="text/javascript">
-          var lastsel;
-          function addDeleteButton(cl) {
-            be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick=jQuery('#pivot_setup').delGridRow("+cl+");$('#pivot_setup').trigger('reloadGrid'); ></ids>"; 
-            jQuery("#pivot_setup").setRowData(cl,{act:be}) 
+        <%= grid_javascript_settings %>
+          var lastPivotSel;
+          function loadFieldGrid(pivot_id) {
+            $('#fieldDataGrid').load('<%= url_for :controller => "wisp", :action => :field_setup_grid %>',
+              {pivot_id:pivot_id,user_id:user_id, farm_id:farm_id,field_id:field_id,crop_id:crop_id});
+            useFirstFieldRow(); // sets field_id
           }
+          function rowSelect(id) {
+            if(id) { 
+              if (!lastPivotSel || id !== lastPivotSel) {
+                jQuery('#pivot_setup').restoreRow(lastPivotSel);
+                jQuery('#pivot_setup').editRow(id,true); 
+                lastPivotSel=id;
+                pivot_id=id;
+                loadFieldGrid(pivot_id);
+              }
+            } 
+          }
+          function useFirstRow(throwaway1,throwaway2) {
+            id = $("#pivot_setup").getDataIDs()[0];
+            lastPivotSel=id;
+            pivot_id=id;
+            field_id = 0;
+            crop_id = 0;
+            loadFieldGrid(pivot_id);
+            return [true,'',id]; // This was a total shot in the dark, Googling 'jqgrid afterSubmit' gave hints
+          }
+          function deletePivot(id) {
+            jQuery('#pivot_setup').delGridRow(id,{afterSubmit:useFirstRow,msg:'Delete pivot and fields under it?'});
+          }
+          function addPivotDeleteButtons() {
+            var ids = jQuery("#pivot_setup").getDataIDs();
+            nRows = ids.length;
+            for(var i=0;i<nRows;i++){ 
+              var id = ids[i];
+              if (nRows == 1) {
+                be = "<input style='height:22px;width:35px;' type='button' value='Del' disabled='true' title='Cannot delete only pivot'/>";
+              } else {
+                // $('#pivot_setup').trigger('reloadGrid');
+                be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick='deletePivot("+id+");' ></ids>"; 
+              }
+              jQuery("#pivot_setup").setRowData(id,{act:be}); 
+            } 
+          }
+          function addNewPivotRow() {
+            var grid = $('#pivot_setup');
+            newPivot = createNewPivot();
+            pivot_id = newPivot['id'];
+            grid.addRowData(pivot_id, newPivot); // add a new row with the new field's data
+            addPivotDeleteButtons();
+            grid.editRow(pivot_id,true); // put new row into inline-edit mode
+            loadFieldGrid(pivot_id);
+            alert('ok, loaded with fields for '+pivot_id);
+          }
+
+          function createNewPivot() {
+            var pvt={};
+            $.ajax(
+              {
+                type: "POST",
+                url: '<%= grid_post_data_url "pivots", @farm %>' + '&oper=add&id=_empty', 
+                dataType: "json",
+                async: false,
+                success: function(json) {
+                  pvt = json;
+                }
+              }
+            );
+            return pvt;
+          }
+          
           jQuery(document).ready(function(){
-            <%= grid_javascript_settings %>
             // Load the dependent field and crop grids with appropriate values
             $('#fieldDataGrid').load('<%= url_for merge_usuals(:controller => "wisp", :action => :field_setup_grid) %>',{pivot_id:<%=@pivot_id%>});
           var mygrid = jQuery("#pivot_setup").jqGrid({
@@ -54,25 +119,10 @@
               multiselect: false,
               
               loadComplete: function(){ 
-                  var ids = jQuery("#pivot_setup").getDataIDs(); 
-                  for(var i=0;i<ids.length;i++){ 
-                      var cl = ids[i];
-                      addDeleteButton(cl); 
-                      // be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick=jQuery('#pivot_setup').delGridRow("+cl+");$('#pivot_setup').trigger('reloadGrid'); ></ids>"; 
-                      // jQuery("#pivot_setup").setRowData(cl,{act:be}) 
-                  } 
+                  addPivotDeleteButtons();
               },
               
-              onSelectRow: function(id){ 
-                if(id && id!==lastsel){ 
-                  jQuery('#pivot_setup').restoreRow(lastsel);
-                  jQuery('#pivot_setup').editRow(id,true); 
-                  lastsel=id;
-                  pivot_id=id;
-                  $('#fieldDataGrid').load('<%= url_for :controller => "wisp", :action => :field_setup_grid %>',
-                    {pivot_id:id,user_id:user_id, farm_id:farm_id,pivot_id:pivot_id,field_id:field_id,crop_id:crop_id});
-                } 
-              },             
+              onSelectRow: rowSelect,             
               
               
               subGrid:false,
@@ -89,30 +139,6 @@
             mygrid.filterToolbar();mygrid[0].toggleToolbar()
           });
           
-          function addNewPivotRow() {
-            var grid = $('#pivot_setup');
-            newPivot = createNewPivot();
-            curID = newPivot['id'];
-            grid.addRowData(curID, newPivot); // add a new row with the new field's data
-            addDeleteButton(curID);
-            grid.editRow(curID,true); // put new row into inline-edit mode
-          }
-
-          function createNewPivot() {
-            var pvt={};
-            $.ajax(
-              {
-                type: "POST",
-                url: '<%= grid_post_data_url "pivots", @farm %>' + '&oper=add&id=_empty', 
-                dataType: "json",
-                async: false,
-                success: function(json) {
-                  pvt = json;
-                }
-              }
-            );
-            return pvt;
-          }
         </script>
 
         <table id="pivot_setup" class="scroll" cellpadding="0" cellspacing="0"></table>

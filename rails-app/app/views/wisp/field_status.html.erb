@@ -102,7 +102,35 @@
       return(Math.ceil(days / 7));
     }
     function showSummaryBox(date) {
-      $('#projectedADBox').load("<%= url_for :controller => 'wisp', :action => :summary_box %>?cur_date="+date);
+      $('#projectedADBox').load("<%= url_for(merge_usuals(:controller => 'wisp', :action => :summary_box)) %>&cur_date="+date);
+    }
+    function showTargetAD() {
+      // adValue = 0.0;
+      adValue = <%= @field.target_ad_pct || "''" %>;
+      document.getElementById('target_ad').value = adValue;
+    }
+    function setTargetAD() {
+      val = document.getElementById('target_ad').value;
+      $.ajax(
+      { 
+          type: "POST",
+          url: '<%= url_for(merge_usuals(:controller => :fields, :action => :update_target_ad_pct, :id => @field[:id])) %>&target_ad_pct='+val,
+          dataType: "json",
+          async: false,
+          success: function(json)
+          {
+            adValue = json['target_ad_pct']
+            document.getElementById('target_ad').value = adValue;
+            plotGraph();
+            // showSummaryBox(cur_date);
+          }, /* success: */
+          error: function(xhr, textStatus, errorThrown)
+          { 
+              alert(textStatus + ' ' + errorThrown);
+              ad_data = [];
+              projected_ad_data = [];
+          } /* error: */
+      });/* $.ajax */
     }
     function plotGraph() {
       var g = new Bluff.Line('example', '575x300');
@@ -118,10 +146,11 @@
           font_color: 'black',
           background_colors: ['#d0e0f8', '#f0f0ff']
         });
+        url = '<%= url_for(merge_usuals(:action => :projection_data)) %>&cur_date='+cur_date;
         $.ajax(
         { 
             type: "GET",
-            url: '<%= url_for :action => :projection_data %>?cur_date='+cur_date, 
+            url: url, 
             dataType: "json",
             async: false,
             success: function(json)
@@ -161,6 +190,7 @@
     jQuery(document).ready(function(){
       plotGraph();
       showSummaryBox(cur_date);
+      showTargetAD();
       
       $("#date_input").change(function(){
         cur_date = $('#date_input').val();
@@ -228,12 +258,8 @@ Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field
 Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>
 Total AD: <%= sprintf("%0.2f",@field.ad_max) %> in.<br/>
 Init. soil moist.: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
-<% if @field.target_ad_pct %>
-  Target AD:
-  <%= form_tag(url_for(:controller => 'fields',:action => 'update', :id => @field)) do %>
-    <input name="field[target_ad_pct]" onclick="plotGraph();">% of max allowable
-  <% end %>
-<% end %>
+Target:&nbsp;<input name="field[target_ad_pct]" id="target_ad" size="2"/>&nbsp;% of AD&nbsp;<input type="button" value="Update" onclick="setTargetAD();"/>
+
 </div>
 
 <%= render :partial => 'wisp/partials/field_daily_wx'%>

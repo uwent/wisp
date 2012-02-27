@@ -21,6 +21,8 @@ class Field < ActiveRecord::Base
   has_many :crops, :dependent => :destroy
   has_many :field_daily_weather, :autosave => true, :dependent => :destroy
   
+  before_save :target_ad_pct_or_nil
+  
   def et_method
     raise "Error: Field with no parent pivot" unless pivot
     raise "Error: Field with no parent farm" unless pivot.farm
@@ -122,7 +124,7 @@ class Field < ActiveRecord::Base
   
   def create_crop
     # puts "create crop"
-    crops << Crop.new(:name => "New crop (field: #{name})", :variety => 'A variety', :emergence_date => date_endpoints.first,
+    crops << Crop.new(:name => "New crop", :variety => 'A variety', :emergence_date => date_endpoints.first,
       :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self.field_capacity,
       :dont_update_canopy => true) # TODO: take this back out?
     # puts "crop created"
@@ -312,5 +314,19 @@ class Field < ActiveRecord::Base
     end
     remove_incoming_if_default(my_soil,incoming_attribs,:field_capacity)
     remove_incoming_if_default(my_soil,incoming_attribs,:perm_wilting_pt)
+  end
+  
+  ###### VALIDATORS & LIFECYCLE #########
+  def target_ad_pct_or_nil
+    if self[:target_ad_pct] != nil
+      begin
+        self[:target_ad_pct] = self[:target_ad_pct].to_f
+        self[:target_ad_pct] = nil if (self[:target_ad_pct] < 1.0) || (self[:target_ad_pct] > 99.0)
+        logger.info "field validation: target_ad_pct #{self[:target_ad_pct]}"
+      rescue Exception => e
+        logger.error "Tried to set field target_ad_pct to #{self[:target_ad_pct]}"
+        self[:target_ad_pct] = nil
+      end
+    end
   end
 end

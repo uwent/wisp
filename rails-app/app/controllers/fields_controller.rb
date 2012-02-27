@@ -14,7 +14,7 @@ class FieldsController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @fields }
-      columns = COLUMN_NAMES; columns << :id; columns << :pivot_id
+      columns = COLUMN_NAMES; columns << :id
       format.json do
         json = @fields.to_jqgrid_json(columns,params[:page], params[:rows],@fields.size)
         render :json => json
@@ -63,6 +63,13 @@ class FieldsController < ApplicationController
     render :json => attrs
   end
   
+  def update_target_ad_pct
+    field = Field.find(params[:id])
+    attribs = {:target_ad_pct => params[:target_ad_pct]}
+    field.update_attributes(attribs)
+    render :json => {:target_ad_pct => params[:target_ad_pct]}
+  end
+  
   # GET /fields/1
   # GET /fields/1.xml
   def show
@@ -94,8 +101,8 @@ class FieldsController < ApplicationController
   # POST /fields.xml
   def create
     @field = Field.new(params[:field])
-	@field.pivot_id = @pivot_id
-	
+    @field.pivot_id = @pivot_id
+  
     respond_to do |format|
       if @field.save
         format.html { redirect_to(@field, :notice => 'Field was successfully created.') }
@@ -111,11 +118,14 @@ class FieldsController < ApplicationController
   # PUT /fields/1.xml
   def update
     @field = Field.find(params[:id])
-	@field.pivot_id = @pivot_id
+    @field.pivot_id = @pivot_id
 
     respond_to do |format|
       if @field.update_attributes(params[:field])
-        format.html { redirect_to(@field, :notice => 'Field was successfully updated.') }
+        format.html do
+          render :nothing => true
+          # redirect_to(@field, :notice => 'Field was successfully updated.')
+        end
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

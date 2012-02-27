@@ -50,7 +50,7 @@ module ApplicationHelper
       :farm_id => @farm[:id],
       :pivot_id => @pivot[:id],
       :field_id => @field[:id],
-      :crop_id => @crop[:id]
+      :crop_id => @crop[:id] || @field.crops.first[:id] # FIXME: Could this turn into a bug after the first season?
       )
     puts "mu: user_id #{ret[:user_id]}, group_id #{ret[:group_id]}, farm_id #{ret[:farm_id]}, pivot_id #{ret[:pivot_id]}, field_id #{ret[:field_id]}, crop_id #{ret[:crop_id]}"
     ret

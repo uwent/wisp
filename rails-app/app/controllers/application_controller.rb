@@ -17,20 +17,36 @@ class ApplicationController < ActionController::Base
     end
     @group = @user.groups.first
   end
+
+  def get_by_parent(klass,parent_klass,parent_id)
+    begin
+      plural = klass.to_s.downcase + 's'
+      parent_obj = parent_klass.find(parent_id)
+      obj = eval("parent_obj.#{plural}.first")
+      id = obj[:id] if obj
+    rescue ActiveRecord::RecordNotFound => e
+      logger.error "Parent object find failed for #{klass.to_s} / #{parent_klass.to_s}:#{parent_id}"
+      flash[:notice] = "We're sorry, an internal error has occurred"
+      id = obj = nil
+    end
+    [id,obj]
+  end
   
   def get_and_set(klass,parent_klass,parent_id,preserve_session=nil)
     klassname = klass.to_s.downcase
     sym = (klassname + '_id').to_sym
     id = params[sym] || session[sym]
-    if id && id != ''
+    if id && id != '' && id.to_i != 0 # This latter in the case of "We don't know what the ID should be"
       # puts "get_and_set: found the id (#{id.inspect}) for #{klass.to_s} in either params (#{params[sym]}) or session (#{session[sym]})"
       # puts "get_and_set: what about string key? (#{params.inspect})"
-      obj = klass.find(id)
+      begin
+        obj = klass.find(id)
+      rescue ActiveRecord::RecordNotFound => e
+        # If the object has just been deleted, the find can fail, so fall back to parent's first child
+        id,obj = get_by_parent(klass,parent_klass,parent_id)
+      end
     else
-      plural = klass.to_s.downcase + 's'
-      parent_obj = parent_klass.find(parent_id)
-      obj = eval("parent_obj.#{plural}.first")
-      id = obj[:id] if obj
+      id,obj = get_by_parent(klass,parent_klass,parent_id)
     end
     unless preserve_session
       session[sym] = id

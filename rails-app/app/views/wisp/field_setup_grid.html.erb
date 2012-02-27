@@ -1,29 +1,57 @@
 <script type="text/javascript">
-  var lastsel,curID;
-  function set_current_field(field_id) {
-    $.ajax(
-    { 
-        type: "GET",
-        <% args = merge_usuals(:controller => 'wisp', :action => :set_field)
-           args.delete(:field_id)
-        %>
-        url: '<%= url_for args %>' + '&field_id='+field_id, 
-        dataType: "json",
-        async: false,
-        success: function()
-        {
-          
-        },
-        error: function(xhr, textStatus, errorThrown)
-        {
-          alert('got an ajax error back, here is xhr');
-          alert(xhr);
-          alert(textStatus + ' ' + errorThrown);
-        } /* error: */
-    });/* $.ajax */
+  var lastFieldSel,curFieldID;
+  function loadCropGrid(field_id) {
+    $('#cropDataGrid').load('<%= url_for :controller => "wisp", :action => :crop_setup_grid %>',
+      {field_id:field_id,user_id:user_id, farm_id:farm_id,field_id:field_id,crop_id:crop_id});
+    crop_id = $("#crop_setup").getDataIDs()[0];
   }
+  function rowSelect(id) {
+    if(id) { 
+      if (!lastFieldSel || id !== lastFieldSel) {
+        jQuery('#field_setup').restoreRow(lastFieldSel);
+        jQuery('#field_setup').editRow(id,true); 
+        lastFieldSel=id;
+        field_id=id;
+        loadCropGrid(field_id);
+      }
+    } 
+  }
+  function useFirstFieldRow(throwaway1,throwaway2) {
+    field_id = $("#field_setup").getDataIDs()[0];
+    lastFieldSel=field_id;
+    crop_id = 1; // Wrong, but that's OK
+    // loadCropGrid(field_id);
+    return [true,'',field_id]; // This was a total shot in the dark, Googling 'jqgrid afterSubmit' gave hints
+  }
+  function deleteField(id) {
+    jQuery('#field_setup').delGridRow(id,{afterSubmit:useFirstFieldRow,msg:'Delete field as well as crop and weather data under it?'});
+  }
+  function addFieldDeleteButtons() {
+    var fieldIDs = jQuery("#field_setup").getDataIDs();
+    var msg = "Field IDs";
+    nRows = fieldIDs.length;
+    for(var ii=0;ii<nRows;ii++){ 
+      var id = fieldIDs[ii];
+      if (nRows == 1) {
+        be = "<input style='height:22px;width:35px;' type='button' value='Del' disabled='true' title='Cannot delete only field'/>";
+      } else {
+        be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick='deleteField("+id+");' ></ids>"; 
+      }
+      jQuery("#field_setup").setRowData(id,{act:be}); 
+    } 
+  }
+  function addNewFieldRow() {
+    var grid = $('#field_setup');
+    newField = createNewField();
+    field_id = newField['id'];
+    grid.addRowData(field_id, newField); // add a new row with the new field's data
+    addFieldDeleteButtons();
+    grid.editRow(field_id,true); // put new row into inline-edit mode
+    loadCropGrid(field_id);
+  }
+
   function createNewField() {
-    var fld={};
+    var pvt={};
     $.ajax(
       {
         type: "POST",
@@ -31,31 +59,21 @@
         dataType: "json",
         async: false,
         success: function(json) {
-          fld = json;
+          pvt = json;
         }
       }
     );
-    return fld;
+    return pvt;
   }
   function set_soil_characteristics(event) {
     var soils = <%= soil_characteristics %>;
     soil_id = this.value;
     fc = soils[soil_id]['field_capacity_pct'];
     pwp = soils[soil_id]['perm_wilting_pt_pct'];
-    $("#"+curID+"_field_capacity_pct").val(fc);
-    $("#"+curID+"_perm_wilting_pt_pct").val(pwp);
+    $("#"+curFieldID+"_field_capacity_pct").val(fc);
+    $("#"+curFieldID+"_perm_wilting_pt_pct").val(pwp);
   }
 
-  
-  function addNewRow() {
-    var grid = $('#field_setup');
-    newField = createNewField();
-    curID = newField['id'];
-    grid.addRowData(curID, newField); // add a new row with the new field's data
-    addFieldDeleteButton(curID);
-    grid.editRow(curID,true); // put new row into inline-edit mode
-  }
-  
   // Tag on percent sign for display
   function pctFormat(cellvalue,options,rowObject) {
     if (cellvalue === undefined) {
@@ -87,36 +105,32 @@
       url:'<%= grid_data_url "fields", @pivot %>',
       editurl:'<%= grid_post_data_url "fields", @pivot %>',
       datatype: "json",
-      colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD','ET Stn','Rain Stn','Soil Moist. Stn','Notes','Delete',' ',' '],
+      colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD','ET Stn','Rain Stn','Soil Moist. Stn','Notes','Delete',' '],
       colModel:[{name:'name', index:'name',width:83,editable:true},
-                     {name:'area', index:'area',width:20,editable:true, align:'right'},
-                     {
-                       
-                         name:'soil_type_id',index:'soil_type_id', width:40,resizable:true,   
-                         align:"left",sorttype:"text",editable:true,edittype:"select",
-                         formatter:'select',
-                         editoptions:   // working example for ET methods is '1:Percent Cover;2:Leaf Area Index'
-                           { value:"<%= soil_types_for_select %>",dataEvents: [
-                                                 {  type: 'change',
-                                                    fn: set_soil_characteristics
-                                                 }
-                                              ]},editrules:{required:true}
+                {name:'area', index:'area',width:20,editable:true, align:'right'},
+                {
+                   name:'soil_type_id',index:'soil_type_id', width:40,resizable:true,   
+                   align:"left",sorttype:"text",editable:true,edittype:"select",
+                   formatter:'select',
+                   editoptions:   // working example for ET methods is '1:Percent Cover;2:Leaf Area Index'
+                   {
+                    value:"<%= soil_types_for_select %>",
+                    dataEvents: [{  type: 'change',fn: set_soil_characteristics}]
+                   },
+                   editrules:{required:true}
+                },
+                {name:'field_capacity_pct', index:'field_capacity_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat},
+                {name:'perm_wilting_pt_pct', index:'perm_wilting_pt_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat},
+                {name:'target_ad_pct',index:'target_ad_pct',width:25,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat},
+                // These three are hidden until we get these features running
+                {name:'ref_et_station_id', index:'ref_et_station_id',width:25,editable:true, align:'right',hidden:true},
+                {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right',hidden:true},
+                {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:50,editable:true, align:'right',hidden:true},
 
-                       // name:'soil_type', index:'soil_type',width:47,editable:true, align:'right'
-                     },
-                     {name:'field_capacity_pct', index:'field_capacity_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat},
-                     {name:'perm_wilting_pt_pct', index:'perm_wilting_pt_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat},
-                     {name:'target_ad_pct',index:'target_ad_pct',width:25,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat},
-                     // These three are hidden until we get these features running
-                     {name:'ref_et_station_id', index:'ref_et_station_id',width:25,editable:true, align:'right',hidden:true},
-                     {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right',hidden:true},
-                     {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:50,editable:true, align:'right',hidden:true},
-                     
-                     {name:'notes', index:'notes',width:87,editable:true, align:'right'},
-                     {name:'act', index:'act', width:20},
-                     {name:'id', index:'id',width:6,hidden:true,key:true},
-                     {name:'pivot_id',index:'pivot_id',width:1,hidden:true,editable:true}
-                     ],
+                {name:'notes', index:'notes',width:87,editable:true, align:'right'},
+                {name:'act', index:'act', width:20},
+                {name:'id', index:'id',width:6,hidden:false}
+              ],
       pager: '#field_setup_pager',
       rowNum:180,
       rowList:[180],
@@ -132,27 +146,10 @@
       rownumbers: false,
       multiselect: false,
         
-      onSelectRow: function(id){ 
-        if(id && id!==lastsel){ 
-          jQuery('#field_setup').restoreRow(lastsel);
-          curID = id;
-          jQuery('#field_setup').editRow(id,true); 
-          lastsel=id;
-          field_id=id;
-          set_current_field(id);
-          $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',
-            {field_id:id,pivot_id:pivot_id,user_id:user_id, farm_id:farm_id,pivot_id:pivot_id});
-        } else {
-          alert('cannot edit; id is '+id+' and lastsel is '+lastsel);
-        }
-      },             
+      onSelectRow: rowSelect,             
       
-      loadComplete: function(){ 
-          var ids = jQuery("#field_setup").getDataIDs(); 
-          for(var i=0;i<ids.length;i++){ 
-              var cl = ids[i];
-              addFieldDeleteButton(cl); 
-          } 
+      loadComplete: function(){
+        addFieldDeleteButtons(); 
       },
       
       
@@ -172,5 +169,5 @@
 
 <table id="field_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
 <!-- <div id="field_setup_pager" class="scroll" style="text-align:center;"></div> -->
-<button type="button" onclick="addNewRow();">Add New Field</button>
+<button type="button" onclick="addNewFieldRow();">Add New Field</button>
 <!-- $("#grid").addRowData(rowid,data, position, srcrowid); -->
