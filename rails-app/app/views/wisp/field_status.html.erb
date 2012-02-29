@@ -249,7 +249,7 @@
 
 <div id="fieldDataBox">
 <h2 style="padding:5px">Field Data</h2>
-Farm:<%= truncate(@farm.name, :length => 28) if @farm %><br/>
+Farm: <%= truncate(@farm.name, :length => 28) if @farm %><br/>
 Pivot: <%= truncate(@pivot.name, :length => 28) if @pivot %><br/>
 Field/soil: <%= truncate(@field.name, :length => 20) %><br/>
 Crop: <%= truncate((@field.current_crop.name + " " + @field.current_crop.variety), :length => 28) %><br/>   
