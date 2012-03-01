@@ -18,7 +18,7 @@
 		position:absolute;
 		left:275px;
 		top:173px;
-		width:200px;
+		width:205px;
 		height:203px;
 		padding:2px;
 		border:1px solid gray;
@@ -121,8 +121,9 @@
           {
             adValue = json['target_ad_pct']
             document.getElementById('target_ad').value = adValue;
+            document.getElementById('target_ad_in').innerHTML = json['target_ad_in'];
             plotGraph();
-            // showSummaryBox(cur_date);
+            showSummaryBox(cur_date);
           }, /* success: */
           error: function(xhr, textStatus, errorThrown)
           { 
@@ -258,7 +259,8 @@ Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field
 Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>
 Total AD: <%= sprintf("%0.2f",@field.ad_max) %> in.<br/>
 Init. soil moist.: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
-Target:&nbsp;<input name="field[target_ad_pct]" id="target_ad" size="2"/>&nbsp;% of AD&nbsp;<input type="button" value="Update" onclick="setTargetAD();"/>
+<% target_ad_in_str = @field.target_ad_in ? sprintf('%0.2f"',@field.target_ad_in) : '--' %>
+Target:&nbsp;<input name="field[target_ad_pct]" id="target_ad" size="1"/>%&nbsp;(<div style="display:inline" id='target_ad_in'><%= target_ad_in_str %></div>)&nbsp;<input type="button" value="Update" onclick="setTargetAD();"/>
 
 </div>
 

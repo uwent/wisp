@@ -129,7 +129,7 @@
 
                 {name:'notes', index:'notes',width:87,editable:true, align:'right'},
                 {name:'act', index:'act', width:20},
-                {name:'id', index:'id',width:6,hidden:false}
+                {name:'id', index:'id',width:1}
               ],
       pager: '#field_setup_pager',
       rowNum:180,
@@ -163,7 +163,8 @@
       {afterSubmit:function(r,data){return true;(r,data,'add');}},
       {afterSubmit:function(r,data){return true;(r,data,'delete');}}
     )
-    mygrid.filterToolbar();mygrid[0].toggleToolbar()
+    mygrid.filterToolbar();mygrid[0].toggleToolbar();
+    $("#field_setup").hideCol('id');
   });
 </script>
 

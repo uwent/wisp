@@ -316,6 +316,16 @@ class Field < ActiveRecord::Base
     remove_incoming_if_default(my_soil,incoming_attribs,:perm_wilting_pt)
   end
   
+  def target_ad_in
+    return nil unless (tadp = self[:target_ad_pct])
+    return nil unless (cc = current_crop)
+    return nil unless (crop_mad_frac = cc.max_allowable_depletion_frac)
+    return nil unless (mrzd = cc.max_root_zone_depth)
+    return nil unless (fc = field_capacity) && (pwp = perm_wilting_pt)
+    mad_inches = ad_max_inches(crop_mad_frac,taw(fc,pwp,mrzd))
+    (tadp / 100.0) * mad_inches
+  end
+  
   ###### VALIDATORS & LIFECYCLE #########
   def target_ad_pct_or_nil
     if self[:target_ad_pct] != nil
