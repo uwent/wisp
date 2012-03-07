@@ -67,7 +67,12 @@ class FieldsController < ApplicationController
     field = Field.find(params[:id])
     attribs = {:target_ad_pct => params[:target_ad_pct]}
     field.update_attributes(attribs)
-    render :json => {:target_ad_pct => params[:target_ad_pct], :target_ad_in => sprintf('%0.2f"',field.target_ad_in) || '--'}
+    if field.target_ad_in
+      tadin_str = sprintf('%0.2f"',field.target_ad_in)
+    else
+      tadin_str = 'none'
+    end
+    render :json => {:target_ad_pct => params[:target_ad_pct], :target_ad_in => tadin_str}
   end
   
   # GET /fields/1
