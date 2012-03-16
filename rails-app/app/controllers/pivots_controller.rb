@@ -1,11 +1,11 @@
 class PivotsController < ApplicationController
   set_default_filters
   # get_current_farm sets farm_id
-  before_filter :get_current_farm
+  before_filter :get_current_farm, :ensure_signed_in, :except => [:post_data]
   
-    COLUMN_NAMES = [:name,
-     :latitude, :longitude, :equipment,
-    :pump_capacity, :some_energy_rate_metric, :cropping_year, :notes
+    COLUMN_NAMES = [
+      :name, :latitude, :longitude, :equipment, :pump_capacity,
+      :some_energy_rate_metric, :cropping_year, :notes, :act, :farm_id, :id
     ]
   
   # GET /pivots
@@ -16,11 +16,11 @@ class PivotsController < ApplicationController
     session[:farm_id] = @farm_id
     @farm = Farm.find(@farm_id)
     @pivot = @pivots.first
-    if params[:pivot_id]
+    if params[:id]
       begin
-        @pivot = @pivots.find { |f| f[:id] == params[:pivot_id] }
+        @pivot = @pivots.find { |f| f[:id] == params[:id] }
       rescue
-        logger.warn "Attempt to GET nonexistent pivot #{params[:pivot_id]}"
+        logger.warn "Attempt to GET nonexistent pivot #{params[:id]}"
       end
     end
 
@@ -32,12 +32,13 @@ class PivotsController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @pivots }
-      columns = COLUMN_NAMES; columns << :id
+      columns = COLUMN_NAMES
       format.json { render :json => @pivots.to_jqgrid_json(columns,params[:page], params[:rows],@pivots.size) }
     end
   end
 
   def post_data
+    logger.info "pivot post data for farm #{params[:parent_id]}"
     @farm = Farm.find(params[:parent_id])
     session[:farm_id] = params[:parent_id]
     if params[:oper] == "del"
@@ -49,16 +50,18 @@ class PivotsController < ApplicationController
     else
       attribs = {}
       for col_name in COLUMN_NAMES
-        attribs[col_name] = params[col_name] unless col_name == :id
+        attribs[col_name] = params[col_name] unless col_name == :id || col_name == :act
       end
       if params[:oper] && params[:oper] == "add"
-        set_parent_id(attribs,params,:farm_id,@farm_id)
-        attribs[:name] = "New pivot"
+        attribs[:name] = "New pivot (farm ID: #{@farm[:id]})"
+        attribs[:farm_id] = @farm[:id]
         unless attribs[:cropping_year]
           attribs[:cropping_year] = '2011'
         end
         pivot = Pivot.create(attribs)
+        logger.info "created the new pivot #{pivot.inspect}"
       else
+        attribs.delete(:farm_id) if attribs[:farm_id]
         pivot = Pivot.find(params[:id])
         pivot.update_attributes(attribs)
       end

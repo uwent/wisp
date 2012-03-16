@@ -36,11 +36,11 @@
           jQuery(document).ready(function(){
             
           var mygrid = jQuery("#farm_setup").jqGrid({
-              url: '<%= url_for merge_usuals(:controller => "farms", :action => :index, :q => 1) %>',
+              url: '<%= url_for :controller => "farms", :action => :index, :q => 1%>',
               // '/farms?q=1',
-              editurl:'<%= url_for merge_usuals(:controller => "farms", :action => :post_data, :parent_id => @group) %>',
+              editurl:'<%= url_for :controller => "farms", :action => :post_data, :parent_id => @group %>',
               datatype: "json",
-              colNames:['Name','ET Method','Notes','Problem?','Delete','',''],
+              colNames:['Name','ET Method','Notes','Problem?','Delete','Group ID','ID'],
               colModel:[
                 {name:'name', index:'name',width:83,editable:true},
                 {
@@ -53,8 +53,8 @@
                 {name:'notes', index:'notes',width:87,editable:true, align:'right'},
                 {name:'problem', index:'problem',width:20, align:'right'},
                 {name:'act', index:'act', width:20},
-                {name:'group_id', index: 'group_id',width:1,hidden:true,editable:true},
-                {name:'id', index:'id',hidden:true}
+                {name:'group_id', index: 'group_id',width:10,hidden:false,editable:true},
+                {name:'id', index:'id',width:10,hidden:false,editable:false}
               ],
               pager: '#farm_setup_pager',
               rowNum:180,

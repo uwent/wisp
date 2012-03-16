@@ -124,7 +124,7 @@ class Field < ActiveRecord::Base
   
   def create_crop
     # puts "create crop"
-    crops << Crop.new(:name => "New crop", :variety => 'A variety', :emergence_date => date_endpoints.first,
+    crops << Crop.new(:name => "New crop (field ID: #{self[:id]})", :variety => 'A variety', :emergence_date => date_endpoints.first,
       :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self.field_capacity,
       :dont_update_canopy => true) # TODO: take this back out?
     # puts "crop created"
@@ -315,13 +315,13 @@ class Field < ActiveRecord::Base
     remove_incoming_if_default(my_soil,incoming_attribs,:field_capacity)
     remove_incoming_if_default(my_soil,incoming_attribs,:perm_wilting_pt)
   end
-  
+
   def target_ad_in
-    return nil unless (tadp = self[:target_ad_pct])
-    return nil unless (cc = current_crop)
-    return nil unless (crop_mad_frac = cc.max_allowable_depletion_frac)
-    return nil unless (mrzd = cc.max_root_zone_depth)
-    return nil unless (fc = field_capacity) && (pwp = perm_wilting_pt)
+    logger.warn "tadi: tadp nil"; return nil unless (tadp = self[:target_ad_pct])
+    logger.warn "tadi: cc nil"; return nil unless (cc = current_crop)
+    logger.warn "tadi: cmf nil"; return nil unless (crop_mad_frac = cc.max_allowable_depletion_frac)
+    logger.warn "tadi: mrzd nil"; return nil unless (mrzd = cc.max_root_zone_depth)
+    logger.warn "tadi: fc or pwp nil"; return nil unless (fc = field_capacity) && (pwp = perm_wilting_pt)
     mad_inches = ad_max_inches(crop_mad_frac,taw(fc,pwp,mrzd))
     (tadp / 100.0) * mad_inches
   end
@@ -331,7 +331,7 @@ class Field < ActiveRecord::Base
     if self[:target_ad_pct] != nil
       begin
         self[:target_ad_pct] = self[:target_ad_pct].to_f
-        self[:target_ad_pct] = nil if (self[:target_ad_pct] < 1.0) || (self[:target_ad_pct] > 99.0)
+        self[:target_ad_pct] = nil if (self[:target_ad_pct] < 1.0) || (self[:target_ad_pct] > 100.0)
         logger.info "field validation: target_ad_pct #{self[:target_ad_pct]}"
       rescue Exception => e
         logger.error "Tried to set field target_ad_pct to #{self[:target_ad_pct]}"
@@ -339,4 +339,9 @@ class Field < ActiveRecord::Base
       end
     end
   end
+  
+  def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
+    ""
+  end
+  
 end

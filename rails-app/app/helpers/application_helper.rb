@@ -57,11 +57,13 @@ module ApplicationHelper
   end
   
   def url_with_usuals(args)
-    url_for(merge_usuals(args))
+    # Going to try going without this one
+    # url_for(merge_usuals(args))
+    url_for(args)
   end
   
   def grid_data_url(what,parent_object)
-    url_with_usuals :controller => what.to_s, :q => 1, :parent_id => parent_object
+    url_with_usuals :controller => what.to_s, :q => 1, :parent_id => parent_object, :user_id => @user_id
   end
   
   def grid_post_data_url(what,parent_object)

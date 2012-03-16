@@ -2,7 +2,7 @@
   var lastsel;
   jQuery(document).ready(function(){
   var mygrid = jQuery("#crop_setup").jqGrid({
-      url:'<%= grid_data_url "crops", nil %>',
+      url:'<%= grid_data_url "crops", @field %>',
       editurl: '<%= grid_post_data_url "crops", @field %>',
       datatype: "json",
       colNames:['Crop','Variety','Emergence Date','Init Soil Moist.','Harvest/Kill Date','Root zone','AD Frac.','Notes',' ',' '],

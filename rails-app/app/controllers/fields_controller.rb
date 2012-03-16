@@ -2,11 +2,12 @@ class FieldsController < ApplicationController
   set_default_filters
  
   COLUMN_NAMES = [:name,:area,:soil_type_id,:field_capacity_pct,:perm_wilting_pt_pct,:target_ad_pct,
-                  :ref_et_station_id,:rain_station_id,:soil_moisture_station_id,:notes]
+                  :ref_et_station_id,:rain_station_id,:soil_moisture_station_id,:notes,:act,:pivot_id,:id]
   # GET /fields
   # GET /fields.xml
   def index
     get_current_ids
+    @pivot_id = params[:parent_id]
     @fields = Field.where(:pivot_id => @pivot_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
@@ -14,7 +15,7 @@ class FieldsController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @fields }
-      columns = COLUMN_NAMES; columns << :id
+      columns = COLUMN_NAMES
       format.json do
         json = @fields.to_jqgrid_json(columns,params[:page], params[:rows],@fields.size)
         render :json => json
@@ -23,8 +24,8 @@ class FieldsController < ApplicationController
   end
 
   def post_data
-    @pivot = Pivot.find(params[:parent_id])
-    session[:pivot_id] = params[:parent_id]
+    @pivot = Pivot.find(params[:pivot_id])
+    session[:pivot_id] = params[:pivot_id]
     if params[:oper] == "del"
       field = Field.find(params[:id])
       # check that we're in the right hierarchy, and not some random id
@@ -40,25 +41,27 @@ class FieldsController < ApplicationController
     else
       attribs = {}
       for col_name in COLUMN_NAMES
-        attribs[col_name] = params[col_name] unless col_name == :id
+        attribs[col_name] = params[col_name] unless col_name == :id || col_name == :act
       end
       if attribs[:soil_type_id]
         attribs[:soil_type_id] = attribs[:soil_type_id].to_i
         attribs[:soil_type_id] = SoilType.default_soil_type[:id] if attribs[:soil_type_id] == 0
       end
       if params[:oper] && params[:oper] == "add"
-        set_parent_id(attribs,params,:pivot_id,@pivot_id)
         attribs[:soil_type_id] = SoilType.default_soil_type[:id] unless attribs[:soil_type_id]
         # Should do a method for this, perhaps with a block for the tests
-        attribs[:name] = "New field" unless (attribs[:name] && attribs[:name] != '')
+        attribs[:name] = "New field (pivot #{params[:pivot_id]})" unless (attribs[:name] && attribs[:name] != '')
         field = Field.create(attribs)
       else
         field = Field.find(params[:id])
         attribs = field.groom_for_defaults(attribs)
+        attribs.delete(:act)
+        attribs.delete(:pivot_id) if attribs[:pivot_id]
         field.update_attributes(attribs)
       end
     end
     attrs = field.attributes.symbolize_keys
+    puts attrs.inspect
     attrs = ApplicationController.jsonify(attrs)
     render :json => attrs
   end

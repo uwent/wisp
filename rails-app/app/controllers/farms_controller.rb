@@ -17,9 +17,12 @@ class FarmsController < ApplicationController
   # GET /field_daily_weather.xml
   def index
     get_current_ids
-    if @group then group_id = @group[:id] else group_id = 1 end
+    raise "no group!" unless @group_id
+    # if @group then group_id = @group[:id] else group_id = 1 end
+    # Now set the current farm
+    get_and_set(Farm,Group,@group_id)
     # FIXME: Don't forget to insert year here!
-    @farms = Farm.where(:group_id => group_id).order(:name) do
+    @farms = Farm.where(:group_id => @group_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
     @farms ||= []
@@ -29,7 +32,7 @@ class FarmsController < ApplicationController
       format.html # index.html.erb
       format.xml  { render :xml => @farms }
       format.json do
-        json = @farms.to_jqgrid_json([:name,:et_method_id,:notes,:problem,:group_id,:id], 
+        json = @farms.to_jqgrid_json([:name,:et_method_id,:notes,:problem,:act,:group_id,:id], 
                                      params[:page], params[:rows],@farms.size)
         render :json => json
       end
@@ -68,7 +71,12 @@ class FarmsController < ApplicationController
         # end
         farm = Farm.create(attribs)
       else
-        farm = Farm.find(params[:farm_id])
+        # Don't allow parameters to muck with the hierarchy! The group is set when the "add"
+        # operation happens, but farms cannot be moved among groups.
+        if attribs[:group_id]
+          attribs.delete(:group_id)
+        end
+        farm = Farm.find(params[:id])
         farm.update_attributes(attribs)
       end
     end

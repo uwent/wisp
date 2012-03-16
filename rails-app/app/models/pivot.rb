@@ -16,7 +16,7 @@ class Pivot < ActiveRecord::Base
   end
 
   def create_new_default_field
-    fields << Field.create(:name => "New field (pivot #{self[:id]})",
+    fields << Field.create(:name => "New field (Pivot ID: #{self[:id]})",
       :soil_type_id => SoilType.default_soil_type[:id],
       # try this because we might not be saved and thus the association won't work yet...?
       :pivot_id => self[:id]
@@ -32,7 +32,13 @@ class Pivot < ActiveRecord::Base
       return false
     end
   end
+  
   def may_destroy(field)
     fields.size > 1 || @@clobberable == id
   end
+  
+  def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
+    ""
+  end
+  
 end

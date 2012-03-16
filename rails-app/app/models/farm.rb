@@ -17,6 +17,10 @@ class Farm < ActiveRecord::Base
     fields.inject([]) { |problems, field| problems << field.problem }
   end
   
+  def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
+    ""
+  end
+  
   def set_default_et_method
     if self[:et_method_id]
       logger.info "That's odd, et_method_id was set to #{et_method_id} coming into Farm.create"
@@ -31,7 +35,7 @@ class Farm < ActiveRecord::Base
   def create_default_data
     logger.warn "Farm#create_default_data: #{self.inspect}" 
     raise "Could not set default ET method" unless self[:et_method_id]
-    pivots << Pivot.create(:name => "New pivot (farm: #{name})", :farm_id => self[:id])
+    pivots << Pivot.create(:name => "New pivot (farm ID: #{self[:id]})", :farm_id => self[:id])
   end
   
   

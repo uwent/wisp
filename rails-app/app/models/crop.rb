@@ -41,4 +41,9 @@ class Crop < ActiveRecord::Base
   def owner
     field.pivot.farm.group
   end
+  
+  def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
+    ""
+  end
+  
 end

@@ -17,15 +17,13 @@ class CropsController < ApplicationController
   # GET /crops.xml
   def index
     get_current_ids
-    # @farm = Farm.find(@farm_id)
-    # @pivot = Pivot.find(@pivot_id)
-    puts "crops#index: #{params.inspect}"
+    @field_id = params[:parent_id]
     @field = Field.find(@field_id)
 
     @crops = Crop.where(:field_id => @field_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
-    @crop = @crops.first
+    @crop = @field.current_crop
     @crop_id = @crop[:id]
     @crops ||= []
 
