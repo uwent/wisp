@@ -1,5 +1,5 @@
 set :application, "wisp"
-set :repository,  "https://wayne@molly.soils.wisc.edu/svn_repos/IrrigSched/trunk/rails-app
+set :repository,  "https://wayne@molly.soils.wisc.edu/svn_repos/IrrigSched/trunk/rails-app"
 set :user, "wayne"
 default_run_options[:pty] = true
 
