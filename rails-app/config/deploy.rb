@@ -1,6 +1,6 @@
 set :application, "wisp"
 set :repository,  "https://wayne@molly.soils.wisc.edu/svn_repos/IrrigSched/trunk/rails-app"
-set :user, "wayne"
+set :user, "root"
 default_run_options[:pty] = true
 
 # If you aren't deploying to /u/apps/#{application} on the target
@@ -13,10 +13,14 @@ set :use_sudo, false
 # If you aren't using Subversion to manage your source code, specify
 # your SCM below:
 # set :scm, :subversion
-
+set :current_dir, 'railsapp'
 role :app, "wisp.cals.wisc.edu"
 role :web, "wisp.cals.wisc.edu"
 role :db,  "wisp.cals.wisc.edu", :primary => true
+
+task :after_update_code, :roles => :app do
+  run "cp #{release_path}/config/database.deployed.yml #{release_path}/config/database.yml"
+end
 
 namespace :deploy do
   desc 'Restart the Passenger app'
