@@ -38,6 +38,7 @@ class FieldDailyWeatherController < ApplicationController
       # puts "Irrig only present, found #{@field_daily_weather.size} records"
     else
       field_id = session[:field_id] || session[:field_id] = params[:field_id]
+      # FIXME: Shouldn't the date be in here too? I mean, 3 years from now will we be returning 500 records?
       @field_daily_weather = FieldDailyWeather.where(:field_id => field_id).order(:date)
       wx_size = @field_daily_weather.size
       if params[:rows]
@@ -51,8 +52,7 @@ class FieldDailyWeatherController < ApplicationController
       else
         page = params[:page] || calc_page(@field_daily_weather,current_day,page_size)
       end
-      logger.info "fdw#index: page_size #{page_size}, current_day #{current_day}, page #{page}"
-    # puts "\n****\nfdw#index full; page is #{page}, page_size is #{page_size}, #{wx_size} records"; $stdout.flush
+      # logger.info "\n****\nfdw#index full; for field_id #{field_id}, page is #{page}, page_size is #{page_size}, #{wx_size} records"; $stdout.flush
       @field_daily_weather = @field_daily_weather.paginate(:page => page, :per_page => page_size)
     end
     @field_daily_weather ||= []
@@ -63,11 +63,12 @@ class FieldDailyWeatherController < ApplicationController
         format.json { render :json => @field_daily_weather.to_jqgrid_json([:field_name,:irrigation,:id], 
                                                                params[:page] || 1, params[:rows] || 7, wx_size) }
       else
-        format.json { render :json => @field_daily_weather.to_jqgrid_json([:date,:ref_et,:rain,:irrigation,
-                                                                           :pct_moisture,:pct_cover,
-                                                                           :leaf_area_index, :adj_et,
-                                                                           :ad,:deep_drainage,:id], 
-                                                               page, page_size, wx_size) }
+        json = @field_daily_weather.to_jqgrid_json([
+          :date,:ref_et,:rain,:irrigation,:pct_moisture,:pct_cover,
+          :leaf_area_index, :adj_et,:ad,:deep_drainage,:id], 
+          page, page_size, wx_size)
+        # logger.info json.inspect
+        format.json { render :json => json }
       end
     end
     

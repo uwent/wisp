@@ -40,8 +40,8 @@
           jQuery(document).ready(function(){
             mygrid = jQuery("#weather").jqGrid({
               page: curPage(initial_date,cur_date),
-              url:'<%= url_for(:controller => "field_daily_weather", :q => 1, :parent_id => @field, :user_id => @user) %>',
-              editurl:'<%= url_for(:controller => "field_daily_weather", :action  => :post_data, :parent_id => @field, :user_id => @user) %>',
+              url:'<%= url_for(:controller => "field_daily_weather", :q => 1, :parent_id => @pivot, :field_id => @field, :user_id => @user) %>',
+              editurl:'<%= url_for(:controller => "field_daily_weather", :action  => :post_data, :parent_id => @pivot, :field_id => @field, :user_id => @user) %>',
               datatype: "json",
               colNames:['Date','Ref. ET','Rainfall','Irrigation','% Moist.',
                 '% Cover','LAI','Adj. ET','AD','Deep Drain','ID'],

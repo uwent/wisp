@@ -103,17 +103,19 @@ class WispController < ApplicationController
     @field_weather_data = @field.field_daily_weather
     @initial_date = @field_weather_data.first.date
     start_date,end_date,@cur_date = date_strs(@initial_date,cur_date)
+    # logger.info "field_status_data: #{start_date} to #{end_date} at #{@cur_date} for #{@field_id}"
     @ad_recs = FieldDailyWeather.fdw_for(@field_id,start_date,end_date)
     @ad_data = @ad_recs.collect { |fdw| fdw.ad }
     @projected_ad_data = FieldDailyWeather.projected_ad(@ad_recs)
     @dates,@date_str,@date_hash = make_dates(start_date,end_date)
-    puts "field_status_data: cur_date #{@cur_date}, dates #{@dates.inspect}"
+    # logger.info "field_status_data: cur_date #{@cur_date}, dates #{@dates.inspect}"
+    # logger.info "  fsd encore: fdw is #{@ad_recs.collect { |e| [e.date,e.field_id,e.ref_et].join(",") }.join("\n")}"
     @summary_data = FieldDailyWeather.summary(@field.id)
     @target_ad_data = target_ad_data(@field,@ad_data)
-  end
+  end 
 
   def field_status
-    logger.info "field_status: group #{@group_id} user #{@user_id} farm #{@farm_id} pivot #{@pivot_id} field #{@field_id}"
+    # logger.info "field_status: group #{@group_id} user #{@user_id} farm #{@farm_id} pivot #{@pivot_id} field #{@field_id}"
     @pivot_id,@pivot = get_and_set(Pivot,Farm,@farm_id)
     @field_id,@field = get_and_set(Field,Pivot,@pivot_id)
     @cur_date = params[:cur_date]
@@ -178,7 +180,7 @@ class WispController < ApplicationController
   end
   
   def set_farm
-    logger.info "SET_FARM: setting the ids to #{params[:farm_id]}"
+    # logger.info "SET_FARM: setting the ids to #{params[:farm_id]}"
     session[:farm_id] = @farm_id = params[:farm_id]
     if @farm_id
       @farm = Farm.find(@farm_id)
@@ -191,7 +193,7 @@ class WispController < ApplicationController
   end
   
   def set_field
-    logger.info "set field with id #{params[:id]}"
+    # logger.info "set field with id #{params[:id]}"
     if params[:field_id]
       @field_id =  params[:field_id]
       @field = Field.find(@field_id)
