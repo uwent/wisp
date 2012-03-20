@@ -262,4 +262,36 @@ class FieldDailyWeather < ActiveRecord::Base
     puts something if @@debug
     $stdout.flush
   end
+  
+  REPORT_COLS_TO_IGNORE = ["id", "created_at", "updated_at"]
+
+  def csv_cols
+    cols = attributes.merge(balance_calcs).keys
+    REPORT_COLS_TO_IGNORE.each { |rcti| cols.delete(rcti) }
+    cols
+  end
+
+  def to_csv
+    combined_attributes = attributes.merge(balance_calcs)
+    keys = combined_attributes.keys
+    REPORT_COLS_TO_IGNORE.each { |rcti| keys.delete(rcti) }
+    ret = []
+    keys.each do |key|
+      obj = combined_attributes[key]
+      if obj
+        if obj.class == Float
+          ret << sprintf('%0.2f',obj)
+        elsif obj.class == ActiveSupport::TimeWithZone || obj.class == Date || obj.class == Time
+          ret << obj.strftime("%Y-%m-%d")
+        elsif obj.kind_of?(Fixnum)
+          ret << obj.to_s
+        else
+          ret << "'#{obj.to_s}'"
+        end
+      else
+        ret << ""
+      end
+    end
+    ret.join(",")
+  end
 end

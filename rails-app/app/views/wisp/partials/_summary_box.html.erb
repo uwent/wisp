@@ -1,4 +1,5 @@
 <h2 style="padding:5px">Seasonal Totals to Date</h2>
+<%= link_to "Report in CSV Format", :controller => 'field_daily_weather', :field_id => @field, :page => 1, :rows => 153, :format => :csv %>
 <table border="0" width="50%">
   <tr><th>Rainfall:</th><td> <%= sprintf("%0.2f",@summary_data[:rain] || 0.0) %> in.</td></tr>
   <tr><th>Irrigation:</th><td><%= sprintf("%0.2f",@summary_data[:irrigation] || 0.0) %> in.</td></tr>

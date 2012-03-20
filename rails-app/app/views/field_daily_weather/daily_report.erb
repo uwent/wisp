@@ -1,0 +1,9 @@
+<% field = @field_daily_weather.first.field %>
+Daily Report
+field,pivot,farm
+<%= field.name %>,<%= field.pivot.name %>,<%= field.pivot.farm.name %>
+<% for key in @field_daily_weather.first.csv_cols; %><%= key.to_s %>,<%; end %>
+<% for fdw in @field_daily_weather %>
+<%= fdw.to_csv %>
+<% end %>
+

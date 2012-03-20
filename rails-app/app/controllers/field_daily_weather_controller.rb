@@ -70,6 +70,7 @@ class FieldDailyWeatherController < ApplicationController
         # logger.info json.inspect
         format.json { render :json => json }
       end
+      format.csv { render :template => 'field_daily_weather/daily_report', :filename => 'field_summary.csv', :content_type => "text/csv"}
     end
     
     def calc_page(fdw,date,page_size)
@@ -115,7 +116,7 @@ class FieldDailyWeatherController < ApplicationController
     # logger.info "fdw now #{fdw.inspect}"
     render :nothing => true
   end
-
+  
   # GET /field_daily_weather/1
   # GET /field_daily_weather/1.xml
   def show
