@@ -12,6 +12,7 @@ module ETCalculator
   def adj_et_pct_cover(ref_et,pctCover)
     ref_et = 0.0 if ref_et == nil
     pctCover = 0.0 if pctCover == nil
+    return 0.0 if pctCover < 0.000001
     # regression coefficients from J. Panuska in Linear_Regressions_for_A3600_Table.doc and based on Table C of UW Extension pub A3600, "Irrigation Management in Wisconsin - the Wisconsin Irrigation Scheduling Program (WISP)" 
     coeff = [[0,0],[-0.002263,0.2377],[-0.002789,0.3956],[-0.002368,0.5395],[-0.000316,0.6684],[-0.000053,0.7781],[0.001053,0.8772],[0.001947,0.9395],[0.000000,1.000]]
   
@@ -20,19 +21,19 @@ module ETCalculator
     case coeffIndex
       when 0  # Get zero %cover adj_et
         case ref_et
-      when 0.0 
-      return 0.0  
+          when 0.0 
+            return 0.0  
           when 0..0.159
             adj_etLow = 0.0
           when 0.160..0.319
             adj_etLow = 0.010
           else 
             adj_etLow = 0.020
-        end
-        # Get 10 %cover adj_et
-        adj_etHigh = coeff[1][0] + ref_et*coeff[1][1]
-        # Interpolate adj_et between zero and 10 %cover
-        adj_et = adj_etLow + ((pctCover/10)*(adj_etHigh-adj_etLow))
+          end
+          # Get 10 %cover adj_et
+          adj_etHigh = coeff[1][0] + ref_et*coeff[1][1]
+          # Interpolate adj_et between zero and 10 %cover
+          adj_et = adj_etLow + ((pctCover/10)*(adj_etHigh-adj_etLow))
 
       when 1..7  # Get low end adj_et
         adj_etLow  = coeff[coeffIndex][0] + ref_et*coeff[coeffIndex][1]  

@@ -13,7 +13,6 @@ class EtMethodTest < ActiveSupport::TestCase
   end
   
   test "can call adjET for pct cover case" do
-    
     assert(@pcm,"Should be a percent cover method in the database")
     assert_nothing_raised(Exception) { @adjET = @pcm.adj_et_pct_cover(@refET,@pctCover)}
     assert(@adjET, "Should have calculated an adjusted ET")
@@ -28,7 +27,7 @@ class EtMethodTest < ActiveSupport::TestCase
   end
   
   test "adjusted ET with zero percent cover" do
-    expected_adj_ets = [0.0, 0.0, 0.0, 0.01, 0.01, 0.01, 0.01, 0.02]
+    expected_adj_ets = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     ii = 0
     for ref_et in @ref_ets
       adj_et = @pcm.adj_et({:ref_et => ref_et, :pct_cover => 0.0})
