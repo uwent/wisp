@@ -1,0 +1,10 @@
+<% if @weather_station %>
+  <% if @show_station %>
+    <h2>Weather Station <%=h @weather_station.name %></h2>
+  <% end %>
+  <h3>Associated with pivot <%=h @weather_station.pivot.name %></h3>
+  <h4>Fields: </h4>
+  <% for field in @weather_station.pivot.fields %>
+    <%=h field.name %><br/>
+  <% end %>
+<% end %>

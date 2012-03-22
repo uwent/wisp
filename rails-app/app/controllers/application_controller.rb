@@ -72,6 +72,16 @@ class ApplicationController < ActionController::Base
     #     @crop_id,@crop = get_and_set(Crop,Field,@field_id)
   end
   
+  # Filter method to flag errors and redirect when we need a group to be present
+  def ensure_group
+    unless @group
+      flash[:notice] = 'Sorry, a login error has occurred'
+      logger.error 'Error: method called, but no group was available '+params.inspect+'; session '+session.inspect
+      redirect_to :controller => :wisp
+    end
+  end
+
+  
   def current_day
     # There will always be a field around with field ID 1
     session[:today] || today_or_latest(1)

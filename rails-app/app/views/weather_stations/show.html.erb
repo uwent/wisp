@@ -13,8 +13,8 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <b>Group:</b>
-  <%= @weather_station.group_id %>
+  <b>Pivot:</b>
+  <%= @weather_station.pivot ? @weather_station.pivot.name : "No pivot selected" %>
 </p>
 
 <p>

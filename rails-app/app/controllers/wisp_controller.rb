@@ -62,8 +62,27 @@ class WispController < ApplicationController
   end
 
   def weather
-    # FIXME: Should use the selected station, not be fixed!
-    @weather_station_id = 1
+    ensure_group
+    @weather_stations = @group.weather_stations
+    if @weather_stations == [] || @weather_stations == nil
+      flash[:notice] = 'You must first create at least one weather station.'
+      redirect_to :controller => 'weather_stations', :action => :new
+    end
+    if params[:weather_station_id]
+      wx_stn_id = params[:weather_station_id].to_i
+      @weather_station = @weather_stations.detect { |wxs| wxs[:id].to_i == wx_stn_id}
+      unless @weather_station
+        logger.info "Could not find station #{wx_stn_id} in #{@weather_stations.collect { |e| e[:id] }.inspect}, using first wx stn in group"
+        @weather_station = @weather_stations.first
+      end
+      logger.info "Found a station, using #{@weather_station[:id]}"
+    else
+      logger.info "no wx stn passed, using first wx stn in group"
+      @weather_station = @weather_stations.first
+    end
+    @years = []
+    (FieldDailyWeather.first.date.year..Time.now.year).each { |yr| @years << yr }
+    
     if params[:ajax]
       render :layout => false
     end

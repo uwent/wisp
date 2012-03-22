@@ -1,25 +1,47 @@
 class WeatherStationDataController < ApplicationController
-  before_filter :ensure_signed_in
+  before_filter :ensure_signed_in, :get_current_ids, :ensure_group
+  
+  COLUMN_NAMES = [:ref_et,:rainfall,:irrigation,:soil_moisture,:notes]
   
   def index
-    weather_station_id = session[:weather_station_id] || session[:weather_station_id] = params[:weather_station_id]
-    # FIXME: Need to filter by year :-)
-    @weather_data = WeatherStationData.where(:station_id => weather_station_id).order(:date) do
+    if params[:weather_station_id]
+      weather_station_id = params[:weather_station_id].to_i
+    else
+      weather_station_id = @group.weather_stations.first[:id]
+    end
+    unless @group.weather_stations.detect { |wxs| wxs[:id] == weather_station_id }
+      weather_station_id = @group.weather_stations.first[:id]
+    end
+    @weather_station = WeatherStation.find(weather_station_id)
+    @year = params[:year] ? params[:year].to_i : Time.now.year
+    wx_start_date,wx_end_date = date_endpoints(@year)
+    
+    @weather_data = WeatherStationData.where(:station_id => weather_station_id,:date => wx_start_date..wx_end_date).order(:date) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
-    puts "getting wx stn data for #{weather_station_id}, found #{@weather_data.size} entries"
+    puts "getting wx stn data for #{weather_station_id} #{@year}, found #{@weather_data.size} entries"
     @weather_data ||= []
 
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @weather_data }
-      format.json { render :json => @weather_data.to_jqgrid_json([:date,:ref_et,:rainfall,:soil_moisture,:notes,:id], 
+      format.json { render :json => @weather_data.to_jqgrid_json([:date,:id]+COLUMN_NAMES, 
                                                              params[:page], params[:rows],@weather_data.size) }
     end
   end  
   
   def post_data
-    raise "Not implemented!"
+    attribs = {}
+    if params[:id]
+      wx_rec = WeatherStationData.find(params[:id])
+      for col in COLUMN_NAMES
+        attribs[col] = params[col] if (params[col])
+      end
+      wx_rec.update_attributes(attribs)
+    else
+      logger.warn "wx stn data post_data attempted without id"
+    end
+    logger.info "posted data successfully"
   end
 
   # GET /weather_station_data/1
@@ -91,5 +113,14 @@ class WeatherStationDataController < ApplicationController
       format.html { redirect_to(weather_station_data_url) }
       format.xml  { head :ok }
     end
+  end
+  
+  private
+  def date_endpoints(year=nil)
+    year ||= Time.now.year
+    # puts "date_endpoints: #{year} / #{START_DATE[0]} / #{START_DATE[1]}"
+    ep1 = Date.civil(year,*Field::START_DATE)
+    ep2 = Date.civil(year,*Field::END_DATE)
+    [ep1,ep2]
   end
 end

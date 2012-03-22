@@ -10,7 +10,7 @@
   	#stationDataBox
   	{
   		position:absolute;
-  		left:275px;
+  		left:25px;
   		top:150px;
   		width:920px;
   		padding:2px;
@@ -20,15 +20,13 @@
 		
   	#stationDataGrid
   	{
-  		float:right;
-  		margin-right:100px;
   	}
 
-  	#irrigationDataBox
+  	#stationAffectsBox
   	{
   		position:absolute;
   		left:275px;
-  		top:450px;
+  		top:550px;
   		width:920px;
   		padding:2px;
   		border:1px solid gray;
@@ -45,36 +43,27 @@
 
 <h2>WISP Weather and Irrigation Data</h2>
 
-<div id="stationDataBox">
-	<h2>Weather Station Data</h2>
-	<b>Select Weather Station</b> 
-	<select name="user[role_id]">
-    <option value="1" selected="selected">Station 1</option>
-    <option value="2">Station 2</option>
-    <option value="3">Station 3</option>
-	</select> 
-	<%= render :partial => 'wisp/partials/weather_station_data_grid'%>
-	<%= submit_tag "Add Station", :type => 'button', :onclick => 'alert("Add station button")' %>
-	<%= submit_tag "Delete Station", :type => 'button', :onclick => 'alert("Delete station button")' %>
-	<br />
-  <br />
-	<b>Edit Station Name:</b> <input id="name" name="name" type="text" />
-	<br />
-  <br />
-	<b>Notes:</b> <input id="name" name="name" type="text" />
-  <br />
-</div>
+<!-- <div id="stationDataBox"> -->
+  <%= form_tag(url_for :controller => "wisp", :action => :weather, :group => @group) do %>
+    <%= select_tag(
+      "weather_station_id",
+      options_from_collection_for_select(@weather_stations,:id,:name,@weather_station[:id].to_i),
+      { :onchange => "this.form.submit();"}
+      )
+     %> 
+  <% end %>      
+  <%= form_tag(url_for :controller => "wisp", :action => :weather, :group => @group, :weather_station_id => @weather_station) do %>
+    <%= select_tag(
+      "year",
+      options_for_select(@years.map { |yr| [yr,yr] }),
+      { :onchange => "this.form.submit();"}
+      )
+     %> 
+  <% end %>      
 
-<div id="irrigationDataBox">
-	<h2>Irrigation Data</h2>
-	<b>Select Pivot</b> 
-	<select name="user[role_id]">
-    <option value="1" selected="selected">Pivot 1</option>
-    <option value="2">Pivot 2</option>
-    <option value="3">Pivot 3</option>
-	</select>
-	<table><tr>
-	  <td><%= render :partial => 'wisp/partials/irrig_event_grid'%></td>
-    <td><%= render :partial => 'wisp/partials/field_daily_irrig'%></td>
-  </tr></table>
+	<%= render :partial => 'wisp/partials/weather_station_data_grid'%>
+<!-- </div> -->
+
+<div id="stationAffectsBox">
+  <%= render :partial => 'wisp/partials/wx_stn_pivots_fields', :locals => {:show_station => false} %>
 </div>

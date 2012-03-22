@@ -1,31 +1,30 @@
 <div id="stationDataGrid">
-	<b>Data entry for station xxx:</b>
-	<br />
 	<%= submit_tag "Add Daily Weather", :type => 'button', :onclick => 'alert("Add weather data")' %>
 
         <script type="text/javascript">
           var lastsel;
           jQuery(document).ready(function(){
           var mygrid = jQuery("#weather_station_data").jqGrid({
-              url:'<%= url_for :controller => "weather_station_data", :weather_station_id => @weather_station_id, :q => 1 %>',
-              editurl:'<%= url_for :controller => "weather_station_data", :action  => :post_data %>',
+              url:'<%= url_for :controller => "weather_station_data", :weather_station_id => @weather_station, :year => @year, :q => 1 %>',
+              editurl:'<%= url_for :controller => "weather_station_data", :action  => :post_data, :weather_station_id => @weather_station, :year => @year %>',
               datatype: "json",
-              colNames:['Date','RefET','Rain','Soil Moisture','Notes','ID'],
+              colNames:['Date','Rain','Irrigation','Soil Moisture','Reference ET','Notes','ID'],
               colModel:[{name:'date', index:'date',width:83},
-                             {name:'ref_et', index:'ref_et',width:47,editable:true, align:'right'},
                              {name:'rainfall', index:'rainfall',width:47,editable:true, align:'right'},
+                             {name:'irrigation', index:'irrigation',width:47,editable:true, align:'right'},
                              {name:'soil_moisture', index:'soil_moisture',width:47,editable:true, align:'right'},
+                             {name:'ref_et', index:'ref_et',width:47,editable:true, align:'right'},
                              {name:'notes', index:'notes',width:150,editable:true, align:'right'},
                              {name:'id', index:'id',width:1}
                              ],
               pager: '#weather_station_data_pager',
-              rowNum:180,
-              rowList:[180],
+              rowNum:153,
+              rowList:[153],
               imgpath: '<%= image_folder_path("jqgrid") %>',
               sortname: '',
               viewrecords: true,
               height: 130,
-              width: 350,
+              width: 920,
               sortorder: '',
               gridview: false,
               scrollrows: true,

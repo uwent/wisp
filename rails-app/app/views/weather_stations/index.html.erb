@@ -11,10 +11,18 @@
 <% end %>
 
 <table>
-  <%= render :partial => 'wisp/partials/scaffold_table_headers', :locals => {:obj_class => WeatherStation} %>
+  <tr><th>Pivot</th><th>Name</th><th>Location</th><th>Notes</th></tr>
 <% @weather_stations.each do |weather_station| %>
   <tr>
-    <%= render :partial => 'wisp/partials/scaffold_table_show', :locals => {:obj => weather_station } %>
+    <td>
+      <% p = weather_station.pivot
+         p_name = p ? p.name : "No pivot assigned"
+      %>
+      <%=h p_name %>
+    </td>
+    <td><%=h weather_station.name %></td>
+    <td><%=h weather_station.location %></td>
+    <td><%=h weather_station.notes %></td>
     <td><%= link_to 'Show', weather_station %></td>
     <td><%= link_to 'Edit', edit_weather_station_path(weather_station) %></td>
     <td><%= button_to 'Destroy', weather_station, :confirm => 'Are you sure?', :method => :delete %></td>

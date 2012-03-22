@@ -8,8 +8,9 @@
     <li><%= link_to "Farm Status", :controller => 'wisp', :action => :farm_status %></li>
     <li><%= link_to "Pivots, Fields, and Crops", :controller => 'wisp', :action => :pivot_crop %></li>
     <li><%= link_to "Field Status", :controller => 'wisp', :action => :field_status %></li>
-    <!-- 
+    <li><%= link_to "Weather Stations", :controller => 'weather_stations', :group_id => @group %></li>
     <li><%= link_to "Multi-Edit Daily Data", :controller => 'wisp', :action => :weather %></li>
+    <!-- 
     <li><%= link_to "Report Setup", :controller => 'wisp', :action => :report_setup %></li>
     -->
   </ul>
@@ -20,3 +21,12 @@
   <% if AuthenticationHelper::USING_OPENID && signed_in? %>
     <%= button_to "Logout " + current_user.email, :controller => 'sessions', :action => :destroy %>
   <% end %>
+
+<% if flash[:notice] %>
+  <br/>
+  <%= flash[:notice] %>
+<% end %>
+<% if flash[:error] %>
+  <br/>
+  <%= flash[:error] %>
+<% end %>
