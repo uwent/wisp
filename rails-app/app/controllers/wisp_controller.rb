@@ -67,6 +67,7 @@ class WispController < ApplicationController
     if @weather_stations == [] || @weather_stations == nil
       flash[:notice] = 'You must first create at least one weather station.'
       redirect_to :controller => 'weather_stations', :action => :new
+      return
     end
     if params[:weather_station_id]
       wx_stn_id = params[:weather_station_id].to_i
