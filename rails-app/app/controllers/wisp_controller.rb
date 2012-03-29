@@ -1,5 +1,5 @@
 class WispController < ApplicationController
-  before_filter :ensure_signed_in, :only => [:farm_status, :pivot_crop, :field_status]
+  before_filter :ensure_signed_in, :only => [:farm_status, :pivot_crop, :field_status, :weather]
   before_filter :current_user
   before_filter :get_current_ids, :except => [:home,:index]
   before_filter :get_farm_id, :except => [:index]
@@ -82,6 +82,9 @@ class WispController < ApplicationController
     end
     @years = []
     (FieldDailyWeather.first.date.year..Time.now.year).each { |yr| @years << yr }
+    @year = params[:year] ? params[:year].to_i : Time.now.year
+    # Check that this year's data are present for this station
+    @weather_station.ensure_data_for(@year)
     
     if params[:ajax]
       render :layout => false

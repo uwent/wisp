@@ -97,7 +97,7 @@ class FieldDailyWeather < ActiveRecord::Base
       self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
     else
       return unless ref_et > 0.0
-      (puts "couldn't calculate adj_et";$stdout.flush; return) unless (self[:adj_et] = feeld.et_method.adj_et(self))
+      (logger.warn "#{self.inspect } couldn't calculate adj_et"; return) unless (self[:adj_et] = feeld.et_method.adj_et(self))
       # puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
       previous_ad = find_previous_ad
     # puts "Got previous AD of #{previous_ad}"

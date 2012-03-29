@@ -9,5 +9,9 @@ class ActiveSupport::TestCase
   # -- they do not yet inherit this setting
   fixtures :all
 
-  # Add more helper methods to be used by all tests here...
+  
+  def wx_for(things,date)
+    things.select { |thing| thing.date.to_s == date }.first
+  end
+
 end

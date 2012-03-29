@@ -8,7 +8,7 @@ one:
   equipment: MyString
   pump_capacity: 1.5
   some_energy_rate_metric: 1.5
-  cropping_year: 1
+  cropping_year: 2011
   notes:
 
 other:
@@ -19,7 +19,7 @@ other:
   equipment: MyString
   pump_capacity: 1.5
   some_energy_rate_metric: 1.5
-  cropping_year: 1
+  cropping_year: 2011
   notes:
 
 two:
@@ -30,7 +30,7 @@ two:
   equipment: MyString
   pump_capacity: 1.5
   some_energy_rate_metric: 1.5
-  cropping_year: 1
+  cropping_year: 2011
   notes:
     
 default:
@@ -42,5 +42,12 @@ default:
   equipment: MyString
   pump_capacity: 1.5
   some_energy_rate_metric: 1.5
-  cropping_year: 1
+  cropping_year: 2011
   notes: For single-user mode, when nothing has yet been entered
+  
+pivot_2012:
+  farm: ricks_farm
+  name: Pivot for 2012 year on Rick's Farm
+  latitude: 44.5
+  longitude: -89.5
+  cropping_year: 2012

@@ -1,7 +1,9 @@
 class WeatherStationDataController < ApplicationController
-  before_filter :ensure_signed_in, :get_current_ids, :ensure_group
+  before_filter :ensure_signed_in, :except => [:post_data]
+  before_filter :get_current_ids, :ensure_group
   
-  COLUMN_NAMES = [:ref_et,:rainfall,:irrigation,:soil_moisture,:notes]
+  COLUMN_NAMES = [:rain,:irrigation,:entered_pct_moisture,:ref_et,:notes]
+  ROWS_PER_PAGE = 14
   
   def index
     if params[:weather_station_id]
@@ -16,8 +18,8 @@ class WeatherStationDataController < ApplicationController
     @year = params[:year] ? params[:year].to_i : Time.now.year
     wx_start_date,wx_end_date = date_endpoints(@year)
     
-    @weather_data = WeatherStationData.where(:station_id => weather_station_id,:date => wx_start_date..wx_end_date).order(:date) do
-      paginate :page => params[:page], :per_page => params[:rows]
+    @weather_data = WeatherStationData.where(:weather_station_id => weather_station_id,:date => wx_start_date..wx_end_date).order(:date) do
+      paginate :page => params[:page], :per_page => ROWS_PER_PAGE
     end
     puts "getting wx stn data for #{weather_station_id} #{@year}, found #{@weather_data.size} entries"
     @weather_data ||= []
@@ -25,7 +27,7 @@ class WeatherStationDataController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @weather_data }
-      format.json { render :json => @weather_data.to_jqgrid_json([:date,:id]+COLUMN_NAMES, 
+      format.json { render :json => @weather_data.to_jqgrid_json([:date]+COLUMN_NAMES+[:id], 
                                                              params[:page], params[:rows],@weather_data.size) }
     end
   end  
@@ -42,6 +44,7 @@ class WeatherStationDataController < ApplicationController
       logger.warn "wx stn data post_data attempted without id"
     end
     logger.info "posted data successfully"
+    render :nothing => true
   end
 
   # GET /weather_station_data/1

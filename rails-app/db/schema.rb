@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120322195116) do
+ActiveRecord::Schema.define(:version => 20120327185336) do
 
   create_table "blogs", :force => true do |t|
     t.date     "date"
@@ -145,14 +145,15 @@ ActiveRecord::Schema.define(:version => 20120322195116) do
   end
 
   create_table "weather_station_data", :force => true do |t|
-    t.integer  "station_id"
+    t.integer  "weather_station_id"
     t.date     "date"
     t.float    "ref_et"
-    t.float    "rainfall"
-    t.float    "soil_moisture"
+    t.float    "rain"
+    t.float    "entered_pct_moisture"
     t.string   "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float    "irrigation"
   end
 
   create_table "weather_stations", :force => true do |t|

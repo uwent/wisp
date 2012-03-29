@@ -1,21 +1,19 @@
 <div id="stationDataGrid">
-	<%= submit_tag "Add Daily Weather", :type => 'button', :onclick => 'alert("Add weather data")' %>
-
         <script type="text/javascript">
           var lastsel;
           jQuery(document).ready(function(){
           var mygrid = jQuery("#weather_station_data").jqGrid({
-              url:'<%= url_for :controller => "weather_station_data", :weather_station_id => @weather_station, :year => @year, :q => 1 %>',
-              editurl:'<%= url_for :controller => "weather_station_data", :action  => :post_data, :weather_station_id => @weather_station, :year => @year %>',
+              url:'<%= url_for :controller => "weather_station_data", :weather_station_id => @weather_station, :year => @year, :user_id => @user, :q => 1 %>',
+              editurl:'<%= url_for :controller => "weather_station_data", :action  => :post_data, :weather_station_id => @weather_station, :user_id => @user, :year => @year %>',
               datatype: "json",
               colNames:['Date','Rain','Irrigation','Soil Moisture','Reference ET','Notes','ID'],
-              colModel:[{name:'date', index:'date',width:83},
-                             {name:'rainfall', index:'rainfall',width:47,editable:true, align:'right'},
-                             {name:'irrigation', index:'irrigation',width:47,editable:true, align:'right'},
-                             {name:'soil_moisture', index:'soil_moisture',width:47,editable:true, align:'right'},
-                             {name:'ref_et', index:'ref_et',width:47,editable:true, align:'right'},
+              colModel:[{name:'date', index:'date',width:35},
+                             {name:'rain', index:'rain',width:25,editable:true, align:'right'},
+                             {name:'irrigation', index:'irrigation',width:25,editable:true, align:'right'},
+                             {name:'soil_moisture', index:'soil_moisture',width:25,editable:true, align:'right'},
+                             {name:'ref_et', index:'ref_et',width:25,editable:true, align:'right'},
                              {name:'notes', index:'notes',width:150,editable:true, align:'right'},
-                             {name:'id', index:'id',width:1}
+                             {name:'id', index:'id',hidden:true,width:1}
                              ],
               pager: '#weather_station_data_pager',
               rowNum:153,
@@ -23,7 +21,7 @@
               imgpath: '<%= image_folder_path("jqgrid") %>',
               sortname: '',
               viewrecords: true,
-              height: 130,
+              height: 310,
               width: 920,
               sortorder: '',
               gridview: false,
@@ -45,20 +43,10 @@
               
               caption: "Weather Station Data"
             })
-            .navGrid('#weather_station_data_pager',
-              {edit:false,add:true,del:true,search:false,refresh:true},
-              {afterSubmit:function(r,data){return true;(r,data,'edit');}},
-              {afterSubmit:function(r,data){return true;(r,data,'add');}},
-              {afterSubmit:function(r,data){return true;(r,data,'delete');}}
-            )
-            .navButtonAdd("#weather_station_data_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
-            
-            
             mygrid.filterToolbar();mygrid[0].toggleToolbar()
           });
         </script>
 
         <table id="weather_station_data" class="scroll" cellpadding="0" cellspacing="0"></table>
-        <div id="weather_station_data_pager" class="scroll" style="text-align:center;"></div>
       
 </div>

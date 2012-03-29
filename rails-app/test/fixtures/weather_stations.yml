@@ -10,4 +10,10 @@ two:
   group_id: 1
   name: MyString
   location: MyString
-  notes: 
+  notes:
+    
+wx_stn_2012:
+  group_id: 1
+  name: Station on Rick's Farm for multiedit testing
+  location: Somewhere
+  pivot: pivot_2012

@@ -32,4 +32,11 @@ two:
   rain_station_id: 1
   soil_moisture_station_id: 1
   name: field two
-  notes: 
+  notes:
+
+field_for_pivot_2012:
+  name: field for pivot_2012 for wx stn testing
+  field_capacity: 0.40
+  perm_wilting_pt: 0.15
+  pivot: pivot_2012
+  

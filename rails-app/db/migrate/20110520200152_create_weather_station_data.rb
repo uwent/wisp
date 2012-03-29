@@ -1,7 +1,7 @@
 class CreateWeatherStationData < ActiveRecord::Migration
   def self.up
     create_table :weather_station_data do |t|
-      t.integer :station_id
+      t.integer :weather_station_id
       t.date :date
       t.float :ref_et
       t.float :rainfall

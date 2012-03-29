@@ -33,3 +33,11 @@ default:
   max_allowable_depletion_frac: 1.5
   max_allowable_depletion_inches: 1.5
   notes: For the default field
+  
+crop_for_wx_station_testing:
+  field: field_for_pivot_2012
+  name: Some crop
+  emergence_date: 2012-05-01
+  max_root_zone_depth: 30
+  max_allowable_depletion_frac: 0.4
+  
