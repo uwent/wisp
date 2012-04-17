@@ -6,6 +6,8 @@ class FieldDailyWeather < ActiveRecord::Base
   before_update :old_update_balances
   after_update :update_next_days_balances, :update_pct_covers
   
+  SEASON_DAYS = 183
+  
   @@debug = nil
   @@do_balances = true
   
@@ -265,19 +267,30 @@ class FieldDailyWeather < ActiveRecord::Base
   
   REPORT_COLS_TO_IGNORE = ["id", "created_at", "updated_at"]
 
+  def cover_param
+    case et_method[:type]
+    when 'PctCoverEtMethod'
+      ['Percent Cover',:pct_cover]
+    when 'LaiEtMethod'
+      ['Leaf Area Index', :leaf_area_index]
+    end
+  end
+  
   def csv_cols
-    cols = attributes.merge(balance_calcs).keys
-    REPORT_COLS_TO_IGNORE.each { |rcti| cols.delete(rcti) }
-    cols
+    # cols = attributes.merge(balance_calcs).keys
+    # REPORT_COLS_TO_IGNORE.each { |rcti| cols.delete(rcti) }
+    # cols
+    [['Date',:date],['Reference ET',:ref_et],['Rainfall',:rain],['Irrigation',:irrigation],['Percent Moisture',:pct_moisture],cover_param,['Adjusted ET',:adj_et],['AD',:ad],['Deep Drainage',:deep_drainage]]
   end
 
   def to_csv
     combined_attributes = attributes.merge(balance_calcs)
-    keys = combined_attributes.keys
-    REPORT_COLS_TO_IGNORE.each { |rcti| keys.delete(rcti) }
+    # keys = combined_attributes.keys
+    # REPORT_COLS_TO_IGNORE.each { |rcti| keys.delete(rcti) }
+    keys = csv_cols.collect { |arr| arr[1].to_s }
     ret = []
     keys.each do |key|
-      obj = combined_attributes[key]
+      obj = combined_attributes[key] || self.send(key)
       if obj
         if obj.class == Float
           ret << sprintf('%0.2f',obj)

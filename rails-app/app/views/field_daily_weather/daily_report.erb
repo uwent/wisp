@@ -1,9 +1,13 @@
 <% field = @field_daily_weather.first.field %>
-Daily Report
-field,pivot,farm
-<%= field.name %>,<%= field.pivot.name %>,<%= field.pivot.farm.name %>
-<% for key in @field_daily_weather.first.csv_cols; %><%= key.to_s %>,<%; end %>
+Daily Report (<%=h @field_daily_weather.first.date.year %> Season)
+'Farm','Pivot','Field'
+<%= field.pivot.farm.name %>,<%= field.pivot.name %>,<%= field.name %>
+<%=h @field_daily_weather.first.csv_cols.collect {|arr| "'#{arr[0]}'"}.join(',') %>
+<% totals = {:rain => 0.0, :irrigation => 0.0, :adj_et => 0.0, :deep_drainage => 0.0}%>
 <% for fdw in @field_daily_weather %>
 <%= fdw.to_csv %>
+<% totals.each {|param,total| totals[param] += (fdw.send(param) || 0.0) }%>
 <% end %>
+'Total Rainfall','Total Irrigation','Total Adj. ET','Total Deep Drainage'
+<%=h totals[:rain] %>,<%=h totals[:irrigation] %>,<%=h totals[:adj_et] %>,<%=h totals[:deep_drainage] %>
 

@@ -3,12 +3,20 @@ module WispHelper
     arr = group.farms.map { |farm|  [farm.name,farm.id]}
     ret = options_for_select(arr,selected_farm[:id])
   end
+  
   def options_from_farm_for_select(farm,selected_pivot)
     arr = farm.pivots.map { |pivot|  [pivot.name,pivot.id]}
     ret = options_for_select(arr,selected_pivot[:id])
   end
+  
   def options_from_pivot_for_select(pivot,selected_field)
     arr = pivot.fields.map { |field|  [field.name,field.id]}
     ret = options_for_select(arr,selected_field[:id])
+  end
+  
+  def problems(group)
+    # Hmm. Want a hierarchy of collections matching the criterion here,
+    # but unsure how to compose it. Hash of hashes? Array of Arrays? Need
+    # some properties (name and id) as well as children for all but leaf level.
   end
 end

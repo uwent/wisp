@@ -7,8 +7,9 @@ class Field < ActiveRecord::Base
   after_create :create_dependent_objects
   before_destroy :mother_may_i  # check with parent if it's OK to go
   
-  START_DATE = [5,1]
+  START_DATE = [4,1]
   END_DATE = [9,30]
+  EMERGENCE_DATE = [5,1]
   DEFAULT_FIELD_CAPACITY = 0.31
   DEFAULT_PERM_WILTING_PT = 0.14
   EPSILON = 0.0000001
@@ -19,7 +20,7 @@ class Field < ActiveRecord::Base
   belongs_to :pivot
   belongs_to :soil_type
   has_many :crops, :dependent => :destroy
-  has_many :field_daily_weather, :autosave => true, :dependent => :destroy
+  has_many :field_daily_weather, :autosave => true, :dependent => :destroy, :order => :date
   
   before_save :target_ad_pct_or_nil
   
@@ -124,10 +125,15 @@ class Field < ActiveRecord::Base
   
   def create_crop
     # puts "create crop"
-    crops << Crop.new(:name => "New crop (field ID: #{self[:id]})", :variety => 'A variety', :emergence_date => date_endpoints.first,
+    crops << Crop.new(:name => "New crop (field ID: #{self[:id]})", :variety => 'A variety', :emergence_date => default_emergence_date,
       :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self.field_capacity,
       :dont_update_canopy => true) # TODO: take this back out?
     # puts "crop created"
+  end
+  
+  def default_emergence_date
+    season_start,season_end = date_endpoints
+    Date.civil(season_start.year,*EMERGENCE_DATE)
   end
   
   # When we're called with default params (e.g. when a Pivot is created, choose the dates for the season)
@@ -271,11 +277,27 @@ class Field < ActiveRecord::Base
     # field_daily_weather[first_fdw].save!
   end
   
-  def weather_for(date)
-    field_daily_weather.select { |fdw| fdw.date == date }
+  def weather_for(date,end_date=nil)
+    if end_date
+      field_daily_weather.select { |fdw| fdw.date >= date && fdw.date <= end_date }
+    else
+      field_daily_weather.select { |fdw| fdw.date == date }
+    end
   end
   
-  def problem
+  def problem(date=nil,end_date=nil)
+    date ||= Date.today
+    end_date ||= date + 7
+    existing_wx = weather_for(date,end_date)
+    projected_ad_data = FieldDailyWeather.projected_ad(existing_wx)
+    target = target_ad_in || 0.0
+    existing_problem = existing_wx.detect do |fdw|
+      fdw.ad < target if fdw && fdw.ad
+    end
+    projected_problem = projected_ad_data.detect do |prj_ad|
+      prj_ad < target if prj_ad
+    end
+    existing_problem || projected_problem
   end
   
   def mother_may_i

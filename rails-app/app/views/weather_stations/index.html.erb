@@ -25,7 +25,7 @@
     <td><%=h weather_station.notes %></td>
     <td><%= link_to 'Show', weather_station %></td>
     <td><%= link_to 'Edit', edit_weather_station_path(weather_station) %></td>
-    <td><%= button_to 'Destroy', weather_station, :confirm => 'Are you sure?', :method => :delete %></td>
+    <td><%= button_to 'Delete', weather_station, :confirm => 'Are you sure?', :method => :delete %></td>
   </tr>
 <% end %>
 </table>

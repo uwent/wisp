@@ -79,7 +79,7 @@ class FarmTest < ActiveSupport::TestCase
     set_counts
     assert_counts
     second_farm = needle_hierarchy("another farm")
-    assert_counts(:farm => 1, :pivot => 1, :field => 1, :fdw => 153)
+    assert_counts(:farm => 1, :pivot => 1, :field => 1, :fdw => FieldDailyWeather::SEASON_DAYS)
     assert(second_farm.destroy,'But I should have been able to clobber it')
     assert_counts
   end

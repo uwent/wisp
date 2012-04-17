@@ -1,6 +1,23 @@
 require 'test_helper'
 
 class WeatherStationTest < ActiveSupport::TestCase
+
+  def lai_to_stuff(day,ending_value,n_days)
+    return 0.0 unless ending_value
+    return ending_value * (day / n_days)
+  end
+  
+  def extend_fdw_backwards(field)
+    unless (size_delta = FieldDailyWeather::SEASON_DAYS - field.field_daily_weather.size) == 0
+      first_fdw = field.field_daily_weather.first
+      date = first_fdw.date - 30
+      assert_equal("#{date.year.to_s}-04-01", date.to_s)
+      size_delta.times do |ii|
+        fdw = FieldDailyWeather.create(:field_id => field[:id], :date => date,
+          :leaf_area_index => lai_to_stuff(ii,first_fdw[:leaf_area_index],size_delta))
+      end
+    end
+  end
   
   def setup
     @farm = farms(:ricks_farm)
@@ -8,6 +25,11 @@ class WeatherStationTest < ActiveSupport::TestCase
     @year = @pivot.cropping_year
     assert_equal(@farm, @pivot.farm)
     @field = @pivot.fields.first
+    extend_fdw_backwards(@field)
+    @field.field_daily_weather.reload
+    assert_equal(FieldDailyWeather::SEASON_DAYS, @field.field_daily_weather.size)
+    first_fdw = @field.field_daily_weather.first
+    assert_equal("#{first_fdw.date.year.to_s}-04-01",first_fdw.date.to_s)
     @station = weather_stations(:wx_stn_2012)
     @station.ensure_data_for(@year)
     @multi_field_test = true # Takes a hella long time
@@ -28,11 +50,11 @@ class WeatherStationTest < ActiveSupport::TestCase
     end
     assert_equal(0, station.weather_station_data.size)
     station.ensure_data_for(Time.now.year)
-    assert_equal(153, station.weather_station_data.size)
+    assert_equal(FieldDailyWeather::SEASON_DAYS, station.weather_station_data.size)
   end
   
   test "can overwrite nil data in fdw" do
-    assert_equal(153, @field.field_daily_weather.size)
+    assert_equal(FieldDailyWeather::SEASON_DAYS, @field.field_daily_weather.size)
     
     assert(fdw = wx_for(@field.field_daily_weather,'2012-08-24'))
     assert_equal('2012-08-24', fdw.date.to_s)
@@ -80,7 +102,7 @@ class WeatherStationTest < ActiveSupport::TestCase
     wx_attribs_to_set = {:rain => 4.0, :irrigation => 2.0, :ref_et => 0.2, :entered_pct_moisture => 0.33}
     f2 = Field.create(:pivot => @pivot,:name => 'Test field f2')
     f3 = Field.create(:pivot => @pivot,:name => 'Test field f3')
-    assert_equal(153,f2.field_daily_weather.size)
+    assert_equal(FieldDailyWeather::SEASON_DAYS,f2.field_daily_weather.size)
     @pivot.fields.each do |field|
       fdw = wx_for(field.field_daily_weather,'2012-08-24')
       wx_attribs_to_set.each { |col,val| assert_not_equal(val, fdw.send(col.to_s),"Unexpectedly, fdw for field #{field.name} was already set") }

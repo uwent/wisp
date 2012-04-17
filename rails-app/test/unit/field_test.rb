@@ -113,7 +113,7 @@ class FieldTest < ActiveSupport::TestCase
     lai = nil
     field.field_daily_weather.each do |fdw|
       if fdw.date < emergence_date
-        assert_nil(fdw.leaf_area_index)
+        assert_equal(0.0,fdw.leaf_area_index)
       elsif fdw.date == emergence_date
         lai = fdw.leaf_area_index
         assert(lai, "Should be an LAI value starting at emergence date")
@@ -129,7 +129,7 @@ class FieldTest < ActiveSupport::TestCase
   def check_field_has_no_lai(field,emergence_date)
     fdw_emergence_date = (field.field_daily_weather.find_all {|fdw| fdw.date == emergence_date}).first
     assert(fdw_emergence_date, "Should be a wx record for emergence date #{emergence_date}, earliest #{field.field_daily_weather.first.date}")
-    assert_equal(0.0,fdw_emergence_date.leaf_area_index,"Should start out with nothing for LAI on emergence date")
+    assert_equal(0.0,fdw_emergence_date.leaf_area_index,"Should start out with nothing for LAI on emergence date of #{emergence_date.to_s} for field '#{field.name}'")
   end
 
   def setup_field_with_emergence
@@ -138,7 +138,7 @@ class FieldTest < ActiveSupport::TestCase
     field = Field.create(
       :pivot_id => farm.pivots.first[:id],:field_capacity => 0.4, :perm_wilting_pt => 0.13,
       :soil_type_id => SoilType.default_soil_type[:id])
-    emergence_date = Date.civil(Date.today.year,05,01)
+    emergence_date = Date.civil(2011,05,01)
     check_field_has_no_lai(field,emergence_date)
     [field,emergence_date]
   end
@@ -410,5 +410,52 @@ class FieldTest < ActiveSupport::TestCase
     field_found = Field.find(field_id)
     assert_equal(0.2, field_found.perm_wilting_pt)
     assert_equal(20.0, field_found.perm_wilting_pt_pct)
+  end
+  
+  test "problem on OK field with no target" do
+    assert(field = setup_field_with_emergence.first)
+    assert_nil(field.target_ad_in)
+    assert(field.field_daily_weather.first.ref_et)
+    first_date = field.field_daily_weather.first.date
+    second_date = first_date + 7
+    (0..7).each { |ii| field.field_daily_weather[ii].ad = 1.8 }
+    assert_not_equal(true, field.problem(first_date,second_date))
+  end
+  
+  test "problem on OK field with target" do
+    assert(field = setup_field_with_emergence.first)
+    field.target_ad_pct = 0.5
+    assert(field.field_daily_weather.first.ref_et)
+    first_date = field.field_daily_weather.first.date
+    second_date = first_date + 7
+    (0..7).each { |ii| field.field_daily_weather[ii].ad = 1.8 }
+    assert_not_equal(true, field.problem(first_date,second_date))
+  end
+  
+  test "problem on field going negative in non-projected data with no target" do
+    assert(field = setup_field_with_emergence.first)
+    assert(field.field_daily_weather.first.ref_et)
+    first_date = field.field_daily_weather.first.date
+    second_date = first_date + 7
+    ad_value = 1.0
+    (0..7).each do |ii|
+      field.field_daily_weather[ii].ad = ad_value
+      ad_value -= 0.3
+    end
+    assert(field.problem(first_date,second_date))
+  end
+
+  test "problem on field going negative in non-projected data with target" do
+    assert(field = setup_field_with_emergence.first)
+    assert(field.field_daily_weather.first.ref_et)
+    first_date = field.field_daily_weather.first.date
+    second_date = first_date + 7
+    ad_value = 1.0
+    field.target_ad_pct = 0.5
+    (0..7).each do |ii|
+      field.field_daily_weather[ii].ad = ad_value
+      ad_value -= 0.3
+    end
+    assert(field.problem(first_date,second_date))
   end
 end

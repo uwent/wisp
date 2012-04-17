@@ -13,8 +13,12 @@ class Farm < ActiveRecord::Base
     Farm.find(:all, :conditions => ['group_id = ?',group_id])
   end
   
+  def problem
+    problems.size > 0
+  end
+  
   def problems
-    fields.inject([]) { |problems, field| problems << field.problem }
+    pivots.inject([]) { |problems, pivot| problems << pivot if pivot.problem; problems }
   end
   
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid

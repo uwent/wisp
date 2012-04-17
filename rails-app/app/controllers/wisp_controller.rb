@@ -120,9 +120,10 @@ class WispController < ApplicationController
   end
   
   def field_status_data(cur_date=nil)
-    @farm = Farm.find(@farm_id) if @farm_id
-    @pivot = Pivot.find(@pivot_id) if @pivot_id
     @field = Field.find(@field_id) if @field_id
+    @pivot = Pivot.find(@pivot_id = @field[:pivot_id])
+    @farm = Farm.find(@farm_id = @pivot[:farm_id])
+    
     @field_weather_data = @field.field_daily_weather
     @initial_date = @field_weather_data.first.date
     start_date,end_date,@cur_date = date_strs(@initial_date,cur_date)

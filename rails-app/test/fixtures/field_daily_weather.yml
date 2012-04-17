@@ -71,6 +71,279 @@ eleven:
   ref_et: 0.2
   entered_pct_cover: 100.0
 
+# This was generated AFTER we extended the growing season, hence has to be inserted
+
+fdw_pivot_2012_000:
+  field: field_for_pivot_2012
+  date: 2012-04-01
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_001:
+  field: field_for_pivot_2012
+  date: 2012-04-02
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_002:
+  field: field_for_pivot_2012
+  date: 2012-04-03
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_003:
+  field: field_for_pivot_2012
+  date: 2012-04-04
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_004:
+  field: field_for_pivot_2012
+  date: 2012-04-05
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_005:
+  field: field_for_pivot_2012
+  date: 2012-04-06
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_006:
+  field: field_for_pivot_2012
+  date: 2012-04-07
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_007:
+  field: field_for_pivot_2012
+  date: 2012-04-08
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_008:
+  field: field_for_pivot_2012
+  date: 2012-04-09
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_009:
+  field: field_for_pivot_2012
+  date: 2012-04-10
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_010:
+  field: field_for_pivot_2012
+  date: 2012-04-11
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_011:
+  field: field_for_pivot_2012
+  date: 2012-04-12
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_012:
+  field: field_for_pivot_2012
+  date: 2012-04-13
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_013:
+  field: field_for_pivot_2012
+  date: 2012-04-14
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_014:
+  field: field_for_pivot_2012
+  date: 2012-04-15
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_015:
+  field: field_for_pivot_2012
+  date: 2012-04-16
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_016:
+  field: field_for_pivot_2012
+  date: 2012-04-17
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_017:
+  field: field_for_pivot_2012
+  date: 2012-04-18
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_018:
+  field: field_for_pivot_2012
+  date: 2012-04-19
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_019:
+  field: field_for_pivot_2012
+  date: 2012-04-20
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_020:
+  field: field_for_pivot_2012
+  date: 2012-04-21
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_021:
+  field: field_for_pivot_2012
+  date: 2012-04-22
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_022:
+  field: field_for_pivot_2012
+  date: 2012-04-23
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_023:
+  field: field_for_pivot_2012
+  date: 2012-04-24
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_024:
+  field: field_for_pivot_2012
+  date: 2012-04-25
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_025:
+  field: field_for_pivot_2012
+  date: 2012-04-26
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_026:
+  field: field_for_pivot_2012
+  date: 2012-04-27
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_027:
+  field: field_for_pivot_2012
+  date: 2012-04-28
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_028:
+  field: field_for_pivot_2012
+  date: 2012-04-29
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+fdw_pivot_2012_029:
+  field: field_for_pivot_2012
+  date: 2012-04-30
+  ref_et: 0.15
+  calculated_pct_moisture: 40.0
+  rain: 0.0
+  leaf_area_index: 0.0
+  irrigation: 0.0
+
+# Stuff generated BEFORE I did that
 fdw_pivot_2012_0:
   field: field_for_pivot_2012
   date: 2012-05-01

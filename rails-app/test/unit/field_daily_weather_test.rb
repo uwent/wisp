@@ -177,9 +177,10 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert_equal(LaiEtMethod, field.et_method.class)
     n_days = 40
     # puts fdw[0].inspect
-    fdw[0].ref_et = ET
-    assert(fdw[0].save)
-    n_days.times { |day|  fdw[day].ref_et = ET; fdw[day].save! }
+    emergence_day = 30 # May 1, the default
+    fdw[emergence_day].ref_et = ET
+    assert(fdw[emergence_day].save)
+    n_days.times { |day|  fdw[emergence_day + day].ref_et = ET; fdw[emergence_day + day].save! }
     # this is effed: why should I have to offset it by three places?
     spreadsheet_numbers = [3.06, 3.06, 3.06,
       3.06, 3.06, 3.06, 3.06, 3.06, 3.06, 3.06, 3.06, 3.06, 3.06, 
@@ -187,7 +188,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
       2.99, 2.96, 2.93, 2.90, 2.85, 2.80, 2.74, 2.67, 2.60, 2.51,
       2.41, 2.30, 2.19, 2.06, 1.92, 1.77, 1.62, 1.46, 1.29, 1.11
      ]
-    n_days.times { |day| assert_in_delta(spreadsheet_numbers[day], fdw[day].ad, 0.01,"Wrong AD number for day #{day}") }
+    n_days.times { |day| assert_in_delta(spreadsheet_numbers[day], fdw[emergence_day + day].ad, 0.01,"Wrong AD number for day #{day}") }
   end
   
   test "can call fdw#summary" do
