@@ -195,12 +195,13 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     field_id = Field.first[:id]
     assert(FieldDailyWeather.summary(field_id), "Failure message.")
   end
-  
-  test "projected_ad works" do
+
+  def projected_ad_test(start_days_back)
+    finish_days_back = start_days_back + 6
     field = create_spreadsheet_field_with_crop
     assert_not_nil(field.field_daily_weather)
-    assert_not_nil(field.field_daily_weather[-1])
-    fdw = field.field_daily_weather[-7..-1]
+    assert_not_nil(field.field_daily_weather[finish_days_back])
+    fdw = field.field_daily_weather[start_days_back..finish_days_back]
     fdw.each { |e| e.ref_et = ET; e.save! }
     adj_ets = fdw.collect { |e| e.adj_et }
     max_adj_et = adj_ets.max
@@ -210,6 +211,14 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert_not_nil(fdw)
     projected = FieldDailyWeather.projected_ad(fdw)
     assert_not_nil(projected)
-    assert_equal([known_ad - max_adj_et, known_ad - 2*max_adj_et],projected)
+    assert_equal([known_ad - max_adj_et, known_ad - 2*max_adj_et],projected,"Ad recs were #{fdw.collect {|fdw| fdw.ad}.inspect},#{projected.inspect}")
+  end
+  
+  test "projected_ad works" do
+    projected_ad_test(-7)
+  end
+  
+  test "projected_ad offset by 2 days still works" do
+    projected_ad_test(-9)
   end
 end

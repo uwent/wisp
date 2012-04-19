@@ -163,8 +163,10 @@
               for (var ii=0,len=ad_data.length; ii<len; ii++) {
                 projected_ad_data.push(ad_data[ii]);
               }
-              for (ii=0,len=prj_data.length; ii<len; ii++) {
-                projected_ad_data.push(prj_data[ii]);
+              if (prj_data != null) {
+                for (ii=0,len=prj_data.length; ii<len; ii++) {
+                  projected_ad_data.push(prj_data[ii]);
+                }
               }
               if (targ_data != null) {
                 for (ii=0,len=targ_data.length; ii<len; ii++) {
@@ -179,7 +181,9 @@
                 projected_ad_data = [];
             } /* error: */
         });/* $.ajax */
-      g.data("Projected AD", projected_ad_data,'#26c202');
+      if (prj_data != null) {
+        g.data("Projected AD", projected_ad_data,'#26c202');
+      }
       g.data("Allowable Depletion", ad_data,'blue');
       if (targ_data != null) {
         g.data("Target AD",target_ad_data,'gray');

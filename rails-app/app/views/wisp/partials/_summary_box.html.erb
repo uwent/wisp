@@ -5,10 +5,12 @@
   <tr><th>Irrigation:</th><td><%= sprintf("%0.2f",@summary_data[:irrigation] || 0.0) %> in.</td></tr>
   <tr><th>ET:</th><td> <%= sprintf("%0.2f",@summary_data[:adj_et] || 0.0) %> in.</td></tr>
   <tr><th>Drainage:</th><td> <%= sprintf("%0.2f",@summary_data[:deep_drainage] || 0.0) %> in.</td></tr>
-</table>      
-<h2 style="padding-top:50px;padding-bottom:5px">Projected Allowable Depletion</h2>
-<p>In inches, based on the max adjusted ET in the past week (i.e., worst case).</p>
-<table width="35%">
-  <tr><th><%= @dates[-2].strftime('%b %d')%>:</th><td id="proj_ad_1"><%= sprintf("%0.2f",@projected_ad_data[-2]) %> in.</td></tr>
-  <tr><th><%= @dates[-1].strftime('%b %d')%>:</th><td id="proj_ad_2"><%= sprintf("%0.2f",@projected_ad_data[-1]) %> in.</td></tr>
 </table>
+<% if @projected_ad_data && @projected_ad_data.size > 1 %>      
+  <h2 style="padding-top:50px;padding-bottom:5px">Projected Allowable Depletion</h2>
+  <p>In inches, based on the max adjusted ET in the past week (i.e., worst case).</p>
+  <table width="35%">
+    <tr><th><%= @dates[-2].strftime('%b %d')%>:</th><td id="proj_ad_1"><%= sprintf("%0.2f",@projected_ad_data[-2]) %> in.</td></tr>
+    <tr><th><%= @dates[-1].strftime('%b %d')%>:</th><td id="proj_ad_2"><%= sprintf("%0.2f",@projected_ad_data[-1]) %> in.</td></tr>
+  </table>
+<% end %>

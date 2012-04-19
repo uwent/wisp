@@ -46,13 +46,20 @@ class FieldDailyWeatherController < ApplicationController
           page_size = 7
           page = FieldDailyWeather.page_for(page_size,@field_daily_weather.first.date)
         else
-          page_size = params[:rows]
-          page = params[:page] || calc_page(@field_daily_weather,current_day,page_size)
+          page_size = params[:rows].to_i
+          page = params[:page] || "-1"
         end
       else
-        page = params[:page] || calc_page(@field_daily_weather,current_day,page_size)
+        page = params[:page] || "-1"
+      end
+      page = page.to_i
+      if page == -1
+        days = current_day - @field_daily_weather.first.date
+        days = 7 if days < 7
+        page = days / page_size
       end
       # logger.info "\n****\nfdw#index full; for field_id #{field_id}, page is #{page}, page_size is #{page_size}, #{wx_size} records"; $stdout.flush
+      page = 0 if page < 0
       @field_daily_weather = @field_daily_weather.paginate(:page => page, :per_page => page_size)
     end
     @field_daily_weather ||= []
