@@ -1,8 +1,9 @@
 class WispController < ApplicationController
+  USER_GUIDE = "USERS_GUIDE_4_18_12.pdf"
   before_filter :ensure_signed_in, :only => [:farm_status, :pivot_crop, :field_status, :weather]
   before_filter :current_user
-  before_filter :get_current_ids, :except => [:home,:index]
-  before_filter :get_farm_id, :except => [:index]
+  before_filter :get_current_ids, :except => [:home,:index, :userguide]
+  before_filter :get_farm_id, :except => [:index, :userguide]
   
   def index
   end
@@ -10,6 +11,10 @@ class WispController < ApplicationController
   def home
     index
     render :template => 'wisp/index'
+  end
+   
+  def userguide
+    send_file "public/#{USER_GUIDE}"
   end
   
   def get_farm_id

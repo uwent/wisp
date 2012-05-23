@@ -22,6 +22,8 @@ RailsApp::Application.routes.draw do
   get "sessions/create"
 
   get "sessions/destroy"
+  
+  match "/userguide" => "wisp#userguide"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
