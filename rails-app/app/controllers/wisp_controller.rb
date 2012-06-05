@@ -230,6 +230,7 @@ class WispController < ApplicationController
     if params[:ajax]
       render :layout => false
     end
+    @et_methods = EtMethod.all.inject({}) {|hash,etm| hash.merge etm[:type] => etm[:id]}.to_json
   end
 
   # Ajax-accessible summary/projected box

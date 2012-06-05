@@ -2,24 +2,29 @@
 
         <script type="text/javascript">
           var lastsel;
+          var et_methods = <%= @et_methods.html_safe %>;
           function addDeleteButton(cl) {
             be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick=removeRow("+cl+"); ></ids>"; 
             jQuery("#farm_setup").setRowData(cl,{act:be}) 
           }
-          function addNewFarmRow() {
+          function addNewFarmRow(method) {
             var grid = $('#farm_setup');
-            newFarm = createNewFarm();
+            newFarm = createNewFarm(method);
             curID = newFarm['id'];
             grid.addRowData(curID, newFarm); // add a new row with the new field's data
             addDeleteButton(curID);
             grid.editRow(curID,true); // put new row into inline-edit mode
           }
-          function createNewFarm() {
+          function createNewFarm(method) {
             var frm={};
+            et_method_id = et_methods[method];
+            if (et_method_id == null) {
+              et_method_id = et_methods['PctCoverEtMethod'];
+            }
             $.ajax(
               {
                 type: "POST",
-                url: '<%= grid_post_data_url "farms", @group %>' + '&oper=add&id=_empty', 
+                url: '<%= grid_post_data_url "farms", @group %>' + '&oper=add&id=_empty&et_method_id='+et_method_id, 
                 dataType: "json",
                 async: false,
                 success: function(json) {
@@ -33,6 +38,10 @@
             jQuery('#farm_setup').delGridRow(rowID);
             $('#farm_setup').trigger('reloadGrid');            
           }
+          
+          // From example http://stackoverflow.com/questions/5092571/how-to-make-cell-editable-dynamically-in-jqgrid
+          
+          
           jQuery(document).ready(function(){
             
           var mygrid = jQuery("#farm_setup").jqGrid({
@@ -45,7 +54,7 @@
                 {name:'name', index:'name',width:83,editable:true},
                 {
                   name:'et_method_id',index:'et_method_id', width:50,resizable:true,   
-                  align:"left",sorttype:"text",editable:true,edittype:"select",
+                  align:"left",sorttype:"text",editable:false,edittype:"select",
                   formatter:'select',
                   editoptions:   
                     { value:"1:Percent Cover;2:Leaf Area Index"},editrules:{required:true}
@@ -76,9 +85,6 @@
                   jQuery('#farm_setup').restoreRow(lastsel);
                   jQuery('#farm_setup').editRow(id,true); 
                   lastsel=id;
-                  // How about we DON'T set the app-wide "current farm" when you click the grid?
-                  // $.post('/wisp/set_farm?farm_id='+id, function(data) {
-                  // });
                 } 
               },             
               
@@ -105,7 +111,8 @@
         </script>
 
         <table id="farm_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
-        <button type="button" onclick="addNewFarmRow();">Add New Farm</button>
+        <button type="button" onclick="addNewFarmRow('PctCoverEtMethod');">Add New Farm (% Cover)</button>
+        <button type="button" onclick="addNewFarmRow('LaiEtMethod');">Add New Farm (Leaf Area Index)</button>
         
         <!-- <div id="farm_setup_pager" class="scroll" style="text-align:center;"></div> -->
       
