@@ -1,7 +1,7 @@
 class Pivot < ActiveRecord::Base
   belongs_to :farm
-  has_many :fields
-  has_many :irrigation_events
+  has_many :fields, :dependent => :destroy
+  has_many :irrigation_events, :dependent => :destroy
   before_save :set_cropping_year
   before_destroy :mother_may_i
   

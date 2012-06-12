@@ -50,6 +50,7 @@ class ApplicationController < ActionController::Base
       id,obj = get_by_parent(klass,parent_klass,parent_id)
     end
     unless preserve_session
+      logger.debug "Setting session[#{sym.to_s}] to #{id.to_s}"
       session[sym] = id
     end
     [id,obj]
@@ -61,15 +62,6 @@ class ApplicationController < ActionController::Base
     @user_id = params[:user_id] || session[:user_id]
     @user = User.find(@user_id)
     @group_id,@group = get_and_set(Group,User,@user_id)
-    # @group = @user.groups.first # someday this might change if we let users belong to > 1 groups
-    
-    # 14 March: getting rid of this in favor of minimal state
-    # puts "get_current_ids: before get_and_set, @farm is #{@farm ? @farm.name : "Not set"}"
-    #     @farm_id,@farm = get_and_set(Farm,Group,@group[:id],params[:preserve_farm]); return unless @farm_id
-    #     # puts "get_current_ids: @farm is #{@farm.name}"
-    # @pivot_id,@pivot = get_and_set(Pivot,Farm,@farm_id); return unless @pivot_id
-    # @field_id,@field = get_and_set(Field,Pivot,@pivot_id); return unless @field_id
-    #     @crop_id,@crop = get_and_set(Crop,Field,@field_id)
   end
   
   # Filter method to flag errors and redirect when we need a group to be present

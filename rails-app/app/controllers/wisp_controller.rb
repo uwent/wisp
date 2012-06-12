@@ -1,6 +1,6 @@
 class WispController < ApplicationController
   USER_GUIDE = "USERS_GUIDE_4_18_12.pdf"
-  before_filter :ensure_signed_in, :only => [:farm_status, :pivot_crop, :field_status, :weather]
+  before_filter :ensure_signed_in, :except => [:home,:index, :userguide]
   before_filter :current_user
   before_filter :get_current_ids, :except => [:home,:index, :userguide]
   before_filter :get_farm_id, :except => [:index, :userguide]
@@ -182,6 +182,9 @@ class WispController < ApplicationController
     # logger.info "field_status: group #{@group_id} user #{@user_id} farm #{@farm_id} pivot #{@pivot_id} field #{@field_id}"
     @pivot_id,@pivot = get_and_set(Pivot,Farm,@farm_id)
     @field_id,@field = get_and_set(Field,Pivot,@pivot_id)
+    if params[:field][:target_ad_pct]
+      @field.update_attributes :target_ad_pct => params[:field][:target_ad_pct]
+    end
     @cur_date = params[:cur_date]
     session[:today] = @cur_date
     field_status_data(@cur_date) # @cur_date may be nil, but will be set if so

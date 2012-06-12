@@ -1,6 +1,5 @@
 class FieldDailyWeatherController < ApplicationController
-  before_filter :get_current_ids
-  protect_from_forgery :except => [:post_data]
+  set_default_filters
   MOISTURE_EPSILON = 0.01 # Amount by which an incoming pct moist must differ to be treated as "new"
   COLUMN_NAMES = [
     :ref_et, 

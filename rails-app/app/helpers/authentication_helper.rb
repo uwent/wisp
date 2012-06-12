@@ -19,7 +19,7 @@ module AuthenticationHelper
     logger.info "ensure_signed_in"
     if USING_OPENID
       unless signed_in?
-        session[:redirect_to] = request.request_uri
+        session[:redirect_to] = request.fullpath
         redirect_to(new_session_path)
       end
     else

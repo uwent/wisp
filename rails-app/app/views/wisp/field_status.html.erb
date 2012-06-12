@@ -102,36 +102,23 @@
       return(Math.ceil(days / 7));
     }
     function showSummaryBox(date) {
-      $('#projectedADBox').load("<%= url_for(:controller => 'wisp', :action => :summary_box, :field_id => @field, :user_id => @user) %>&cur_date="+date);
+      $.ajax(
+        {
+          type: "GET",
+          url: "<%= url_for(:controller => 'wisp', :action => :summary_box,
+                            :field_id => @field, :user_id => @user) %>&cur_date="+date,
+          dataType: 'html',
+          async: false,
+          success: function(html)
+          {
+            $('#projectedADBox').innerHTML = html;
+          }
+        });
     }
     function showTargetAD() {
       // adValue = 0.0;
       adValue = <%= @field.target_ad_pct || "''" %>;
       document.getElementById('target_ad').value = adValue;
-    }
-    function setTargetAD() {
-      val = document.getElementById('target_ad').value;
-      $.ajax(
-      { 
-          type: "POST",
-          url: '<%= url_for(:controller => :fields, :action => :update_target_ad_pct, :user_id => @user, :id => @field[:id]) %>&target_ad_pct='+val,
-          dataType: "json",
-          async: false,
-          success: function(json)
-          {
-            adValue = json['target_ad_pct']
-            document.getElementById('target_ad').value = adValue;
-            document.getElementById('target_ad_in').innerHTML = json['target_ad_in'];
-            plotGraph();
-            showSummaryBox(cur_date);
-          }, /* success: */
-          error: function(xhr, textStatus, errorThrown)
-          { 
-              alert(textStatus + ' ' + errorThrown);
-              ad_data = [];
-              projected_ad_data = [];
-          } /* error: */
-      });/* $.ajax */
     }
     function plotGraph() {
       var g = new Bluff.Line('example', '575x300');
@@ -264,8 +251,9 @@ Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.
 Total AD: <%= sprintf("%0.2f",@field.ad_max) %> in.<br/>
 Init. soil moist.: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
 <% target_ad_in_str = @field.target_ad_in ? sprintf('%0.2f in.',@field.target_ad_in) : '--' %>
-Target<input name="field[target_ad_pct]" id="target_ad" size="1"/>%&nbsp;(<div style="display:inline" id='target_ad_in'><%= target_ad_in_str %></div>)&nbsp;<input type="button" value="Update" onclick="setTargetAD();"/>
-
+<%= form_tag(url_for :controller => "wisp", :action => :field_status, :pivot_id => @pivot, :field_id => @field) do %>
+Target<input name="field[target_ad_pct]" id="target_ad" size="1"/>%&nbsp;(<div style="display:inline" id='target_ad_in'><%= target_ad_in_str %></div>)&nbsp;<input type="submit" value="Update"/>
+<% end %>
 </div>
 
 <%= render :partial => 'wisp/partials/field_daily_wx'%>

@@ -58,7 +58,14 @@ class FarmsController < ApplicationController
     else
       attribs = {}
       for col_name in COLUMN_NAMES
-        attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem
+        case col_name
+        when :id
+        when :problem
+        when :et_method_id
+          attribs[col_name] = params[col_name] if params[col_name]
+        else
+          attribs[col_name] = params[col_name]
+        end
       end
       if params[:oper] == "add"
         # if no year supplied, use current one

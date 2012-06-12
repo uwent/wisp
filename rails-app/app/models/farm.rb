@@ -1,11 +1,12 @@
 class Farm < ActiveRecord::Base
   belongs_to :group
   belongs_to :et_method
-  has_many :pivots
+  has_many :pivots, :dependent => :destroy
   validates :year, :presence => true
   before_create :set_default_et_method
   after_create :create_default_data
   before_destroy :mother_may_i
+  
 
   @@clobberable = nil
   
@@ -26,14 +27,11 @@ class Farm < ActiveRecord::Base
   end
   
   def set_default_et_method
-    if self[:et_method_id]
-      logger.info "That's odd, et_method_id was set to #{et_method_id} coming into Farm.create"
-    else
-      self[:et_method_id] = EtMethod.find_by_type('LaiEtMethod')[:id]
+    unless self[:et_method_id]
+      self[:et_method_id] = EtMethod.find_by_type('PctCoverEtMethod')[:id]
       logger.info "et_method_id now #{self[:et_method_id]}"
-      raise "Could not find LAI ET method to set as default" unless self[:et_method_id]
+      raise "Could not find % Cover ET method to set as default" unless self[:et_method_id]
     end
-    logger.warn "Farm#set_default_et_method: #{self.inspect}" 
   end
   
   def create_default_data
