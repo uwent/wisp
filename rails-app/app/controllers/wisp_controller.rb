@@ -182,7 +182,7 @@ class WispController < ApplicationController
     # logger.info "field_status: group #{@group_id} user #{@user_id} farm #{@farm_id} pivot #{@pivot_id} field #{@field_id}"
     @pivot_id,@pivot = get_and_set(Pivot,Farm,@farm_id)
     @field_id,@field = get_and_set(Field,Pivot,@pivot_id)
-    if params[:field][:target_ad_pct]
+    if params[:field] && params[:field][:target_ad_pct]
       @field.update_attributes :target_ad_pct => params[:field][:target_ad_pct]
     end
     @cur_date = params[:cur_date]
