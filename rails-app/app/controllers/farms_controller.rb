@@ -1,6 +1,6 @@
 class FarmsController < ApplicationController
   COLUMN_NAMES = [:name,:et_method_id,:notes]
-  set_default_filters
+  before_filter :ensure_signed_in, :get_current_ids
   
   # GET /farms
   # GET /farms.xml
@@ -41,11 +41,12 @@ class FarmsController < ApplicationController
   end # index
   
   def post_data
+    # logger.info "Session has #{session.size} keys in it"
+    # session.each {|key,value| logger.info "session #{key} == #{value}"}
     @group = Group.find(params[:parent_id])
     session[:group_id] = params[:parent_id]
     if params[:oper] == "del"
       farm = Farm.find(params[:id])
-      session.each {|key,value| logger.info "session #{key} == #{value}"}
       if farm.group == @group
         farm.destroy
         if session[:farm_id] == params[:id] # we just destroyed the current farm

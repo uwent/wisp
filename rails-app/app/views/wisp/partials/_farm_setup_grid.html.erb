@@ -1,6 +1,7 @@
 <div id="farmSetupGrid">
 
         <script type="text/javascript">
+        <%= grid_javascript_settings %>
           var lastsel;
           var et_methods = <%= @et_methods.html_safe %>;
           function addDeleteButton(cl) {
@@ -21,10 +22,13 @@
             if (et_method_id == null) {
               et_method_id = et_methods['PctCoverEtMethod'];
             }
+            // Why in heaven's name do I have to add the authenticity_token in here manually, when the other
+            // forms seem to add it in just fine via application.js?
             $.ajax(
               {
                 type: "POST",
-                url: '<%= grid_post_data_url "farms", @group %>' + '&oper=add&id=_empty&et_method_id='+et_method_id, 
+                url: '<%= grid_post_data_url "farms", @group %>' +
+                 '&oper=add&id=_empty&authenticity_token='+encodeURIComponent(AUTH_TOKEN)+'&et_method_id='+et_method_id, 
                 dataType: "json",
                 contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
                 async: false,
@@ -48,7 +52,8 @@
           var mygrid = jQuery("#farm_setup").jqGrid({
               url: '<%= url_for :controller => "farms", :action => :index, :q => 1%>',
               // '/farms?q=1',
-              editurl:'<%= url_for :controller => "farms", :action => :post_data, :parent_id => @group %>',
+              // editurl:'<%= url_for :controller => "farms", :action => :post_data, :parent_id => @group %>',
+              editurl: '<%= grid_post_data_url "farms", @group_id %>',
               datatype: "json",
               colNames:['Name','ET Method','Notes','Problem?','Delete','Group ID','ID'],
               colModel:[
@@ -100,12 +105,12 @@
               subGrid:false,
               caption: "Farms"
             })
-            .navGrid('#farm_setup_pager',
-              {edit:false,add:true,del:true,search:false,refresh:true},
-              {afterSubmit:function(r,data){return true;(r,data,'edit');}},
-              {afterSubmit:function(r,data){return true;(r,data,'add');}},
-              {afterSubmit:function(r,data){return true;(r,data,'delete');}}
-            )
+            // .navGrid('#farm_setup_pager',
+            //   {edit:false,add:true,del:true,search:false,refresh:true},
+            //   {afterSubmit:function(r,data){return true;(r,data,'edit');}},
+            //   {afterSubmit:function(r,data){return true;(r,data,'add');}},
+            //   {afterSubmit:function(r,data){return true;(r,data,'delete');}}
+            // )
             
             mygrid.filterToolbar();mygrid[0].toggleToolbar()
           });
