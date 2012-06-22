@@ -26,6 +26,7 @@
                 type: "POST",
                 url: '<%= grid_post_data_url "farms", @group %>' + '&oper=add&id=_empty&et_method_id='+et_method_id, 
                 dataType: "json",
+                contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
                 async: false,
                 success: function(json) {
                   frm = json;

@@ -52,7 +52,7 @@ class FieldsControllerTest < ActionController::TestCase
     assert_response :success
     puts(response.body)
     assert(json = JSON.parse(response.body))
-    assert_equal("New field", json['name'])
+    assert_equal("New field (pivot 1)", json['name'])
   end
   
   # let's just test this here, it's the first controller to use it

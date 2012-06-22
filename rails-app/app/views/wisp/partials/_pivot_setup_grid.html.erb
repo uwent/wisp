@@ -59,6 +59,7 @@
                 type: "POST",
                 url: '<%= grid_post_data_url "pivots", @farm %>' + '&oper=add&id=_empty', 
                 dataType: "json",
+                contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
                 async: false,
                 success: function(json) {
                   pvt = json;
@@ -119,10 +120,7 @@
               loadComplete: function(){ 
                   addPivotDeleteButtons();
               },
-              
-              onSelectRow: rowSelect,             
-              
-              
+              onSelectRow: rowSelect,
               subGrid:false,
               
               caption: "Pivots <%= @farm ? "for #{@farm.name}" : '' %>"

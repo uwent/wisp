@@ -57,6 +57,7 @@
         type: "POST",
         url: '<%= url_for :controller => 'fields', :action => :post_data, :oper => :add, :id => '_empty'%>' + '&pivot_id='+pivot_id, 
         dataType: "json",
+        contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
         async: false,
         success: function(json) {
           pvt = json;
@@ -150,7 +151,9 @@
       onSelectRow: rowSelect,             
       
       loadComplete: function(){
-        addFieldDeleteButtons(); 
+        addFieldDeleteButtons();
+        fieldIDs = jQuery("#field_setup").getDataIDs();
+        loadCropGrid(fieldIDs[0]);
       },
       
       

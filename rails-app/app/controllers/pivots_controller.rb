@@ -144,7 +144,9 @@ class PivotsController < ApplicationController
   
   private
   def get_current_farm
-    @farm_id = params[:farm_id] || session[:farm_id] || params[:parent_id]
+    @farm_id = params[:farm_id]
+    @farm_id = params[:parent_id] unless @farm_id && @farm_id != ''
+    @farm_id = session[:farm_id] unless @farm_id && @farm_id != ''
     @farm = Farm.find(@farm_id)
     @group = @farm.group
   end

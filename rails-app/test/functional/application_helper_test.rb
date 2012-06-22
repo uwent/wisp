@@ -7,7 +7,7 @@ class ApplicationHelperTest < ActionView::TestCase
   
   
   def test_soil_characteristics
-    puts soil_characteristics
+    # puts soil_characteristics
   end
 
 end
