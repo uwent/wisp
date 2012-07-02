@@ -6,12 +6,14 @@
           // If pivot_id is set, load the field grid for that one. If it's zero,
           // grab the id of the first pivot in the grid and use that.
           function loadFieldGrid(throwaway1,throwaway2) {
+            // alert('loadFieldGrid');
             if (pivot_id == 0) {
               pivot_id = $("#pivot_setup").getDataIDs()[0];
               lastPivotSel=pivot_id;
             }
             $('#fieldDataGrid').load('<%= url_for :controller => "wisp", :action => :field_setup_grid %>',
-              {pivot_id:pivot_id,user_id:user_id, farm_id:farm_id});
+              // {pivot_id:pivot_id,user_id:user_id, farm_id:farm_id});
+              '&pivot_id='+pivot_id+'&farm_id='+farm_id);
           }
           function rowSelect(id) {
             if(id) { 
@@ -26,7 +28,7 @@
           }
          function deletePivot(id) {
             pivot_id = 0; // We no longer know what the current one is; find out after grids reload
-            jQuery('#pivot_setup').delGridRow(id,{afterSubmit:loadFieldGrid,msg:'Delete pivot and fields under it?'});
+            jQuery('#pivot_setup').delGridRow(id,{afterSubmit:loadFieldGrid});
           }
           function addPivotDeleteButtons() {
             var ids = jQuery("#pivot_setup").getDataIDs();
@@ -57,8 +59,9 @@
             $.ajax(
               {
                 type: "POST",
-                url: '<%= grid_post_data_url "pivots", @farm %>' + '&oper=add&id=_empty', 
+                url: '<%= url_for :controller => 'pivots', :action => :post_data %>',
                 dataType: "json",
+                data: {farm_id:farm_id,parent_id:farm_id,oper:'add',id:'_empty'},
                 contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
                 async: false,
                 success: function(json) {

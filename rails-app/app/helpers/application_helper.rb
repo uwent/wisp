@@ -73,7 +73,7 @@ module ApplicationHelper
   def grid_javascript_settings
     ret = "\n// State variables:"
     ret += "\nvar user_id = #{@user_id};" if @user_id
-    # ret += "\nvar group_id = #{@group_id};" if @group_id
+    ret += "\nvar group_id = #{@group_id};" if @group_id
     ret += "\nvar farm_id = #{@farm_id};" if @farm_id
     ret += "\nvar pivot_id = #{@pivot_id};" if @pivot_id
     ret += "\nvar field_id = #{@field_id};" if @field_id

@@ -24,8 +24,8 @@ class FieldsController < ApplicationController
   end
 
   def post_data
-    @pivot = Pivot.find(params[:pivot_id])
-    session[:pivot_id] = params[:pivot_id]
+    @pivot = Pivot.find(params[:pivot_id] || params[:parent_id])
+    session[:pivot_id] = params[:pivot_id] || params[:parent_id]
     if params[:oper] == "del"
       field = Field.find(params[:id])
       # check that we're in the right hierarchy, and not some random id

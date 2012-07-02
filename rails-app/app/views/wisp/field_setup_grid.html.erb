@@ -3,6 +3,7 @@
   function loadCropGrid(field_id) {
     $('#cropDataGrid').load('<%= url_for :controller => "wisp", :action => :crop_setup_grid %>',
       {field_id:field_id,user_id:user_id, farm_id:farm_id});
+      // alert('loadCropGrid for field '+field_id);
     crop_id = $("#crop_setup").getDataIDs()[0];
   }
   function rowSelect(id) {
@@ -55,7 +56,8 @@
     $.ajax(
       {
         type: "POST",
-        url: '<%= url_for :controller => 'fields', :action => :post_data, :oper => :add, :id => '_empty'%>' + '&pivot_id='+pivot_id, 
+        url: '<%= url_for :controller => 'fields', :action => :post_data %>',
+        data: {pivot_id:pivot_id,parent_id:pivot_id,oper:'add',id:'_empty'}, 
         dataType: "json",
         contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
         async: false,

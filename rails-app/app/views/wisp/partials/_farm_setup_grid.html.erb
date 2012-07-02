@@ -27,8 +27,10 @@
             $.ajax(
               {
                 type: "POST",
-                url: '<%= grid_post_data_url "farms", @group %>' +
-                 '&oper=add&id=_empty&authenticity_token='+encodeURIComponent(AUTH_TOKEN)+'&et_method_id='+et_method_id, 
+                url: '<%= url_for :controller => 'farms', :action => :post_data %>',
+                data: {group_id:group_id,parent_id:group_id,et_method_id:et_method_id,oper:'add',id:'_empty'},
+                // url: '<%= grid_post_data_url "farms", @group %>' +
+                // '&oper=add&id=_empty&authenticity_token='+encodeURIComponent(AUTH_TOKEN)+'&et_method_id='+et_method_id, 
                 dataType: "json",
                 contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
                 async: false,
