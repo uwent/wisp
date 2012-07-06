@@ -1,5 +1,5 @@
 class WispController < ApplicationController
-  USER_GUIDE = "USERS_GUIDE_4_18_12.pdf"
+  USER_GUIDE = "USERS_GUIDE_6_29_12.pdf"
   before_filter :ensure_signed_in, :except => [:home,:index, :userguide]
   before_filter :current_user
   before_filter :get_current_ids, :except => [:home,:index, :userguide]
@@ -37,7 +37,7 @@ class WispController < ApplicationController
     # @crops = Crop.where(:field_id => @field_id)
     # FIXME: Need to filter everything below pivot for current year
     if params[:ajax]
-      render :layout => false
+      render :partial => '/wisp/partials/pivot_setup_grid'
     end
   end
 

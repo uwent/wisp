@@ -26,9 +26,13 @@
               }
             } 
           }
-         function deletePivot(id) {
+          function reloadGrids() {
+            $('#pivotDataGrid').load('<%= url_for :controller => "wisp", :action => :pivot_crop %>',
+            '&farm_id='+farm_id+'&parent_id='+farm_id+'&ajax=true');
+          }
+          function deletePivot(id) {
             pivot_id = 0; // We no longer know what the current one is; find out after grids reload
-            jQuery('#pivot_setup').delGridRow(id,{afterSubmit:loadFieldGrid});
+            jQuery('#pivot_setup').delGridRow(id,{afterSubmit:reloadGrids});
           }
           function addPivotDeleteButtons() {
             var ids = jQuery("#pivot_setup").getDataIDs();
