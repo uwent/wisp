@@ -7,15 +7,15 @@ RailsApp::Application.routes.draw do
 
   resources :weather_stations
 
-  resources :crops
+  # resources :crops
   
-  resources :fields
+  # resources :fields
 
   resources :irrigation_events
 
-  resources :pivots
+  # resources :pivots
 
-  resources :farms
+  # resources :farms
 
   get "sessions/new"
 

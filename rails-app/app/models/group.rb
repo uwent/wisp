@@ -21,7 +21,6 @@ class Group < ActiveRecord::Base
   # You can't destroy the only farm in a group. There must always be at least one, unless we're in the process
   # of destroying all the farms in the group
   def may_destroy(farm) 
-    puts "@clobber_farms is #{@clobber_farms}"
     @clobber_farms || farms.size > 1
   end
   
