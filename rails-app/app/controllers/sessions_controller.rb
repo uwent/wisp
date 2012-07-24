@@ -1,6 +1,7 @@
 # after http://blog.sethladd.com/2010/09/ruby-rails-openid-and-google.html
 class SessionsController < ApplicationController
   skip_before_filter :verify_authenticity_token
+  
   def new
     response.headers['WWW-Authenticate'] = Rack::OpenID.build_header(
         :identifier => "https://www.google.com/accounts/o8/id",
@@ -40,11 +41,36 @@ class SessionsController < ApplicationController
 
   def destroy
     session[:user_id] = nil
+    session.delete(:group_id)
+    session.delete(:farm_id)
+    session.delete(:pivot_id)
+    session.delete(:field_id)
     if params[:redirect]
       redirect_to :controller => params[:redirect]
     else
       redirect_to :controller => 'wisp', :action => :home
     end
   end
-
+  
+  def su
+    # A no-op unless logged in
+    puts "su"
+    if session[:user_id]
+      # A no-op unless logged in as Rick
+      if User.find(session[:user_id]).identifier_url == @rick_identifier_url
+        session[:user_id] = params[:su_to]
+        session.delete(:group_id)
+        session.delete(:farm_id)
+        session.delete(:pivot_id)
+        session.delete(:field_id)
+      else
+        puts 'wrong person tried to su'
+      end
+    else
+      puts 'no one signed in'
+    end
+    puts "su'd to #{session[:user_id]}"
+    redirect_to(:back)
+  end
+ 
 end

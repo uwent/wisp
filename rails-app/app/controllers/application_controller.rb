@@ -1,6 +1,14 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
   include AuthenticationHelper
+  before_filter :rick_is
+  
+  def rick_is
+    logger.info "rick is..."
+    rick = User.where(:email => 'fewayne@gmail.com')
+    rick &&= rick.first
+    @rick_identifier_url = rick ? rick.identifier_url : "Rick's not here man"
+  end
   
   def self.set_default_filters
     :ensure_signed_in

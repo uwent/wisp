@@ -21,6 +21,11 @@
   
   <% if AuthenticationHelper::USING_OPENID && signed_in? %>
     <%= button_to "Logout " + current_user.email, :controller => 'sessions', :action => :destroy %>
+    <% if current_user.identifier_url == @rick_identifier_url %>
+      <form action="/sessions/su">
+        <input name="su_to"/>
+      </form>
+    <% end %>
   <% end %>
 
 <% if flash[:notice] %>
