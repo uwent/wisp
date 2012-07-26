@@ -2,7 +2,7 @@ class WeatherStationsController < ApplicationController
   before_filter :ensure_signed_in, :get_current_ids, :ensure_group
   
   def pivots_for_group
-    Pivot.where("farm_id IS NOT NULL").select { |p| p.farm.group[:id] == @group[:id]}
+    Pivot.where("farm_id IS NOT NULL").select { |p| p.farm && p.farm.group && p.farm.group[:id] == @group[:id]}
   end
   # GET /weather_stations
   # GET /weather_stations.xml
