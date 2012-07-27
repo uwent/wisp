@@ -195,9 +195,9 @@ class WispController < ApplicationController
         break
       end
     end
-    if params[:ajax]
-      render :template => 'wisp/field_status', :layout => false
-    end
+    # for some reason, IE makes a request for format JSON, which kinda whacks things. So we explicitly
+    # specify the template, which works for everybody.
+    render 'field_status.html.erb'
   end
   
   def field_status_from_javascript
