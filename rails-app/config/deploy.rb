@@ -19,7 +19,10 @@ role :web, "wisp.cals.wisc.edu"
 role :db,  "wisp.cals.wisc.edu", :primary => true
 
 task :after_update_code, :roles => :app do
+  # Since we want a different setup even for development -- the grids have us stuck in dev right now...
   run "cp #{release_path}/config/database.deployed.yml #{release_path}/config/database.yml"
+  # Blip what Cap currently understands to be the repo rev number to the "build" partial
+  run "echo #{revision}" > "#{current_path}/app/views/wisp/partials/_build.html.erb"
 end
 
 namespace :deploy do

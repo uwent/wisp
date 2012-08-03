@@ -17,6 +17,9 @@ class WispController < ApplicationController
     send_file "public/#{USER_GUIDE}"
   end
   
+  def project_status
+  end
+  
   def get_farm_id
     @farm_id,@farm = get_and_set(Farm,Group,@group_id)
     raise "No farm!" unless @farm

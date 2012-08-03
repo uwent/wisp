@@ -1,0 +1,46 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler <%= Time.now.year %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'sidebar' %>
+<% end %>
+<!-- Content for the remainder (body) of the page goes here -->
+<h2>WISP Software Status: Compatibility, News, Bug List</h2>
+<p>
+  Here you can find out the latest scoop on WISP --  what features we've tested with which browsers, what new features and fixes have been added, and what's broken.
+</p>
+<p>
+  For assistance with using the software, please contact <a href="mailto:jcpanuska@wisc.edu">John Panuska</a>, who is the scientist behind the software. To report a bug in the software, email <a href="mailto:fewayne@wisc.edu">Rick Wayne</a>.
+</p>
+<h3>Compatibility Matrix</h3>
+<p>These browsers have been tested (last update 3 August 2012) and are known to support the following features:</p>
+<p>Version 1.0.0, Build <%= render :partial => '/wisp/partials/build' %></p>
+<table border="1">
+  <tr>
+    <th>Platform</th><th>Browser</th><th align="center">Data Grids</th><th align="center">Graphs</th>
+   </tr>
+    <tr><th rowspan="3">Windows 7</th><td>Internet Explorer 8</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Firefox 14.1</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Google Chrome 20.0</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><th rowspan="2">Windows XP</th><td>Internet Explorer 6</td><td align="center">Poor HTML rendering</td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Internet Explorer 6</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><th rowspan="3">Mac OS X 10.6.8 (Snow Leopard)</th><td>Safari 5.1.7</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Firefox 14.0.1</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Google Chrome 20.0*</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><th rowspan="2">iOS 5.0 (iPad, iPhone)</th><td>Safari (default browser)</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Google Chrome</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><th>Android 2.3</th><td>Default (Google) browser</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "x.png"%></td></tr>
+    <tr><th>Android 3 (tablets)</th><td>Default (Google) browser</td><td>Not tested (should work)</td><td>Not tested (should work)</td></tr>
+    <tr><th>Android 4 ("Ice Cream Sandwich" phones)</th><td>Default (Google) browser</td><td>Not tested (should work)</td><td>Not tested (should work)</td></tr>
+</table>
+<p>*Data grids may require a page refresh; graphs show an erroneous "Your browser does not support charts" message (right above the correctly-rendered chart!).</p>
+<h3>News</h3>
+<ul>
+  <li>3 August (Build 221): Added this status page.</li>
+  <li>1 August (Build 220): Made grids and graphs compatible with IE browser, at the expense of graphs in Android 2.3</li>
+</ul>
