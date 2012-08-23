@@ -2,16 +2,17 @@ require 'rubygems'
 require 'yaml'
 require 'active_record'
 
-rails_path = File.join(File.dirname(__FILE__),'..')
+rails_path = `pwd`.chomp
 puts rails_path
-@environment = ENV['RACK_ENV'] || 'development'
-yaml_path = File.join(rails_path,'config/database.yml')
-puts yaml_path
-@dbconfig = YAML.load(File.read(yaml_path))
-ActiveRecord::Base.establish_connection @dbconfig[@environment]
-
+# @environment = ENV['RACK_ENV'] || 'development'
+# yaml_path = File.join(rails_path,'config/database.yml')
+# puts yaml_path
+# @dbconfig = YAML.load(File.read(yaml_path))
+# ActiveRecord::Base.establish_connection @dbconfig[@environment]
+ActiveRecord::Base.establish_connection(:adapter => :mysql, :database => 'railsapp_development', :username => 'irrig_devel', :password => '7A7d61j_CZzr')
 #Load All models 
-Dir.glob(File.join(rails_path,"app/models/{user,group,farm,pivot,field,crop,field_daily_weather,et_method,weather_station,membership}")).each do |file|
+Dir.glob(File.join(rails_path,"app/models/{user,group,farm,pivot,field,crop,field_daily_weather,et_method,weather_station,membership}.rb")).each do |file|
+  puts "requiring #{file}"
   require file 
 end
 
