@@ -2,11 +2,12 @@
 # per http://www.slashdotdash.net/2007/01/09/using-activerecord-outside-rails/
 $LOAD_PATH << File.expand_path(File.dirname(__FILE__))
 require 'rubygems'
-ENV['RAILS_ENV'] = ARGV.first || ENV['RAILS_ENV'] || 'development'
+ENV['RAILS_ENV'] = ENV['RAILS_ENV'] || 'development'
 require File.dirname(__FILE__) + '/../../config/boot'
+RAILS_ROOT=`pwd`.chomp
 require "#{RAILS_ROOT}/config/environment"
 def connect(environment)
-  conf = YAML::load(File.open(File.dirname(__FILE__) + '/../../config/database.yml'))
+  conf = YAML::load(File.open(File.join(File.dirname(__FILE__), '..','config','database.yml')))
   ActiveRecord::Base.establish_connection(conf[environment])
 end
 # Open ActiveRecord connection
