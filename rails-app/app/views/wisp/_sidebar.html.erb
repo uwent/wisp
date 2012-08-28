@@ -1,3 +1,23 @@
+<script type="text/javascript">
+  var new_login = <%= @new_login ? "true" : "false"%>;
+  window.onload = function(){
+    if (document.getElementById('logout')) {
+      if (new_login) {
+        $('#logout').animate({fontSize:'1.5em'},800);
+        $('#logout').animate({fontSize:'1em'},1400,
+          function() {
+            $('#new_login').animate({fontSize:'10em'},600);
+            $('#new_login').animate({fontSize:'0.001em'},1400,
+              function() {
+                $('#new_login').hide();
+              }
+            )
+          }
+        );
+      }
+    }
+  };
+</script>
 <h2>WISP: Wisconsin Irrigation Scheduling Program <%= Time.now.year %> Version 1.0.0</h2>
 <br/>
 <br/>
@@ -16,12 +36,15 @@
     <li><%= link_to "Report Setup", :controller => 'wisp', :action => :report_setup %></li>
     -->
   </ul>
-<% (0..15).each do %>
+<% (0..4).each do %>
 <br/>
 <% end %>
   
   <% if AuthenticationHelper::USING_OPENID && signed_in? %>
-    <%= button_to "Logout " + current_user.email, :controller => 'sessions', :action => :destroy %>
+    <% if @new_login %>
+      <h3 id="new_login">Creating new user account</h3>
+    <% end %>
+    <%= button_to "Logout " + current_user.email, {:controller => 'sessions', :action => :destroy}, {:id => 'logout'} %>
     <% if current_user.identifier_url == @rick_identifier_url %>
       <form action="/sessions/su">
         <input name="su_to"/>
