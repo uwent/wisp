@@ -50,6 +50,8 @@ module ADCalculator
   # adj_ET is calculated in module EtCalculator
   # Result is in inches of water
   def change_in_daily_storage(daily_rain, daily_irrig, adj_et)
+    # If any of these are nil, use 0.0 for the calculation instead of blowing up
+    daily_rain ||= 0.0; daily_irrig ||= 0.0; adj_et ||= 0.0
     (daily_rain + daily_irrig) - adj_et
   end # Change_In_Daily_Storage
 
