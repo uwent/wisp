@@ -19,10 +19,13 @@ class SessionsController < ApplicationController
        when :success
          ax = OpenID::AX::FetchResponse.from_success_response(openid)
          user = User.where(:identifier_url => openid.display_identifier).first
-         user ||= User.new_user(:identifier_url => openid.display_identifier,
+         unless user 
+           user = User.new_user(:identifier_url => openid.display_identifier,
                                :email => ax.get_single('http://axschema.org/contact/email'),
                                :first_name => ax.get_single('http://axschema.org/namePerson/first'),
                                :last_name => ax.get_single('http://axschema.org/namePerson/last'))
+           session[:new_login] = true # Alert the user that a new login has been created
+         end
          session[:user_id] = user.id
          # if user.first_name.blank?
            # redirect_to(user_additional_info_path(user))

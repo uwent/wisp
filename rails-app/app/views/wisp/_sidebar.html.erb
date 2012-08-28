@@ -1,17 +1,17 @@
 <script type="text/javascript">
   var new_login = <%= @new_login ? "true" : "false"%>;
   window.onload = function(){
+    // This serves as a proxy for "Are we on a page requiring login?"
     if (document.getElementById('logout')) {
       if (new_login) {
-        $('#logout').animate({fontSize:'1.5em'},800);
-        $('#logout').animate({fontSize:'1em'},1400,
+        // Expand the "New User Account Created" head to draw attention to it
+        $('#new_login').animate({fontSize:'200%'},600);
+        // Likewise the "Logout" button, so they see the name
+        $('#logout').animate({fontSize:'150%'},600);
+        // Shrink the "Logout" button back to normal, and shrink the CNA head
+        $('#logout').animate({fontSize:'100%'},800,
           function() {
-            $('#new_login').animate({fontSize:'10em'},600);
-            $('#new_login').animate({fontSize:'0.001em'},1400,
-              function() {
-                $('#new_login').hide();
-              }
-            )
+              $('#new_login').animate({fontSize:'90%'},100);
           }
         );
       }
@@ -42,7 +42,7 @@
   
   <% if AuthenticationHelper::USING_OPENID && signed_in? %>
     <% if @new_login %>
-      <h3 id="new_login">Creating new user account</h3>
+      <h3 id="new_login">New user account created</h3>
     <% end %>
     <%= button_to "Logout " + current_user.email, {:controller => 'sessions', :action => :destroy}, {:id => 'logout'} %>
     <% if current_user.identifier_url == @rick_identifier_url %>

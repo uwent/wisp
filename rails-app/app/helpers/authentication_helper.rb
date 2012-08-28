@@ -25,5 +25,11 @@ module AuthenticationHelper
     else
       session[:user_id] = SINGLE_USER_ID
     end
+    if session[:new_login]
+      @new_login = true
+      session[:new_login] = false
+    else
+      @new_login = false
+    end
   end
 end
