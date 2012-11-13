@@ -199,7 +199,8 @@
           async: false,
           success: function(html)
           {
-            $('#projectedADBox').innerHTML = html;
+            // Set the HTML of the summary box to the new stuff
+            $('#projectedADBox').html(newHtml);
           }
         });
     }
