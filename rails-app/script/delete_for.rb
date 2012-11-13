@@ -53,5 +53,5 @@ for group in user.groups
   if group.users.size == 1
     Group.delete group[:id]
   end
-  User.delete ser[:id]
+  User.delete user[:id]
 end
