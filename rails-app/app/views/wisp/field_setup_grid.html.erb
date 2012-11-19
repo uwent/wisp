@@ -110,7 +110,7 @@
       datatype: "json",
       colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD','ET Stn','Rain Stn','Soil Moist. Stn','Notes','Delete','Pivot','ID'],
       colModel:[{name:'name', index:'name',width:83,editable:true},
-                {name:'area', index:'area',width:20,editable:true, align:'right'},
+                {name:'area', index:'area',width:20,editable:true, align:'right',editrules:{number:true,minValue:0.0}},
                 {
                    name:'soil_type_id',index:'soil_type_id', width:40,resizable:true,   
                    align:"left",sorttype:"text",editable:true,edittype:"select",
@@ -122,9 +122,9 @@
                    },
                    editrules:{required:true}
                 },
-                {name:'field_capacity_pct', index:'field_capacity_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat},
-                {name:'perm_wilting_pt_pct', index:'perm_wilting_pt_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat},
-                {name:'target_ad_pct',index:'target_ad_pct',width:25,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat},
+                {name:'field_capacity_pct', index:'field_capacity_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,editrules:{number:true,minValue:0,maxValue:100}},
+                {name:'perm_wilting_pt_pct', index:'perm_wilting_pt_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,editrules:{number:true,minValue:0,maxValue:100}},
+                {name:'target_ad_pct',index:'target_ad_pct',width:25,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,editrules:{number:true,minValue:0,maxValue:100}},
                 // These three are hidden until we get these features running
                 {name:'ref_et_station_id', index:'ref_et_station_id',width:25,editable:true, align:'right',hidden:true},
                 {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right',hidden:true},
