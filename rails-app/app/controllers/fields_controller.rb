@@ -51,6 +51,8 @@ class FieldsController < ApplicationController
         attribs[:soil_type_id] = SoilType.default_soil_type[:id] unless attribs[:soil_type_id]
         # Should do a method for this, perhaps with a block for the tests
         attribs[:name] = "New field (pivot #{params[:pivot_id]})" unless (attribs[:name] && attribs[:name] != '')
+        attribs[:field_capacity] = SoilType.default_soil_type[:field_capacity] unless attribs[:field_capacity]
+        attribs[:perm_wilting_pt] = SoilType.default_soil_type[:perm_wilting_pt] unless attribs[:perm_wilting_pt]
         field = Field.create(attribs)
       else
         field = Field.find(params[:id])
@@ -60,7 +62,9 @@ class FieldsController < ApplicationController
         field.update_attributes(attribs)
       end
     end
-    attrs = field.attributes.symbolize_keys
+    attrs = field.attributes.symbolize_keys.merge(
+      {:field_capacity_pct => field.field_capacity_pct, :perm_wilting_pt_pct => field.perm_wilting_pt_pct }
+    )
     puts attrs.inspect
     attrs = ApplicationController.jsonify(attrs)
     render :json => attrs

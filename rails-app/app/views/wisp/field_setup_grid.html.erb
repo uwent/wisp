@@ -3,7 +3,6 @@
   function loadCropGrid(field_id) {
     $('#cropDataGrid').load('<%= url_for :controller => "wisp", :action => :crop_setup_grid %>',
       {field_id:field_id,user_id:user_id, farm_id:farm_id});
-      // alert('loadCropGrid for field '+field_id);
     crop_id = $("#crop_setup").getDataIDs()[0];
   }
   function rowSelect(id) {
@@ -25,7 +24,7 @@
     return [true,'',field_id]; // This was a total shot in the dark, Googling 'jqgrid afterSubmit' gave hints
   }
   function deleteField(id) {
-    jQuery('#field_setup').delGridRow(id,{afterSubmit:useFirstFieldRow,msg:'Delete field as well as crop and weather data under it?'});
+    jQuery('#field_setup').delGridRow(id,{afterSubmit:useFirstFieldRow,msg:'Permanently delete field, its crop & daily data?'});
   }
   function addFieldDeleteButtons() {
     var fieldIDs = jQuery("#field_setup").getDataIDs();
@@ -45,12 +44,14 @@
     var grid = $('#field_setup');
     newField = createNewField();
     field_id = newField['id'];
+    set_soil_characteristics(field_id,newField['soil_type_id']);
     grid.addRowData(field_id, newField); // add a new row with the new field's data
     addFieldDeleteButtons();
     grid.editRow(field_id,true); // put new row into inline-edit mode
     loadCropGrid(field_id);
   }
 
+  // Make a call to the server to create a new field; will return new row as JSON
   function createNewField() {
     var pvt={};
     $.ajax(
@@ -62,15 +63,24 @@
         contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
         async: false,
         success: function(json) {
-          pvt = json;
+          field = json;
         }
       }
     );
-    return pvt;
+    return field;
   }
-  function set_soil_characteristics(event) {
+  // Propagate changes from select-clicked event onwards
+  function set_soil_characteristics_from_event(event) {
+    // From stackoverflow.com/questions/5247138/jqgrid-change-cell-value-and-stay-in-edit-mode
+    var rowID = $(event.target).closest('tr.jqgrow').attr('id');
+    soil_id=parseInt($(event.target).val(),10);
+    set_soil_characteristics(rowID,soil_id);
+  }
+  // Ensure that default FC and PWP values are entered, whether from a new row being created
+  // or from the select box being clicked. Overwrite existing values in either case.
+  function set_soil_characteristics(curFieldID,soil_id) {
+    // This Ruby helper enumerates all the soil_type data, same order as the select box
     var soils = <%= soil_characteristics %>;
-    soil_id = this.value;
     fc = soils[soil_id]['field_capacity_pct'];
     pwp = soils[soil_id]['perm_wilting_pt_pct'];
     $("#"+curFieldID+"_field_capacity_pct").val(fc);
@@ -118,7 +128,7 @@
                    editoptions:   // working example for ET methods is '1:Percent Cover;2:Leaf Area Index'
                    {
                     value:"<%= soil_types_for_select %>",
-                    dataEvents: [{  type: 'change',fn: set_soil_characteristics}]
+                    dataEvents: [{  type: 'change',fn: set_soil_characteristics_from_event}]
                    },
                    editrules:{required:true}
                 },
