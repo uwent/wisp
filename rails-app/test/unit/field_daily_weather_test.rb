@@ -125,6 +125,14 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert_equal(date + span, fdw.date)
     assert_in_delta(-4.58, fdw.ad, 0.025)
   end
+
+  # deep drainage occurs when we go over field capacity
+  test "deep drainage" do
+    field = create_field_with_crop
+    date = Date.parse('2011-06-19')
+    fdw = (field.field_daily_weather.select { |fdw| fdw.date == date }).first
+    assert(fdw)
+  end
   
   def equal(fdw1,fdw2)
     fdw1.attributes.each do |attr_name,attr_val|
