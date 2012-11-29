@@ -6,95 +6,116 @@
   <%= stylesheet_link_tag "style" -%>
   <%= jqgrid_stylesheets.html_safe -%>
   <style type="text/css">
-	h2 {text-align:center;}
+  	h2 {text-align:center;}
 	
-	#fieldSelectionBox
-	{
-	  text-align: center;
-	}
+  	#fieldSelectionBox
+  	{
+  	  text-align: center;
+  	}
 
-	#fieldDataBox
-	{
-		position:absolute;
-		left:275px;
-		top:173px;
-		width:205px;
-		height:203px;
-		padding:2px;
-		border:1px solid gray;
-		margin:0px;
-	}
+  	#fieldDataBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:173px;
+  		width:205px;
+  		height:203px;
+  		padding:2px;
+  		border:1px solid gray;
+  		margin:0px;
+  	}
 
-	#tableDataBox
-	{
-		position:absolute;
-		left:500px;
-		top:173px;
-		width:690px;
-		padding:2px;
-		margin:0px;
-	}
+  	#tableDataBox
+  	{
+  		position:absolute;
+  		left:500px;
+  		top:173px;
+  		width:690px;
+  		padding:2px;
+  		margin:0px;
+  	}
 
-	#tableDataBox table tr td.editable
-	{
-		background:white
-	}
+  	#tableDataBox table tr td.editable
+  	{
+  		background:white
+  	}
 
-	#graphBox
-	{
-		position:absolute;
-		left:275px;
-		top:400px;
-		width:575px;
-		padding:2px;
-		border:1px solid gray;
-		margin:0px;
-	}
+  	#graphBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:400px;
+  		width:575px;
+  		padding:2px;
+  		border:1px solid gray;
+  		margin:0px;
+  	}
 	
-	#projectedADBox
-	{
-		position:absolute;
-		left:875px;
-		top:400px;
-		width:300px;
-		height:300px;
-		padding:2px;
-		border:1px solid gray;
-		margin:0px;
-	}
+  	#projectedADBox
+  	{
+  		position:absolute;
+  		left:875px;
+  		top:400px;
+  		width:300px;
+  		height:300px;
+  		padding:2px;
+  		border:1px solid gray;
+  		margin:0px;
+  	}
 	
-	#imageADBox
-	{
-		position:absolute;
-		left:875px;
-		top:375px;
-		width:300px;
-	}
+  	#imageADBox
+  	{
+  		position:absolute;
+  		left:875px;
+  		top:375px;
+  		width:300px;
+  	}
 	
-	table.center
-	{
-	  margin-left:auto;
-	  margin-right:auto;
-	}
-	</style>
-   </style>
+  	table.center
+  	{
+  	  margin-left:auto;
+  	  margin-right:auto;
+  	}
+	
+  	span.week-button
+  	{
+  	  background:#DDD;
+  	  border:1px solid;
+  	  border-radius:3px
+  	}
+  </style>
 <% end %>
 <%= content_for :scripts do %>
   <%= jqgrid_javascripts.html_safe %>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script type="text/javascript">
+    function parseDate(input) {
+      var parts = input.match(/(\d+)/g);
+      return new Date(parts[0], parts[1]-1, parts[2]);
+    }
+    function dateToS(date) {
+      return date.getFullYear() + '-' + (1+date.getMonth()) + '-' + date.getDate();
+    }
+    function setLastAndNextWeeks(date) {
+      lastWeek = parseDate(date);
+      lastWeek.setDate(lastWeek.getDate()-7);
+      lastWeek = dateToS(lastWeek);
+      nextWeek = parseDate(date);
+      nextWeek.setDate(nextWeek.getDate()+7);
+      nextWeek = dateToS(nextWeek);
+    }
+    
     <%= grid_javascript_settings %>
     var cur_date = '<%= @cur_date %>;'
+    var lastWeek
+    var nextWeek;
+    setLastAndNextWeeks(cur_date);
     var initial_date = '<%= @initial_date %>';
     // Load the Visualization API and the piechart package.
     google.load('visualization', '1.0', {'packages':['corechart']});
     // Set a callback to run when the Google Visualization API is loaded.
     google.setOnLoadCallback(plotGraph);
     // Support Safari and other stupid browsers whose Date objects are nonstandard
-    function parseDate(input) {
-      var parts = input.match(/(\d+)/g);
-      return new Date(parts[0], parts[1]-1, parts[2]);
-    }
 
      // Callback that creates and populates a data table,
      // instantiates the chart, passes in the data and
@@ -209,18 +230,29 @@
       adValue = <%= @field.target_ad_pct || "''" %>;
       document.getElementById('target_ad').value = adValue;
     }
+    
+    function changeDate(newDate) {
+      /* Detect if the passed-in object is coming from the calendar's "change" event, or
+         passed in explicitly by one of our button handlers */
+      if (newDate.type == "change") {
+        cur_date = $('#date_input').val();
+      } else {
+        cur_date = newDate;
+        $('#date_input').val(cur_date);
+      }
+      setLastAndNextWeeks(cur_date);
+      cur_page = curPage(initial_date,cur_date);
+      $("#weather").setGridParam({ page: cur_page }).trigger("reloadGrid");
+      plotGraph();
+      showSummaryBox(cur_date);
+    }
+    
     jQuery(document).ready(function(){
      plotGraph();
       showSummaryBox(cur_date);
       showTargetAD();
       
-      $("#date_input").change(function(){
-        cur_date = $('#date_input').val();
-        cur_page = curPage(initial_date,cur_date);
-        $("#weather").setGridParam({ page: cur_page }).trigger("reloadGrid");
-        plotGraph();
-        showSummaryBox(cur_date);
-      });
+      $("#date_input").change(changeDate);
       
     });
     
@@ -264,7 +296,7 @@
         <% end %>
       });
       </script>
-      Date: <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>"></input>
+      &nbsp;&nbsp;<span class="week-button" onclick="changeDate(lastWeek);">&lt;</span>&nbsp;<input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>"></input>&nbsp;<span class="week-button" onclick="changeDate(nextWeek);">&gt;</span>
     </td>
   </tr></table>
 </div>
