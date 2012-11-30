@@ -37,8 +37,7 @@ gem 'asigbiophys', :path => File.join(File.dirname(__FILE__),'vendor', 'asig')
 group :development, :test do
   gem 'sqlite3'
   gem 'ruby-debug19', :require => 'ruby-debug'
+end
+group :production do 
   gem 'mysql2'
 end
-# group :production do 
-	# gem 'mysql2'
-# end
