@@ -14,7 +14,7 @@ class WispController < ApplicationController
   end
    
   def userguide
-    send_file "public/#{USER_GUIDE}"
+    send_file "#{RAILS_ROOT}/public/#{USER_GUIDE}"
   end
   
   def project_status
