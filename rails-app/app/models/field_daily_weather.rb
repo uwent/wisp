@@ -99,10 +99,13 @@ class FieldDailyWeather < ActiveRecord::Base
       self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
     else
       return unless ref_et > 0.0
-      (logger.warn "#{self.inspect } couldn't calculate adj_et"; return) unless (self[:adj_et] = feeld.et_method.adj_et(self))
+      unless (self[:adj_et] = feeld.et_method.adj_et(self))
+        logger.warn "#{self.inspect } couldn't calculate adj_et"
+        return
+      end 
       # puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
       previous_ad = find_previous_ad
-    # puts "Got previous AD of #{previous_ad}"
+      # puts "Got previous AD of #{previous_ad}"
       requirements = [ "ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
       errors = []
       requirements.each do |cond|
@@ -117,12 +120,10 @@ class FieldDailyWeather < ActiveRecord::Base
       end
       # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
       delta_storage = change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
-    # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
+      # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
     
       dd = delta_storage + previous_ad
-      self[:deep_drainage] = (dd > total_available_water ? dd  - total_available_water : 0.0)
-      # FIXME: Entered percent moisture obviates these. Just check that there's a value?
-      self[:ad] = daily_ad(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+      self[:ad],self[:deep_drainage] = daily_ad_and_dd(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
       self[:calculated_pct_moisture] = moisture(
         feeld.current_crop.max_allowable_depletion_frac,
         total_available_water,

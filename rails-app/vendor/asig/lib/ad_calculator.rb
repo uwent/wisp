@@ -69,6 +69,25 @@ module ADCalculator
   
 
   ###############################################
+  # Created:: 05Dec12
+  # Author:: R Wayne
+  # AD is Allowable Depletion (aka RAW - Readily Available Water)
+  # prev_Daily_AD is previous day's daily AD
+  # delta_Stor is calculated in Change_In_Daily_Storage
+  # Results are in inches of water: [AD,DD]
+  #  AD is the smaller of max_ad_inches and the sum of previous + delta
+  #  Deep Drainage is what's left over above max_ad_inches
+  def daily_ad_and_dd(prev_daily_ad, delta_stor, mad_frac, taw)
+    max_ad_inches = ad_max_inches(mad_frac,taw)
+    water_inches = prev_daily_ad + delta_stor
+    if water_inches > max_ad_inches
+      [max_ad_inches,water_inches - max_ad_inches]
+    else
+      [water_inches,0.0]
+    end
+  end
+  
+  ###############################################
   # Created:: 15Jun11
   # Author:: P Kaarakka & Rick Wayne
   # mad_frac and taw are used to calculate Max AD in inches

@@ -125,14 +125,70 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert_equal(date + span, fdw.date)
     assert_in_delta(-4.58, fdw.ad, 0.025)
   end
-
-  # deep drainage occurs when we go over field capacity
-  test "deep drainage" do
-    field = create_field_with_crop
-    date = Date.parse('2011-06-19')
-    fdw = (field.field_daily_weather.select { |fdw| fdw.date == date }).first
-    assert(fdw)
+  
+  # Spew debug info to stdout (for failed assertions)
+  def dbgprt(fdw,field)
+    "\n  #{fdw.inspect},\n  field is #{field.inspect},\n  crop is #{field.current_crop.inspect}"
   end
+
+  # Select the appropriate pivot for a field, one belonging to either an LAI or % cover farm
+  def set_pivot(field,et_method=LaiEtMethod)
+    unless field.pivot.farm.et_method.class == et_method
+      field.pivot = Pivot.all.find do |pivot|
+        pivot.farm.et_method.class == et_method
+      end
+    end
+    assert(field.pivot,"Could not find a pivot whose farm has #{et_method.to_s}")
+    assert_equal(PctCoverEtMethod,field.pivot.farm.et_method.class)
+  end
+  
+  ET = 0.2
+  FC = 0.3
+  PWP = 0.15
+  MAD = 0.5
+  # deep drainage occurs when we go over field capacity -- check an LAI field first...
+  test "deep drainage with LAI" do
+    field = create_field_with_crop({field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
+    assert_equal(field.et_method,LaiEtMethod)
+    fdw = field.field_daily_weather.first
+    assert(fdw,'Should be able to get the first day of FDW')
+    fdw.ref_et = ET
+    fdw.save! # Should now have an AD calculated
+    assert_equal(field.ad_max, fdw.ad,"AD should start out at max ad in inches"+dbgprt(fdw,field))
+    fdw.ref_et = ET
+    fdw.leaf_area_index = 1.6 # Should yield adj. ET == ref. ET
+    fdw.irrigation = 0.3 # Add some irrigation at FC, 0.2 balanced by ET, 0.1 should drain out
+    fdw.save!
+    assert_in_delta(ET, fdw.adj_et, 2 ** -10,"An LAI of 1.6 should yield an adjusted ET same as ref ET"+dbgprt(fdw,field))
+    assert_in_delta(0.1, fdw.deep_drainage, 2 ** -10,'Should have gotten some deep drainage from adding irrigation at FC'+dbgprt(fdw,field))
+    assert_in_delta(field.ad_max, fdw.ad, 2 ** -10,'Deep drainage should leave the field at FC'+dbgprt(fdw,field))
+  end
+  
+  # deep drainage occurs when we go over field capacity -- now a percent cover field.
+  test "deep drainage with percent cover" do
+    pivot = pivots(:other)
+    assert_equal(PctCoverEtMethod, pivot.farm.et_method.class)
+    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
+    # set_pivot(field,PctCoverEtMethod)
+    fdw = field.field_daily_weather.first
+    assert(fdw,'Should be able to get the first day of FDW')
+    fdw.ref_et = ET
+    fdw.save! # Should now have an AD calculated
+    assert_in_delta(field.ad_max, fdw.ad, 2 ** -10, "AD should start out at max ad in inches"+dbgprt(fdw,field))
+    assert_in_delta(100*field.field_capacity, fdw.calculated_pct_moisture, 2 ** -10)
+    # Now look at emergence date so's to get adj_et numbers with a percent cover
+    fdw = field.field_daily_weather.select { |f| f.date == field.current_crop.emergence_date }.first
+    assert(fdw,'Should be able to get emergence-day FDW')
+    fdw.ref_et = ET
+    fdw.entered_pct_cover = fdw[:calculated_pct_cover] = 99.0 # Should yield adj. ET == ref. ET
+    fdw.save!
+    # Add irrigation to get it back up to ad_max, plus 0.1; the 0.1 should drain out
+    fdw.irrigation = (field.ad_max - fdw.ad) + 0.1
+    fdw.save!
+    assert_in_delta(ET, fdw.adj_et, 2 ** -10,"100% cover should yield an adjusted ET same as ref ET"+dbgprt(fdw,field))
+    assert_in_delta(0.1, fdw.deep_drainage, 2 ** -10,"Should have gotten some deep drainage from adding irrigation at FC #{fdw.inspect}")
+    assert_in_delta(field.ad_max, fdw.ad, 2 ** -10,'Deep drainage should leave the field at FC'+dbgprt(fdw,field))
+  end        
   
   def equal(fdw1,fdw2)
     fdw1.attributes.each do |attr_name,attr_val|

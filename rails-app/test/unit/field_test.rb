@@ -34,6 +34,38 @@ class FieldTest < ActiveSupport::TestCase
     assert_nothing_raised(Exception) {  @pcf.daily_deep_drainage_volume(ad_max, prev_daily_ad, delta_stor) }
     assert_nothing_raised(Exception) {  @pcf.daily_ad_from_moisture(mad_frac,taw,mrzd,pct_moisture_at_ad_min,pct_moisture_obs) }
   end
+
+  def create_a_field
+    f = Field.create(field_capacity: 0.3, perm_wilting_pt: 0.15, pivot_id: Pivot.first[:id])
+    assert_equal(f.current_crop.max_allowable_depletion_frac, 0.5)
+    f
+  end
+  
+  test "moisture defaults to field capacity on creation" do
+    field = create_a_field
+    assert_equal(100*field.field_capacity, field.field_daily_weather[0].calculated_pct_moisture)
+  end
+  
+  ET = 0.2
+  
+  test "AD defaults to TAW * MAD_FRAC * RZD on creation" do
+    field = create_a_field
+    assert(field.field_daily_weather[0], "Field should have FDW on creation")
+    assert_nil(field.field_daily_weather[0].ad)
+    field.field_daily_weather[0].ref_et = ET
+    field.save!
+    assert(field.field_daily_weather[0].ad)
+    expected_taw = (field.field_capacity - field.perm_wilting_pt) * field.current_crop.max_root_zone_depth
+    assert_in_delta(5.4, expected_taw, 2 ** -20)
+    expected_ad = 
+      field.current_crop.max_allowable_depletion_frac *
+      expected_taw
+    assert_in_delta(2.7, expected_ad, 2 ** -10)
+    assert_in_delta(2.7, field.field_daily_weather[0].ad, 2 ** -10)
+    field.field_daily_weather[1].ref_et = ET
+    field.save!
+    assert_in_delta(expected_ad - ET, field.field_daily_weather[1].ad, 2 ** -10)
+  end
   
   test "change_in_daily_storage works" do
     assert_equal(0.0, @pcf.change_in_daily_storage(0.0,0.0,0.0))
