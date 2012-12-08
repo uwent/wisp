@@ -259,12 +259,14 @@ class Field < ActiveRecord::Base
     # could re-interpolate everything, but let's just do the ones around the new point
     midpoint_pct_cover = fdw.pct_cover
     fdw_index = field_daily_weather.index {|an_fdw| an_fdw[:date] == fdw[:date]}
-    first_fdw,last_fdw = surrounding(field_daily_weather,fdw_index,:entered_pct_cover)
-    # puts "fdw_index: #{fdw_index} first_fdw: #{first_fdw} last_fdw: #{last_fdw} midpoint: #{midpoint_pct_cover}fdw: #{fdw.date}, #{fdw.calculated_pct_cover}, #{fdw.entered_pct_cover}, #{fdw.pct_cover}"
+    first_fdw_index,last_fdw_index = surrounding(field_daily_weather,fdw_index,:entered_pct_cover)
+    if field_daily_weather[first_fdw_index].date < current_crop.emergence_date
+      first_fdw_index = field_daily_weather.index { |fdw| fdw.date == current_crop.emergence_date }
+    end
     FieldDailyWeather.defer_balances
-    linear_interpolation(field_daily_weather,first_fdw,fdw_index,:entered_pct_cover,:calculated_pct_cover)
-    if field_daily_weather[last_fdw][:entered_pct_cover]
-      linear_interpolation(field_daily_weather,fdw_index,last_fdw,:entered_pct_cover,:calculated_pct_cover)
+    linear_interpolation(field_daily_weather,first_fdw_index,fdw_index,:entered_pct_cover,:calculated_pct_cover)
+    if field_daily_weather[last_fdw_index][:entered_pct_cover]
+      linear_interpolation(field_daily_weather,fdw_index,last_fdw_index,:entered_pct_cover,:calculated_pct_cover)
     else
       # go one week from last-entered value
       field_daily_weather[fdw_index+1..fdw_index+6].each do |extrapolated_fdw|
@@ -274,7 +276,7 @@ class Field < ActiveRecord::Base
     end
     FieldDailyWeather.undefer_balances
     # NOW trigger the whole mess!
-    # field_daily_weather[first_fdw].save!
+    # field_daily_weather[first_fdw_index].save!
   end
   
   def weather_for(date,end_date=nil)

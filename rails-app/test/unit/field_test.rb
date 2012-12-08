@@ -216,16 +216,51 @@ class FieldTest < ActiveSupport::TestCase
     assert_equal(field.et_method.class, PctCoverEtMethod,field.pivot.farm.inspect)
   end
   
+  def emergence_index(field)
+    field.field_daily_weather.index {|fdw| fdw.date == field.current_crop.emergence_date}
+  end
+  
   test "I can automatically set a range of percent cover" do
     FieldDailyWeather.destroy_all
     field,emergence_date = setup_pct_cover_field_with_emergence
-    assert_equal(0.0, field.field_daily_weather[0].pct_cover,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
-    field.field_daily_weather[9].entered_pct_cover = 9.0
-    field.field_daily_weather[9].save!
+    emi = emergence_index(field)
+    assert_equal(0.0, field.field_daily_weather[emi].pct_cover,field.field_daily_weather[emi..emi+10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+    field.field_daily_weather[emi+9].entered_pct_cover = 9.0
+    field.field_daily_weather[emi+9].save!
     field = Field.find(field[:id])
-    assert_in_delta(1.0, field.field_daily_weather[1].pct_cover, 0.00001,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
-    assert_in_delta(8.0, field.field_daily_weather[8].pct_cover, 0.00001,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
-    assert_in_delta(9.0, field.field_daily_weather[15].pct_cover, 0.00001,field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+    assert_in_delta(1.0, field.field_daily_weather[emi+1].pct_cover, 0.00001,field.field_daily_weather[emi..emi+10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+    assert_in_delta(8.0, field.field_daily_weather[emi+8].pct_cover, 0.00001,field.field_daily_weather[emi..emi+10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+    assert_in_delta(9.0, field.field_daily_weather[emi+15].pct_cover, 0.00001,field.field_daily_weather[emi..emi+10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+  end
+  
+  test "my automatically-set range doesn't extend back past emergence" do
+    FieldDailyWeather.destroy_all
+    field,emergence_date = setup_pct_cover_field_with_emergence
+    emi = emergence_index(field)
+    index_to_set = emi + 2
+    day_before_emergence = emi - 1
+    day_after_emergence = emi + 1
+    week_after_set = index_to_set + 6
+    one_day_after_one_week = week_after_set + 1
+    assert_equal(0.0, field.field_daily_weather[emi].pct_cover,field.field_daily_weather[emi-1..emi+10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+    # Back one day before emergence too
+    assert_equal(0.0, field.field_daily_weather[day_before_emergence].pct_cover,field.field_daily_weather[day_before_emergence..emi + 10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+    field.field_daily_weather[index_to_set].entered_pct_cover = 9.0
+    field.field_daily_weather[index_to_set].save!
+    field = Field.find(field[:id])
+    # Very first day of fdw, way back before emergence, certainly shouldn't be affected
+    assert_in_delta(0.0, field.field_daily_weather[0].pct_cover, 0.00001,(field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect) + " emergence date of #{field.current_crop.emergence_date}")
+    # Nor should the day before emergence
+    assert_in_delta(0.0, field.field_daily_weather[day_before_emergence].pct_cover, 0.00001,(field.field_daily_weather[day_before_emergence..emi + 10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect) + " emergence date of #{field.current_crop.emergence_date}")
+    # Emergence day itself should be zero too
+    assert_in_delta(0.0, field.field_daily_weather[emi].pct_cover, 0.00001,(field.field_daily_weather[day_before_emergence..emi + 10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect) + " emergence date of #{field.current_crop.emergence_date}")
+    # Day after emergence should be affected -- halfway between 0 and 9
+    assert_in_delta((9.0 - 0.0) / 2.0, field.field_daily_weather[day_after_emergence].pct_cover, 0.00001,(field.field_daily_weather[day_before_emergence..emi + 10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect) + " emergence date of #{field.current_crop.emergence_date}")
+    # And of course the one we explicitly set s/b unchanged
+    assert_in_delta(9.0, field.field_daily_weather[index_to_set].pct_cover, 0.00001,field.field_daily_weather[day_before_emergence..emi + 10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+    # And we're not haring off further than a week into the future, either, are we laddie
+    assert_in_delta(9.0, field.field_daily_weather[week_after_set].pct_cover, 0.00001,field.field_daily_weather[day_before_emergence..emi + 10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
+    assert_in_delta(0.0, field.field_daily_weather[one_day_after_one_week].pct_cover, 0.00001,field.field_daily_weather[day_before_emergence..emi + 10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
   end
   
   def field_with_soil_type
