@@ -1,16 +1,16 @@
 module WispHelper
   def options_from_group_for_select(group,selected_farm)
-    arr = group.farms.map { |farm|  [farm.name,farm.id]}
+    arr = group.farms.map { |farm|  [truncate(farm.name,length: 40),farm.id]}
     ret = options_for_select(arr,selected_farm[:id])
   end
   
   def options_from_farm_for_select(farm,selected_pivot)
-    arr = farm.pivots.map { |pivot|  [pivot.name,pivot.id]}
+    arr = farm.pivots.map { |pivot|  [truncate(pivot.name,length: 40),pivot.id]}
     ret = options_for_select(arr,selected_pivot[:id])
   end
   
   def options_from_pivot_for_select(pivot,selected_field)
-    arr = pivot.fields.map { |field|  [field.name,field.id]}
+    arr = pivot.fields.map { |field|  [truncate(field.name,length: 40),field.id]}  
     ret = options_for_select(arr,selected_field[:id])
   end
   
