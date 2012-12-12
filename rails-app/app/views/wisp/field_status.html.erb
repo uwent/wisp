@@ -18,8 +18,8 @@
   		position:absolute;
   		left:275px;
   		top:173px;
-  		width:226px;
-  		height:203px;
+  		width:246px;
+  		height:204px;
   		padding:2px;
   		border:1px solid gray;
   		margin:0px;
@@ -28,9 +28,9 @@
   	#tableDataBox
   	{
   		position:absolute;
-  		left:525px;
+  		left:544px;
   		top:171px;
-  		width:690px;
+  		width:691px;
   		padding:2px;
   		margin:0px;
   	}
@@ -40,24 +40,25 @@
   		background:white
   	}
 
-  	#graphBox
+  	#projectedADBox
   	{
   		position:absolute;
   		left:275px;
   		top:400px;
-  		width:575px;
+  		width:246px;
+  		height:290px;
   		padding:2px;
   		border:1px solid gray;
   		margin:0px;
   	}
 	
-  	#projectedADBox
+  	#graphBox
   	{
   		position:absolute;
-  		left:875px;
+  		left:545px;
   		top:400px;
-  		width:300px;
-  		height:300px;
+  		width:648px;
+  		height: 290px;
   		padding:2px;
   		border:1px solid gray;
   		margin:0px;
@@ -189,12 +190,12 @@
        }
        // Set chart options
        var options = {'title':'Calculated / Projected Allowable Depletion (inches)',
-                      'width':575,
-                      'height':300,
+                      'width':646,
+                      'height':290,
                       'colors':colors,
-                      'fontSize':10,
+                      'fontSize':12,
                       'pointSize':5,
-                      'titleTextStyle':{fontSize:15}
+                      'titleTextStyle':{fontSize:18}
                      };
 
        // Instantiate and draw our chart, passing in some options.
@@ -311,14 +312,14 @@ AD at field capacity: <%= sprintf("%0.2f",@field.ad_max) %> in.<br/>
 Initial soil moisture: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
 <% target_ad_in_str = @field.target_ad_in ? sprintf('%0.2f in.',@field.target_ad_in) : '--' %>
 <%= form_tag(url_for :controller => "wisp", :action => :field_status, :pivot_id => @pivot, :field_id => @field) do %>
-Target&nbsp;<input name="field[target_ad_pct]" id="target_ad" size="1"/>%&nbsp;(<div style="display:inline" id='target_ad_in'><%= target_ad_in_str %></div>)&nbsp;<input type="submit" value="Update Tgt."/>
+Target&nbsp;<input name="field[target_ad_pct]" id="target_ad" size="1"/>%&nbsp;(<div style="display:inline" id='target_ad_in'><%= target_ad_in_str %></div>)&nbsp;<input type="submit" value="Update Target"/>
 <% end %>
 </div>
 
 <%= render :partial => 'wisp/partials/field_daily_wx'%>
 
 <div id="graphBox">
-  <canvas id="example" width="400" height="300"></canvas>
+  <canvas id="example" width="420" height="300"></canvas>
 </div>
 
 <div id="projectedADBox">

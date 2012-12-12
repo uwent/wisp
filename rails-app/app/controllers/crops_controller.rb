@@ -6,7 +6,6 @@ class CropsController < ApplicationController
     :name,
     :variety,
     :emergence_date,
-    :initial_soil_moisture,
     :harvest_or_kill_date,
     :max_root_zone_depth,
     :max_allowable_depletion_frac,

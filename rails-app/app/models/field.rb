@@ -154,12 +154,12 @@ class Field < ActiveRecord::Base
     mrzd = current_crop.max_root_zone_depth
     taw = taw(field_capacity, perm_wilting_pt, mrzd)
     mad_frac = current_crop.max_allowable_depletion_frac
-  # puts "Field#taw returns #{taw}; max allowable depletion frac is #{mad_frac}"
+    # puts "Field#taw returns #{taw}; max allowable depletion frac is #{mad_frac}"
     
     pct_mad_min = pct_moisture_at_ad_min(field_capacity, ad_max_inches(mad_frac,taw), mrzd)
     
     obs_pct_moisture = current_crop.initial_soil_moisture
-    # puts "about to do the calc"
+    # puts "about to do the calc with crop's initial moisture at #{obs_pct_moisture}"
     daily_ad_from_moisture(mad_frac,taw,mrzd,pct_mad_min,obs_pct_moisture)
     
   end

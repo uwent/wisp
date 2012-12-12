@@ -116,17 +116,28 @@ module ETCalculator
   end
   
   def linear_interpolation(wx_arr,start,finish,entered_method,calc_method)
-    return unless wx_arr && wx_arr.size > 2
+    return unless wx_arr && wx_arr.size > 2 # Can't interpolate nothin', or if arr has fewer than 3 values
+    return unless (n_vals = 1 + finish - start) > 1 # Finish and start have to be far enough apart
     return if start >= finish && start < 0 && finish > wx_arr.size - 1
     start_val = wx_arr[start][entered_method] || wx_arr[start][calc_method] || 0.0
     finish_val = wx_arr[finish][entered_method] || wx_arr[finish][calc_method] || 0.0
-    incr = linear_increment(start_val,finish_val,1 + finish - start)
+    incr = linear_increment(start_val,finish_val,n_vals)
     start.upto(finish).each do |ii|
       # Note that this sets the calculated_pct_cover fields of the days with entered_pct_cover,
       # but should be to the same value
       wx_arr[ii][calc_method] = start_val + (ii - start)*incr
       if wx_arr[ii].respond_to?('save!')
-        wx_arr[ii].save!
+        begin
+          wx_arr[ii].save!
+        rescue Exception => e
+          dbg = <<-END
+          ETCalculator::linear_interpolation: Could not save wx_arr[#{ii}]
+            start #{start} finish #{finish} entered_method #{entered_method} calc_method #{calc_method}
+            start_val #{start_val} finish_val #{finish_val} incr #{incr}
+            #{wx_arr[ii].inspect}
+          END
+          logger.warn dbg
+        end
       end
     end
   end

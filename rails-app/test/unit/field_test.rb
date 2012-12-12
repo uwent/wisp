@@ -34,39 +34,91 @@ class FieldTest < ActiveSupport::TestCase
     assert_nothing_raised(Exception) {  @pcf.daily_deep_drainage_volume(ad_max, prev_daily_ad, delta_stor) }
     assert_nothing_raised(Exception) {  @pcf.daily_ad_from_moisture(mad_frac,taw,mrzd,pct_moisture_at_ad_min,pct_moisture_obs) }
   end
-
-  def create_a_field
-    f = Field.create(field_capacity: 0.3, perm_wilting_pt: 0.15, pivot_id: Pivot.first[:id])
-    assert_equal(f.current_crop.max_allowable_depletion_frac, 0.5)
+  
+  FC = 0.3
+  PWP = 0.15
+  MAD_FRAC = 0.5
+  
+  def create_a_field(pivot_id=Pivot.first[:id])
+    f = Field.create(field_capacity: FC, perm_wilting_pt: PWP, pivot_id: pivot_id)
+    assert_equal(f.current_crop.max_allowable_depletion_frac, MAD_FRAC)
     f
   end
   
   test "moisture defaults to field capacity on creation" do
     field = create_a_field
     assert_equal(100*field.field_capacity, field.field_daily_weather[0].calculated_pct_moisture)
+    fdw = field.field_daily_weather.select { |f| f.date == field.current_crop.emergence_date }.first
+    assert_equal(100*field.field_capacity, fdw.calculated_pct_moisture)
+  end
+  
+  test "deep drainage is zero on creation" do
+    field = create_a_field
+    field.field_daily_weather[50].ref_et = 0.2
+    field.field_daily_weather[50].leaf_area_index = 1.9
+    field.save!
+    fdw_with_dd = 0
+    field.field_daily_weather.each do |fdw|
+      if fdw.deep_drainage
+        assert_in_delta(0.0, fdw.deep_drainage, 2 ** -20,fdw.date)
+        fdw_with_dd += 1
+      end
+    end
+    assert(fdw_with_dd > 0, "Should have been some deep drainage numbers")
+  end
+  
+  test "deep drainage is zero for percent cover fields too" do
+    pct_pivot = Pivot.all.select { |p| p.farm.et_method.class == PctCoverEtMethod }.first
+    field = create_a_field(pct_pivot[:id])
+    field.field_daily_weather[50].ref_et = 0.2
+    field.field_daily_weather[50].entered_pct_cover = 80.0
+    field.save!
+    fdw_with_dd = 0
+    field.field_daily_weather.each do |fdw|
+      if fdw.deep_drainage
+        assert_in_delta(0.0, fdw.deep_drainage, 2 ** -20,fdw.date)
+        fdw_with_dd += 1
+      end
+    end
+    assert(fdw_with_dd > 0, "Should have been some deep drainage numbers")
   end
   
   ET = 0.2
   
   test "AD defaults to TAW * MAD_FRAC * RZD on creation" do
     field = create_a_field
-    assert(field.field_daily_weather[0], "Field should have FDW on creation")
-    assert_nil(field.field_daily_weather[0].ad)
-    field.field_daily_weather[0].ref_et = ET
+    assert_in_delta(FC, field.field_capacity, 2 ** -20)
+    assert_in_delta(MAD_FRAC, field.current_crop.max_allowable_depletion_frac, 2 ** -20)
+    # assert_equal(PctCoverEtMethod, field.et_method.class)
+    fdw = field.field_daily_weather.select { |f| f.date == field.current_crop.emergence_date }.first
+    second_fdw = field.field_daily_weather.select { |f| f.date == field.current_crop.emergence_date + 1 }.first
+    assert(fdw, "Field should have FDW on creation")
+    assert(second_fdw, "Should have a successor to fdw")
+    assert_nil(fdw.ad)
+    fdw.ref_et = ET
     field.save!
-    assert(field.field_daily_weather[0].ad)
+    assert(fdw.ad)
     expected_taw = (field.field_capacity - field.perm_wilting_pt) * field.current_crop.max_root_zone_depth
     assert_in_delta(5.4, expected_taw, 2 ** -20)
-    expected_ad = 
-      field.current_crop.max_allowable_depletion_frac *
-      expected_taw
+    expected_ad = field.current_crop.max_allowable_depletion_frac * expected_taw
     assert_in_delta(2.7, expected_ad, 2 ** -10)
-    assert_in_delta(2.7, field.field_daily_weather[0].ad, 2 ** -10)
-    field.field_daily_weather[1].ref_et = ET
+    assert_in_delta(2.7, fdw.ad, 2 ** -10)
+    second_fdw.ref_et = ET
+    second_fdw.leaf_area_index = 1.605 # Empirically determined to yield adj_et ~= ref_et
     field.save!
-    assert_in_delta(expected_ad - ET, field.field_daily_weather[1].ad, 2 ** -10)
+    assert_in_delta(ET, second_fdw.adj_et, 2 ** -10)
+    assert_in_delta(expected_ad - second_fdw.adj_et, second_fdw.ad, 2 ** -10)
   end
   
+  test "calculated_pct_moisture is correct on creation" do
+    pct_pivot = Pivot.all.select { |p| p.farm.et_method.class == PctCoverEtMethod }.first
+    field = create_a_field(pct_pivot[:id])
+    assert_in_delta(100*field.field_capacity, field.field_daily_weather[0].pct_moisture, 2 ** -20)
+    (1..field.field_daily_weather.size-1).each do |day|
+      assert_nil(field.field_daily_weather[day].pct_moisture)
+    end
+  end
+                                                        
   test "change_in_daily_storage works" do
     assert_equal(0.0, @pcf.change_in_daily_storage(0.0,0.0,0.0))
     assert_equal(-0.2, @pcf.change_in_daily_storage(0.0,0.0,0.2))

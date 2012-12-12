@@ -46,4 +46,9 @@ class Crop < ActiveRecord::Base
     ""
   end
   
+  # Shadows the atttribute -- I'm pulling this out of field/crop setup process and making them put it in on field status
+  def initial_soil_moisture
+    field.field_capacity * 100.0
+  end
+  
 end
