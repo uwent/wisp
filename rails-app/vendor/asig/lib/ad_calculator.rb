@@ -82,8 +82,9 @@ module ADCalculator
     water_inches = prev_daily_ad + delta_stor
     # For some reason we're getting a rounding error here, where the water is coming up
     # infinitesmially greater than max_ad_inches. So only look for significant DD.
-    if (water_inches - max_ad_inches).abs > 0.001
-      [max_ad_inches,water_inches - max_ad_inches]
+    drainage = water_inches - max_ad_inches
+    if drainage > 0.00001
+      [max_ad_inches,drainage]
     else
       [water_inches,0.0]
     end

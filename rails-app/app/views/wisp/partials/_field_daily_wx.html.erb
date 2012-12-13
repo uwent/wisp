@@ -3,6 +3,7 @@
         <script type="text/javascript">
           var lastsel;
           var isLai = <%= @field.et_method.method_name == "LAI" ? 'true' : 'false' %>;
+          var max_moisture = <%= @field.field_capacity * 100.0 %>;
           var laiFormatter,pctCoverFormatter;
           var laiIsEditable,pctCoverIsEditable;
           if (isLai) {
@@ -54,7 +55,7 @@
                  formatter:'number', formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0.0,maxValue:10.0}},
                 {name:'pct_moisture', index:'pct_moisture',width:72,
                  editable:true, align:'right',
-                 formatter:'number', formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0.0,maxValue:100.0}},
+                 formatter:'number', formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0.0,maxValue:max_moisture}},
                 {name:'entered_pct_cover', index:'entered_pct_cover',width:63,
                  editable:pctCoverIsEditable, align:'right',hidden:isLai,
                  formatter:'number', formatoptions:{decimalPlaces:0},editrules:{number:true,minValue:0.0,maxValue:100.0}},
