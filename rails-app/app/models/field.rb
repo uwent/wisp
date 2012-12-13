@@ -112,7 +112,7 @@ class Field < ActiveRecord::Base
         lai = days_since_emergence >= 0 ? lai_corn(days_since_emergence) : 0.0
         pct_cover = nil
       elsif et_method.class == PctCoverEtMethod
-        pct_cover = 0.0 # Should this be pre-calculated somehow?
+        pct_cover = 0.0
         lai = nil
       end
       field_daily_weather << FieldDailyWeather.new(

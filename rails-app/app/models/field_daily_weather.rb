@@ -97,6 +97,7 @@ class FieldDailyWeather < ActiveRecord::Base
       self[:calculated_pct_moisture] = entered_pct_moisture
       self[:ad] = [ad_from_moisture(total_available_water),total_available_water].min
       self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
+      logger.info "#{self[:date]}: Deep drainage #{self[:deep_drainage]} from entered moisture of #{entered_pct_moisture}" if self[:deep_drainage] > 0.0
     else
       return unless ref_et > 0.0
       unless (self[:adj_et] = feeld.et_method.adj_et(self))
@@ -124,6 +125,10 @@ class FieldDailyWeather < ActiveRecord::Base
     
       dd = delta_storage + previous_ad
       self[:ad],self[:deep_drainage] = daily_ad_and_dd(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+      dbg = <<-END
+      #{self[:date]}: Deep drainage of #{self[:deep_drainage]} from prev ad #{previous_ad}, delta #{delta_storage}, taw #{total_available_water}
+      END
+      logger.info dbg if self[:deep_drainage] > 0
       self[:calculated_pct_moisture] = moisture(
         feeld.current_crop.max_allowable_depletion_frac,
         total_available_water,
@@ -135,35 +140,35 @@ class FieldDailyWeather < ActiveRecord::Base
     end
   end
   
-  def update_balances
-    return unless self[:ref_et]
-    balance_calcs.each { |attrib_name,val| self[attrib_name] = val }
-  end
-  
-  def balance_calcs
-    # print " #{self.date.yday} "; $stdout.flush
-    # deb_puts "balance_calcs for #{self.date} (#{self.field.name})"
-    ret = {}
-    ret[:adj_et] = field.et_method.adj_et(self)
-    previous_ad = find_previous_ad
-    # deb_puts "no previous ad" unless previous_ad
-    if ret[:adj_et] && previous_ad
-      delta_storage = change_in_daily_storage(rain, irrigation, adj_et)
-      total_available_water = taw(field.field_capacity, field.perm_wilting_pt, field.current_crop.max_root_zone_depth)
-      ret[:deep_drainage] = [0.0,(delta_storage + previous_ad) - total_available_water].max
-      ret[:ad] = daily_ad(previous_ad, delta_storage, field.current_crop.max_allowable_depletion_frac, total_available_water)
-      ret[:calculated_pct_moisture]= moisture(
-        field.current_crop.max_allowable_depletion_frac,
-        total_available_water,
-        field.perm_wilting_pt,
-        field.field_capacity,
-        ret[:ad],
-        field.current_crop.max_root_zone_depth
-      )
-    end
-    # deb_puts "balance_calcs returning with #{ret.inspect}"
-    ret
-  end
+  # def update_balances
+  #   return unless self[:ref_et]
+  #   balance_calcs.each { |attrib_name,val| self[attrib_name] = val }
+  # end
+  # 
+  # def balance_calcs
+  #   # print " #{self.date.yday} "; $stdout.flush
+  #   # deb_puts "balance_calcs for #{self.date} (#{self.field.name})"
+  #   ret = {}
+  #   ret[:adj_et] = field.et_method.adj_et(self)
+  #   previous_ad = find_previous_ad
+  #   # deb_puts "no previous ad" unless previous_ad
+  #   if ret[:adj_et] && previous_ad
+  #     delta_storage = change_in_daily_storage(rain, irrigation, adj_et)
+  #     total_available_water = taw(field.field_capacity, field.perm_wilting_pt, field.current_crop.max_root_zone_depth)
+  #     ret[:deep_drainage] = [0.0,(delta_storage + previous_ad) - total_available_water].max
+  #     ret[:ad] = daily_ad(previous_ad, delta_storage, field.current_crop.max_allowable_depletion_frac, total_available_water)
+  #     ret[:calculated_pct_moisture]= moisture(
+  #       field.current_crop.max_allowable_depletion_frac,
+  #       total_available_water,
+  #       field.perm_wilting_pt,
+  #       field.field_capacity,
+  #       ret[:ad],
+  #       field.current_crop.max_root_zone_depth
+  #     )
+  #   end
+  #   # deb_puts "balance_calcs returning with #{ret.inspect}"
+  #   ret
+  # end
   
   def update_next_days_balances
     if self[:ad] && @@do_balances
