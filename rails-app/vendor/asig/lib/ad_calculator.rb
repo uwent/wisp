@@ -80,7 +80,9 @@ module ADCalculator
   def daily_ad_and_dd(prev_daily_ad, delta_stor, mad_frac, taw)
     max_ad_inches = ad_max_inches(mad_frac,taw)
     water_inches = prev_daily_ad + delta_stor
-    if water_inches > max_ad_inches
+    # For some reason we're getting a rounding error here, where the water is coming up
+    # infinitesmially greater than max_ad_inches. So only look for significant DD.
+    if (water_inches - max_ad_inches).abs > 0.001
       [max_ad_inches,water_inches - max_ad_inches]
     else
       [water_inches,0.0]
