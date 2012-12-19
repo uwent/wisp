@@ -71,8 +71,14 @@ class Field < ActiveRecord::Base
     field_capacity * 100.0
   end
   
+  def field_capacity=(val)
+    @do_balance_recalc = true
+    super(val)
+  end
+  
   def field_capacity_pct=(val)
     write_attribute(:field_capacity, val.to_f / 100.0)
+    @do_balance_recalc = true
   end
   
   def perm_wilting_pt
@@ -84,13 +90,20 @@ class Field < ActiveRecord::Base
       DEFAULT_PERM_WILTING_PT
     end
   end
-
+  
+  def perm_wilting_pt=(val)
+    raise("boom!")
+    @do_balance_recalc = true
+    super(val)
+  end
+  
   def perm_wilting_pt_pct
     perm_wilting_pt * 100.0
   end
 
   def perm_wilting_pt_pct=(val)
-    write_attribute(:perm_wilting_pt,val.to_f / 100.0)
+    perm_wilting_pt = val.to_f / 100.0
+    # write_attribute(:perm_wilting_pt,val.to_f / 100.0)
   end
   
   def create_dependent_objects
@@ -108,6 +121,8 @@ class Field < ActiveRecord::Base
     # puts "create_fdw for #{start_date}, #{end_date}"
     pct_cover = nil
     lai = nil
+    # Originally this was an attribute of crop, but now it just grabs our field capacity * 100
+    moisture = current_crop.initial_soil_moisture
     (start_date..end_date).each do |date|
       # Could use update_canopy for this, but why go 'round twice? Still, there's a smell.
       days_since_emergence = date - crops.first.emergence_date
@@ -119,12 +134,11 @@ class Field < ActiveRecord::Base
         lai = nil
       end
       field_daily_weather << FieldDailyWeather.new(
-        :date => date, :ref_et => 0.0, :adj_et => 0.0, :leaf_area_index => lai, :calculated_pct_cover => pct_cover
+        :date => date, :ref_et => 0.0, :adj_et => 0.0,
+        :leaf_area_index => lai, :calculated_pct_cover => pct_cover,
+        :calculated_pct_moisture => moisture
       )
     end
-    # Originally this was an attribute of crop, but now it just grabs our field capacity * 100
-    moisture = current_crop.initial_soil_moisture
-    field_daily_weather[0].calculated_pct_moisture = moisture
   end
   
   def create_crop
@@ -383,20 +397,23 @@ class Field < ActiveRecord::Base
       @do_balance_recalc = false
     end
   end
+  
+  # def field_capacity=(value)
   # Hook into ActiveRecord's write_attribute to allow a specific callback on attributes requiring
   # a balance calc cascade.
   # Per http://stackoverflow.com/questions/1513991/callback-for-changed-activerecord-attributes
   # As it turns out, this doesn't work with update_attributes because it isn't called till after
   # said attributes are set.
-  # def write_attribute(attr_name, new_value)
-  #   super.tap do
-  #     attribute_changed(attr_name, read_attribute(attr_name), new_value)
-  #   end
-  # end
-  # 
-  # private
-  # 
-  # def attribute_changed(attr, old_val, new_val)
-  #   logger.info "Attribute Changed: #{attr} from #{old_val} to #{new_val}"
-  # end
+  def write_attribute(attr_name, new_value)
+    super.tap do
+      attribute_changed(attr_name, read_attribute(attr_name), new_value)
+    end
+  end
+  
+  private
+  
+  def attribute_changed(attr, old_val, new_val)
+    puts "Attribute Changed: #{attr} from #{old_val} to #{new_val}"
+    raise "boom!"
+  end
 end

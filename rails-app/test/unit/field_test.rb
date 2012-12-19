@@ -109,7 +109,7 @@ class FieldTest < ActiveSupport::TestCase
     assert_in_delta(ET, second_fdw.adj_et, 2 ** -10)
     assert_in_delta(expected_ad - second_fdw.adj_et, second_fdw.ad, 2 ** -10)
   end
-  
+                                                        
   def get_pct_pivot
     Pivot.all.select { |p| p.farm.et_method.class == PctCoverEtMethod }.first
   end
@@ -132,7 +132,7 @@ class FieldTest < ActiveSupport::TestCase
     field = create_a_field(pct_pivot[:id])
     field.field_capacity = 0.52 # None of the defaults come anywhere near this value
     field.save!
-    assert_in_delta(100*field.field_capacity, field.field_daily_weather[0], 2 ** -20)
+    assert_in_delta(100*field.field_capacity, field.field_daily_weather[0].pct_moisture, 2 ** -20)
   end
                                                         
   test "change_in_daily_storage works" do
@@ -592,5 +592,16 @@ class FieldTest < ActiveSupport::TestCase
       ad_value -= 0.3
     end
     assert(field.problem(first_date,second_date))
+  end
+  
+  test "new attribute setters" do
+    field = Field.first
+    assert(field)
+    assert(!field.do_balance_recalc, "Untouched field shouldn't need balance recalc!")
+    attribs = {:perm_wilting_pt_pct => 0.5}
+    assert_raise(Exception) { Field.update(field[:id],attribs) }
+    assert(field.do_balance_recalc == true, "Modifying perm_wilting_pt_pct should trigger recalc flag!")
+    field.perm_wilting_pt_pct = 0.5
+    assert_raise(Exception) { field.save! }
   end
 end
