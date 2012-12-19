@@ -110,13 +110,29 @@ class FieldTest < ActiveSupport::TestCase
     assert_in_delta(expected_ad - second_fdw.adj_et, second_fdw.ad, 2 ** -10)
   end
   
-  test "calculated_pct_moisture is correct on creation" do
-    pct_pivot = Pivot.all.select { |p| p.farm.et_method.class == PctCoverEtMethod }.first
+  def get_pct_pivot
+    Pivot.all.select { |p| p.farm.et_method.class == PctCoverEtMethod }.first
+  end
+  
+  # FIXME: These two tests only operate correctly if percent moisture can be set via lifecycle methods.
+  # This does not appear to be the case -- for some reason the change to the attribute already seems to
+  # have been made by the time our clever write_attribute hook gets called, so it can't detect a change.
+  # So these tests may have to be scrapped, and their intent moved to fields_controller_test.rb
+  test "pct_moisture is correct on creation" do
+    pct_pivot = get_pct_pivot
     field = create_a_field(pct_pivot[:id])
     assert_in_delta(100*field.field_capacity, field.field_daily_weather[0].pct_moisture, 2 ** -20)
     (1..field.field_daily_weather.size-1).each do |day|
       assert_nil(field.field_daily_weather[day].pct_moisture)
     end
+  end
+  
+  test "pct_moisture is correct on update" do
+    pct_pivot = get_pct_pivot
+    field = create_a_field(pct_pivot[:id])
+    field.field_capacity = 0.52 # None of the defaults come anywhere near this value
+    field.save!
+    assert_in_delta(100*field.field_capacity, field.field_daily_weather[0], 2 ** -20)
   end
                                                         
   test "change_in_daily_storage works" do

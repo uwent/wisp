@@ -51,14 +51,18 @@ class FieldsController < ApplicationController
         attribs[:soil_type_id] = SoilType.default_soil_type[:id] unless attribs[:soil_type_id]
         # Should do a method for this, perhaps with a block for the tests
         attribs[:name] = "New field (pivot #{params[:pivot_id]})" unless (attribs[:name] && attribs[:name] != '')
-        attribs[:field_capacity] = SoilType.default_soil_type[:field_capacity] unless attribs[:field_capacity]
-        attribs[:perm_wilting_pt] = SoilType.default_soil_type[:perm_wilting_pt] unless attribs[:perm_wilting_pt]
+        attribs[:field_capacity_pct] = SoilType.default_soil_type[:field_capacity] unless attribs[:field_capacity_pct]
+        attribs[:perm_wilting_pt_pct] = SoilType.default_soil_type[:perm_wilting_pt] unless attribs[:perm_wilting_pt_pct]
         field = Field.create(attribs)
       else
         field = Field.find(params[:id])
         attribs = field.groom_for_defaults(attribs)
         attribs.delete(:act)
         attribs.delete(:pivot_id) if attribs[:pivot_id]
+        # deal with munged attribute, does not gibe with grid
+        attribs[:field_capacity] = ((attribs[:field_capacity_pct]).to_f / 100.0) if attribs[:field_capacity_pct]
+        attribs[:perm_wilting_pt] = ((attribs[:perm_wilting_pt_pct]).to_f / 100.0) if attribs[:perm_wilting_pt_pct]
+        field.do_balance_recalc = true
         field.update_attributes(attribs)
       end
     end

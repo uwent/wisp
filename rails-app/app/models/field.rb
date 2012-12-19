@@ -23,6 +23,9 @@ class Field < ActiveRecord::Base
   has_many :field_daily_weather, :autosave => true, :dependent => :destroy, :order => :date
   
   before_save :target_ad_pct_or_nil
+  attr_accessor :do_balance_recalc
+  @do_balance_recalc = false
+  after_update :recalculate_balances
   
   def et_method
     raise "Error: Field with no parent pivot" unless pivot
@@ -119,8 +122,9 @@ class Field < ActiveRecord::Base
         :date => date, :ref_et => 0.0, :adj_et => 0.0, :leaf_area_index => lai, :calculated_pct_cover => pct_cover
       )
     end
-    # Shouldn't initial soil moisture go in here?
-    field_daily_weather[0].calculated_pct_moisture = 100*self.field_capacity
+    # Originally this was an attribute of crop, but now it just grabs our field capacity * 100
+    moisture = current_crop.initial_soil_moisture
+    field_daily_weather[0].calculated_pct_moisture = moisture
   end
   
   def create_crop
@@ -367,5 +371,32 @@ class Field < ActiveRecord::Base
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
     ""
   end
-  
+
+  def recalculate_balances
+    logger.info "FDW#recalculate_balances: #{@do_balance_recalc}"
+    if @do_balance_recalc
+      # By setting entered_pct_moisture, we cause the balance calcs to calculate AD from that,
+      # instead of the reverse. Since it's the first day, there's not much chance of overwriting a
+      # user input.
+      field_daily_weather[0].entered_pct_moisture = field_capacity * 100.0
+      field_daily_weather[0].save!
+      @do_balance_recalc = false
+    end
+  end
+  # Hook into ActiveRecord's write_attribute to allow a specific callback on attributes requiring
+  # a balance calc cascade.
+  # Per http://stackoverflow.com/questions/1513991/callback-for-changed-activerecord-attributes
+  # As it turns out, this doesn't work with update_attributes because it isn't called till after
+  # said attributes are set.
+  # def write_attribute(attr_name, new_value)
+  #   super.tap do
+  #     attribute_changed(attr_name, read_attribute(attr_name), new_value)
+  #   end
+  # end
+  # 
+  # private
+  # 
+  # def attribute_changed(attr, old_val, new_val)
+  #   logger.info "Attribute Changed: #{attr} from #{old_val} to #{new_val}"
+  # end
 end
