@@ -40,4 +40,6 @@ group :development, :test do
 end
 group :production do 
   gem 'mysql2'
+  # Later versions of the Mysql2 gem do not include the AR adapter, so pull that in too
+  gem 'activerecord-mysql2-adapter'
 end
