@@ -88,19 +88,15 @@ class ApplicationController < ActionController::Base
   end
   
   def today_or_latest(field_id)
+    field = Field.find(field_id)
+    earliest = field.current_crop.emergence_date
     query = <<-END
       select max(date) as date from field_daily_weather where field_id=#{field_id}
     END
     latest = FieldDailyWeather.find_by_sql(query).first.date
-    today = Date.today
-    unless latest
-      return today
-    end
-    if today > latest
-      return latest
-    else
-      return today
-    end
+    day = Date.today
+    day = earliest if day < earliest
+    day
   end
   
   # debugging
@@ -113,6 +109,21 @@ class ApplicationController < ActionController::Base
     if parent_id == nil || parent_id == '' || parent_id == '_empty'
       attribs[parent_id_sym] = params[:parent_id] == '' ? parent_var : params[:parent_id]
     end
+  end
+  
+  # Check to see if any of our pivots need to be cloned.
+  def check_pivots_for_cloning(clone_to = nil)
+    clone_to ||= Time.now.year
+    return unless @group
+    if @farm
+      farms = [@farm]
+    else
+      farms = @group.farms
+    end
+    # What needs cloning? Well, the latest set of pivots whose cropping years are < clone_to
+    latest_pivots = Farm.latest_pivots(farms)
+    latest_pivot_year = latest_pivots.first.cropping_year
+    (latest_pivot_year < clone_to) ? latest_pivots : nil
   end
   
 end

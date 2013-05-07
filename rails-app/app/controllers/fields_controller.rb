@@ -44,7 +44,6 @@ class FieldsController < ApplicationController
         attribs[col_name] = params[col_name] unless col_name == :id || col_name == :act
       end
       if attribs[:soil_type_id]
-        # FIXME move to model
         attribs[:soil_type_id] = attribs[:soil_type_id].to_i
         attribs[:soil_type_id] = SoilType.default_soil_type[:id] if attribs[:soil_type_id] == 0
       end
@@ -52,17 +51,17 @@ class FieldsController < ApplicationController
         attribs[:soil_type_id] = SoilType.default_soil_type[:id] unless attribs[:soil_type_id]
         # Should do a method for this, perhaps with a block for the tests
         attribs[:name] = "New field (pivot #{params[:pivot_id]})" unless (attribs[:name] && attribs[:name] != '')
-        # FIXME move to model
-        attribs[:field_capacity_pct] = SoilType.default_soil_type[:field_capacity] unless attribs[:field_capacity_pct]
-        attribs[:perm_wilting_pt_pct] = SoilType.default_soil_type[:perm_wilting_pt] unless attribs[:perm_wilting_pt_pct]
+        attribs[:field_capacity] = SoilType.default_soil_type[:field_capacity] unless attribs[:field_capacity]
+        attribs[:perm_wilting_pt] = SoilType.default_soil_type[:perm_wilting_pt] unless attribs[:perm_wilting_pt]
         field = Field.create(attribs)
       else
-        field = Field.find(params[:id])
+        field = Field.find(params[:id], :include => :field_daily_weather)
         attribs = field.groom_for_defaults(attribs)
         attribs.delete(:act)
         attribs.delete(:pivot_id) if attribs[:pivot_id]
-        field.do_balance_recalc = true
+        puts "updating field attributes"
         field.update_attributes(attribs)
+        puts "field attributes updated"
       end
     end
     attrs = field.attributes.symbolize_keys.merge(

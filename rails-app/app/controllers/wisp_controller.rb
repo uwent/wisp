@@ -135,13 +135,13 @@ class WispController < ApplicationController
     @field_weather_data = @field.field_daily_weather
     @initial_date = @field_weather_data.first.date
     start_date,end_date,@cur_date = date_strs(@initial_date,cur_date)
-    # logger.info "field_status_data: #{start_date} to #{end_date} at #{@cur_date} for #{@field_id}"
+    # logger.info "field_status_data: cur_date passed in was #{cur_date}, #{start_date} to #{end_date} at #{@cur_date} for #{@field_id}"
     @ad_recs = FieldDailyWeather.fdw_for(@field_id,start_date,end_date)
     @ad_data = @ad_recs.collect { |fdw| fdw.ad }
     # sets @graph_data, @projected_ad_data,@dates,@date_str,and @date_hash
     graph_data(@field_weather_data,start_date,end_date)
     # logger.info "field_status_data: cur_date #{@cur_date}, start_date #{start_date.to_s}, end_date #{end_date.to_s}, dates #{@dates.inspect}"
-    # logger.info "field_status_data: fdw is #{@ad_recs.collect { |e| [e.date,e.field_id,e.ref_et].join(",") }.join("\n")}"
+    # logger.info "field_status_data: fdw is \n#{@ad_recs.collect { |e| [e.date,e.field_id,e.ref_et].join(",") }.join("\n")}"
     # logger.info "field_status_data: @graph_data is #{@graph_data.inspect}, @projected is #{@projected_ad_data.inspect}, over #{@date_hash.inspect}"
     @summary_data = FieldDailyWeather.summary(@field.id)
     @target_ad_data = target_ad_data(@field,@ad_data)
@@ -149,34 +149,20 @@ class WispController < ApplicationController
 
   # from a set of fdw recs and some idea of where to begin looking, return
   # the graph and summary data. This will be a an array of AD numbers, 
-  def graph_data(fdw,start_date,end_date)
-    ad_recs = @ad_recs # for now
+  def graph_data(fdw,start_date,end_date,start_projecting=Date.today)
+    ad_recs = @ad_recs # just so it's something if we don't reset them
     # reposition the window, if necessary, so that it ends NLT the end of AD data
-    # logger.info "graph_data: start_date is #{start_date.inspect}, end_date is #{end_date.inspect}"
-    last_ad_idx = fdw.index {|rec| rec.ad == nil && rec.date <= end_date + 2} || 0
-    last_ad_idx -= 1 if fdw[last_ad_idx].ad == nil && last_ad_idx > 0
-    # logger.info "graph_data: last_ad_idx #{last_ad_idx}"
-    unless last_ad_idx == nil || last_ad_idx < 1
-      if fdw[last_ad_idx].date < end_date + 2
-        # we're looking at the end of the data, so do 7 "real" days plus two projected
-        first_ad_idx = last_ad_idx - 6
-        first_ad_idx = 0 if first_ad_idx < 0
-        ad_recs = fdw[first_ad_idx,7]
-        # logger.info "first_ad_idx #{first_ad_idx}, last_ad_idx #{last_ad_idx}, ad_recs is #{ad_recs.size} long from #{ad_recs[0].date} to #{ad_recs[-1].date}"
-        start_date = ad_recs[0].date
-        end_date = ad_recs[-1].date
-        # logger.info "and dates reset to #{start_date}, #{end_date}"
-        @projected_ad_data = FieldDailyWeather.projected_ad(ad_recs)
-      else
-        # we're looking historically, so do 9 days and no projected
-        first_ad_idx = last_ad_idx - 8
-        first_ad_idx = 0 if first_ad_idx < 0
-        ad_recs = fdw[first_ad_idx,9]
-        start_date = ad_recs[0].date
-        end_date = ad_recs(-3).date
-        @projected_ad_data = []
-      end
-    end
+    # logger.info "graph_data: start_date is #{start_date.inspect}, end_date is #{end_date.inspect}, #{fdw.size} records"
+    first_ad_idx = fdw.index {|rec| rec.ad == nil} || fdw.index {|rec| rec.date == start_date} || 0
+    first_ad_idx = 0 if first_ad_idx < 0
+    last_ad_idx = first_ad_idx + 8
+    last_ad_idx = fdw.size - 1 if last_ad_idx >= fdw.size
+    ad_recs = fdw[(first_ad_idx..last_ad_idx)]
+    start_date = ad_recs[0].date
+    end_date = ad_recs[-3].date
+    @projected_ad_data = []
+    # (first_ad_idx..last_ad_idx).each { |idx| @projected_ad_data << (fdw[idx].ref_et == 0.0) }
+    @projected_ad_data = fdw[(first_ad_idx..last_ad_idx)].collect { |fdw| fdw.ref_et == 0.0 }
     @graph_data = ad_recs.collect { |fdw| fdw.ad }
     @dates,@date_str,@date_hash = make_dates(start_date,end_date)
   end

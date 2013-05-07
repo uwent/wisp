@@ -14,6 +14,11 @@ class Farm < ActiveRecord::Base
     Farm.find(:all, :conditions => ['group_id = ?',group_id])
   end
   
+  def self.latest_pivots(farms)
+    latest_year = farms.collect { |f| f.pivots }.flatten.collect { |p| p.cropping_year }.max
+    (farms.collect { |f| f.pivots }).flatten.select { |p| p.cropping_year == latest_year }
+  end
+  
   def problem
     problems.size > 0
   end
@@ -37,7 +42,8 @@ class Farm < ActiveRecord::Base
   def create_default_data
     logger.warn "Farm#create_default_data: #{self.inspect}" 
     raise "Could not set default ET method" unless self[:et_method_id]
-    pivots << Pivot.create(:name => "New pivot (farm ID: #{self[:id]})", :farm_id => self[:id])
+    pivots << Pivot.create(:name => "New pivot (farm ID: #{self[:id]})", :farm_id => self[:id],
+      :cropping_year => year || Time.now.year)
   end
   
   
@@ -54,4 +60,11 @@ class Farm < ActiveRecord::Base
     pivots.size > 1 || @@clobberable == id
   end
   
+  def clone_pivots_for(year=Time.now.year)
+    pivots.each do |piv|
+      if (cloned = piv.clone_for(year))
+        pivots << cloned
+      end
+    end
+  end
 end

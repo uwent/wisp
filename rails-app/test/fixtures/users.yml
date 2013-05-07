@@ -13,6 +13,7 @@ rick:
   identifier_url: https://www.google.com/accounts/o8/id?id=AItOawllgedFhmTZ68zwAdRsUTexBuvKFwOeeqs
   first_name: Rick
   last_name: Wayne
+  # memberships: ricks_membership
 
 finn:
   email: something_private@mailinator.com

@@ -44,4 +44,23 @@ class Pivot < ActiveRecord::Base
   def problem
     fields.inject([]) {|problems,field| problems << field if field.problem; problems }
   end
+  
+  def clone_for(year=Time.now.year)
+    return nil if cropping_year == year # Can't clone to same year
+    new_attrs = {}
+    attributes.each { |key,val| new_attrs[key] = val unless key == :id || key == 'id' }
+    new_attrs[:cropping_year] = year
+    new_piv = Pivot.create(new_attrs)
+    dead_field_walking = new_piv.fields.first
+    fields.each do |field|
+      f_attrs = field.attributes
+      f_attrs.delete(:id)
+      f_attrs[:pivot_id] = new_piv[:id]
+      Field.create(f_attrs)
+    end
+    # Now delete the automatically-created one
+    fields.delete(dead_field_walking)
+    dead_field_walking.destroy
+    new_piv
+  end
 end

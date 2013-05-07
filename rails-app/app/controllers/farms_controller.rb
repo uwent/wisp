@@ -27,7 +27,10 @@ class FarmsController < ApplicationController
     end
     @farms ||= []
     @et_methods = EtMethod.all
-
+    clone_year = params[:clone_pivots_to_year] || Time.now.year
+    if (@pivots_need_cloning = check_pivots_for_cloning(clone_year))
+      @pivots_need_cloning.each { |p| p.clone_for(clone_year) }
+    end
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @farms }
@@ -163,5 +166,4 @@ class FarmsController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
 end

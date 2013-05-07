@@ -1,6 +1,7 @@
 class SoilType < ActiveRecord::Base
+  DEFAULT_SOIL_TYPE_NAME = 'Sandy Loam'
   def self.default_soil_type
-    find_by_name('Sandy Loam') || first
+    find_by_name(DEFAULT_SOIL_TYPE_NAME) || first
   end
   
   def self.initial_types

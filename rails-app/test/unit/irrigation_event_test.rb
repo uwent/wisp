@@ -6,6 +6,6 @@ class IrrigationEventTest < ActiveSupport::TestCase
     weather = irrigation_events(:one).fdw_for
     assert(weather)
     assert(weather.size > 0)
-    puts weather.inspect
+    # puts weather.inspect
   end
 end

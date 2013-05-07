@@ -92,7 +92,7 @@
     if (cellvalue === undefined) {
       return("");
     } else {
-      return(pctUnformat(cellvalue)+'%');
+      return(pctUnformat(cellvalue,options)+'%');
     }   
   }
   
@@ -101,7 +101,19 @@
     if (cellvalue === undefined) {
       return("");
     } else {
-      return cellvalue.replace("%","");
+      // Remove the percent sign
+      num = cellvalue.replace("%","");
+      // Do we have decimalPlaces in our format options?
+      if (!(options.colModel.formatoptions.decimalPlaces === undefined)) {
+        // Try parsing the number as a float (could be blank or null)
+        aFloat = parseFloat(num);
+        // Success?
+        if (!isNaN(aFloat)) {
+          // Reformat it to a string with the appropriate number of decimal places
+          num = aFloat.toFixed(options.colModel.formatoptions.decimalPlaces);
+        }
+      }
+      return num;
     }
   }
   
@@ -132,9 +144,9 @@
                    },
                    editrules:{required:true}
                 },
-                {name:'field_capacity_pct', index:'field_capacity_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,editrules:{number:true,minValue:0,maxValue:100}},
-                {name:'perm_wilting_pt_pct', index:'perm_wilting_pt_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,editrules:{number:true,minValue:0,maxValue:100}},
-                {name:'target_ad_pct',index:'target_ad_pct',width:25,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,editrules:{number:true,minValue:0,maxValue:100}},
+                {name:'field_capacity_pct', index:'field_capacity_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0,maxValue:100}},
+                {name:'perm_wilting_pt_pct', index:'perm_wilting_pt_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0,maxValue:100}},
+                {name:'target_ad_pct',index:'target_ad_pct',width:25,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0,maxValue:100}},
                 // These three are hidden until we get these features running
                 {name:'ref_et_station_id', index:'ref_et_station_id',width:25,editable:true, align:'right',hidden:true},
                 {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right',hidden:true},

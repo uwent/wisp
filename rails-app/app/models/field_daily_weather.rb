@@ -1,12 +1,11 @@
-require 'ad_calculator'
-
 class FieldDailyWeather < ActiveRecord::Base
   belongs_to :field
   before_create :zero_rain_and_irrig
-  before_update :old_update_balances
-  after_update :update_next_days_balances, :update_pct_covers
+  # before_update :old_update_balances
+  # after_update :update_next_days_balances, :update_pct_covers
   
   SEASON_DAYS = 183
+  ADJ_ET_EPSILON = 0.00001
   
   @@debug = nil
   @@do_balances = true
@@ -78,19 +77,28 @@ class FieldDailyWeather < ActiveRecord::Base
     pct_moisture_from_ad(pwp,fc,ad_max,ad,mrzd)
   end
 
-  def ad_from_moisture(taw)
+  def ad_from_moisture(taw,fc=field[:field_capacity])
     # AD == (moisture - pct_moisture_at_ad_min) * mrzd.
-    fc = field.field_capacity
+    # fc = field[:field_capacity]
+    raise "need field capacity for #{self[:id]}; field is #{field.inspect}" unless fc
     mrzd = field.current_crop.max_root_zone_depth
     mad_frac = field.current_crop.max_allowable_depletion_frac
     mad_in = ad_max_inches(mad_frac,taw)
     # daily_ad_from_moisture(mad_frac,taw,mrzd,pct_moisture_at_ad_min,entered_pct_moisture)
-    # logger.info "ad_from_moisture: #{fc}, #{mad_in}, #{mrzd}, #{pct_moisture}, #{pct_moisture_at_ad_min(fc, mad_in, mrzd)}"
+    # puts "ad_from_moisture (#{date}): fc #{fc}, ad_max_inches #{mad_in}, mrzd #{mrzd}, pct_moisture #{pct_moisture}, pct_moisture at min ad #{pct_moisture_at_ad_min(fc, mad_in, mrzd)}"
     mrzd * (pct_moisture - pct_moisture_at_ad_min(fc, mad_in, mrzd))/100
   end
   
+  def set_ad_from_calculated_moisture(fc,pwp,mrzd)
+    total_available_water = taw(fc, pwp, mrzd)
+    self[:ad] = [ad_from_moisture(total_available_water,fc),total_available_water].min
+    # puts "set ad from calculated moisture: fc #{fc}, pwp #{pwp}, mrzd #{mrzd}, mad_frac #{field.current_crop.max_allowable_depletion_frac}, new ad #{self[:ad]}"
+    self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
+  end
+  
   # TODO: Why does this work, while the one using balance_calcs doesn't? FIXME
-  def old_update_balances
+  def old_update_balances(previous_ad=nil,previous_max_adj_et=nil)
+    return unless @@do_balances
     feeld = self.field
     total_available_water = taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
     if entered_pct_moisture
@@ -99,13 +107,19 @@ class FieldDailyWeather < ActiveRecord::Base
       self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
       logger.info "#{self[:date]}: Deep drainage #{self[:deep_drainage]} from entered moisture of #{entered_pct_moisture}" if self[:deep_drainage] > 0.0
     else
-      return unless ref_et > 0.0
+      return unless ref_et || previous_max_adj_et
       unless (self[:adj_et] = feeld.et_method.adj_et(self))
         logger.warn "#{self.inspect } couldn't calculate adj_et"
         return
-      end 
-      # puts "fdw#update_balances: we (#{self.inspect}) have a field of #{feeld.inspect}";$stdout.flush
-      previous_ad = find_previous_ad
+      end
+      # If adj_et is zero and we have a previous, use that instead
+      if (self[:adj_et] < ADJ_ET_EPSILON) && previous_max_adj_et
+        self[:adj_et] = previous_max_adj_et
+        # print "#{self[:adj_et]},"; $stdout.flush 
+      end
+      
+      # puts "fdw#update_balances: date #{date} ref_et #{ref_et} adj_et #{adj_et}" if (date >= Date.parse('2011-06-01') && date <= Date.parse('2011-06-20'))
+      previous_ad ||= find_previous_ad
       # puts "Got previous AD of #{previous_ad}"
       requirements = [ "ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
       errors = []
@@ -122,9 +136,12 @@ class FieldDailyWeather < ActiveRecord::Base
       # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
       delta_storage = change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
       # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
-    
-      dd = delta_storage + previous_ad
+      
+      # Should check that AD doesn't go any lower than PWP
       self[:ad],self[:deep_drainage] = daily_ad_and_dd(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+      
+      #FIXME: why any at all?
+      self[:deep_drainage] = 0.0 if self[:deep_drainage] < 0.01
       dbg = <<-END
       #{self[:date]}: Deep drainage of #{self[:deep_drainage]} from prev ad #{previous_ad}, delta #{delta_storage}, taw #{total_available_water}
       END
@@ -236,9 +253,10 @@ class FieldDailyWeather < ActiveRecord::Base
   end
   
   def self.summary(field_id)
+    season_year = Field.find(field_id).current_crop.emergence_date.year
     query = <<-END
     select sum(rain) as rain, sum(irrigation) as irrigation, sum(deep_drainage) as deep_drainage, sum(adj_et) as adj_et
-    from field_daily_weather where field_id=#{field_id}
+    from field_daily_weather where field_id=#{field_id} and date >= '#{season_year}-01-01' and date <= '#{season_year}-12-31'
     END
     find_by_sql(query).first
   end
@@ -290,13 +308,10 @@ class FieldDailyWeather < ActiveRecord::Base
   end
 
   def to_csv
-    combined_attributes = attributes.merge(balance_calcs)
-    # keys = combined_attributes.keys
-    # REPORT_COLS_TO_IGNORE.each { |rcti| keys.delete(rcti) }
     keys = csv_cols.collect { |arr| arr[1].to_s }
     ret = []
     keys.each do |key|
-      obj = combined_attributes[key] || self.send(key)
+      obj = attributes[key] || self.send(key)
       if obj
         if obj.class == Float
           ret << sprintf('%0.2f',obj)

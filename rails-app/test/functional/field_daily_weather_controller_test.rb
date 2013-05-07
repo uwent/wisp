@@ -3,17 +3,7 @@ require 'test_helper'
 class FieldDailyWeatherControllerTest < ActionController::TestCase
   setup do
     @field_daily_weather = field_daily_weather(:one)
-  end
-
-  test "should get index" do
-    get :index
-    assert_response :success
-    assert_not_nil assigns(:field_daily_weather)
-  end
-
-  test "should get new" do
-    get :new
-    assert_response :success
+    @field = fields(:field_for_pivot_2012)
   end
 
   test "should create field_daily_weather" do
@@ -21,7 +11,7 @@ class FieldDailyWeatherControllerTest < ActionController::TestCase
       post :create, :field_daily_weather => @field_daily_weather.attributes
     end
 
-    assert_redirected_to field_daily_weather_path(assigns(:field_daily_weather))
+    assert_redirected_to controller: 'wisp', action: :field_status
   end
 
   test "should show field_daily_weather" do

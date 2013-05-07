@@ -1,5 +1,3 @@
-require 'et_calculator' # Does it really need this? Shouldn't, should it?
-
 class EtMethod < ActiveRecord::Base
   has_many :farms
   include ETCalculator

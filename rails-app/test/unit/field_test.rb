@@ -1,10 +1,12 @@
 require 'test_helper'
 
+
 class FieldTest < ActiveSupport::TestCase
   
   def setup
     @pcf = fields(:one)
     @pct_cover_method = EtMethod.find_by_type('PctCoverEtMethod')
+    @pct_cover_pivot = Pivot.all.select { |p| p.farm.et_method.class == PctCoverEtMethod }.first
   end
   
   test "et_method method works" do
@@ -45,11 +47,125 @@ class FieldTest < ActiveSupport::TestCase
     f
   end
   
+  # test "moisture defaults to field capacity on creation" do
+  #   field = create_a_field
+  #   assert_equal(100*field.field_capacity, field.field_daily_weather[0].calculated_pct_moisture,
+  #     "Expected first FDW to be at FC, but was:\n" + field.inspect + "\n" + field.field_daily_weather[0].inspect)
+  #   fdw = field.field_daily_weather.select { |f| f.date == field.current_crop.emergence_date }.first
+  #   assert_equal(100*field.field_capacity, fdw.calculated_pct_moisture,
+  #     "Expected emergence FDW to be at FC, but was:\n" + field.inspect + "\n" + fdw.inspect)
+  # end
+
+  def yes_moisture_for_fdw_0_and_emerg_are_at_fc(field)
+    assert_in_delta(100*field.field_capacity, field.field_daily_weather[0].calculated_pct_moisture,
+      0.00001,
+      "Expected first FDW to be at FC, but was:\n" + field.inspect + "\n" + field.field_daily_weather[0].inspect)
+    fdw = field.field_daily_weather.select { |f| f.date == field.current_crop.emergence_date }.first
+    assert_equal(100*field.field_capacity, fdw.calculated_pct_moisture,
+      "Expected emergence FDW to be at FC, but was:\n" + field.inspect + "\n" + fdw.inspect)
+  end
+  
   test "moisture defaults to field capacity on creation" do
     field = create_a_field
-    assert_equal(100*field.field_capacity, field.field_daily_weather[0].calculated_pct_moisture)
-    fdw = field.field_daily_weather.select { |f| f.date == field.current_crop.emergence_date }.first
-    assert_equal(100*field.field_capacity, fdw.calculated_pct_moisture)
+    yes_moisture_for_fdw_0_and_emerg_are_at_fc(field)
+  end
+  
+  test "moisture changes to field capacity on update" do
+    field = create_a_field
+    field.field_capacity_pct = (FC * 0.8) * 100.0
+    field.save!
+    yes_moisture_for_fdw_0_and_emerg_are_at_fc(field)
+  end
+  
+  test "moisture changes to field capacity if updating the raw FC too" do
+    field = create_a_field
+    field.field_capacity = FC * 0.5
+    field.save!
+    yes_moisture_for_fdw_0_and_emerg_are_at_fc(field)
+  end
+
+  def moisture_changes(field)
+    emi = emergence_index(field)
+    unexpected = {
+      0 => field.field_daily_weather[0].pct_moisture,
+      emi => field.field_daily_weather[emi].pct_moisture
+    }
+    assert_in_delta(unexpected[0], unexpected[emi], 2 ** -20)
+    yield(field)
+    unexpected.each do |fdw_index,value|
+      fdw = field.field_daily_weather[fdw_index]
+      assert_not_in_delta(
+        value,
+        fdw.pct_moisture,0.0001,
+        "Changing PWP should have changed FDW moisture for #{fdw.date}"
+    )
+    end
+  end
+
+  def setup_field_with_AD
+    field = create_a_field(@pct_cover_pivot[:id])
+    emi = emergence_index(field)
+    # before we change anything, fdw[emi] will be at FC, and the next one will be nil
+    assert_in_delta(field.field_capacity * 100.0, field.field_daily_weather[emi].pct_moisture, 2 ** -20)
+    # assert_nil(field.field_daily_weather[emi+1].pct_moisture) # Field now does balances for all FDW
+    # set up a sequence of FDW with ref ET and pct cover, save each one so that balance calcs are initialized
+    vals = {
+      emi => {:ref_et => 0.2, :entered_pct_cover => 0.0},
+      emi+1 => {:ref_et => 0.21, :entered_pct_cover => 10.0},
+      emi+2 => {:ref_et => 0.22, :entered_pct_cover => 50.0},
+      emi+3 => {:ref_et => 0.19, :entered_pct_cover => 80.0}
+    }
+    unexpected = {}
+    vals.each do |index,attrs|
+      fdw = field.field_daily_weather[index]
+      fdw.update_attributes(attrs)
+      fdw.save!
+      unexpected[fdw[:id]] = {:moisture => fdw.pct_moisture, :ad => fdw.ad}
+      assert(fdw.pct_moisture)
+    end
+    assert_equal(0.22, field.field_daily_weather[emi+2].ref_et)
+    [field,unexpected]
+  end
+  
+  test "changing FC triggers a balance recalc which changes moisture" do
+    field,unexpected = setup_field_with_AD
+    # puts "********************* updating FC from #{field.field_capacity} to #{0.5 * FC} **********************"
+    # puts "********************* set and save the field, which should update balances **********************"
+    field.field_capacity_pct = 100 * 0.6 * FC
+    field.save!
+    field.field_daily_weather.reload
+    unexpected.each do |id,params|
+      fdw = FieldDailyWeather.find(id)
+      moisture = params[:moisture]
+      assert_not_in_delta(moisture,fdw.pct_moisture,0.0001,"Moisture value should have changed for #{fdw.date} when field params did (emergence #{field.current_crop.emergence_date})")
+      ad = params[:ad]
+      assert_not_in_delta(ad,fdw.ad,0.0001,"AD should have been recalced (and changed) for #{fdw.date} when field params did (emergence #{field.current_crop.emergence_date})")
+    end
+  end
+  
+  # FIXME: I think the logic may be wrong for AD/moisture calcs, because the moisture is getting recalced from new AD perhaps?
+  # Needs a test for Day 0, and the Web version seems to work fine. What gives?
+  test "changing PWP does not change initial moisture, but redoes AD via balance calc" do
+    field,unexpected = setup_field_with_AD
+    # puts "field.perm_wilting_pt starts at #{field.perm_wilting_pt}"
+    field.perm_wilting_pt = 0.98 * FC # Bigger allowable depletion, then
+    # puts "field.perm_wilting_pt is now at #{field.perm_wilting_pt}, hopefully triggering balance calcs"
+    field.save!
+    # puts "after save"
+    # Since we just copy over FC on top of moisture, THAT won't change. Check that it hasn't.
+    emerg_fdw = field.field_daily_weather[emergence_index(field)]
+    # "Unexpected" is a bit of a misnomer here, it actually contains the value that we expect
+    emergence_moisture = unexpected[emerg_fdw[:id]][:moisture]
+    assert_in_delta(emergence_moisture, emerg_fdw.pct_moisture,0.0000001,'Emergence moisture should not change, s/b set at FC')
+    unexpected.each do |id,params|
+      fdw = FieldDailyWeather.find(id)
+      ad = params[:ad]
+      moisture = params[:moisture]
+      unless fdw[:id] == emerg_fdw[:id] # as we saw above, emergence day is a special case
+        assert_not_in_delta(moisture,fdw.pct_moisture,0.0001,"Moisture value should have changed for #{fdw.date} when field params did (emergence #{field.current_crop.emergence_date})")
+        assert_not_in_delta(ad,fdw.ad,0.0001,"ad value should have changed for #{fdw.date} when field params did (emergence #{field.current_crop.emergence_date})")
+      end
+    end
   end
   
   test "deep drainage is zero on creation" do
@@ -91,13 +207,12 @@ class FieldTest < ActiveSupport::TestCase
     assert_in_delta(MAD_FRAC, field.current_crop.max_allowable_depletion_frac, 2 ** -20)
     # assert_equal(PctCoverEtMethod, field.et_method.class)
     fdw = field.field_daily_weather.select { |f| f.date == field.current_crop.emergence_date }.first
-    second_fdw = field.field_daily_weather.select { |f| f.date == field.current_crop.emergence_date + 1 }.first
     assert(fdw, "Field should have FDW on creation")
+    assert(fdw.ad,"Emergence FDW should have an AD, because the field should have set it upon creation")
+    second_fdw = field.field_daily_weather.select { |f| f.date == field.current_crop.emergence_date + 1 }.first
     assert(second_fdw, "Should have a successor to fdw")
-    assert_nil(fdw.ad)
     fdw.ref_et = ET
     field.save!
-    assert(fdw.ad)
     expected_taw = (field.field_capacity - field.perm_wilting_pt) * field.current_crop.max_root_zone_depth
     assert_in_delta(5.4, expected_taw, 2 ** -20)
     expected_ad = field.current_crop.max_allowable_depletion_frac * expected_taw
@@ -109,31 +224,29 @@ class FieldTest < ActiveSupport::TestCase
     assert_in_delta(ET, second_fdw.adj_et, 2 ** -10)
     assert_in_delta(expected_ad - second_fdw.adj_et, second_fdw.ad, 2 ** -10)
   end
-                                                        
-  def get_pct_pivot
-    Pivot.all.select { |p| p.farm.et_method.class == PctCoverEtMethod }.first
-  end
   
-  # FIXME: These two tests only operate correctly if percent moisture can be set via lifecycle methods.
-  # This does not appear to be the case -- for some reason the change to the attribute already seems to
-  # have been made by the time our clever write_attribute hook gets called, so it can't detect a change.
-  # So these tests may have to be scrapped, and their intent moved to fields_controller_test.rb
-  test "pct_moisture is correct on creation" do
-    pct_pivot = get_pct_pivot
+  test "calculated_pct_moisture is correct on creation" do
+    pct_pivot = Pivot.all.select { |p| p.farm.et_method.class == PctCoverEtMethod }.first
     field = create_a_field(pct_pivot[:id])
-    assert_in_delta(100*field.field_capacity, field.field_daily_weather[0].pct_moisture, 2 ** -20)
-    (1..field.field_daily_weather.size-1).each do |day|
-      assert_nil(field.field_daily_weather[day].pct_moisture)
+    (0..field.field_daily_weather.size-1).each do |day|
+      fdw = field.field_daily_weather[day]
+      assert_in_delta(100*field.field_capacity, field.field_daily_weather[0].pct_moisture, 2 ** -20,
+        "For first day of FDW and emergence date, moisture s/b at field capacity (#{field.field_capacity})"
+      )
     end
   end
   
-  test "pct_moisture is correct on update" do
-    pct_pivot = get_pct_pivot
+  test "pct_moisture and AD change when FC changes" do
+    pct_pivot = Pivot.all.select { |p| p.farm.et_method.class == PctCoverEtMethod }.first
     field = create_a_field(pct_pivot[:id])
-    field.field_capacity = 0.52 # None of the defaults come anywhere near this value
-    field.save!
-    assert_in_delta(100*field.field_capacity, field.field_daily_weather[0].pct_moisture, 2 ** -20)
+    emi = emergence_index(field)
+    assert(emi)
+    initial_moist = field.field_daily_weather[emi].pct_moisture
+    assert(initial_moist > 0.0,"initial moisture for emergence was wrong at #{initial_moist}")
+    initial_ad = field.field_daily_weather[emi].ad
+    assert(initial_ad > 0.0,"initial ad for emergence was wrong at #{initial_ad}")
   end
+  
                                                         
   test "change_in_daily_storage works" do
     assert_equal(0.0, @pcf.change_in_daily_storage(0.0,0.0,0.0))
@@ -284,24 +397,21 @@ class FieldTest < ActiveSupport::TestCase
     assert_equal(field.et_method.class, PctCoverEtMethod,field.pivot.farm.inspect)
   end
   
-  def emergence_index(field)
-    field.field_daily_weather.index {|fdw| fdw.date == field.current_crop.emergence_date}
-  end
-  
   test "I can automatically set a range of percent cover" do
     FieldDailyWeather.destroy_all
     field,emergence_date = setup_pct_cover_field_with_emergence
     emi = emergence_index(field)
     assert_equal(0.0, field.field_daily_weather[emi].pct_cover,field.field_daily_weather[emi..emi+10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
     field.field_daily_weather[emi+9].entered_pct_cover = 9.0
-    field.field_daily_weather[emi+9].save!
+    field.pct_cover_changed(field.field_daily_weather[emi+9])
+    field.save! # Triggers do_balances and saves the FDW -- right?
     field = Field.find(field[:id])
     assert_in_delta(1.0, field.field_daily_weather[emi+1].pct_cover, 0.00001,field.field_daily_weather[emi..emi+10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
     assert_in_delta(8.0, field.field_daily_weather[emi+8].pct_cover, 0.00001,field.field_daily_weather[emi..emi+10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
     assert_in_delta(9.0, field.field_daily_weather[emi+15].pct_cover, 0.00001,field.field_daily_weather[emi..emi+10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
   end
   
-  test "my automatically-set range doesn't extend back past emergence" do
+  test "my automatically-set range does not extend back past emergence" do
     FieldDailyWeather.destroy_all
     field,emergence_date = setup_pct_cover_field_with_emergence
     emi = emergence_index(field)
@@ -315,6 +425,8 @@ class FieldTest < ActiveSupport::TestCase
     assert_equal(0.0, field.field_daily_weather[day_before_emergence].pct_cover,field.field_daily_weather[day_before_emergence..emi + 10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect)
     field.field_daily_weather[index_to_set].entered_pct_cover = 9.0
     field.field_daily_weather[index_to_set].save!
+    field.pct_cover_changed(field.field_daily_weather[index_to_set])
+    field.save!
     field = Field.find(field[:id])
     # Very first day of fdw, way back before emergence, certainly shouldn't be affected
     assert_in_delta(0.0, field.field_daily_weather[0].pct_cover, 0.00001,(field.field_daily_weather[0..10].collect { |fdw| [fdw.date,fdw.pct_cover] }.inspect) + " emergence date of #{field.current_crop.emergence_date}")
@@ -523,7 +635,11 @@ class FieldTest < ActiveSupport::TestCase
   end
   
   test "field_capacity_pct works" do
-    assert(field = Field.first)
+    field = create_a_field
+    crop = field.current_crop
+    assert(crop.emergence_date > field.field_daily_weather[0].date,"Crop (#{crop.name},#{crop[:id]}) emergence date is before FDW starts")
+    assert(crop.emergence_date < field.field_daily_weather[-1].date,"Crop (#{crop.name},#{crop[:id]}) emergence date is after FDW ends")
+    assert(field.field_daily_weather.size > field.fdw_index(crop.emergence_date),"Field  (#{field.name},#{field[:id]}) only has #{field.field_daily_weather.size} FDWs!")
     field_id = field[:id]
     assert(fc = field.field_capacity)
     assert_equal(fc * 100.0, field.field_capacity_pct)
@@ -535,7 +651,7 @@ class FieldTest < ActiveSupport::TestCase
   end
   
   test "perm_wilting_pt_pct works" do
-    assert(field = Field.first, "No field")
+    assert(field = create_a_field, "No field")
     field_id = field[:id]
     assert(pwp = field.perm_wilting_pt, "No PWP")
     assert_not_equal(20.0, pwp)
@@ -594,14 +710,116 @@ class FieldTest < ActiveSupport::TestCase
     assert(field.problem(first_date,second_date))
   end
   
-  test "new attribute setters" do
-    field = Field.first
-    assert(field)
-    assert(!field.do_balance_recalc, "Untouched field shouldn't need balance recalc!")
-    attribs = {:perm_wilting_pt_pct => 0.5}
-    assert_raise(Exception) { Field.update(field[:id],attribs) }
-    assert(field.do_balance_recalc == true, "Modifying perm_wilting_pt_pct should trigger recalc flag!")
-    field.perm_wilting_pt_pct = 0.5
-    assert_raise(Exception) { field.save! }
+  test "do_balances" do
+    field,emergence_date = setup_pct_cover_field_with_emergence
+    field.do_balances
+    field.do_balances(field.current_crop.emergence_date + 5)
   end
+  
+  test "changes to crop affect field ad_max" do
+    field,emergence_data = setup_pct_cover_field_with_emergence
+    assert_difference "field.ad_max", field.ad_max do # Should double, since the MRZD is doubling
+      field.current_crop.max_root_zone_depth *= 2.0
+      field.current_crop.save!
+    end
+  end
+
+  test "changes to crop affect FDW ad" do
+    field,emergence_data = setup_pct_cover_field_with_emergence
+    emi = field.fdw_index(field.current_crop.emergence_date)
+    assert_difference "field.field_daily_weather[emi].ad", field.ad_max do # Should double, since the MRZD is doubling
+      field.current_crop.max_root_zone_depth *= 2.0
+      field.current_crop.save!
+      field.field_daily_weather.reload
+    end
+  end
+  
+  # Projected-AD stuff
+  test "can call mad_adj_et_in_past_week" do
+    field,emergence_data = setup_pct_cover_field_with_emergence
+    (31..40).each { |ii| field.field_daily_weather[ii].ref_et = (0.2 - ii.to_f / 1000.0); field.field_daily_weather[ii].entered_pct_cover = ii.to_f }
+    field.field_daily_weather[35].ref_et = 0.4
+    field.save!
+    field = Field.find(field[:id])
+    assert(max_adj_et = field.max_adj_et_in_past_week(37), "Could not call and get a result")
+    assert_in_delta(0.240238, max_adj_et, 2 ** -20)
+  end
+  
+  test "RingBuffer works with default" do
+    rb = nil
+    assert_nothing_raised(RuntimeError) { rb = RingBuffer.new }
+    assert(rb, "RingBuffer not returned")
+    # Should be zero when empty
+    assert_nil(rb.mean)
+    rb.add(-1.0)
+    assert_in_delta(-1.0, rb.mean, 2 ** -20)
+    rb.add(1.0)
+    assert_in_delta(0.0, rb.mean, 2 ** -20)
+    rb = RingBuffer.new
+    # Fill it
+    vals = [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]
+    sum = vals.inject(0.0) { |int_sum, val| int_sum + val }
+    val_mean = sum / vals.size
+    vals.each { |val| rb.add(val) }
+    assert(mean = rb.mean,"Mean returned nil for #{rb.inspect}")
+    assert_in_delta(val_mean, rb.mean, 2 ** -20)
+    # Adding a number should overwrite the zero; sum should be 56, mean 5.6
+    rb.add(11.0)
+    assert_in_delta(5.6, rb.mean, 2 ** -20)
+  end
+  
+  test "RingBuffer works with smaller value" do
+    rb = RingBuffer.new(5)
+    assert_nil(rb.mean)
+    # Stuff in six values, first s/b dropped, so vals should end up 1 2 3 4 5 for a 15 sum and 3.0 mean
+    6.times {|ii| rb.add(ii.to_f)}
+    assert_in_delta(3.0, rb.mean, 2 ** -20,rb.dump.inspect)
+  end
+
+  test "RingBuffer max works" do
+    rb = RingBuffer.new(3)
+    5.times { |ii| rb.add(ii.to_f) } # Should end up with [3,4,2]
+    assert_equal(4.0, rb.max)
+  end
+  
+  test "RingBuffer big_enough works" do
+    {0.1 => true, -0.1 => true, 0.0 => false, 0.00001 => true, -0.00001 => true, 0.000000000001 => false, -0.0000000000001 => false}.each do |val,expected|
+      assert_equal(expected, RingBuffer.big_enough(val))
+    end
+  end
+  
+  test "RingBuffer ignore_zeros works" do
+    rb = RingBuffer.new(12)
+    5.times { |ii| rb.add(ii.to_f) } # [0,1,2,3,4]
+    rb.add(0.0) # Put a zero in the middle, to flush out ordering effects
+    10.downto(7) {|ii| rb.add(ii.to_f) } # [0,1,2,3,4,0,10,9,8,7]
+    # Sum is 44, counting ten values should get a mean of 4.4
+    assert_in_delta(4.4, rb.mean, 2 ** -20)
+    # But throwing out the zero values, should be 44 / 8 = 5.5
+    assert_in_delta(5.5, rb.mean(true), 2 ** -20)
+  end
+  
+  test "RingBuffer ignore_zeros returns nil when called on an all-zero buffer" do
+    rb = RingBuffer.new(3)
+    assert_nil(rb.mean(true),'Should return nil when called on empty buffer with ignore_zeros flag')
+    3.times { rb.add(0.0)}
+    assert_nil(rb.mean(true),'Should return nil when called on buffer full of zeros with ignore_zeros flag')
+  end
+  
+  test "RingBuffer last_nonzero works" do
+    rb = RingBuffer.new(6)
+    assert_nil(rb.last_nonzero,'last_nonzero should return nil on empty buffer')
+    [0.0,0.0].each { |val| rb.add(val) }
+    assert_nil(rb.last_nonzero,'last_nonzero should return nil on buffer with nothing but zeros')
+    rb.add(1.0)
+    assert_in_delta(1.0, rb.last_nonzero, 2 ** -20)
+    rb.add(0.0)
+    assert_in_delta(1.0, rb.last_nonzero, 2 ** -20)
+    rb.add(2.0)
+    assert_in_delta(2.0, rb.last_nonzero, 2 ** -20)
+    rb.add(-4.0)
+    assert_in_delta(-4.0, rb.last_nonzero, 2 ** -20)
+    
+  end
+  
 end

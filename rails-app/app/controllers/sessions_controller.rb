@@ -57,7 +57,7 @@ class SessionsController < ApplicationController
   
   def su
     # A no-op unless logged in
-    puts "su"
+    logger.info "su"
     if session[:user_id]
       # A no-op unless logged in as Rick
       if User.find(session[:user_id]).identifier_url == @rick_identifier_url
@@ -67,12 +67,12 @@ class SessionsController < ApplicationController
         session.delete(:pivot_id)
         session.delete(:field_id)
       else
-        puts 'wrong person tried to su'
+        logger.info 'wrong person tried to su'
       end
     else
-      puts 'no one signed in'
+      logger.info 'no one signed in'
     end
-    puts "su'd to #{session[:user_id]}"
+    logger.info "su'd to #{session[:user_id]}"
     redirect_to(:back)
   end
  

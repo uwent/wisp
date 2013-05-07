@@ -1,7 +1,61 @@
-require "ad_calculator"
-require "et_calculator"
 require 'net/http'
 require 'uri'
+
+class RingBuffer
+  @vals = nil
+  attr_accessor :last_nonzero
+  
+  EPSILON = 0.00000001
+  
+  def self.big_enough(val)
+    val && (0.0 - val).abs > EPSILON
+  end
+  
+  def initialize(size=10)
+    @vals = Array.new(size)
+    @last = -1
+    @n_vals = 0
+    @last_nonzero = nil
+  end
+  
+  def add(val)
+    return unless val # Ignore nils
+    @last = (@last + 1) % @vals.size
+    @vals[@last] = val
+    @n_vals += 1 if @n_vals < @vals.size
+    # record last nonzero value added
+    @last_nonzero = val if RingBuffer.big_enough(val)
+  end
+
+  def max
+    return nil unless @n_vals > 0
+    @vals[0..@n_vals-1].max
+  end
+  
+  def mean(ignore_zeros=false)
+    return nil unless @n_vals > 0
+    if ignore_zeros
+      sum,num_nonzero_vals = @vals[0..@n_vals-1].inject([0.0,0]) do |sums, val|
+        if RingBuffer.big_enough(val)
+          [sums[0] + val,sums[1] + 1]
+        else
+          sums
+        end
+      end
+      if num_nonzero_vals == 0
+        nil
+      else
+        sum / num_nonzero_vals.to_f
+      end
+    else
+      (@vals[0..@n_vals-1].inject(0.0) { |sum, val| sum + val } || 0.0).to_f / @n_vals.to_f
+    end
+  end
+  
+  def dump
+    [@last,@n_vals,@vals]
+  end
+end
 
 class Field < ActiveRecord::Base
   after_create :create_dependent_objects
@@ -20,12 +74,14 @@ class Field < ActiveRecord::Base
   belongs_to :pivot
   belongs_to :soil_type
   has_many :crops, :dependent => :destroy
-  has_many :field_daily_weather, :autosave => true, :dependent => :destroy, :order => :date
+  has_many :field_daily_weather, :dependent => :destroy, :order => :date # , :autosave => true
   
   before_save :target_ad_pct_or_nil
-  attr_accessor :do_balance_recalc
-  @do_balance_recalc = false
-  after_update :recalculate_balances
+  after_save :set_fdw_initial_moisture, :do_balances
+  
+  #
+  # ACCESSORS
+  #
   
   def et_method
     raise "Error: Field with no parent pivot" unless pivot
@@ -66,19 +122,18 @@ class Field < ActiveRecord::Base
       DEFAULT_FIELD_CAPACITY
     end
   end
-  
-  def field_capacity_pct
-    field_capacity * 100.0
+
+  def field_capacity_pct=(val)
+    val = val.to_f / 100.0
+    write_attribute(:field_capacity, val)
   end
   
   def field_capacity=(val)
-    @do_balance_recalc = true
-    super(val)
+    write_attribute(:field_capacity, val.to_f)
   end
-  
-  def field_capacity_pct=(val)
-    write_attribute(:field_capacity, val.to_f / 100.0)
-    @do_balance_recalc = true
+
+  def field_capacity_pct
+    field_capacity * 100.0
   end
   
   def perm_wilting_pt
@@ -90,11 +145,9 @@ class Field < ActiveRecord::Base
       DEFAULT_PERM_WILTING_PT
     end
   end
-  
+
   def perm_wilting_pt=(val)
-    raise("boom!")
-    @do_balance_recalc = true
-    super(val)
+    write_attribute(:perm_wilting_pt,val.to_f)
   end
   
   def perm_wilting_pt_pct
@@ -102,8 +155,7 @@ class Field < ActiveRecord::Base
   end
 
   def perm_wilting_pt_pct=(val)
-    perm_wilting_pt = val.to_f / 100.0
-    # write_attribute(:perm_wilting_pt,val.to_f / 100.0)
+    write_attribute(:perm_wilting_pt,val.to_f / 100.0)
   end
   
   def create_dependent_objects
@@ -121,11 +173,9 @@ class Field < ActiveRecord::Base
     # puts "create_fdw for #{start_date}, #{end_date}"
     pct_cover = nil
     lai = nil
-    # Originally this was an attribute of crop, but now it just grabs our field capacity * 100
-    moisture = current_crop.initial_soil_moisture
     (start_date..end_date).each do |date|
       # Could use update_canopy for this, but why go 'round twice? Still, there's a smell.
-      days_since_emergence = date - crops.first.emergence_date
+      days_since_emergence = date - current_crop.emergence_date
       if et_method.class == LaiEtMethod
         lai = days_since_emergence >= 0 ? lai_corn(days_since_emergence) : 0.0
         pct_cover = nil
@@ -134,11 +184,10 @@ class Field < ActiveRecord::Base
         lai = nil
       end
       field_daily_weather << FieldDailyWeather.new(
-        :date => date, :ref_et => 0.0, :adj_et => 0.0,
-        :leaf_area_index => lai, :calculated_pct_cover => pct_cover,
-        :calculated_pct_moisture => moisture
+        :date => date, :ref_et => 0.0, :adj_et => 0.0, :leaf_area_index => lai, :calculated_pct_cover => pct_cover
       )
     end
+    set_fdw_initial_moisture
   end
   
   def create_crop
@@ -251,7 +300,7 @@ class Field < ActiveRecord::Base
     # why the *^$@ can't I just subtract the database field instead of this rigamarole?
     return nil unless field_daily_weather.first
     fdw_date = Date.parse(field_daily_weather.first.date.to_s)
-    date - fdw_date
+    (date - fdw_date).to_i
   end
   
   # hook method for FDW objects to alert us of their (newly changed?) AD
@@ -273,6 +322,10 @@ class Field < ActiveRecord::Base
     ad_max_inches(mad_frac,taw)
   end
   
+  def pct_cover_changed_by_date(date)
+    pct_cover_changed(field_daily_weather[fdw_index(date)])
+  end
+  
   def pct_cover_changed(fdw)
     # could re-interpolate everything, but let's just do the ones around the new point
     midpoint_pct_cover = fdw.pct_cover
@@ -281,7 +334,6 @@ class Field < ActiveRecord::Base
     if field_daily_weather[first_fdw_index].date < current_crop.emergence_date
       first_fdw_index = field_daily_weather.index { |fdw| fdw.date == current_crop.emergence_date }
     end
-    FieldDailyWeather.defer_balances
     linear_interpolation(field_daily_weather,first_fdw_index,fdw_index,:entered_pct_cover,:calculated_pct_cover)
     if field_daily_weather[last_fdw_index][:entered_pct_cover]
       linear_interpolation(field_daily_weather,fdw_index,last_fdw_index,:entered_pct_cover,:calculated_pct_cover)
@@ -289,12 +341,8 @@ class Field < ActiveRecord::Base
       # go one week from last-entered value
       field_daily_weather[fdw_index+1..fdw_index+6].each do |extrapolated_fdw|
         extrapolated_fdw[:calculated_pct_cover] = midpoint_pct_cover
-        extrapolated_fdw.save!
       end
     end
-    FieldDailyWeather.undefer_balances
-    # NOW trigger the whole mess!
-    # field_daily_weather[first_fdw_index].save!
   end
   
   def weather_for(date,end_date=nil)
@@ -382,38 +430,56 @@ class Field < ActiveRecord::Base
     end
   end
   
+  def set_fdw_initial_moisture
+    fc = self[:field_capacity] || field_capacity
+    first_fdw = field_daily_weather[0]
+    unless (first_fdw && fc)
+      logger.warn "set_fdw_initial_moisture called but fc or first fdw was missing"
+      return
+    end
+    first_fdw.calculated_pct_moisture = 100*fc
+    pwp = self[:perm_wilting_pt] || perm_wilting_pt
+    unless pwp
+      logger.warn "set_fdw_initial_moisture: pwp for field was nil, using default soil type"
+      pwp = SoilType.initial_types.select { |st| st[:name] == SoilType.DEFAULT_SOIL_TYPE_NAME }.first[:perm_wilting_pt]
+    end
+    first_fdw.set_ad_from_calculated_moisture(fc,pwp,current_crop.max_root_zone_depth)
+    first_fdw.save!
+    # puts "set_fdw_initial: set the AD for the first FDW, it's now:"
+    # puts first_fdw.inspect
+    # do_balances(first_fdw.date + 1)
+  end
+
+  def max_adj_et_in_past_week(fdw_index)
+    max_index = fdw_index
+    max_index = field_daily_weather.size -1 if max_index >= field_daily_weather.size
+    fdw_index -= 6
+    fdw_index = 0 if fdw_index < 0
+    field_daily_weather[fdw_index,max_index].inject(0.0) { |max, fdw| [max,fdw.adj_et].max }
+  end
+  
+  def do_balances(date=nil)
+    # puts "do_balances called with date #{date}"
+    day = date ? fdw_index(date) : 0
+    return unless field_daily_weather && field_daily_weather[0]
+    # Get yesterday's index to initialize prev_ad, but don't go below 0!
+    prev_ad = field_daily_weather[[0,day - 1].max].ad
+    # puts "do_balances going from #{day} onward (date was #{date}), prev_ad #{prev_ad} and starting FDW is"
+    # puts field_daily_weather[day].inspect
+    # Track previous adjusted ADs as we go, and use the max value from the past week to replace if necessary
+    rb = RingBuffer.new(7)
+    field_daily_weather[day..-1].each do |fdw|
+      # Remember the max adjusted ET within the last week. If there wasn't a nonzero one, use the last available one.
+      last_adj_et = rb.max || rb.last_nonzero
+      fdw.old_update_balances(prev_ad,last_adj_et)
+      prev_ad = fdw.ad
+      rb.add(fdw.adj_et) # Add this one's adj_et value to the running list
+      fdw.save!
+    end
+  end
+  
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
     ""
   end
-
-  def recalculate_balances
-    logger.info "FDW#recalculate_balances: #{@do_balance_recalc}"
-    if @do_balance_recalc
-      # By setting entered_pct_moisture, we cause the balance calcs to calculate AD from that,
-      # instead of the reverse. Since it's the first day, there's not much chance of overwriting a
-      # user input.
-      field_daily_weather[0].entered_pct_moisture = field_capacity * 100.0
-      field_daily_weather[0].save!
-      @do_balance_recalc = false
-    end
-  end
   
-  # def field_capacity=(value)
-  # Hook into ActiveRecord's write_attribute to allow a specific callback on attributes requiring
-  # a balance calc cascade.
-  # Per http://stackoverflow.com/questions/1513991/callback-for-changed-activerecord-attributes
-  # As it turns out, this doesn't work with update_attributes because it isn't called till after
-  # said attributes are set.
-  def write_attribute(attr_name, new_value)
-    super.tap do
-      attribute_changed(attr_name, read_attribute(attr_name), new_value)
-    end
-  end
-  
-  private
-  
-  def attribute_changed(attr, old_val, new_val)
-    puts "Attribute Changed: #{attr} from #{old_val} to #{new_val}"
-    raise "boom!"
-  end
 end

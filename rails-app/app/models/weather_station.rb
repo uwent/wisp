@@ -26,6 +26,7 @@ class WeatherStation < ActiveRecord::Base
           next
         end
         fdw.update_attributes(attribs_to_update) # this will update date too, but no matter, since we're already sure it's the same
+        fdw.field.save! # Trigger a balance recalc
       end
     else
       logger.warn "WeatherStation#wx_record_saved: station #{self[:id]}, #{self.name} has no pivot!"

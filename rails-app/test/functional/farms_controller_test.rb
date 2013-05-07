@@ -2,48 +2,25 @@ require 'test_helper'
 
 class FarmsControllerTest < ActionController::TestCase
   setup do
-    @farm = farms(:one)
+    @farm = farms(:ricks_other_farm)
+    @rick = users(:rick)
+    session[:user_id] = @rick[:id]
+    assert(@rick.memberships.size > 0, "Rick should have memberships")
+    @rick.memberships.each { |m| assert(m.group, "Each of Rick's memberships should have a group too") }
+    @prev_years = @farm.pivots.collect { |p| p.cropping_year }
+    @prev_years.each { |y| assert(y < Time.now.year) }
   end
-
-  test "should get index" do
+  
+  test "check_year_for_cloning gets called" do
     get :index
-    assert_response :success
-    assert_not_nil assigns(:farms)
+    assert(assigns(:pivots_need_cloning), "Should always set @pivots_need_cloning")
   end
-
-  test "should get new" do
-    get :new
-    assert_response :success
+  
+  test "nonzero number of pivots should need cloning" do
+    get :index
+    pnc = assigns(:pivots_need_cloning)
+    assert_equal(Array, pnc.class)
+    assert(pnc.size > 0, "Should have been pivots needed to clone!")
   end
-
-  test "should create farm" do
-    assert_difference('Farm.count') do
-      post :create, :farm => @farm.attributes
-    end
-
-    assert_redirected_to farm_path(assigns(:farm))
-  end
-
-  test "should show farm" do
-    get :show, :id => @farm.to_param
-    assert_response :success
-  end
-
-  test "should get edit" do
-    get :edit, :id => @farm.to_param
-    assert_response :success
-  end
-
-  test "should update farm" do
-    put :update, :id => @farm.to_param, :farm => @farm.attributes
-    assert_redirected_to farm_path(assigns(:farm))
-  end
-
-  test "should destroy farm" do
-    assert_difference('Farm.count', -1) do
-      delete :destroy, :id => @farm.to_param
-    end
-
-    assert_redirected_to farms_path
-  end
+  
 end

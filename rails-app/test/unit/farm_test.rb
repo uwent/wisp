@@ -1,6 +1,8 @@
 require 'test_helper'
 
 class FarmTest < ActiveSupport::TestCase
+  
+  CROPPING_YEAR = 2012
   def setup
     @ricks_group = groups(:ricks)
     @ricks_farms = @ricks_group.farms
@@ -22,7 +24,7 @@ class FarmTest < ActiveSupport::TestCase
   
   def needle_hierarchy(name="A farm")
     group_id = Group.first[:id]
-    farm = Farm.new(:name => name, :et_method_id => 1, :year => 2012, :group_id => group_id)
+    farm = Farm.new(:name => name, :et_method_id => 1, :year => CROPPING_YEAR, :group_id => group_id)
     farm.save!
     farm
   end
@@ -82,5 +84,43 @@ class FarmTest < ActiveSupport::TestCase
     assert_counts(:farm => 1, :pivot => 1, :field => 1, :fdw => FieldDailyWeather::SEASON_DAYS)
     assert(second_farm.destroy,'But I should have been able to clobber it')
     assert_counts
+  end
+  
+  test "clone_pivots_for works" do
+    farm = needle_hierarchy
+    this_year = Time.now.year
+    assert_nothing_raised(NoMethodError) { farm.clone_pivots_for }
+  end
+  
+  test "clone_pivots_for doubles the number of pivots" do
+    farm = needle_hierarchy
+    assert_difference "farm.pivots.size", farm.pivots.size do
+      farm.clone_pivots_for
+    end
+  end
+
+  def inspect_pivots(pivots)
+    pivots.collect { |p| "#{p.name}: #{p.cropping_year}, farm #{p.farm_id}" }.join("\n")    
+  end
+
+  test "can select the set of latest pivots for an array of farms" do
+    farm_w_recent_pivot_iis = [1,3]
+    farm = needle_hierarchy
+    group = farm.group
+    4.times do |n|
+      group.farms << Farm.create(group_id: group[:id], name: "CY farm #{n}", year: CROPPING_YEAR) # So it has one pivot with CROPPING YEAR
+    end
+    group.save!
+    farm_w_recent_pivot_iis.each do |ii|
+      f = group.farms[ii]
+      f.pivots << Pivot.create(farm_id: f[:id], cropping_year: CROPPING_YEAR + 1, name: "pick me #{ii}")
+    end
+    # Now we should have a group of 5 farms, each with one pivot whose cropping year is CROPPING_YEAR.
+    # In addition, group.farms[1] and group.farms[3] should also have a pivot whose cropping year is CROPPING_YEAR + 1,
+    # and whose names are "pick me 1" and "pick me 3", respectively.
+    recent_pivots = Farm.latest_pivots(group.farms)
+    assert_equal(Array, recent_pivots.class)
+    assert_equal(farm_w_recent_pivot_iis.size, recent_pivots.size,inspect_pivots(recent_pivots))
+    recent_pivots.each { |p| assert_equal(CROPPING_YEAR + 1, p.cropping_year); assert_equal(0, p.name =~ /^pick me [#{farm_w_recent_pivot_iis.join('')}]$/,"#{inspect_pivots(recent_pivots)}, pivot name was #{p.name}") }
   end
 end

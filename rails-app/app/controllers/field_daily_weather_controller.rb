@@ -1,6 +1,8 @@
 class FieldDailyWeatherController < ApplicationController
   set_default_filters
   MOISTURE_EPSILON = 0.01 # Amount by which an incoming pct moist must differ to be treated as "new"
+  PCT_COVER_EPSILON = 0.001 # Likewise for percent cover
+  
   COLUMN_NAMES = [
     :ref_et, 
     :rain, 
@@ -15,6 +17,11 @@ class FieldDailyWeatherController < ApplicationController
   def moisture_changed?(old,incoming)
     (old - incoming).abs > MOISTURE_EPSILON
   end
+  
+  def cover_changed?(old,incoming)
+      (old - incoming).abs > PCT_COVER_EPSILON
+    end
+
   
   # GET /field_daily_weather
   # GET /field_daily_weather.xml
@@ -118,7 +125,25 @@ class FieldDailyWeatherController < ApplicationController
         logger.info "new moisture is #{attribs[:pct_moisture].to_f} and old was #{fdw.pct_moisture.to_f}, setting it"
       end
     end
+    # Pct cover is special for a different reason -- if the user changes it, we have to call the field's interp
+    # routine. Don't bother, though, if it's the same
+    do_pct_cover = false
+    if attribs[:entered_pct_cover]
+      unless cover_changed?(attribs[:entered_pct_cover].to_f,fdw.pct_cover.to_f) # it's not changing
+        logger.info "Cover value supplied is the same as old one, so don't bother"
+        attribs.delete(:entered_pct_cover) # so we don't need to update it and trigger sacredness
+      else
+        logger.info "new cover is #{attribs[:entered_pct_cover].to_f} and old was #{fdw.pct_cover.to_f}, setting it"
+        do_pct_cover = true
+      end
+    end
+    
+    
     fdw.update_attributes(attribs)
+    if do_pct_cover
+      fdw.field.pct_cover_changed(fdw)
+    end
+    fdw.field.save! # triggers do_balances
     # logger.info "fdw now #{fdw.inspect}"
     render :nothing => true
   end

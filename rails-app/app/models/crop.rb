@@ -33,7 +33,9 @@ class Crop < ActiveRecord::Base
     unless @dont_update_canopy || !(emergence_date)
       # puts "updating our field's canopy (#{field[:id]})"; $stdout.flush
       field.update_canopy(emergence_date)
-      # logger.info "************************************* update canopy finished *****************"
+      field.set_fdw_initial_moisture
+      field.do_balances
+      logger.info "************************************* update canopy finished *****************"
     end
   end
   

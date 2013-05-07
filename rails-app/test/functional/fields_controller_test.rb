@@ -18,7 +18,7 @@ class FieldsControllerTest < ActionController::TestCase
     assert(before_emergence_fdw = fld.field_daily_weather.select { |f| f.date == emd - 1 }.first)
     assert(after_emergence_fdw = fld.field_daily_weather.select { |f| f.date == emd + 1 }.first)
     assert_nil(before_emergence_fdw.deep_drainage)
-    assert_nil(fdw.deep_drainage)
+    assert_equal(0.0,fdw.deep_drainage)
     assert_nil(after_emergence_fdw.deep_drainage)
     fdw.ref_et = 0.2
     fdw.entered_pct_cover = 100
@@ -42,20 +42,5 @@ class FieldsControllerTest < ActionController::TestCase
   # let's just test this here, it's the first controller to use it
   test "jsonify works" do
     assert_equal({"expected_str" => "this", "expected_int" => "2"}, FieldsController.jsonify({:expected_str => 'this', :expected_int => 2}))
-  end
-  
-  test "posting a new field sets the first FDW item to moisture==FC" do
-    name = 'should create field test'
-    fc = 0.65
-    fc_pct = 100.0 * fc
-    assert_nil(Field.find_by_name(name))
-    piv_id = pivots(:pivot_pct_2012)[:id]
-    assert_difference('Field.count') do
-      post :post_data, pivot_id: piv_id, parent_id: piv_id, oper: 'add', id: '_empty', name: name, field_capacity_pct: fc_pct, perm_wilting_pt: fc / 5.0
-    end
-    fld = Field.find_by_name name
-    fdw_first = fld.field_daily_weather.first
-    assert_in_delta(fc_pct, fdw_first.pct_moisture, 2 ** -20)
-    
   end
 end

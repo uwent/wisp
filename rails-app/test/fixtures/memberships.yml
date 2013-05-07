@@ -1,5 +1,10 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
 
+ricks_membership:
+  group: ricks
+  user: rick
+  is_admin: true
+  
 # default:
 #   id: 1
 #   group_id: 1

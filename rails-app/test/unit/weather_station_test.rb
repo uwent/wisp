@@ -100,8 +100,8 @@ class WeatherStationTest < ActiveSupport::TestCase
   test "can update multiple fields" do
     return unless @multi_field_test
     wx_attribs_to_set = {:rain => 4.0, :irrigation => 2.0, :ref_et => 0.2, :entered_pct_moisture => 0.33}
-    f2 = Field.create(:pivot => @pivot,:name => 'Test field f2')
-    f3 = Field.create(:pivot => @pivot,:name => 'Test field f3')
+    f2 = Field.create(:pivot => @pivot,:name => 'Test field f2', :field_capacity => 0.15)
+    f3 = Field.create(:pivot => @pivot,:name => 'Test field f3', :field_capacity => 0.15)
     assert_equal(FieldDailyWeather::SEASON_DAYS,f2.field_daily_weather.size)
     @pivot.fields.each do |field|
       fdw = wx_for(field.field_daily_weather,'2012-08-24')
@@ -115,6 +115,24 @@ class WeatherStationTest < ActiveSupport::TestCase
       fdw = wx_for(field.field_daily_weather,'2012-08-24')
       wx_attribs_to_set.each { |col,val| assert_equal(val, fdw.send(col.to_s),"Unexpectedly, fdw for field #{field.name} was already set") }
     end
-    
   end
+
+  test "AD balances get updated" do
+    wx_attribs_to_set = {:rain => 14.0, :irrigation => 2.0, :ref_et => 0.2} #, :entered_pct_moisture => 0.33
+    f2 = Field.create(:pivot => @pivot,:name => 'Test field f2')
+    f3 = Field.create(:pivot => @pivot,:name => 'Test field f3')
+    [f2,f3].each { |f| f.field_daily_weather.each { |fdw| fdw.ref_et = 0.2 }; f.save! }
+    fdw_24 = wx_for(f2.field_daily_weather,'2012-08-24')
+    fdw_25 = wx_for(f2.field_daily_weather,'2012-08-25')
+    assert(wsd = wx_for(@station.weather_station_data,'2012-08-24'))
+    assert_in_delta(-14.82, fdw_25.ad, 0.05)
+    old_moisture = fdw_25.calculated_pct_moisture
+    old_ad = fdw_25.ad
+    wsd.update_attributes(wx_attribs_to_set)
+    f2.field_daily_weather.reload
+    fdw_25 = wx_for(f2.field_daily_weather,'2012-08-25')
+    assert_not_equal(old_moisture, fdw_25.calculated_pct_moisture)
+    assert_not_equal(old_ad, fdw_25.ad)
+  end
+  
 end

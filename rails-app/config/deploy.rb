@@ -1,5 +1,14 @@
 set :application, "wisp"
-set :repository,  "https://wayne@svn.soils.wisc.edu/svn_repos/IrrigSched/trunk/rails-app"
+
+# Deploy to branches with cap --set-before branch=BRANCH_NAME deploy
+# from http://www.missiondata.com/blog/system-administration/84/deploying-an-svn-branch-with-capistrano/
+# Note that this deploys the root of the branch, i.e. it doesn't tack rails-app on if that is required.
+# Usually I make branches out of just the rails-app folder, so the branch name by itself is fine.
+if variables.include?(:branch)
+  set :repository,  "https://wayne@svn.soils.wisc.edu/svn_repos/IrrigSched/branches/#{branch}"
+else
+  set :repository,  "https://wayne@svn.soils.wisc.edu/svn_repos/IrrigSched/trunk/rails-app"
+end
 set :user, "root"
 default_run_options[:pty] = true
 

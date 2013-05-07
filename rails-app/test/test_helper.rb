@@ -14,4 +14,9 @@ class ActiveSupport::TestCase
     things.select { |thing| thing.date.to_s == date }.first
   end
 
+  
+  def emergence_index(field)
+    field.field_daily_weather.index {|fdw| fdw.date == field.current_crop.emergence_date}
+  end
+  
 end
