@@ -25,6 +25,10 @@ class WeatherStation < ActiveRecord::Base
           logger.warn "could not find #{attribs_to_update[:date].to_s} record for field #{field[:id]}/#{field.name}"
           next
         end
+        unless fdw
+          logger.warn "No FDW found for #{attribs_to_update.inspect} in weather_station #{self[:id]}"
+          return
+        end
         fdw.update_attributes(attribs_to_update) # this will update date too, but no matter, since we're already sure it's the same
         fdw.field.save! # Trigger a balance recalc
       end
