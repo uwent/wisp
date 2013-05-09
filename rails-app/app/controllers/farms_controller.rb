@@ -93,6 +93,14 @@ class FarmsController < ApplicationController
     end
     render :json => ApplicationController.jsonify(farm.attributes)
   end
+  
+  def problems
+    if params[:farm_id]
+      @farm = Farm.find(params[:farm_id].to_i)
+    end
+    @problems = @farm.problems
+    render :partial => '/wisp/partials/farm_problems'
+  end  
 
   # GET /farms/1
   # GET /farms/1.xml

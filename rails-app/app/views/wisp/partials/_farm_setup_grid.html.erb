@@ -4,6 +4,30 @@
         <%= grid_javascript_settings %>
           var lastsel;
           var et_methods = <%= @et_methods.html_safe %>;
+          
+          // Display "Yes" or "No" for boolean
+          function yesNoBoolFormat(cellvalue,options,rowObject) {
+            if (cellvalue === undefined) {
+              return("");
+            } else {
+              if (cellvalue == true || cellvalue == 'true') {
+                return("Yes");
+              } else {
+                return("No");
+              }
+            }   
+          }
+          // And (sigh!) translate back
+          function yesNoBoolUnformat(cellvalue,options,rowObject) {
+            if (cellvalue === undefined) {
+              return("");
+            } else if (cellvalue == 'Yes') {
+              return('true');
+            } else {
+              return('false');
+            }
+          }
+          
           function addDeleteButton(cl) {
             be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick=removeRow("+cl+"); ></ids>"; 
             jQuery("#farm_setup").setRowData(cl,{act:be}) 
@@ -57,7 +81,7 @@
               // editurl:'<%= url_for :controller => "farms", :action => :post_data, :parent_id => @group %>',
               editurl: '<%= grid_post_data_url "farms", @group_id %>',
               datatype: "json",
-              colNames:['Name','ET Method','Notes','Problem?','Delete','Group ID','ID'],
+              colNames:['Name','ET Method','Notes','AD < 0?','Delete','Group ID','ID'],
               colModel:[
                 {name:'name', index:'name',width:83,editable:true},
                 {
@@ -68,7 +92,7 @@
                     { value:"1:Percent Cover;2:Leaf Area Index"},editrules:{required:true}
                 },
                 {name:'notes', index:'notes',width:87,editable:true, align:'right'},
-                {name:'problem', index:'problem',width:20, hidden:true, align:'right'},
+                {name:'problem', index:'problem',formatter:yesNoBoolFormat,unformat:yesNoBoolUnformat,width:20, align:'right'},
                 {name:'act', index:'act', width:20},
                 {name:'group_id', index: 'group_id',width:10,hidden:true,editable:true},
                 {name:'id', index:'id',width:10,hidden:true,editable:false}
@@ -93,11 +117,13 @@
                   jQuery('#farm_setup').restoreRow(lastsel);
                   jQuery('#farm_setup').editRow(id,true); 
                   lastsel=id;
+                  fillProblemsBox(id);
                 } 
               },             
               
               loadComplete: function(){ 
-                  var ids = jQuery("#farm_setup").getDataIDs(); 
+                  var ids = jQuery("#farm_setup").getDataIDs();
+                  fillProblemsBox(ids[0]);
                   for(var i=0;i<ids.length;i++){ 
                       var cl = ids[i];
                       addDeleteButton(cl); 
@@ -114,7 +140,7 @@
             //   {afterSubmit:function(r,data){return true;(r,data,'delete');}}
             // )
             
-            mygrid.filterToolbar();mygrid[0].toggleToolbar()
+            mygrid.filterToolbar();mygrid[0].toggleToolbar();
           });
         </script>
 

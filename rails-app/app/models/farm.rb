@@ -22,9 +22,14 @@ class Farm < ActiveRecord::Base
   def problem
     problems.size > 0
   end
-  
-  def problems
-    pivots.inject([]) { |problems, pivot| problems << pivot if pivot.problem; problems }
+
+  # Iterate over all the fields on the farm. Return a hash where the keys are fields with problems,
+  # the values are the FDW where the problem was first detected
+  def problems(date=Date.today)
+    # Collect all fields on the farm
+    all_fields = pivots.select { |p| p.cropping_year == date.year }.collect { |p| p.fields }.flatten
+    problems = all_fields.collect { |f| f.problem(date - 7, date + 2) }.compact
+    problems
   end
   
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid

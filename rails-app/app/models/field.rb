@@ -353,19 +353,36 @@ class Field < ActiveRecord::Base
     end
   end
   
+  # For a given date range, determine if we have an AD below zero, whether in the range
+  # or in the projected data. We assume that the projected data follow the range.
+  # Return {self => {date => ad}} or nil if no problems.
   def problem(date=nil,end_date=nil)
     date ||= Date.today
     end_date ||= date + 7
     existing_wx = weather_for(date,end_date)
     projected_ad_data = FieldDailyWeather.projected_ad(existing_wx)
-    target = target_ad_in || 0.0
-    existing_problem = existing_wx.detect do |fdw|
-      fdw.ad < target if fdw && fdw.ad
+    problem_limit = 0.0
+    existing_problems = existing_wx.select do |fdw|
+      if fdw && fdw.ad
+        fdw.ad < problem_limit
+      else
+        false
+      end
     end
-    projected_problem = projected_ad_data.detect do |prj_ad|
-      prj_ad < target if prj_ad
+    projected_problem = nil
+    projected_ad_data.each_with_index do |prj_ad,ii|
+      if prj_ad && prj_ad < problem_limit
+        projected_problem = [end_date + ii,prj_ad]
+        break
+      end
     end
-    existing_problem || projected_problem
+    if existing_problems.size > 0
+      {self => [existing_problems.first.date,existing_problems.first.ad]}
+    elsif projected_problem
+      {self => projected_problem}
+    else
+      nil
+    end
   end
   
   def mother_may_i

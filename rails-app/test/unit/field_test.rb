@@ -670,7 +670,7 @@ class FieldTest < ActiveSupport::TestCase
     first_date = field.field_daily_weather.first.date
     second_date = first_date + 7
     (0..7).each { |ii| field.field_daily_weather[ii].ad = 1.8 }
-    assert_not_equal(true, field.problem(first_date,second_date))
+    assert_nil(field.problem(first_date,second_date))
   end
   
   test "problem on OK field with target" do
@@ -680,7 +680,7 @@ class FieldTest < ActiveSupport::TestCase
     first_date = field.field_daily_weather.first.date
     second_date = first_date + 7
     (0..7).each { |ii| field.field_daily_weather[ii].ad = 1.8 }
-    assert_not_equal(true, field.problem(first_date,second_date))
+    assert_nil(field.problem(first_date,second_date))
   end
   
   test "problem on field going negative in non-projected data with no target" do
@@ -693,7 +693,13 @@ class FieldTest < ActiveSupport::TestCase
       field.field_daily_weather[ii].ad = ad_value
       ad_value -= 0.3
     end
-    assert(field.problem(first_date,second_date))
+    assert(problem = field.problem(first_date,second_date))
+    assert_equal(Hash,problem.class)
+    fld = problem.keys.first
+    assert_equal(Field, fld.class)
+    assert_equal(Array, problem[fld].class)
+    assert_equal(Date, problem[fld][0].class)
+    assert_equal(Float,problem[fld][1].class)
   end
 
   test "problem on field going negative in non-projected data with target" do
@@ -707,7 +713,8 @@ class FieldTest < ActiveSupport::TestCase
       field.field_daily_weather[ii].ad = ad_value
       ad_value -= 0.3
     end
-    assert(field.problem(first_date,second_date))
+    assert(problem = field.problem(first_date,second_date))
+    assert_equal(Hash, problem.class,"Problem looks more like: #{problem.inspect}")
   end
   
   test "do_balances" do

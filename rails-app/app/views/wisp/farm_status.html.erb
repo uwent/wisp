@@ -38,6 +38,23 @@
 
 <% content_for :scripts do %>
   <%= jqgrid_javascripts.html_safe %>
+  <script type="text/javascript">
+    function fillProblemsBox(id) {
+      $.ajax(
+        {
+          type: "GET",
+          url: "<%= url_for(:controller => 'farms', :action => :problems,
+                            :user_id => @user) %>&farm_id="+id,
+          dataType: 'html',
+          async: false,
+          success: function(newHtml)
+          {
+            // Set the HTML of the summary box to the new stuff
+            $('#farmProblemsBox').html(newHtml);
+          }
+        });
+    }
+  </script>
 <% end %>
 
 <h2>WISP Farm Data</h2>
@@ -45,18 +62,8 @@
 <div id="farmDataBox">
   <%= render :partial => '/wisp/partials/farm_setup_grid'%>
 </div>
-<!-- 
 <div id="farmProblemsBox">
-  <table width="100%" border="1" cellpadding="1" cellspacing="1" summary="Action Items for farm">
-    <tr>
-    		<th>Field name</th><th>Explanation</th>
-    </tr>
-    <tr>
-    		<td>Field name (and link to field status)</td><td>Explanation of problem</td>
-    </tr>
-  </table>
 </div>
--->
 <% content_for :footer do %>
 <!-- Nothing needed in here for now -->
 <% end %>
