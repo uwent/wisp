@@ -1,0 +1,17 @@
+<% if @problems && @problems.size > 0 %>
+  <h3>Fields below allowable depletion<%= @farm ? " for #{@farm.name}" : '' %></h3>
+  <table width="100%" border="1" cellpadding="1" cellspacing="1" summary="Action Items for farm">
+    <tr>
+    		<th>Field name</th><th width="25%">Calculated or projected AD</th><th width="15%">On</th>
+    </tr>
+    <% @problems.each do |problem| %>
+      <% problem.each do |field,date_plus_val|%>
+        <tr>
+        		<td><%= link_to field.name, 'field_status', :field_id => field[:id] %></td><td><%= sprintf('%0.1f',date_plus_val[1]) %></td><td><%= date_plus_val[0].to_s %></td>
+        </tr>
+      <% end %>
+    <% end %>
+  </table>
+<% else %>
+  <h3>No fields below allowable depletion<%= @farm ? " for #{@farm.name}" : '' %></h3>
+<% end %>
