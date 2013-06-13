@@ -1,4 +1,5 @@
 set :application, "wisp"
+set :scm, "subversion"
 
 # Deploy to branches with cap --set-before branch=BRANCH_NAME deploy
 # from http://www.missiondata.com/blog/system-administration/84/deploying-an-svn-branch-with-capistrano/
@@ -16,7 +17,6 @@ default_run_options[:pty] = true
 # servers (which is the default), you can specify the actual location
 # via the :deploy_to variable:
 set :deploy_to, "/var/www/"
-set :deploy_via, "export"
 set :use_sudo, false
 
 # If you aren't using Subversion to manage your source code, specify

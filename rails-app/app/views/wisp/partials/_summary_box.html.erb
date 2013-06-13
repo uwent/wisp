@@ -10,7 +10,7 @@
   <h2 style="padding-top:35px;padding-bottom:5px">Projected Allowable Depletion</h2>
   <p>Two days hence, based on the max adjusted ET in the past week (i.e., worst case).</p>
   <table border="0">
-    <tr><th><%= @dates[first_projected_idx].strftime('%b %d')%>:</th><td id="proj_ad_1"><%= sprintf("%0.2f",@graph_data[first_projected_idx]) %> in.</td></tr>
+    <tr><th><%= @dates[first_projected_idx].strftime('%b %d')%>:</th><td id="proj_ad_1"><%= sprintf("%0.2f",@graph_data[first_projected_idx] || 0.0) %> in.</td></tr>
     <% if first_projected_idx < @ad_data.size %>
       <tr><th><%= @dates[first_projected_idx + 1].strftime('%b %d')%>:</th><td id="proj_ad_2"><%= sprintf("%0.2f",@graph_data[first_projected_idx + 1]) %> in.</td></tr>
     <% end %>
