@@ -3,11 +3,10 @@
 "Farm","Pivot","Field"
 "<%= field.pivot.farm.name %>","<%= field.pivot.name %>","<%= field.name %>"
 <%= @field_daily_weather.first.csv_cols.collect {|arr| %Q("#{arr[0]}")}.join(',').html_safe %>
-<% totals = {:rain => 0.0, :irrigation => 0.0, :adj_et => 0.0, :deep_drainage => 0.0}%>
 <% for fdw in @field_daily_weather %>
 <%= fdw.to_csv %>
-<% totals.each {|param,total| totals[param] += (fdw.send(param) || 0.0) }%>
 <% end %>
-"Total Rainfall","Total Irrigation","Total Adj. ET","Total Deep Drainage" 
-<%=h totals[:rain] %>,<%=h totals[:irrigation] %>,<%=h totals[:adj_et] %>,<%=h totals[:deep_drainage] %>
+
+"Totals as of <%= @summary[:date] %>",,,,,"Rainfall","Irrigation","Adj. ET","Deep Drainage" 
+,,,,,<%=h @summary[:rain] %>,<%=h @summary[:irrigation] %>,<%=h @summary[:adj_et] %>,<%=h @summary[:deep_drainage] %>
 

@@ -252,11 +252,28 @@ class FieldDailyWeather < ActiveRecord::Base
     ((date - start_date) / rows_per_page).to_i + 1
   end
   
-  def self.summary(field_id)
-    season_year = Field.find(field_id).current_crop.emergence_date.year
+  def self.summary(field_id,finish_date=nil)
+    field = Field.find(field_id)
+    season_year = field.current_crop.emergence_date.year
+    # start at beginning of season -- Field class is the keeper of that constant
+    start_date = Date.new(season_year,Field::START_DATE[0],Field::START_DATE[1])
+    # If a date was supplied, coerce it to be in the same year as season_year
+    if finish_date
+      if finish_date.year != season_year
+        finish_date = Date.new(season_year,finish_date.month,finish_date.mday)
+      end
+    else
+      # If not supplied, finish_date defaults to today if in current year, end of season otherwise
+      today = Date.today
+      if today.year == season_year
+        finish_date ||= today
+      else
+        finish_date ||= Date.new(season_year,Field::END_DATE[0],Field::END_DATE[1])
+      end
+    end
     query = <<-END
-    select sum(rain) as rain, sum(irrigation) as irrigation, sum(deep_drainage) as deep_drainage, sum(adj_et) as adj_et
-    from field_daily_weather where field_id=#{field_id} and date >= '#{season_year}-01-01' and date <= '#{season_year}-12-31'
+    select '#{finish_date}' as date, sum(rain) as rain, sum(irrigation) as irrigation, sum(deep_drainage) as deep_drainage, sum(adj_et) as adj_et
+    from field_daily_weather where field_id=#{field_id} and date >= '#{start_date}' and date <= '#{finish_date}'
     END
     find_by_sql(query).first
   end
@@ -304,7 +321,7 @@ class FieldDailyWeather < ActiveRecord::Base
     # cols = attributes.merge(balance_calcs).keys
     # REPORT_COLS_TO_IGNORE.each { |rcti| cols.delete(rcti) }
     # cols
-    [['Date',:date],['Reference ET',:ref_et],['Rainfall',:rain],['Irrigation',:irrigation],['Percent Moisture',:pct_moisture],cover_param,['Adjusted ET',:adj_et],['AD',:ad],['Deep Drainage',:deep_drainage]]
+    [['Date',:date],['Reference ET',:ref_et],['AD',:ad],['Percent Moisture',:pct_moisture],cover_param,['Rainfall',:rain],['Irrigation',:irrigation],['Adjusted ET',:adj_et],['Deep Drainage',:deep_drainage]]
   end
 
   def to_csv

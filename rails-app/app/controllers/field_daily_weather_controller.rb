@@ -83,7 +83,10 @@ class FieldDailyWeatherController < ApplicationController
         # logger.info json.inspect
         format.json { render :json => json }
       end
-      format.csv { render :template => 'field_daily_weather/daily_report', :filename => 'field_summary.csv', :content_type => "text/csv"}
+      format.csv do
+        @summary = FieldDailyWeather.summary(field_id)
+        render :template => 'field_daily_weather/daily_report', :filename => 'field_summary.csv', :content_type => "text/csv"
+      end
     end
     
     def calc_page(fdw,date,page_size)

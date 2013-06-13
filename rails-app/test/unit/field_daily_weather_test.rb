@@ -347,22 +347,37 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert(FieldDailyWeather.summary(field_id), "Failure message.")
   end
   
+  test "summary has the fields I expect" do
+    pivot = pivots(:other)
+    assert_equal(PctCoverEtMethod, pivot.farm.et_method.class)
+    season_year = pivot.cropping_year
+    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
+    summary = FieldDailyWeather.summary(field[:id])
+    [:rain,:irrigation,:deep_drainage,:adj_et].each do |column|
+      assert_equal(0.0, summary[column],"#{column.to_s} not found in summary  #{summary.inspect}  field: #{field.inspect}")
+    end
+    date = field.field_daily_weather[-1].date
+    assert_equal(date.to_s, summary[:date].to_s,"Wrong date for summary")
+  end
+  
   test "summary produces sensible results" do
     pivot = pivots(:other)
     assert_equal(PctCoverEtMethod, pivot.farm.et_method.class)
     season_year = pivot.cropping_year
     field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
+    # Pull the summary. Of course there should be no nonzero values, so it should sum to all zeroes.
     summary = FieldDailyWeather.summary(field[:id])
     [:adj_et,:rain,:irrigation,:deep_drainage].each { |thing| assert_equal(0.0, summary[thing]) }
     emi = field.fdw_index(field.current_crop.emergence_date)
     n_fdw = field.field_daily_weather.size - emi - 1
     vals = {ref_et: 0.2, entered_pct_cover: 60.0, rain: 0.3, irrigation: 0.4}
     results = {
-      adj_et: 0.176494 * n_fdw,
-      rain: vals[:rain] * n_fdw,
-      irrigation: vals[:irrigation] * n_fdw,
-      deep_drainage: 0.523507 * n_fdw
+      adj_et: 0.176494 * n_fdw,               # adjusted ET for 60% cover and ref_et 0.2
+      rain: vals[:rain] * n_fdw,              # rains 0.3 every day
+      irrigation: vals[:irrigation] * n_fdw,  # irrigate 0.4 every day
+      deep_drainage: 0.523507 * n_fdw         # Which, all together, should take us over FC so there's DD
     }
+    # Iterate through from emergence to the end of the season
     field.field_daily_weather[emi..-1].each do |fdw|
       vals.each do |param,val|
         fdw[param] = val
@@ -374,6 +389,44 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     results.each do |param,result|
       assert_in_delta(result, summary[param], 1.0,"#{param.to_s}")
     end
+  end
+  
+  test "summary produces sensible results over a subset of the season" do
+    DAYS_FROM_SEASON_END = 50
+    pivot = pivots(:other)
+    assert_equal(PctCoverEtMethod, pivot.farm.et_method.class)
+    season_year = pivot.cropping_year
+    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
+    emi = field.fdw_index(field.current_crop.emergence_date)
+    # simulate a summary taken on a particular day by specifying a finish date (the production code
+    # defaults the finish date to "today" if we're looking at a current-year field)
+    n_fdw = field.field_daily_weather.size - emi - 1 - DAYS_FROM_SEASON_END
+    finish_fdw = field.field_daily_weather[-DAYS_FROM_SEASON_END]
+    finish_date = finish_fdw.date
+    vals = {ref_et: 0.2, entered_pct_cover: 60.0, rain: 0.3, irrigation: 0.4}
+    results = {
+      adj_et: 0.176494 * n_fdw,               # adjusted ET for 60% cover and ref_et 0.2
+      rain: vals[:rain] * n_fdw,              # rains 0.3 every day
+      irrigation: vals[:irrigation] * n_fdw,  # irrigate 0.4 every day
+      deep_drainage: 0.523507 * n_fdw         # Which, all together, should take us over FC so there's DD
+    }
+    # Iterate through from emergence to the end of the season
+    # This should throw off the sums if they're not taking the finish date into account
+    field.field_daily_weather[emi..-1].each do |fdw|
+      vals.each do |param,val|
+        fdw[param] = val
+      end
+    end
+    field.save!
+    field.field_daily_weather.reload
+    summary = FieldDailyWeather.summary(field[:id],finish_date)
+    results.each do |param,result|
+      assert_in_delta(result, summary[param], 1.4,
+      "#{param.to_s} as of #{finish_date} (#{n_fdw} days) should have been #{result} " +
+        "at #{sprintf("%0.2f",finish_fdw[param])} per day"
+      )
+    end
+    assert_in_delta(summary[:rain] + summary[:irrigation], summary[:adj_et] + summary[:deep_drainage], 2 ** -20)
   end
 
   def projected_ad_test(start_days_back)
@@ -425,6 +478,6 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     field.field_daily_weather.reload
     fdws = fdws_from_emergence(field)
     assert(csv = fdws[1].to_csv)
-    assert_equal("2011-05-02,0.31,0.21,1.01,30.00,0.00,0.00,2.70,1.22", csv)
+    assert_equal("2011-05-02,0.31,2.70,30.00,0.00,0.21,1.01,0.00,1.22", csv)
   end
 end
