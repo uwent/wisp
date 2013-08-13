@@ -7,6 +7,6 @@
 <%= fdw.to_csv %>
 <% end %>
 
-"Totals as of <%= @summary[:date] %>",,,,,"Rainfall","Irrigation","Adj. ET","Deep Drainage" 
+"Totals for <%= @field_daily_weather.first.date.year %>",,,,,"Rainfall","Irrigation","Adj. ET","Deep Drainage" 
 ,,,,,<%=h @summary[:rain] %>,<%=h @summary[:irrigation] %>,<%=h @summary[:adj_et] %>,<%=h @summary[:deep_drainage] %>
 
