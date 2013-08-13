@@ -84,7 +84,11 @@ class FieldDailyWeatherController < ApplicationController
         format.json { render :json => json }
       end
       format.csv do
-        @summary = FieldDailyWeather.summary(field_id)
+        # CSVs always start at start of weather data and go through to the bitter end, per John
+        season_year = @field_daily_weather.first ? @field_daily_weather.first.date.year : Date.today.year
+        start_date = Date.new(season_year,Field::START_DATE[0],Field::START_DATE[1])
+        finish_date = Date.new(season_year,Field::END_DATE[0],Field::END_DATE[1])
+        @summary = FieldDailyWeather.summary(field_id,start_date,)
         render :template => 'field_daily_weather/daily_report', :filename => 'field_summary.csv', :content_type => "text/csv"
       end
     end

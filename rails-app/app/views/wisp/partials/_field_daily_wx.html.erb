@@ -13,6 +13,21 @@
             laiIsEditable = false;
             pctCoverIsEditable = true;
           }
+          
+          function editedFormatter(cellvalue,options,obj) {
+            if (cellvalue === undefined) {
+              return("");
+            } else {
+              // Is there an "E" for "entered"?
+              if (cellvalue.indexOf('E') == -1) {
+                return cellvalue;
+              } else {
+                num = cellvalue.replace("%","");
+                return redFormatter(num,options,obj);
+              }
+            }         
+          }
+          
           function redFormatter(cellvalue,options,obj) {
             if (cellvalue > 0.0) {
               cellstr = cellvalue.toString();
@@ -55,7 +70,7 @@
                  formatter:'number', formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0.0,maxValue:10.0}},
                 {name:'pct_moisture', index:'pct_moisture',width:72,
                  editable:true, align:'right',
-                 formatter:'number', formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0.0,maxValue:max_moisture}},
+                 formatter:editedFormatter, formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0.0,maxValue:max_moisture}},
                 {name:'entered_pct_cover', index:'entered_pct_cover',width:63,
                  editable:pctCoverIsEditable, align:'right',hidden:isLai,
                  formatter:'number', formatoptions:{decimalPlaces:0},editrules:{number:true,minValue:0.0,maxValue:100.0}},

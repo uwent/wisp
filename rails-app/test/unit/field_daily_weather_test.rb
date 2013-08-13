@@ -419,7 +419,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     end
     field.save!
     field.field_daily_weather.reload
-    summary = FieldDailyWeather.summary(field[:id],finish_date)
+    summary = FieldDailyWeather.summary(field[:id],field.current_crop.emergence_date,finish_date)
     results.each do |param,result|
       assert_in_delta(result, summary[param], 1.4,
       "#{param.to_s} as of #{finish_date} (#{n_fdw} days) should have been #{result} " +

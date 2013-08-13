@@ -31,9 +31,13 @@ class FieldDailyWeather < ActiveRecord::Base
     entered_pct_moisture || calculated_pct_moisture
   end
   
+  def display_pct_moisture
+    entered_pct_moisture ? entered_pct_moisture.to_s + 'E' : calculated_pct_moisture
+  end
+  
   def pct_moisture=(moisture)
     self[:entered_pct_moisture] = moisture
-    logger.info "I now have an entered pct moisture: "
+    logger.info "I now have an entered pct moisture: #{moisture}"
   end
   
   def pct_cover
@@ -78,8 +82,6 @@ class FieldDailyWeather < ActiveRecord::Base
   end
 
   def ad_from_moisture(taw,fc=field[:field_capacity])
-    # AD == (moisture - pct_moisture_at_ad_min) * mrzd.
-    # fc = field[:field_capacity]
     raise "need field capacity for #{self[:id]}; field is #{field.inspect}" unless fc
     mrzd = field.current_crop.max_root_zone_depth
     mad_frac = field.current_crop.max_allowable_depletion_frac
@@ -252,11 +254,11 @@ class FieldDailyWeather < ActiveRecord::Base
     ((date - start_date) / rows_per_page).to_i + 1
   end
   
-  def self.summary(field_id,finish_date=nil)
+  def self.summary(field_id,start_date=nil,finish_date=nil)
     field = Field.find(field_id)
     season_year = field.current_crop.emergence_date.year
-    # start at beginning of season -- Field class is the keeper of that constant
-    start_date = Date.new(season_year,Field::START_DATE[0],Field::START_DATE[1])
+    # start at supplied start date, or at emergence
+    start_date ||= field.current_crop.emergence_date
     # If a date was supplied, coerce it to be in the same year as season_year
     if finish_date
       if finish_date.year != season_year
@@ -264,8 +266,11 @@ class FieldDailyWeather < ActiveRecord::Base
       end
     else
       # If not supplied, finish_date defaults to today if in current year, end of season otherwise
+      # FIXME: What if today is after the current 
       today = Date.today
       if today.year == season_year
+        # use today, or the end of season, whichever is earliest
+        today = [today,Date.new(season_year,Field::END_DATE[0],Field::END_DATE[1])].min
         finish_date ||= today
       else
         finish_date ||= Date.new(season_year,Field::END_DATE[0],Field::END_DATE[1])

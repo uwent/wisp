@@ -1,4 +1,4 @@
-<h2 style="padding:5px">Seasonal Totals<br/>as of <%= @summary_data[:date] %></h2>
+<h2 style="padding:5px">Seasonal Totals<br/><%= @field.current_crop.emergence_date.to_s %> to <%= @summary_data[:date] %></h2>
 <%= link_to "Report in CSV Format", :controller => 'field_daily_weather', :field_id => @field, :page => 1, :rows => FieldDailyWeather::SEASON_DAYS, :format => :csv %>
 <table border="0">
   <tr><th>Rainfall:</th><td> <%= sprintf("%0.2f",@summary_data[:rain] || 0.0) %> in.</td></tr>
