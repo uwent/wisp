@@ -62,7 +62,7 @@ class Field < ActiveRecord::Base
   before_destroy :mother_may_i  # check with parent if it's OK to go
   
   START_DATE = [4,1]
-  END_DATE = [9,30]
+  END_DATE = [10,31]
   EMERGENCE_DATE = [5,1]
   DEFAULT_FIELD_CAPACITY = 0.31
   DEFAULT_PERM_WILTING_PT = 0.14

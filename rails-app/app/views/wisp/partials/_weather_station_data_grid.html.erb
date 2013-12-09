@@ -6,7 +6,7 @@
               url:'<%= url_for :controller => "weather_station_data", :weather_station_id => @weather_station, :year => @year, :user_id => @user, :q => 1 %>',
               editurl:'<%= url_for :controller => "weather_station_data", :action  => :post_data, :weather_station_id => @weather_station, :user_id => @user, :year => @year %>',
               datatype: "json",
-              colNames:['Date','Rainfall','Irrigation','Soil Moisture','Reference ET','Notes','ID'],
+              colNames:['Date','Rainfall','Irrigation','Soil Moisture','Potential ET','Notes','ID'],
               colModel:[{name:'date', index:'date',width:35},
                              {name:'rain', index:'rain',width:25,editable:true, align:'right',editrules:{number:true,minValue:0.0,maxValue:10.0}},
                              {name:'irrigation', index:'irrigation',width:25,editable:true, align:'right',editrules:{number:true,minValue:0.0,maxValue:10.0}},

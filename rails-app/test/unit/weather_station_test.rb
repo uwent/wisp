@@ -9,6 +9,7 @@ class WeatherStationTest < ActiveSupport::TestCase
   
   def extend_fdw_backwards(field)
     unless (size_delta = FieldDailyWeather::SEASON_DAYS - field.field_daily_weather.size) == 0
+      puts "extend_fdw_backwards: size_delta is #{size_delta}"
       first_fdw = field.field_daily_weather.first
       date = first_fdw.date - 30
       assert_equal("#{date.year.to_s}-04-01", date.to_s)

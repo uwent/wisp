@@ -4,7 +4,7 @@ class FieldDailyWeather < ActiveRecord::Base
   # before_update :old_update_balances
   # after_update :update_next_days_balances, :update_pct_covers
   
-  SEASON_DAYS = 183
+  SEASON_DAYS = 214
   ADJ_ET_EPSILON = 0.00001
   
   @@debug = nil
@@ -326,7 +326,7 @@ class FieldDailyWeather < ActiveRecord::Base
     # cols = attributes.merge(balance_calcs).keys
     # REPORT_COLS_TO_IGNORE.each { |rcti| cols.delete(rcti) }
     # cols
-    [['Date',:date],['Reference ET',:ref_et],['AD',:ad],['Percent Moisture',:pct_moisture],cover_param,['Rainfall',:rain],['Irrigation',:irrigation],['Adjusted ET',:adj_et],['Deep Drainage',:deep_drainage]]
+    [['Date',:date],['Potential ET',:ref_et],['AD',:ad],['Percent Moisture',:pct_moisture],cover_param,['Rainfall',:rain],['Irrigation',:irrigation],['Adjusted ET',:adj_et],['Deep Drainage',:deep_drainage]]
   end
 
   def to_csv
