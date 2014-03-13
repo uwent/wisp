@@ -1,9 +1,11 @@
 <% field = @field_daily_weather.first.field %>
 "Daily Report (<%=h @field_daily_weather.first.date.year %> Season)"
 "Farm","Pivot","Field"
-"<%= field.pivot.farm.name %>","<%= field.pivot.name %>","<%= field.name %>"
-"Crop","Root zone depth","Initial percent moisture","Emergence date","AD at field capacity","Target % of AD"
-<%= field.current_crop.name %>,<%= field.field_daily_weather.first.pct_moisture %>,<%= field.current_crop.max_root_zone_depth %>,<%= field.current_crop.emergence_date %>,<%= field.ad_max %>,<%= field.target_ad_pct %>
+"<%= field.pivot.farm.name %>","<%= field.pivot.name %>"
+"Field","Soil Type","Field capacity","Permanent wilt point","Target AD %"
+"<%= field.name %>","<%= @soil_type %>",<%= field.field_capacity %>,<%= field.perm_wilting_pt %>,<%= field.target_ad_pct %>
+"Crop","Root zone depth","Initial percent moisture","Emergence date","AD at field capacity","Harvest or Kill Date"
+<%= field.current_crop.name %>,<%= field.current_crop.max_root_zone_depth %>,<%= field.field_daily_weather.first.pct_moisture %>,<%= field.current_crop.emergence_date %>,<%= field.ad_max %>,<%= field.current_crop.harvest_or_kill_date %>
 <%= @field_daily_weather.first.csv_cols.collect {|arr| %Q("#{arr[0]}")}.join(',').html_safe %>
 <% for fdw in @field_daily_weather %>
 <%= fdw.to_csv %>
