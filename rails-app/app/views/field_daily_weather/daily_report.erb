@@ -2,6 +2,8 @@
 "Daily Report (<%=h @field_daily_weather.first.date.year %> Season)"
 "Farm","Pivot","Field"
 "<%= field.pivot.farm.name %>","<%= field.pivot.name %>","<%= field.name %>"
+"Crop","Root zone depth","Emergence date","AD at field capacity","Target % of AD"
+<%= field.current_crop.name %>,<%= field.current_crop.max_root_zone_depth %>,<%= field.current_crop.emergence_date %>,<%= field.ad_max %>,<%= field.target_ad_pct %>
 <%= @field_daily_weather.first.csv_cols.collect {|arr| %Q("#{arr[0]}")}.join(',').html_safe %>
 <% for fdw in @field_daily_weather %>
 <%= fdw.to_csv %>
