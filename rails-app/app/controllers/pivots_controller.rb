@@ -54,7 +54,7 @@ class PivotsController < ApplicationController
         attribs[:name] = "New pivot (farm ID: #{@farm[:id]})"
         attribs[:farm_id] = @farm[:id]
         unless attribs[:cropping_year]
-          attribs[:cropping_year] = '2013'
+          attribs[:cropping_year] = Date.today.year.to_s
         end
         pivot = Pivot.create(attribs)
         logger.info "created the new pivot #{pivot.inspect}"
