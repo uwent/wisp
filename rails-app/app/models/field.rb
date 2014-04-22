@@ -269,9 +269,9 @@ class Field < ActiveRecord::Base
     
     vals = {}
     if Rails.env == 'development' || Rails.env == 'test'
-      url = "http://agwx.soils.wisc.edu/devel/sun_water"
+      url = "http://agwx.soils.wisc.edu/devel/sun_water/get_grid"
     else
-      url = "http://agwx.soils.wisc.edu/uwex_agwx/sun_water"
+      url = "http://agwx.soils.wisc.edu/uwex_agwx/sun_water/get_grid"
     end
     begin
       uri = URI.parse(url)
@@ -284,7 +284,7 @@ class Field < ActiveRecord::Base
 
       vals = {}
       res.body.split("\n").each do |line|
-        if line =~ /([\d]{4}-[\d]{2}-[\d]{2}),([\d].[\d]+)[^\d]/
+        if line =~ /([\d]{4}-[\d]{2}-[\d]{2}),([\d].[\d]+)$/
           vals[$1] = $2.to_f
         end
       end
