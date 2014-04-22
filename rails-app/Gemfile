@@ -1,4 +1,4 @@
- source 'http://rubygems.org'
+source 'http://rubygems.org'
 
 gem 'rails', '3.0.20'
 
@@ -33,7 +33,7 @@ gem 'asigbiophys', '>= 0.0.2'
 group :development, :test do
   gem 'sqlite3'
   # Per http://stackoverflow.com/questions/10918019/gem-issue-database-rake-aborted:
-  gem 'debugger'
+  # gem 'debugger'
 end
 group :production do 
   gem 'mysql2'

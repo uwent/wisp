@@ -267,15 +267,21 @@ class Field < ActiveRecord::Base
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
     
-    # http://www.soils.wisc.edu/asig/rails/wimnext-rails/choose_date?controller=et&action=get_et_series&latitude=48.0&longitude=90.8
     vals = {}
+    if Rails.env == 'development' || Rails.env == 'test'
+      url = "http://agwx.soils.wisc.edu/devel/sun_water"
+    else
+      url = "http://agwx.soils.wisc.edu/uwex_agwx/sun_water"
+    end
     begin
-      url = URI.parse("http://www.soils.wisc.edu")
-      res = Net::HTTP.start(url.host, url.port) {|http|
-        http.get("/asig/rails/wimnext-rails/et/get_et_series?" + 
-          "start_date=#{start_date}&end_date=#{end_date}&latitude=#{pivot.latitude}&longitude=#{pivot.longitude}"
-        )
-      }
+      uri = URI.parse(url)
+      # Note that we code the nested params with the [] format, since they'll irremediably be
+      # formatted to escaped braces if we just use the grid_date => {start_date: } nested hash
+      res = response = Net::HTTP.post_form(uri,
+        "latitude"=>pivot.latitude, "longitude"=>pivot.longitude, "param"=>"ET",
+        "grid_date[start_date]" => start_date, "grid_date[end_date]"=>end_date,
+        "format" => "csv")
+
       vals = {}
       res.body.split("\n").each do |line|
         if line =~ /([\d]{4}-[\d]{2}-[\d]{2}),([\d].[\d]+)[^\d]/
