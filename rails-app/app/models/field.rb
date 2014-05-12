@@ -268,13 +268,11 @@ class Field < ActiveRecord::Base
     end_date = field_daily_weather[-1].date.to_s
     
     vals = {}
-    if Rails.env == 'development' || Rails.env == 'test'
-      url = "http://agwx.soils.wisc.edu/devel/sun_water/get_grid"
-    else
-      url = "http://agwx.soils.wisc.edu/uwex_agwx/sun_water/get_grid"
-    end
+	# To use a test url use "http://agwx.soils.wisc.edu/devel/sun_water/get_grid" Note: et data not automatically updated on devel.
+    url = "http://agwx.soils.wisc.edu/uwex_agwx/sun_water/get_grid"
     begin
       uri = URI.parse(url)
+	  #logger.info uri
       # Note that we code the nested params with the [] format, since they'll irremediably be
       # formatted to escaped braces if we just use the grid_date => {start_date: } nested hash
       res = response = Net::HTTP.post_form(uri,
