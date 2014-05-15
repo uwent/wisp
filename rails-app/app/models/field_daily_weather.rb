@@ -4,7 +4,7 @@ class FieldDailyWeather < ActiveRecord::Base
   # before_update :old_update_balances
   # after_update :update_next_days_balances, :update_pct_covers
   
-  SEASON_DAYS = 214
+  SEASON_DAYS = 244
   ADJ_ET_EPSILON = 0.00001
   
   @@debug = nil
