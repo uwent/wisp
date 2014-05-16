@@ -1816,3 +1816,273 @@ fdw_pivot_2012_183:
   rain: 0.0
   leaf_area_index: 0.5
   irrigation: 0.0
+
+fdw_pivot_2012_184:
+  field: field_for_pivot_2012
+  date: 2012-11-1
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_185:
+  field: field_for_pivot_2012
+  date: 2012-11-2
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_186:
+  field: field_for_pivot_2012
+  date: 2012-11-3
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_187:
+  field: field_for_pivot_2012
+  date: 2012-11-4
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_188:
+  field: field_for_pivot_2012
+  date: 2012-11-5
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_189:
+  field: field_for_pivot_2012
+  date: 2012-11-6
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_190:
+  field: field_for_pivot_2012
+  date: 2012-11-7
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_191:
+  field: field_for_pivot_2012
+  date: 2012-11-8
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_192:
+  field: field_for_pivot_2012
+  date: 2012-11-9
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_193:
+  field: field_for_pivot_2012
+  date: 2012-11-10
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_194:
+  field: field_for_pivot_2012
+  date: 2012-11-11
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_195:
+  field: field_for_pivot_2012
+  date: 2012-11-12
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_196:
+  field: field_for_pivot_2012
+  date: 2012-11-13
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_197:
+  field: field_for_pivot_2012
+  date: 2012-11-14
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_198:
+  field: field_for_pivot_2012
+  date: 2012-11-15
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_199:
+  field: field_for_pivot_2012
+  date: 2012-11-16
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_200:
+  field: field_for_pivot_2012
+  date: 2012-11-17
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_201:
+  field: field_for_pivot_2012
+  date: 2012-11-18
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_202:
+  field: field_for_pivot_2012
+  date: 2012-11-19
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_203:
+  field: field_for_pivot_2012
+  date: 2012-11-20
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_204:
+  field: field_for_pivot_2012
+  date: 2012-11-21
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_205:
+  field: field_for_pivot_2012
+  date: 2012-11-22
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_206:
+  field: field_for_pivot_2012
+  date: 2012-11-23
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_207:
+  field: field_for_pivot_2012
+  date: 2012-11-24
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_208:
+  field: field_for_pivot_2012
+  date: 2012-11-25
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_209:
+  field: field_for_pivot_2012
+  date: 2012-11-26
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_210:
+  field: field_for_pivot_2012
+  date: 2012-11-27
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_211:
+  field: field_for_pivot_2012
+  date: 2012-11-28
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_212:
+  field: field_for_pivot_2012
+  date: 2012-11-29
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
+
+fdw_pivot_2012_213:
+  field: field_for_pivot_2012
+  date: 2012-11-30
+  ref_et: 0.15
+  rain: 0.0
+  leaf_area_index: 0.5
+  irrigation: 0.0
+end
