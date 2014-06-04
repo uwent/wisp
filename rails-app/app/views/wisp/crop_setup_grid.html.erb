@@ -1,5 +1,12 @@
 <script type="text/javascript">
   var lastsel;
+  // datepicker re-focus per
+  // http://stackoverflow.com/questions/18626761/how-to-set-focus-on-specific-cell-in-onselectrow-in-inline-edit-jqgrid
+  // to set the focus, and 
+  // http://stackoverflow.com/questions/15342360/jquery-datepicker-onclose-select-next
+  // for the onClose event handler
+  
+  
   jQuery(document).ready(function(){
   var mygrid = jQuery("#crop_setup").jqGrid({
       url:'<%= grid_data_url "crops", @field %>',
@@ -8,13 +15,37 @@
       colNames:['Crop','Variety','Emergence','Harvest/Kill','Root zone depth','AD Frac.','Notes',' ',' '],
       colModel:[ {name:'name', index:'name',width:83,editable:true},
                  {name:'variety', index:'variety',width:47,editable:true, align:'right'},
-                 {name:'emergence_date', index:'emergence_date',width:35,editable:true, align:'right',
-                  editrules:{date:true},
-                  editoptions: { dataInit: function(el) { setTimeout(function() { $(el).datepicker({ dateFormat: "yy-mm-dd" }); }, 200); }}
+                 {
+                   name:'emergence_date', index:'emergence_date',width:35,editable:true, align:'right',
+                   editrules:{date:true},
+                   editoptions: { 
+                     dataInit: function(el) { 
+                       setTimeout(function() {
+                         $(el).datepicker({
+                           dateFormat: "yy-mm-dd",
+                           onClose: function(selectedDate) {
+                             $("#" + $.jgrid.jqID(lastsel) + "_emergence_date").focus();
+                           }
+                         });
+                       }, 200);
+                     }
+                   }
                  },
-                 {name:'harvest_or_kill_date', index:'harvest_or_kill_date',width:35,editable:true, align:'right',
+                 {
+                   name:'harvest_or_kill_date', index:'harvest_or_kill_date',width:35,editable:true, align:'right',
                   editrules:{required:false,date:true},
-                  editoptions: { dataInit: function(el) { setTimeout(function() { $(el).datepicker({ dateFormat: "yy-mm-dd" }); }, 200); }}
+                  editoptions: {
+                    dataInit: function(el) {
+                      setTimeout(function() {
+                         $(el).datepicker({
+                            dateFormat: "yy-mm-dd",
+                            onClose: function(selectedDate) {
+                              $("#" + $.jgrid.jqID(lastsel) + "_harvest_or_kill_date").focus();
+                            }
+                         }); 
+                      }, 200); 
+                    }
+                  }
                  },
                  {name:'max_root_zone_depth', index:'max_root_zone_depth',width:47,editable:true, align:'right',editrules:{number:true,minValue:0,maxValue:60}},
                  {name:'max_allowable_depletion_frac', index:'max_allowable_depletion_frac',width:25,editable:true, align:'right',editrules:{number:true,minValue:0.0,maxValue:1.0}},
