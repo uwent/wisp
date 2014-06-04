@@ -1,5 +1,5 @@
-# Calculates adjusted evapotranspiration (hereinafter ET) from a "reference ET" number and other stuff like
-# percent canopy cover or leaf-area index.
+# Calculates adjusted evapotranspiration (hereinafter ET) from a "reference ET" number 
+# and other stuff like percent canopy cover or leaf-area index.
 # Created:: 31May2011
 # Authors:: P Kaarakka, Rick Wayne
 
@@ -10,9 +10,9 @@ module ETCalculator
  
   # Return the adjusted ET. Uses regression coefficients derived by J. Panuska from the UW Extension pub A3600.
   def adj_et_pct_cover(ref_et,pctCover)
-    ref_et = 0.0 if ref_et == nil
-    pctCover = 0.0 if pctCover == nil
-    return 0.0 if pctCover < 0.000001
+    ref_et ||= 0.0 #if ref_et == nil #pk 6/3/14
+    pctCover ||= 0.0 #if pctCover == nil #pk 6/3/14
+    return 0.0 if ref_et < 0.000001 #Does the limit need to be bigger to be effective? pk 6/3/14
     # regression coefficients from J. Panuska in Linear_Regressions_for_A3600_Table.doc and based on Table C of UW Extension pub A3600, "Irrigation Management in Wisconsin - the Wisconsin Irrigation Scheduling Program (WISP)" 
     coeff = [[0,0],[-0.002263,0.2377],[-0.002789,0.3956],[-0.002368,0.5395],[-0.000316,0.6684],[-0.000053,0.7781],[0.001053,0.8772],[0.001947,0.9395],[0.000000,1.000]]
   

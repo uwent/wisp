@@ -259,22 +259,35 @@ class FieldDailyWeather < ActiveRecord::Base
     season_year = field.current_crop.emergence_date.year
     # start at supplied start date, or at emergence
     start_date ||= field.current_crop.emergence_date
+    kill_date = field.current_crop.harvest_or_kill_date
     # If a date was supplied, coerce it to be in the same year as season_year
     if finish_date
       if finish_date.year != season_year
         finish_date = Date.new(season_year,finish_date.month,finish_date.mday)
       end
     else
-      # If not supplied, finish_date defaults to today if in current year, end of season otherwise
+      # If not supplied, finish_date defaults to:
+      # 1) today if in current year and earlier than harvest/kill date,
+      # 2) harvest/kill date if specified and is prior to today,
+      # 3) end of data if earlier than today or harvest/kill
       # FIXME: What if today is after the current 
       today = Date.today
+      last_data_date = Date.new(season_year,Field::END_DATE[0],Field::END_DATE[1])
+      kill_date ||= last_data_date
+      last_data_date.inspect
       if today.year == season_year
-        # use today, or the end of season, whichever is earliest
-        today = [today,Date.new(season_year,Field::END_DATE[0],Field::END_DATE[1])].min
+        # use today, or kill date or the end of season, whichever is earliest
+        today = [today,kill_date,last_data_date].min
         finish_date ||= today
       else
-        finish_date ||= Date.new(season_year,Field::END_DATE[0],Field::END_DATE[1])
+        finish_date ||= [kill_date,last_data_date].min
       end
+      #Is the following better than the lines above? pk 6/3/14
+      # if today.year != season_year 
+        # today.year = season_year
+      # end
+      # today = [today,kill_date,last_data_date].min
+      # finish_date ||= today
     end
     query = <<-END
     select '#{finish_date}' as date, sum(rain) as rain, sum(irrigation) as irrigation, sum(deep_drainage) as deep_drainage, sum(adj_et) as adj_et

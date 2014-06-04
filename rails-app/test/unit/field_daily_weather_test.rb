@@ -435,12 +435,13 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     emi = field.fdw_index(field.current_crop.emergence_date)
     # simulate a summary taken on a particular day by specifying a finish date (the production code
     # defaults the finish date to "today" if we're looking at a current-year field)
-    n_fdw = field.field_daily_weather.size - emi - DAYS_FROM_SEASON_END
+    # n_fdw = field.field_daily_weather.size - emi - DAYS_FROM_SEASON_END #This gives wrong size. 
+    n_fdw = field.field_daily_weather[emi..-1].size - DAYS_FROM_SEASON_END
     finish_fdw = field.field_daily_weather[-DAYS_FROM_SEASON_END]
     finish_date = finish_fdw.date
     vals = {ref_et: 0.2, entered_pct_cover: 60.0, rain: 0.3, irrigation: 0.4}
     results = {
-      adj_et: 0.176494 * n_fdw,               # adjusted ET for 60% cover and ref_et 0.2
+      adj_et: 0.176493 * n_fdw,               # adjusted ET for 60% cover and ref_et 0.2
       rain: vals[:rain] * n_fdw,              # rains 0.3 every day
       irrigation: vals[:irrigation] * n_fdw,  # irrigate 0.4 every day
       deep_drainage: 0.523507 * n_fdw         # Which, all together, should take us over FC so there's DD

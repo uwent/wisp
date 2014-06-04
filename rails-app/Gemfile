@@ -19,7 +19,7 @@ gem "rack-openid"
 # gem 'mongrel', '1.2.0.pre2'
 
 # Everything from the comma eastward will go away once I get Rubyforge working!
-gem 'asigbiophys', '>= 0.0.2'
+gem 'asigbiophys', :path => "vendor/asigbiophys"
 
 # Bundle the extra gems:
 # gem 'bj'
