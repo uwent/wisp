@@ -24,7 +24,8 @@
     return [true,'',field_id]; // This was a total shot in the dark, Googling 'jqgrid afterSubmit' gave hints
   }
   function deleteField(id) {
-    jQuery('#field_setup').delGridRow(id,{afterSubmit:useFirstFieldRow,msg:'Permanently delete field, its crop & daily data?'});
+    jQuery('#field_setup').delGridRow(id,{afterSubmit:useFirstFieldRow,msg:'Delete selected record(s)? \nThis will delete all crop data \nassociated with this field. \nProceed with delete?'});
+//    jQuery('#field_setup').delGridRow(id,{afterSubmit:useFirstFieldRow,msg:'Permanently delete field, its crop & daily data?'});
   }
   function addFieldDeleteButtons() {
     var fieldIDs = jQuery("#field_setup").getDataIDs();
