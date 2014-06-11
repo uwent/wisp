@@ -2,6 +2,10 @@
   WISP: Wisconsin Irrigation Scheduler 2012
 <% end %>
 
+<% content_for :scripts do %>
+ <%= javascript_include_tag :defaults %>
+<% end %>
+
 <% content_for :stylesheet do %>
   <%= stylesheet_link_tag "style" -%>
 <% end %>
