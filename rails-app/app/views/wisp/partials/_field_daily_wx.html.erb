@@ -29,14 +29,9 @@
           }
           
           function redFormatter(cellvalue,options,obj) {
-            if (cellvalue > 0.0) {
-              cellstr = cellvalue.toString();
-              dot = cellstr.indexOf('.');
-              if (dot != -1) {
-                before = cellstr.substr(0,dot);
-                after = cellstr.substr(dot,dot+2);
-                cellstr = before + after;
-              }
+		    cellFloat = parseFloat(cellvalue).toFixed(2);
+            if (cellFloat > 0.0) {
+              cellstr = cellFloat.toString();
               return('<span style="color:red;font-size:1.5em;font-weight:bold">'+cellstr+'</span>');
             }
             else
@@ -82,7 +77,7 @@
                 {name:'ad', index:'ad',width:44, align:'right',
                 formatter:'number', formatoptions:{decimalPlaces:2}},
                 {name:'deep_drainage', index:'deep_drainage',width:92, align:'right',
-                 formatter:redFormatter,formatoptions:{decimapPlaces:2}},
+                 formatter:redFormatter,formatoptions:{decimalPlaces:2}},
                 {name:'id', index:'id',width:1,editable:true,hidden:true}           
               ], 
               pager: '#weather_pager',
