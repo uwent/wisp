@@ -4,6 +4,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   include ADCalculator
   WILT = 0.14
   ET = 0.2
+  ADJ_ET_NO_PCT_COVER = 0.01 # The adjusted ET calc yields 0.01 adj when ref 0.2 and 0 pct cover
   INITIAL_AD = 0.31
   MID_AD = -0.47
   FC = 0.5
@@ -194,11 +195,11 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     STARTING_AD = 2.7
     span.times do |day|
       fdw = field.field_daily_weather[emi + day]
-      if day == 0
-        assert_in_delta(STARTING_AD, fdw.ad, 0.0001,"Emergence date should start at field capacity AD")
-      else
-        assert_in_delta(STARTING_AD - (day * ET), fdw.ad, 0.0001,"Day #{day} (#{fdw.date}) has incorrect balance")
-      end
+      # if day == 0
+        # assert_in_delta(STARTING_AD - ADJ_ET_NO_PCT_COVER, fdw.ad, 0.0001,"Emergence date should start at field capacity AD")
+      # else
+        assert_in_delta(STARTING_AD - ADJ_ET_NO_PCT_COVER - (day * ET), fdw.ad, 0.0001,"Day #{day} (#{fdw.date}) has incorrect balance")
+      #end
     end
   end
   
@@ -252,7 +253,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     fdw.ref_et = ET
     fdw.save!
     field.do_balances # Should now have an AD calculated
-    assert_in_delta(field.ad_max, fdw.ad, 2 ** -10, "AD should start out at max ad in inches"+dbgprt(fdw,field))
+    assert_in_delta(field.ad_max - ADJ_ET_NO_PCT_COVER, fdw.ad, 2 ** -10, "AD should start out at max ad in inches"+dbgprt(fdw,field))
     assert_in_delta(100*field.field_capacity, fdw.calculated_pct_moisture, 2 ** -10)
     # Now look at emergence date so's to get adj_et numbers with a percent cover
     fdw = field.field_daily_weather[field.fdw_index(field.current_crop.emergence_date)]
@@ -370,61 +371,52 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     [:adj_et,:rain,:irrigation,:deep_drainage].each { |thing| assert_equal(0.0, summary[thing]) }
     emi = field.fdw_index(field.current_crop.emergence_date)
     n_fdw = field.field_daily_weather[emi..-1].size
-    #puts "fdw size is #{field.field_daily_weather.size}, emi #{emi}, n_fdw #{n_fdw}"
-
     vals = {ref_et: 0.2, entered_pct_cover: 60.0, rain: 0.3, irrigation: 0.4}
-    expected_adj_et = 0.176493 * n_fdw                # adjusted ET for 60% cover and ref_et 0.2
+    ADJ_ET = 0.176493
+    expected_adj_et = ADJ_ET * n_fdw                # adjusted ET for 60% cover and ref_et 0.2
     expected_rain = vals[ :rain] * n_fdw              # rains 0.3 every day
     expected_irrigation = vals[ :irrigation] * n_fdw  # irrigate 0.4 every day
     expected_deep_drainage = 0.523507 * n_fdw         # Which, all together, should take us over FC so there's DD
     # Iterate through from emergence to the end of the season
     number_set = 0
+    adj_et_sum = 0.0
     field.field_daily_weather[emi..-1].each do |fdw|
       vals.each do |param,val|
         fdw[param] = val
       end
       number_set += 1
+      adj_et_sum += ADJ_ET
     end
-    assert_equal(n_fdw,number_set,"Did not set values for the correct number of FDW records. ")
+    assert_equal(n_fdw,number_set,"Did not set values for the correct number of FDW records.")
+    assert_in_delta(expected_adj_et,adj_et_sum,10 ** -8,"Wrong cumulative adj ET")
     field.save!
     field.field_daily_weather.reload
+    field.field_daily_weather[emi..-1].each do |fdw|
+      assert_in_delta(ADJ_ET,fdw[:adj_et],10 ** -8,"adj et for #{fdw[:date]} was wrong")
+      assert_in_delta(n_fdw,field.field_daily_weather[emi..-1].size,10 ** -8)
+    end 
     summary = FieldDailyWeather.summary(field[:id])
     # Check all of the four params like this one
     #puts expected_adj_et.inspect
     #puts summary[:adj_et].inspect
+    assert_equal(n_fdw,summary[:count],"Did not set values for the correct number of FDW records. #{n_fdw}, #{summary[:count]}")
     assert_in_delta(expected_adj_et,summary[:adj_et], 10 ** -8, "Expected Adj ET wrong, adj et for first day #{field.field_daily_weather[emi][:adj_et]}, last day  #{field.field_daily_weather[-1][:adj_et]}")
     assert_in_delta(expected_rain,summary[:rain], 10 ** -8, "Expected Rain wrong, Rain for first day #{field.field_daily_weather[emi][:rain]}, last day  #{field.field_daily_weather[-1][:rain]}")
     assert_in_delta(expected_irrigation,summary[:irrigation], 10 ** -8, "Expected Irrigation wrong, irrigation for first day #{field.field_daily_weather[emi][:irrigation]}, last day  #{field.field_daily_weather[-1][:irrigation]}")
     assert_in_delta(expected_deep_drainage,summary[:deep_drainage], 10 ** -8, "Expected deep drainage wrong, deep drainage for first day #{field.field_daily_weather[emi][:deep_drainage]}, last day  #{field.field_daily_weather[-1][:deep_drainage]}")
 
-  # Change harvest/kill date for crop, but use the same date 
-  field.current_crop.harvest_or_kill_date = field.field_daily_weather[-1].date
-  field.save!
-  # Pull the summary
-  summary = FieldDailyWeather.summary(field[:id])
-  # Rerun the four assertions with the same numbers, should yield the same results
-  assert_in_delta(expected_adj_et,summary[:adj_et], 1.0, "Expected Adj ET wrong")
-  
-  # Change harvest/kill date for crop to an earlier date -- one day previous is easy to test 
-  field.current_crop.harvest_or_kill_date = field.field_daily_weather[-2].date
-  field.save!
-  # Change the expected values to one less day's worth
-  expected_adj_et = 0.176493 * (n_fdw - 1)                # adjusted ET for 60% cover and ref_et 0.2
-  expected_rain = vals[ :rain] * (n_fdw - 1)              # rains 0.3 every day
-  expected_irrigation = vals[ :irrigation] * (n_fdw - 1)  # irrigate 0.4 every day
-  expected_deep_drainage = 0.523507 * (n_fdw - 1)         # Which, all together, should take us over FC so there's DD
+    # Change harvest/kill date for crop, but use the same date 
+    field.current_crop.harvest_or_kill_date = field.field_daily_weather[-1].date
+    field.save!
     # Pull the summary
-  summary = FieldDailyWeather.summary(field[:id])
-  # Rerun the four assertions with the same numbers, should be one less day's worth
-  #assert_in_delta(expected_adj_et,summary[:adj_et], 1.0, "Expected Adj ET wrong")
-    assert_in_delta(expected_adj_et,summary[:adj_et], 10 ** -8, "Expected Adj ET wrong, adj et for first day #{field.field_daily_weather[emi][:adj_et]}, last day  #{field.field_daily_weather[-2][:adj_et]}")
-    assert_in_delta(expected_rain,summary[:rain], 10 ** -8, "Expected rain wrong, rain for first day #{field.field_daily_weather[emi][:rain]}, last day  #{field.field_daily_weather[-2][:rain]}")
-    assert_in_delta(expected_irrigation,summary[:irrigation], 10 ** -8, "Expected irrigation wrong, irrigation for first day #{field.field_daily_weather[emi][:irrigation]}, last day  #{field.field_daily_weather[-2][:irrigation]}")
-    assert_in_delta(expected_deep_drainage,summary[:deep_drainage], 10 ** -8, "Expected deep drainage wrong, deep drainage for first day #{field.field_daily_weather[emi][:deep_drainage]}, last day  #{field.field_daily_weather[-2][:deep_drainage]}")
+    summary = FieldDailyWeather.summary(field[:id])
+    # Rerun the four assertions with the same numbers, should yield the same results
+    assert_in_delta(expected_adj_et,summary[:adj_et], 1.0, "Expected Adj ET wrong")
+    assert_in_delta(expected_rain,summary[:rain], 10 ** -8, "Expected Rain wrong, Rain for first day #{field.field_daily_weather[emi][:rain]}, last day  #{field.field_daily_weather[-1][:rain]}")
+    assert_in_delta(expected_irrigation,summary[:irrigation], 10 ** -8, "Expected Irrigation wrong, irrigation for first day #{field.field_daily_weather[emi][:irrigation]}, last day  #{field.field_daily_weather[-1][:irrigation]}")
+    assert_in_delta(expected_deep_drainage,summary[:deep_drainage], 10 ** -8, "Expected deep drainage wrong, deep drainage for first day #{field.field_daily_weather[emi][:deep_drainage]}, last day  #{field.field_daily_weather[-1][:deep_drainage]}")
 
-  # Redo the four tests with values appropriate to shorter period
-
-  end
+    end
   
   test "summary produces sensible results over a subset of the season" do
     DAYS_FROM_SEASON_END = 50
@@ -514,6 +506,6 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     field.field_daily_weather.reload
     fdws = fdws_from_emergence(field)
     assert(csv = fdws[1].to_csv)
-    assert_equal("2011-05-02,0.31,2.70,30.00,0.00,0.21,1.01,0.00,1.22", csv)
+    assert_equal("2011-05-02,0.31,2.70,30.00,0.00,0.21,1.01,0.01,1.21", csv)
   end
 end
