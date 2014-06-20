@@ -27,7 +27,7 @@ class EtMethodTest < ActiveSupport::TestCase
   end
   
   test "adjusted ET with zero percent cover" do
-    expected_adj_ets = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    expected_adj_ets = [0.0, 0.0, 0.0, 0.01, 0.01, 0.01, 0.01, 0.02]
     ii = 0
     for ref_et in @ref_ets
       adj_et = @pcm.adj_et({:ref_et => ref_et, :pct_cover => 0.0})

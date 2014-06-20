@@ -20,10 +20,7 @@ gem "rack-openid"
 # (which includes confirmation dialogs on button_to)
 gem 'jquery-rails'
 
-# For dev use, gets around the RequestURITooLarge error with WEBrick and OpenID
-# gem 'mongrel', '1.2.0.pre2'
 
-# Everything from the comma eastward will go away once I get Rubyforge working!
 gem 'asigbiophys', :path => "vendor/asigbiophys"
 
 # Bundle the extra gems:
@@ -36,6 +33,8 @@ gem 'asigbiophys', :path => "vendor/asigbiophys"
 # put test-only gems in this group so their generators
 # and rake tasks are available in development mode:
 group :development, :test do
+  # For dev use, gets around the RequestURITooLarge error with WEBrick and OpenID
+  gem 'mongrel', '1.2.0.pre2'
   gem 'sqlite3'
   # Per http://stackoverflow.com/questions/10918019/gem-issue-database-rake-aborted:
   # gem 'debugger'

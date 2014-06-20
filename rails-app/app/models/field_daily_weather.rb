@@ -5,7 +5,7 @@ class FieldDailyWeather < ActiveRecord::Base
   # after_update :update_next_days_balances, :update_pct_covers
   
   SEASON_DAYS = 244
-  ADJ_ET_EPSILON = 0.00001
+  REF_ET_EPSILON = 0.00001
   
   @@debug = nil
   @@do_balances = true
@@ -114,8 +114,9 @@ class FieldDailyWeather < ActiveRecord::Base
         logger.warn "#{self.inspect } couldn't calculate adj_et"
         return
       end
-      # If adj_et is zero and we have a previous, use that instead
-      if (self[:adj_et] < ADJ_ET_EPSILON) && previous_max_adj_et
+      # If ref_et is zero (i.e. missing) and we have a previous adjusted ET use that instead.
+      # This should work for both gaps in the reference ET record and for extrapolations.
+      if (self[:ref_et] < REF_ET_EPSILON) && previous_max_adj_et
         self[:adj_et] = previous_max_adj_et
         # print "#{self[:adj_et]},"; $stdout.flush 
       end

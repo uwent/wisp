@@ -25,6 +25,7 @@ class FarmsController < ApplicationController
     @farms = Farm.where(:group_id => @group_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
+    logger.warn "No farms for group #{@group_id} found!" unless (@farms && @farms.size > 0)
     @farms ||= []
     @et_methods = EtMethod.all
     clone_year = params[:clone_pivots_to_year] || Time.now.year

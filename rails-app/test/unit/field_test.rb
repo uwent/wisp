@@ -156,7 +156,10 @@ class FieldTest < ActiveSupport::TestCase
     emerg_fdw = field.field_daily_weather[emergence_index(field)]
     # "Unexpected" is a bit of a misnomer here, it actually contains the value that we expect
     emergence_moisture = unexpected[emerg_fdw[:id]][:moisture]
-    assert_in_delta(emergence_moisture, emerg_fdw.pct_moisture,0.0000001,'Emergence moisture should not change, s/b set at FC')
+    # Ensure that AD hasn't changed (easier to test than pct_moisture)
+    assert_in_delta(field.ad_max - emerg_fdw.adj_et, emerg_fdw.ad, 2 ** -10, "AD should start out at max ad in inches")
+    # This is wrong -- moisture should be down by one day's worth
+    # assert_in_delta(emergence_moisture, emerg_fdw.pct_moisture,0.0000001,'Emergence moisture should not change, s/b set at FC')
     unexpected.each do |id,params|
       fdw = FieldDailyWeather.find(id)
       ad = params[:ad]

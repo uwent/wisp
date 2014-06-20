@@ -192,7 +192,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     end
     field.do_balances
     field.field_daily_weather.reload
-    STARTING_AD = 2.7
+    STARTING_AD = 2.7 - field.field_daily_weather[emi].adj_et # It's measured at the end of the first day
     span.times do |day|
       fdw = field.field_daily_weather[emi + day]
       # if day == 0
@@ -256,16 +256,21 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert_in_delta(field.ad_max - ADJ_ET_NO_PCT_COVER, fdw.ad, 2 ** -10, "AD should start out at max ad in inches"+dbgprt(fdw,field))
     assert_in_delta(100*field.field_capacity, fdw.calculated_pct_moisture, 2 ** -10)
     # Now look at emergence date so's to get adj_et numbers with a percent cover
-    fdw = field.field_daily_weather[field.fdw_index(field.current_crop.emergence_date)]
-    e_plus_one_fdw = field.field_daily_weather[field.fdw_index(field.current_crop.emergence_date) + 1]
-    e_minus_one_fdw = field.field_daily_weather[field.fdw_index(field.current_crop.emergence_date) - 1]
+    emi = field.fdw_index(field.current_crop.emergence_date)
+    fdw = field.field_daily_weather[emi]
+    e_plus_one_fdw = field.field_daily_weather[emi + 1]
+    e_minus_one_fdw = field.field_daily_weather[emi - 1]
     assert(fdw,'Should be able to get emergence-day FDW')
     fdw.ref_et = ET
     e_plus_one_fdw.ref_et = ET
     e_plus_one_fdw.entered_pct_cover = 100.0 # Should yield adj. ET == ref. ET
     fdw.save!
     field.do_balances
-    assert_in_delta(field.field_capacity * 100.0, fdw.pct_moisture, 2 ** -20,"FDW should be at FC (#{field.field_capacity * 100.0}) now:\n  #{fdw.inspect}\nprevious day:\n  #{e_minus_one_fdw.inspect}")
+    # Should this be at field capacity? Or should nonzero adjusted ETs pre-emergence have drawn it down?
+    adj_et_sum = field.field_daily_weather[0..emi].inject(0.0) { |sum, an_fdw| sum + an_fdw.adj_et }
+    assert(adj_et_sum > 0.0)
+    assert_in_delta(field.ad_max - adj_et_sum, fdw.ad, 2 ** -10, "AD should start out at max ad in inches decremented by #{adj_et_sum}"+dbgprt(fdw,field))
+    # assert_in_delta(field.field_capacity * 100.0, fdw.pct_moisture, 2 ** -20,"FDW should be at FC (#{field.field_capacity * 100.0}) now:\n  #{fdw.inspect}\nprevious day:\n  #{e_minus_one_fdw.inspect}")
     # Add irrigation to get it back up to ad_max, plus 0.1; the 0.1 should drain out
     e_plus_one_fdw.irrigation = (field.ad_max - e_plus_one_fdw.ad) + 0.1
     e_plus_one_fdw.save!
@@ -415,8 +420,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert_in_delta(expected_rain,summary[:rain], 10 ** -8, "Expected Rain wrong, Rain for first day #{field.field_daily_weather[emi][:rain]}, last day  #{field.field_daily_weather[-1][:rain]}")
     assert_in_delta(expected_irrigation,summary[:irrigation], 10 ** -8, "Expected Irrigation wrong, irrigation for first day #{field.field_daily_weather[emi][:irrigation]}, last day  #{field.field_daily_weather[-1][:irrigation]}")
     assert_in_delta(expected_deep_drainage,summary[:deep_drainage], 10 ** -8, "Expected deep drainage wrong, deep drainage for first day #{field.field_daily_weather[emi][:deep_drainage]}, last day  #{field.field_daily_weather[-1][:deep_drainage]}")
-
-    end
+  end
   
   test "summary produces sensible results over a subset of the season" do
     DAYS_FROM_SEASON_END = 50
