@@ -29,9 +29,23 @@
           }
           
           function addDeleteButton(cl) {
-            be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick=removeRow("+cl+"); ></ids>"; 
-            jQuery("#farm_setup").setRowData(cl,{act:be}) 
+            var ids = jQuery("#farm_setup").getDataIDs();
+            nRows = ids.length;
+            if (nRows == 1)
+              { 
+              be = "<input style='height:22px;width:35px;' type='button' value='Del' disabled='true' title='Cannot delete last farm'/>"; 
+              jQuery("#farm_setup").setRowData(cl,{act:be})
+              }
+            else 
+            {
+              for(var i=0;i<nRows;i++){ 
+                var id = ids[i];
+                be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick=removeRow("+cl+"); ></ids>";
+                jQuery("#farm_setup").setRowData(cl,{act:be})
+              }
+            }
           }
+  
           function addNewFarmRow(method) {
             var grid = $('#farm_setup');
             newFarm = createNewFarm(method);
@@ -40,6 +54,7 @@
             addDeleteButton(curID);
             grid.editRow(curID,true); // put new row into inline-edit mode
           }
+          
           function createNewFarm(method) {
             var frm={};
             et_method_id = et_methods[method];
