@@ -31,6 +31,7 @@
           function addDeleteButton(cl) {
             var ids = jQuery("#farm_setup").getDataIDs();
             nRows = ids.length;
+            //alert('nRows: '+nRows);
             if (nRows == 1)
               { 
               be = "<input style='height:22px;width:35px;' type='button' value='Del' disabled='true' title='Cannot delete last farm'/>"; 
@@ -53,6 +54,7 @@
             grid.addRowData(curID, newFarm); // add a new row with the new field's data
             addDeleteButton(curID);
             grid.editRow(curID,true); // put new row into inline-edit mode
+            $('#farm_setup').trigger('reloadGrid');
           }
           
           function createNewFarm(method) {
@@ -82,7 +84,7 @@
           }
           function removeRow(rowID) {
             jQuery('#farm_setup').delGridRow(rowID);
-            $('#farm_setup').trigger('reloadGrid');            
+            $('#farm_setup').trigger('reloadGrid');
           }
           
           // From example http://stackoverflow.com/questions/5092571/how-to-make-cell-editable-dynamically-in-jqgrid
