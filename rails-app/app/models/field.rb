@@ -362,20 +362,33 @@ class Field < ActiveRecord::Base
   # Return {self => {date => ad}} or nil if no problems.
   def problem(date=nil,end_date=nil)
     date ||= Date.today
-    end_date ||= date + 7
+    end_date ||= date - 14
     existing_wx = weather_for(date,end_date)
     projected_ad_data = FieldDailyWeather.projected_ad(existing_wx)
-    problem_limit = 0.0
+    ad_problem_threshold = 0.0
+    
+    #threshold_date = nil
+    #problem_today = existing_wx.last.ad < ad_problem_threshold
+    #If problem_today then search backwards for zero crossing from neg to pos and record threshold_date (if found).
+    #(existing_wx-1).downto(end_date) do |fdw|
+    # if fdw && fdw.ad
+    #   if fdw.ad > ad_problem_threshold
+    #     save date
+    #     break
+    #   end
+    #end
+    #If not problem_today then check projected for any negative ad and if found report first negative ad value and projected date.
+    
     existing_problems = existing_wx.select do |fdw|
       if fdw && fdw.ad
-        fdw.ad < problem_limit
+        fdw.ad < ad_problem_threshold
       else
         false
       end
     end
     projected_problem = nil
     projected_ad_data.each_with_index do |prj_ad,ii|
-      if prj_ad && prj_ad < problem_limit
+      if prj_ad && prj_ad < ad_problem_threshold
         projected_problem = [end_date + ii,prj_ad]
         break
       end
