@@ -28,6 +28,7 @@ class Farm < ActiveRecord::Base
   def problems(date=Date.today)
     # Collect all fields on the farm
     all_fields = pivots.select { |p| p.cropping_year == date.year }.collect { |p| p.fields }.flatten
+    # Find transition points near today where AD goes negative.
     problems = all_fields.collect { |f| f.problem(date - 7, date + 2) }.compact
     problems
   end
