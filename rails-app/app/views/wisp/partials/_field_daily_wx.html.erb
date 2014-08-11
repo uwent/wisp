@@ -1,3 +1,4 @@
+
 <div id="tableDataBox">
 
         <script type="text/javascript">
@@ -29,7 +30,7 @@
           }
           
           function redFormatter(cellvalue,options,obj) {
-		    cellFloat = parseFloat(cellvalue).toFixed(2);
+            cellFloat = parseFloat(cellvalue).toFixed(2);
             if (cellFloat > 0.0) {
               cellstr = cellFloat.toString();
               return('<span style="color:red;font-size:1.5em;font-weight:bold">'+cellstr+'</span>');
