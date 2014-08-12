@@ -121,6 +121,9 @@ module ETCalculator
     return if start >= finish && start < 0 && finish > wx_arr.size - 1
     start_val = wx_arr[start][entered_method] || wx_arr[start][calc_method] || 0.0
     finish_val = wx_arr[finish][entered_method] || wx_arr[finish][calc_method] || 0.0
+    
+    #if finish_val >= harvest/kill date then %cover should be decaying to zero unless a second crop is growing. pk 12Aug14
+    
     incr = linear_increment(start_val,finish_val,n_vals)
     start.upto(finish).each do |ii|
       # Note that this sets the calculated_pct_cover fields of the days with entered_pct_cover,
