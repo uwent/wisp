@@ -299,16 +299,17 @@ class FieldDailyWeather < ActiveRecord::Base
 
   # Given a subset of FDW data, find the max adj et, and project that outward two days
   # from the last FDW's AD balance
-  def self.projected_ad(fdw)
-    ret = [0,0]
-    return ret unless fdw.size > 0
-    max_days_back = -1 * fdw.size
-    # find the max adj et for the past two weeks in this field
-    max_adj_et = -1000.0
-    -1.downto(max_days_back) {|days_back| max_adj_et = [max_adj_et,fdw[days_back].adj_et].max; return ret unless fdw[days_back].ad}
-    # since we don't have to worry about any inputs, just subtract from the AD
-    [fdw[-1].ad - max_adj_et, fdw[-1].ad - 2*max_adj_et]
-  end
+  # def self.projected_ad(fdw)
+    # puts "fdw#projected_ad: #{fdw.inspect}"
+    # ret = [0,0]
+    # return ret unless fdw.size > 0
+    # max_days_back = -1 * fdw.size
+    ##find the max adj et for the past two weeks in this field
+    # max_adj_et = -1000.0
+    # -1.downto(max_days_back) {|days_back| max_adj_et = [max_adj_et,fdw[days_back].adj_et].max; return ret unless fdw[days_back].ad}
+    ##since we don't have to worry about any inputs, just subtract from the AD
+    # [fdw[-1].ad - max_adj_et, fdw[-1].ad - 2*max_adj_et]
+  # end
   
   def self.fdw_for(field_id,start_date,end_date)
     where(

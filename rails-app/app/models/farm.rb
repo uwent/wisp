@@ -24,12 +24,12 @@ class Farm < ActiveRecord::Base
   end
 
   # Iterate over all the fields on the farm. Return a hash where the keys are fields with problems,
-  # the values are the FDW where the problem was first detected
+  # the values are the FDW where the AD is negative today or in the next two days.
   def problems(date=Date.today)
     # Collect all fields on the farm
     all_fields = pivots.select { |p| p.cropping_year == date.year }.collect { |p| p.fields }.flatten
-    # Find transition points near today where AD goes negative.
-    problems = all_fields.collect { |f| f.problem(date - 7, date + 2) }.compact
+    # Is AD negative today or two days ahead?
+    problems = all_fields.collect { |f| f.problem(date, date + 2) }.compact
     problems
   end
   

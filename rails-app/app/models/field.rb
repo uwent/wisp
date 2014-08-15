@@ -362,47 +362,26 @@ class Field < ActiveRecord::Base
   # Return {self => {date => ad}} or nil if no problems.
   def problem(date=nil,end_date=nil)
     date ||= Date.today
-    end_date ||= date - 14
-    existing_wx = weather_for(date,end_date)
-    projected_ad_data = FieldDailyWeather.projected_ad(existing_wx)
+    existing_wx = weather_for(date)
+    projected_wx = weather_for(date+1,date+2)
+    #projected_ad_data = FieldDailyWeather.projected_ad(existing_wx)
     ad_problem_threshold = 0.0
-    
-    #threshold_date = nil
-    #problem_today = existing_wx.last.ad < ad_problem_threshold
-    #if problem_today #then search backwards for zero crossing from neg to pos and record threshold_date (if found).
-      #(existing_wx-1).downto(end_date) do |fdw|
-      # if fdw && fdw.ad
-      #   if fdw.ad > ad_problem_threshold
-      #     save date
-      #     break
-      #   end
-      # end
-      #end
-    #end
-    ##If not problem_today then check projected for any negative ad and if found report first negative ad value and projected date.
-    #else
-      # projected_problem = nil
-      # projected_ad_data.each_with_index do |prj_ad,ii|
-        # if prj_ad && prj_ad < ad_problem_threshold
-          # projected_problem = [end_date + ii,prj_ad]
-          # break
-        # end
-      # end
-    #end
-    existing_problems = existing_wx.select do |fdw|
-      if fdw && fdw.ad
-        fdw.ad < ad_problem_threshold
-      else
-        false
+
+    existing_problems = Array.new
+    # Is today's AD below zero?
+    if existing_wx.last.ad < ad_problem_threshold
+      existing_problems[0] = existing_wx.last
+    else
+      #Today's AD is above zero so check projected two days ahead for problem.
+      projected_problem = nil
+      projected_wx.each do |prj_wx|
+        if prj_wx && prj_wx.ad && prj_wx.ad < ad_problem_threshold
+          projected_problem = [prj_wx.date,prj_wx.ad]
+          break
+        end
       end
     end
-    projected_problem = nil
-    projected_ad_data.each_with_index do |prj_ad,ii|
-      if prj_ad && prj_ad < ad_problem_threshold
-        projected_problem = [end_date + ii,prj_ad]
-        break
-      end
-    end
+
     if existing_problems.size > 0
       {self => [existing_problems.first.date,existing_problems.first.ad]}
     elsif projected_problem

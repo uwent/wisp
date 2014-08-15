@@ -755,6 +755,40 @@ class FieldTest < ActiveSupport::TestCase
     assert_in_delta(0.240238, max_adj_et, 2 ** -20)
   end
   
+  test "getting problem ad" do
+    field = Field.create(name: 'Problem field', pivot_id: Pivot.first[:id])
+    #field,emergence_data = setup_pct_cover_field_with_emergence
+    today = field.current_crop.emergence_date
+    field.field_daily_weather[60].entered_pct_cover = 100
+    field.save!
+    #field = Field.find(field[:id])
+    field.do_balances
+    field.field_daily_weather.reload
+    fdw = FieldDailyWeather.fdw_for(field[:id],today,today+90)
+    last_ad = 50.0
+    fdw.each do |data|
+      puts (data.date.to_s + " " + data.entered_pct_cover.to_s + " " + data.ad.to_s)
+      if last_ad >= 0 && data.ad < 0
+        puts ("Zero crossing on " + data.date.to_s)
+      end
+      last_ad = data.ad
+    end
+    
+    # fdw = FieldDailyWeather.fdw_for(field[:id],today-2,today+2)
+    # assert_equal(5,fdw.size)
+    # Transition negative on today
+    # ad_values = [0.2, 0.1, -0.1, -0.2, -0.3]
+    # ad_values.each_with_index do |val,ii|
+      # fdw[ii].ad = val
+       # puts fdw[ii].inspect
+    # end
+    # fdw = FieldDailyWeather.fdw_for(field[:id],today-2,today+2)
+    # # Test that the right ADs are in the FDW
+    # ad_values.each_with_index do |val,ii|
+      # assert_equal(val,fdw[ii].ad,"Wrong AD value " + fdw[ii].inspect)
+    # end
+  end
+  
   test "RingBuffer works with default" do
     rb = nil
     assert_nothing_raised(RuntimeError) { rb = RingBuffer.new }
