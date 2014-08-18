@@ -5,6 +5,8 @@
     		<th>Field name</th><th width="25%">Calculated or projected AD</th><th width="15%">On</th>
     </tr>
     <% @problems.each do |problem| %>
+      <!-- Finn's changes mean there can only be one problem per field. However, we'll leave
+           in the iteration, just in case that changes some day. -->
       <% problem.each do |field,date_plus_val|%>
         <tr>
         		<td><%= link_to field.name, 'field_status', :field_id => field[:id] %></td><td><%= sprintf('%0.1f',date_plus_val[1]) %></td><td><%= date_plus_val[0].to_s %></td>
