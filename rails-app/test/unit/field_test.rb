@@ -757,36 +757,50 @@ class FieldTest < ActiveSupport::TestCase
   
   test "getting problem ad" do
     field = Field.create(name: 'Problem field', pivot_id: Pivot.first[:id])
-    #field,emergence_data = setup_pct_cover_field_with_emergence
-    today = field.current_crop.emergence_date
-    field.field_daily_weather[60].entered_pct_cover = 100
+    ed = field.current_crop.emergence_date
+    #Set up field daily weather with two AD zero crossings to negative 
+    field.field_daily_weather.each_with_index { |data, ii|
+      data.ref_et = 0.17
+      if data.date > ed && ii < 100 
+        data.entered_pct_cover = ii
+      end
+      if ii == 110
+        data.rain = 7.0
+      end
+    }
     field.save!
-    #field = Field.find(field[:id])
     field.do_balances
     field.field_daily_weather.reload
-    fdw = FieldDailyWeather.fdw_for(field[:id],today,today+90)
-    last_ad = 50.0
-    fdw.each do |data|
-      puts (data.date.to_s + " " + data.entered_pct_cover.to_s + " " + data.ad.to_s)
-      if last_ad >= 0 && data.ad < 0
-        puts ("Zero crossing on " + data.date.to_s)
-      end
-      last_ad = data.ad
-    end
+    fdw = FieldDailyWeather.fdw_for(field[:id],ed,ed+90)
     
-    # fdw = FieldDailyWeather.fdw_for(field[:id],today-2,today+2)
-    # assert_equal(5,fdw.size)
-    # Transition negative on today
-    # ad_values = [0.2, 0.1, -0.1, -0.2, -0.3]
-    # ad_values.each_with_index do |val,ii|
-      # fdw[ii].ad = val
-       # puts fdw[ii].inspect
+    ## Testing the test
+    # last_ad = 999.0
+    # crossing_count = 0
+    # fdw.each do |data|
+      ##puts (data.date.to_s + " " + data.entered_pct_cover.to_s + " " + data.ad.to_s)
+      # if (last_ad >= 0 && data.ad < 0)
+        # puts ("Zero crossing on " + data.date.to_s ) # Should find crossings on 2011-06-21 and 2011-07-29
+        # crossing_count += 1;
+      # end
+      # last_ad = data.ad
     # end
-    # fdw = FieldDailyWeather.fdw_for(field[:id],today-2,today+2)
-    # # Test that the right ADs are in the FDW
-    # ad_values.each_with_index do |val,ii|
-      # assert_equal(val,fdw[ii].ad,"Wrong AD value " + fdw[ii].inspect)
-    # end
+    # assert_equal(crossing_count,2,"Wrong number of AD zero crossings")
+
+    # Test for problem today
+    problems = field.problem(Date.new(2011,06,21))
+    assert_not_nil(problems,"Did not find AD problem on test date")
+    assert_equal(Date.new(2011,06,21),problems[problems.keys[0]][0],"AD problem wrong date: test date #{problems[problems.keys[0]][0]}")
+    
+    # Test for problem tomorrow
+    problems = field.problem(Date.new(2011,06,20))
+    assert_not_nil(problems,"Did not find AD problem on test date + 1")
+    assert_equal(Date.new(2011,06,21),problems[problems.keys[0]][0],"AD problem wrong date: test date + 1 #{problems[problems.keys[0]][0]}")
+
+    # Test for problem in two days
+    problems = field.problem(Date.new(2011,06,19))
+    assert_not_nil(problems,"Did not find AD problem on test date + 2")
+    assert_equal(Date.new(2011,06,21),problems[problems.keys[0]][0],"AD problem wrong date: test date + 2 #{problems[problems.keys[0]][0]}")
+    
   end
   
   test "RingBuffer works with default" do

@@ -364,15 +364,14 @@ class Field < ActiveRecord::Base
     date ||= Date.today
     existing_wx = weather_for(date)
     projected_wx = weather_for(date+1,date+2)
-    #projected_ad_data = FieldDailyWeather.projected_ad(existing_wx)
     ad_problem_threshold = 0.0
 
-    existing_problems = Array.new
-    # Is today's AD below zero?
+    existing_problem = nil
+    # Is start date AD below zero?
     if existing_wx.last.ad < ad_problem_threshold
-      existing_problems[0] = existing_wx.last
+      existing_problem = [existing_wx.last.date,existing_wx.last.ad]
     else
-      #Today's AD is above zero so check projected two days ahead for problem.
+      #Start date AD is above zero so check projected two days ahead for problem.
       projected_problem = nil
       projected_wx.each do |prj_wx|
         if prj_wx && prj_wx.ad && prj_wx.ad < ad_problem_threshold
@@ -382,8 +381,9 @@ class Field < ActiveRecord::Base
       end
     end
 
-    if existing_problems.size > 0
-      {self => [existing_problems.first.date,existing_problems.first.ad]}
+    if existing_problem
+      #{self => [existing_problems.first.date,existing_problems.first.ad]}
+      {self => existing_problem}
     elsif projected_problem
       {self => projected_problem}
     else
