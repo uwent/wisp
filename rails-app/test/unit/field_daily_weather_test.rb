@@ -29,13 +29,23 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     @default_crop_params.each { |k,v| crop_params[k] = v unless crop_params[k] }
     field = Field.create(field_params)
     field.crops.first.update_attributes(crop_params)
-    field.save!
+    # field.save!
     field
   end
   
   def create_spreadsheet_field_with_crop
     create_field_with_crop({:perm_wilting_pt => WILT, :field_capacity => 0.31},
       {:max_root_zone_depth => 36, :initial_soil_moisture => 31.0})
+  end
+  
+  test "create_field_with_crop creates a sensible field" do
+    field = create_field_with_crop
+    puts("field_capacity: #{field.field_capacity}, perm_wilting_pt: #{field.perm_wilting_pt}, mrzd: #{field.current_crop.max_root_zone_depth}")
+    puts("mad_frac: #{field.current_crop.max_allowable_depletion_frac}")
+    
+    assert_in_delta(2.88, field.ad_max, 0.001)
+    assert_equal(LaiEtMethod, field.et_method.class)
+    assert_equal(2.88, field.field_daily_weather[0].ad)
   end
   
   test "update_balances does something useful" do
