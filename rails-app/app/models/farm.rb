@@ -1,9 +1,7 @@
 class Farm < ActiveRecord::Base
   belongs_to :group
-  belongs_to :et_method
   has_many :pivots, :dependent => :destroy
   validates :year, :presence => true
-  before_create :set_default_et_method
   after_create :create_default_data
   before_destroy :mother_may_i
   
@@ -37,17 +35,8 @@ class Farm < ActiveRecord::Base
     ""
   end
   
-  def set_default_et_method
-    unless self[:et_method_id]
-      self[:et_method_id] = EtMethod.find_by_type('PctCoverEtMethod')[:id]
-      logger.info "et_method_id now #{self[:et_method_id]}"
-      raise "Could not find % Cover ET method to set as default" unless self[:et_method_id]
-    end
-  end
-  
   def create_default_data
     logger.warn "Farm#create_default_data: #{self.inspect}" 
-    raise "Could not set default ET method" unless self[:et_method_id]
     pivots << Pivot.create(:name => "New pivot (farm ID: #{self[:id]})", :farm_id => self[:id],
       :cropping_year => year || Time.now.year)
   end

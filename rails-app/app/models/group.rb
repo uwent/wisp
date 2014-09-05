@@ -6,10 +6,9 @@ class Group < ActiveRecord::Base
   after_create :make_farm
   
   def make_farm
-    # Farm defaults to LaiEtMethod, so we don't have to specify that here
     logger.info "Group#make_farm called"
     farm = Farm.create(:name => 'Farm 1',
-      :year => DateTime.now.year, :et_method_id => nil, :group_id => self[:id])
+      :year => DateTime.now.year, :group_id => self[:id])
     farm.save!
   end
   

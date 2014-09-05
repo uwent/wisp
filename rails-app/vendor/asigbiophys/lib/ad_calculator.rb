@@ -104,6 +104,15 @@ module ADCalculator
   end
   
   ###############################################
+  # Created:: 04Sep14
+  # Author:: Rick Wayne
+  # Return the inches of water at permanent wilt point
+  def ad_inches_at_pwp(taw,mad_frac)
+    (-1 * (1.0 - mad_frac) * taw)
+  end
+
+  
+  ###############################################
   # Created:: 18May11
   # Author:: P Kaarakka
   # pwp is permanent wilting point
@@ -115,7 +124,7 @@ module ADCalculator
   # Result is in percent  
   def pct_moisture_from_ad(pwp, fc, ad_max, ad, mrzd, pct_moisture_obs=nil)
     pct_moisture_at_ad_min = pct_moisture_at_ad_min(fc, ad_max, mrzd)
-    pct_moisture_obs || ([(pct_moisture_at_ad_min+((ad/mrzd)*100)),pwp].max)
+    pct_moisture_obs || ([(pct_moisture_at_ad_min+((ad/mrzd)*100)),pwp*100].max)
   end # Daily_TWC
   
   ###############################################

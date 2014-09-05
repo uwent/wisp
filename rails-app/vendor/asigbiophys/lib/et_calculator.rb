@@ -7,7 +7,88 @@ module ETCalculator
   
  # Originally these were class methods, but it turns out to make more sense to use "include" in a class
  # and make then instance methods of that class; ADCalculator is the same way.
+
+  # GENERIC METHODS (for both LAI and percent cover)  
+
+  # Duck Typing at work here; "day" can be anything that responds to the methods:
+  # "et_method", "ref_et", "leaf_area_index", and "pct_cover".
+  # So an ActiveRecord class instance with those table columns will work, or a mock object for testing,
+  # or wrapper around some other class that calls them referenceET and leafAreaIndex.
+  def calc_adj_ET(day)
+    if day.respond_to?('et_method')
+      day.et_method.adj_et(day)
+    else
+      raise "Can't get ET method"
+    end
+  end
+
+  # In addition to the four methods expected above for "day", this one expects "day" to have a
+  # adj_et=(et_value) method
+  def update_adj_et_single_day(day)
+    day.adj_et =  calc_adj_ET(day)
+  end
+
  
+  #
+  # LAI
+  #
+  
+  # LAI GROWTH CURVE MODELS
+  
+  # LAI growth curve function for corn from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
+  def lai_corn(days_since_emergence)
+    (0.000000000009*(days_since_emergence)**7.95)*(Math.exp(-0.1*(days_since_emergence)))
+  end
+  
+  # def self.generate_growth_curve
+  #   # y = -8E-19x6 + 3E-15x5 + 2E-12x4 - 2E-08x3 + 2E-05x2 - 0.003x + 0.0577
+  #   # R² = 0.9971
+  # -8E-19x6 + 3E-15x5 + 2E-12x4 - 2E-08x3 + 2E-05x2 - 0.003x + 0.0577
+  # = -3E-06x2 + 0.0073x - 0.6728
+  # end
+  
+  # Return the LAI for a given day. "day" must be something with a "degree_days" method.
+  # We can have a number of these, one for each plant whose growth curve has been established.
+  def lai_thermal(day)
+    fake_lai_thermal(day.degree_days)
+  end
+  
+  # This is a placeholder function until we get some real data.
+  def fake_lai_thermal(dd)
+    (-0.000003 * dd * dd) + (0.0073 * dd) - 0.6728 if dd
+  end
+  
+  # LAI ADJUSTED ET CALCS
+  
+  # Return adjusted ET from the reference ET and the days sinçe emergence
+  # Crop coeff math is from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
+  def adj_et_lai_corn(ref_et,days_since_emergence)
+  crop_coeff = 1.1*(1-Math.exp(-1.5*(lai_corn(days_since_emergence))))
+  adj_et = ref_et * crop_coeff
+  end
+
+  # Return adjusted ET from the reference ET if the leaf area index is already in hand
+  # Crop coeff math is from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
+  def adj_et_from_lai_corn(ref_et,lai)
+  crop_coeff = 1.1*(1-Math.exp(-1.5*(lai)))
+  adj_et = ref_et * crop_coeff
+  end
+
+  # This is just copied straight from lai_corn, but makes the API a little more generic.
+  def adj_et_lai_for_nonclumping(ref_et,lai)
+    crop_coeff = 1.1*(1-Math.exp(-1.5*(lai)))
+    adj_et = ref_et * crop_coeff
+  end
+  
+  def adj_et_lai_for_clumping(ref_et,lai)
+    
+  end
+  
+  #
+  # Percent Cover methods
+  #
+  # Percent cover calcs don't have a growth-curve generator, there's just the adjusted-ET equation.
+  #
   # Return the adjusted ET. Uses regression coefficients derived by J. Panuska from the UW Extension pub A3600.
   def adj_et_pct_cover(ref_et,pctCover)
     ref_et ||= 0.0 #if ref_et == nil #pk 6/3/14
@@ -40,7 +121,7 @@ module ETCalculator
         # Get high end adj_et
         adj_etHigh = coeff[coeffIndex+1][0] + ref_et*coeff[coeffIndex+1][1]
         # Interpolate adj_et between low and high %cover
-        adj_et = adj_etLow + (((pctCover - coeffIndex*10)/10) * (adj_etHigh-adj_etLow))
+        adj_et = adj_etLow + (((pctCover - coeffIndex*10)/10) *(adj_etHigh-adj_etLow))
 
       else     # At 80% cover and above there is no adjustment to the ref_et
         adj_et = ref_et
@@ -48,46 +129,6 @@ module ETCalculator
     return adj_et
   end #adj_et_pct_cover
 
-  # LAI growth curve function for corn from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
-  def lai_corn(days_since_emergence)
-  (0.000000000009*(days_since_emergence)**7.95)*(Math.exp(-0.1*(days_since_emergence)))
-  end
-  
-  # Return adjusted ET from the reference ET and the days sinçe emergence
-  # Crop coeff math is from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
-  def adj_et_lai_corn(ref_et,days_since_emergence)
-  crop_coeff = 1.1*(1-Math.exp(-1.5*(lai_corn(days_since_emergence))))
-  adj_et = ref_et * crop_coeff
-  end
-
-  # Return adjusted ET from the reference ET if the leaf area index is already in hand
-  # Crop coeff math is from WI_Irrigation_Scheduler_(WIS)_VV6.3.11.xls
-  def adj_et_from_lai_corn(ref_et,lai)
-  crop_coeff = 1.1*(1-Math.exp(-1.5*(lai)))
-  adj_et = ref_et * crop_coeff
-  end
-
-  # Duck Typing at work here; "day" can be anything that responds to the methods:
-  # "et_method", "ref_et", "leaf_area_index", and "pct_cover".
-  # So an ActiveRecord class instance with those table columns will work, or a mock object for testing,
-  # or wrapper around some other class that calls them referenceET and leafAreaIndex.
-  def calc_adj_ET(day)
-    if day.respond_to?('et_method')
-      day.et_method.adj_et(day)
-    else
-      raise "Can't get ET method"
-    end
-  end
-  
-  # In addition to the four methods expected above for "day", this one expects "day" to have a
-  # adj_et=(et_value) method
-  def update_adj_et_single_day(day)
-    day.adj_et =  calc_adj_ET(day)
-  end
-  
-  #
-  # Percent Cover methods
-  #
   def surrounding(wx_arr,middle,parameter)
     max_index = wx_arr.size - 1
     return nil if max_index < 2 || middle > max_index || middle < 0

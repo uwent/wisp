@@ -2,7 +2,7 @@ class WeatherStationDataController < ApplicationController
   before_filter :ensure_signed_in, :except => [:post_data]
   before_filter :get_current_ids, :ensure_group
   
-  COLUMN_NAMES = [:rain,:irrigation,:entered_pct_moisture,:ref_et,:notes]
+  COLUMN_NAMES = [:rain,:irrigation,:entered_pct_moisture,:ref_et,:entered_pct_cover,:notes]
   ROWS_PER_PAGE = 14
   
   def index

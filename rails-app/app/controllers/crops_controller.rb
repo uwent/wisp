@@ -4,6 +4,7 @@ class CropsController < ApplicationController
   
   COLUMN_NAMES = [
     :name,
+    :plant_id,
     :variety,
     :emergence_date,
     :harvest_or_kill_date,

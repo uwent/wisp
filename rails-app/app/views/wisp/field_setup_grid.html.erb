@@ -1,5 +1,9 @@
 <script type="text/javascript">
   var lastFieldSel,curFieldID;
+  
+  var PCT_COVER_METHOD = <%= Field::PCT_COVER_METHOD %>;
+  var LAI_METHOD = <%= Field::LAI_METHOD %>;
+  
   function loadCropGrid(field_id) {
     $('#cropDataGrid').load('<%= url_for :controller => "wisp", :action => :crop_setup_grid %>',
       {field_id:field_id,user_id:user_id, farm_id:farm_id});
@@ -41,9 +45,11 @@
       jQuery("#field_setup").setRowData(id,{act:be}); 
     } 
   }
-  function addNewFieldRow() {
+  
+  // Add new field based on et mthod selection (currently controlled by separate buttons).
+  function addNewFieldRow(method) {
     var grid = $('#field_setup');
-    newField = createNewField();
+    newField = createNewField(method);
     field_id = newField['id'];
     set_soil_characteristics(field_id,newField['soil_type_id']);
     grid.addRowData(field_id, newField); // add a new row with the new field's data
@@ -53,13 +59,13 @@
   }
 
   // Make a call to the server to create a new field; will return new row as JSON
-  function createNewField() {
+  function createNewField(method) {
     var pvt={};
     $.ajax(
       {
         type: "POST",
         url: '<%= url_for :controller => 'fields', :action => :post_data %>',
-        data: {pivot_id:pivot_id,parent_id:pivot_id,oper:'add',id:'_empty'}, 
+        data: {pivot_id:pivot_id,parent_id:pivot_id,oper:'add',id:'_empty',et_method:method}, 
         dataType: "json",
         contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
         async: false,
@@ -81,11 +87,27 @@
   // or from the select box being clicked. Overwrite existing values in either case.
   function set_soil_characteristics(curFieldID,soil_id) {
     // This Ruby helper enumerates all the soil_type data, same order as the select box
-    var soils = <%= soil_characteristics %>;
+    var soils = <%= soil_characteristics %>; // {1:{field_capacity_pct:15.0,perm_wilting_pt_pct:5.0},2:{...}}
     fc = soils[soil_id]['field_capacity_pct'];
     pwp = soils[soil_id]['perm_wilting_pt_pct'];
     $("#"+curFieldID+"_field_capacity_pct").val(fc);
     $("#"+curFieldID+"_perm_wilting_pt_pct").val(pwp);
+  }
+  
+  function etMethodFormat(cellvalue,options,rowObject) {
+    if (cellvalue === undefined) {
+      return("");
+    } else {
+      if (cellvalue == '1') {
+        return 'Pct Cover';
+      } else {
+        return 'LAI';
+      }
+    }   
+  }
+  
+  function etMethodUnformat(cellvalue,options,cell) {
+    return cellvalue;
   }
 
   // Tag on percent sign for display
@@ -131,8 +153,9 @@
       url:'<%= grid_data_url "fields", @pivot_id %>',
       editurl:'<%= grid_post_data_url "fields", @pivot %>',
       datatype: "json",
-      colNames:['Name','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD','ET Stn','Rain Stn','Soil Moist. Stn','Notes','Delete','Pivot','ID'],
+      colNames:['Name','ET Method','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD','ET Stn','Rain Stn','Soil Moist. Stn','Notes','Delete','Pivot','ID'],
       colModel:[{name:'name', index:'name',width:83,editable:true},
+                {name:'et_method',index:'et_method',editable:false,formatter:etMethodFormat,width:25},
                 {name:'area', index:'area',width:20,editable:true, align:'right',editrules:{number:true,minValue:0.0}},
                 {
                    name:'soil_type_id',index:'soil_type_id', width:40,resizable:true,   
@@ -164,7 +187,7 @@
       imgpath: '<%= image_folder_path("jqgrid") %>',
       sortname: '',
       viewrecords: true,
-      height: 160,
+      height: 280,
       width: 918,
       sortorder: '',
       gridview: false,
@@ -199,5 +222,6 @@
 
 <table id="field_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
 <!-- <div id="field_setup_pager" class="scroll" style="text-align:center;"></div> -->
-<button type="button" onclick="addNewFieldRow();">Add New Field</button>
+<button type="button" onclick="addNewFieldRow(PCT_COVER_METHOD);">Add New Field (% Cover)</button>
+<button type="button" onclick="addNewFieldRow(LAI_METHOD);">Add New Field (Leaf Area Index)</button>
 <!-- $("#grid").addRowData(rowid,data, position, srcrowid); -->

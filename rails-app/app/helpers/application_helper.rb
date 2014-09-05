@@ -95,9 +95,15 @@ module ApplicationHelper
   end
   
   def soil_types_for_select
-    # 1:Percent Cover;2:Leaf Area Index
+    # 1:Sandy Loam;2:Silt Loam
     soils = SoilType.all
     soils.inject("") {|str,soil_type| so_far(str,';') + "#{soil_type[:id]}:#{soil_type.name}"}
+  end
+  
+  def plant_types_for_select
+    # 1:Potato;2:Snap Bean
+    plants = Plant.all.sort { |a, b| a.name <=> b.name }
+    plants.inject("") {|str,plant| so_far(str,';') + "#{plant[:id]}:#{plant.name}"}
   end
   
   def soil_characteristics
@@ -107,6 +113,18 @@ module ApplicationHelper
         soil_type[:id].to_s + ':' + 
         '{field_capacity_pct:' + (100*soil_type[:field_capacity]).to_s + ',' +
          'perm_wilting_pt_pct:' + (100*soil_type[:perm_wilting_pt]).to_s + '}'
+    end
+    "{#{str}}"
+  end
+  
+  # Helper method to enumerate all plant characteristics in JSON format, suitable for use in a grid
+  # to fill in default values
+  def plant_characteristics
+    plants = Plant.all.sort { |a, b| a.name <=> b.name }
+    str = plants.inject("") do |str,plant|
+      so_far(str) + 
+        plant[:id].to_s + ':' + 
+        '{default_max_root_zone_depth:' + (plant[:default_max_root_zone_depth]).to_s + '}'
     end
     "{#{str}}"
   end

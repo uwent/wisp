@@ -24,7 +24,7 @@
   	{
   		position:absolute;
   		left:275px;
-  		top:315px;
+  		top:235px;
   		width:920px;
   		padding:2px;
   		margin:0px;
@@ -33,7 +33,7 @@
   	{
   		position:absolute;
   		left:275px;
-  		top:550px;
+  		top:600px;
   		width:920px;
   		padding:2px;
   		margin:0px;
@@ -63,6 +63,11 @@
       <input type="hidden" name="pivot_id" value=""></input>
       <input type="hidden" name="field_id" value=""></input>
       <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %> 
+    <% end %>      
+  </td>
+  <td>
+    <%= form_tag(url_for :controller => "wisp", :action => :pivot_crop, :field_id => "") do %>
+      <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot),{ :onchange => "this.form.submit();"} %> 
     <% end %>      
   </td>
 </tr></table>

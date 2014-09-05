@@ -1,7 +1,7 @@
 class FieldsController < ApplicationController
   set_default_filters
  
-  COLUMN_NAMES = [:name,:area,:soil_type_id,:field_capacity_pct,:perm_wilting_pt_pct,:target_ad_pct,
+  COLUMN_NAMES = [:name,:et_method,:area,:soil_type_id,:field_capacity_pct,:perm_wilting_pt_pct,:target_ad_pct,
                   :ref_et_station_id,:rain_station_id,:soil_moisture_station_id,:notes,:act,:pivot_id,:id]
   # GET /fields
   # GET /fields.xml
@@ -54,14 +54,16 @@ class FieldsController < ApplicationController
         attribs[:field_capacity] = SoilType.default_soil_type[:field_capacity] unless attribs[:field_capacity]
         attribs[:perm_wilting_pt] = SoilType.default_soil_type[:perm_wilting_pt] unless attribs[:perm_wilting_pt]
         field = Field.create(attribs)
+        field.get_et
+        field.get_dds if field.current_crop.plant.uses_dds(field.et_method)
       else
         field = Field.find(params[:id], :include => :field_daily_weather)
         attribs = field.groom_for_defaults(attribs)
         attribs.delete(:act)
         attribs.delete(:pivot_id) if attribs[:pivot_id]
-        puts "updating field attributes"
+        # puts "updating field attributes"
         field.update_attributes(attribs)
-        puts "field attributes updated"
+        # puts "field attributes updated"
       end
     end
     attrs = field.attributes.symbolize_keys.merge(

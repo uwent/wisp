@@ -28,7 +28,12 @@ class WispController < ApplicationController
   def pivot_crop
     # these variables are the initial values when the page is loaded. After the user
     # starts clicking, all bets are off!
-    @pivot,@pivot_id = [@farm.pivots.first,@farm.pivots.first[:id]]
+    if (params['pivot_id'] && params['pivot_id'] != '')
+      @pivot_id = params['pivot_id']
+      @pivot = Pivot.find(@pivot_id)
+    else
+      @pivot,@pivot_id = [@farm.pivots.first,@farm.pivots.first[:id]]
+    end
     @field,@field_id = [@pivot.fields.first,@pivot.fields.first[:id]]
     # @crop_id = @field.current_crop[:id]
     # # @farm = Farm.find(@farm_id) if @farm_id
@@ -173,8 +178,11 @@ class WispController < ApplicationController
     @field_id,@field = get_and_set(Field,Pivot,@pivot_id)
     if params[:field] && params[:field][:target_ad_pct]
       @field.update_attributes :target_ad_pct => params[:field][:target_ad_pct]
+    else
+      @field.do_balances
     end
     @cur_date = params[:cur_date]
+    @ad_at_pwp = @field.ad_at_pwp
     session[:today] = @cur_date
     field_status_data(@cur_date) # @cur_date may be nil, but will be set if so
     # now that we've got the last week's fdw recs, check if any need ET
@@ -182,6 +190,15 @@ class WispController < ApplicationController
       if adr.ref_et == nil || adr.ref_et == 0.0
         @field.get_et
         break
+      end
+    end
+    # run it around again for DDs
+    if @field.need_dds
+      @ad_recs.each do |adr|
+        if adr.degree_days == nil || adr.degree_days == 0.0
+          @field.get_dds
+          break
+        end
       end
     end
     # for some reason, IE makes a request for format JSON, which kinda whacks things. So we explicitly
@@ -222,7 +239,6 @@ class WispController < ApplicationController
     if params[:ajax]
       render :layout => false
     end
-    @et_methods = EtMethod.all.inject({}) {|hash,etm| hash.merge etm[:type] => etm[:id]}.to_json
   end
 
   # Ajax-accessible summary/projected box

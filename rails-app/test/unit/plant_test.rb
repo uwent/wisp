@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class SunWaterControllerTest < ActionController::TestCase
+class PlantTest < ActiveSupport::TestCase
   # Replace this with your real tests.
   test "the truth" do
     assert true

@@ -3,12 +3,15 @@
 
         <script type="text/javascript">
           var lastsel;
-          var isLai = <%= @field.et_method.method_name == "LAI" ? 'true' : 'false' %>;
+          var isLai = <%= @field.et_method_name == "LAI" ? 'true' : 'false' %>;
           var max_moisture = <%= @field.field_capacity * 100.0 %>;
+          var ad_at_pwp = <%= @ad_at_pwp %>;
           var laiFormatter,pctCoverFormatter;
           var laiIsEditable,pctCoverIsEditable;
           if (isLai) {
-            laiIsEditable = true;
+            // Someday we want to turn this back on, but there's no way to adapt the growth curves
+            // to user input yet. So LAI is never editable.
+            laiIsEditable = false;
             pctCoverIsEditable = false;
           } else {
             laiIsEditable = false;
@@ -21,16 +24,16 @@
             } else {
               // Is there an "E" for "entered"?
               if (cellvalue.indexOf('E') == -1) {
-                return cellvalue;
+                return parseFloat(cellvalue).toFixed(2).toString();
               } else {
-                num = cellvalue.replace("%","");
-                return redFormatter(num,options,obj);
+                num = cellvalue.replace("E","");
+                return num;
               }
             }         
           }
           
-          function redFormatter(cellvalue,options,obj) {
-            cellFloat = parseFloat(cellvalue).toFixed(2);
+          function posRedFormatter(cellvalue,options,obj) {
+    		    cellFloat = parseFloat(cellvalue).toFixed(2);
             if (cellFloat > 0.0) {
               cellstr = cellFloat.toString();
               return('<span style="color:red;font-size:1.5em;font-weight:bold">'+cellstr+'</span>');
@@ -38,6 +41,17 @@
             else
               return('');
           }
+          
+          function naFormatter(cellvalue,options,obj) {
+            if (cellvalue == 'n/a') {
+              return cellvalue;
+            } else if (cellvalue == '') {
+              return '0.0';
+            } else {
+              return parseFloat(cellvalue).toFixed(2).toString();
+            }
+          }
+          
           // Example of how to set the pager to a given page in JS
           // function page5() {
           //   mygrid.setGridParam({page:5}).trigger('reloadGrid');
@@ -66,19 +80,48 @@
                  formatter:'number', formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0.0,maxValue:10.0}},
                 {name:'pct_moisture', index:'pct_moisture',width:72, formatoptions:{decimalPlaces:2},
                  editable:true, align:'right',
-                 formatter:editedFormatter, formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0.0,maxValue:max_moisture}},
+                 formatter:editedFormatter,
+                 cellattr: function(rowId, tv, rawObject, cm, rdata) {
+                   if (rawObject[4].indexOf('E') == -1) {
+                     return '';
+                   } else {
+                     return('style="background-color:#00F0A0;font-size:larger"');
+                   }
+                 },
+                 editrules:{number:true,minValue:0.0,maxValue:max_moisture}},
                 {name:'entered_pct_cover', index:'entered_pct_cover',width:63,
                  editable:pctCoverIsEditable, align:'right',hidden:isLai,
-                 formatter:'number', formatoptions:{decimalPlaces:0},editrules:{number:true,minValue:0.0,maxValue:100.0}},
+                 formatter:'number',
+                 // not working, see comment on formatter above.
+                 formatter:editedFormatter,
+                 cellattr: function(rowId, tv, rawObject, cm, rdata) {
+                   if (rawObject[5].indexOf('E') == -1) {
+                     return '';
+                   } else {
+                     return('style="background-color:#00F0A0;font-size:larger"');
+                   }
+                 },
+                 formatoptions:{decimalPlaces:0},editrules:{number:true,minValue:0.0,maxValue:100.0}
+               },
                 {name:'leaf_area_index', index:'leaf_area_index',width:63,
+                  // Since we don't have any way to rejigger curves, laiIsEditable == false
                   editable:laiIsEditable, align:'right', hidden:!(isLai),
                  formatter:'number', formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0.0,maxValue:10.0}},
                 {name:'adj_et', index:'adj_et',width:61, align:'right',
-                 formatter:'number', formatoptions:{decimalPlaces:2}},
+                 formatter:naFormatter, formatoptions:{decimalPlaces:2}},
                 {name:'ad', index:'ad',width:44, align:'right',
-                formatter:'number', formatoptions:{decimalPlaces:2}},
+                  formatter:'number', formatoptions:{decimalPlaces:2},
+                  cellattr: function(rowId, tv, rawObject, cm, rdata) {
+                    ad = parseFloat(rawObject[8]);
+                    if (ad > ad_at_pwp) {
+                      return '';
+                    } else {
+                      return('style="background-color:#FF0000;font-size:larger"');
+                    }
+                  },
+                },
                 {name:'deep_drainage', index:'deep_drainage',width:92, align:'right',
-                 formatter:redFormatter,formatoptions:{decimalPlaces:2}},
+                 formatter:posRedFormatter,formatoptions:{decimalPlaces:2}},
                 {name:'id', index:'id',width:1,editable:true,hidden:true}           
               ], 
               pager: '#weather_pager',

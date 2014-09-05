@@ -2,14 +2,12 @@
 
         <script type="text/javascript">
         <%= grid_javascript_settings %>
-          var lastPivotSel;
           // If pivot_id is set, load the field grid for that one. If it's zero,
           // grab the id of the first pivot in the grid and use that.
           function loadFieldGrid(throwaway1,throwaway2) {
             // alert('loadFieldGrid');
             if (pivot_id == 0) {
               pivot_id = $("#pivot_setup").getDataIDs()[0];
-              lastPivotSel=pivot_id;
             }
             $('#fieldDataGrid').load('<%= url_for :controller => "wisp", :action => :field_setup_grid %>',
               // {pivot_id:pivot_id,user_id:user_id, farm_id:farm_id});
@@ -17,35 +15,47 @@
           }
           function rowSelect(id) {
             if(id) { 
-              if (!lastPivotSel || id !== lastPivotSel) {
-                jQuery('#pivot_setup').restoreRow(lastPivotSel);
-                jQuery('#pivot_setup').editRow(id,true); 
-                lastPivotSel=id;
-                pivot_id=id;
-                loadFieldGrid(); // will load for the pivot id we just selected
-              }
+              jQuery('#pivot_setup').editRow(id,true,null,updatePivotSelectName); 
+              pivot_id=id;
+              loadFieldGrid(); // will load for the pivot id we just selected
             } 
           }
-          function reloadGrids() {
+          
+          function reloadGrids(pivot_id) {
             $('#pivotDataGrid').load('<%= url_for :controller => "wisp", :action => :pivot_crop %>',
-            '&farm_id='+farm_id+'&parent_id='+farm_id+'&ajax=true');
+            '&farm_id='+farm_id+'&parent_id='+farm_id+'&pivot_id='+pivot_id+'&ajax=true');
+          }
+          function reloadPage() {
+            url = '<%= url_for(:controller => "wisp", :action => :pivot_crop, :pivot_id => "", :field_id => "") %>';
+            window.location.href=url;
           }
           function deletePivot(id) {
             pivot_id = 0; // We no longer know what the current one is; find out after grids reload
-            jQuery('#pivot_setup').delGridRow(id,{afterSubmit:reloadGrids});
+            jQuery('#pivot_setup').delGridRow(id,{afterSubmit:reloadPage});
+          }
+          function addPivotToSelect(id,pivot_data) {
+            $('#pivot_id').append($('<option/>', { 
+                    value: id,
+                    text : pivot_data['name'],
+                }));
+            reloadGrids(id);
+          }
+          function updatePivotSelectName(response) {
+            var json = $.parseJSON(response.responseText)
+            var name = json['name'];
+            var id = json['id'];
+            $('#pivot_id option[value='+id+']').text(name);
+            $('#pivot').val(id);
+            loadFieldGrid();
+            return(true);
           }
           function addPivotDeleteButtons() {
             var ids = jQuery("#pivot_setup").getDataIDs();
             nRows = ids.length;
             for(var i=0;i<nRows;i++){ 
               var id = ids[i];
-              if (nRows == 1) {
-                be = "<input style='height:22px;width:35px;' type='button' value='Del' disabled='true' title='Cannot delete only pivot'/>";
-              } else {
-                // $('#pivot_setup').trigger('reloadGrid');
                 be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick='deletePivot("+id+");' ></ids>"; 
-              }
-              jQuery("#pivot_setup").setRowData(id,{act:be}); 
+                jQuery("#pivot_setup").setRowData(id,{act:be}); 
             } 
           }
           function addNewPivotRow() {
@@ -54,8 +64,8 @@
             pivot_id = newPivot['id'];
             grid.addRowData(pivot_id, newPivot); // add a new row with the new field's data
             addPivotDeleteButtons();
-            grid.editRow(pivot_id,true); // put new row into inline-edit mode
-            loadFieldGrid();
+            addPivotToSelect(pivot_id,newPivot);
+            grid.editRow(pivot_id,true,null,updatePivotSelectName); // put new row into inline-edit mode
           }
 
           function createNewPivot() {
@@ -81,7 +91,7 @@
             <%= grid_javascript_settings %> // Sets pivot_id
             loadFieldGrid();
             var mygrid = jQuery("#pivot_setup").jqGrid({
-              url:'<%= url_for(:controller => "pivots", :q => 1, :farm_id => @farm_id) %>',
+              url:'<%= url_for(:controller => "pivots", :q => 1, :farm_id => @farm_id) %>&pivot_id='+pivot_id,
               editurl:'<%= grid_post_data_url "pivots", @farm_id %>',
               datatype: "json",
               // t.integer  "farm_id"
@@ -110,12 +120,12 @@
                          {name:'id', index:'id',width:1,hidden:true,editable:true},
                          ],
               pager: '#pivot_setup_pager',
-              rowNum:180,
-              rowList:[180],
+              rowNum:1,
+              rowList:[1],
               imgpath: '<%= image_folder_path("jqgrid") %>',
               sortname: '',
               viewrecords: true,
-              height: 110,
+              height: 22,
               width: 918,
               sortorder: '',
               gridview: false,
@@ -130,16 +140,8 @@
               onSelectRow: rowSelect,
               subGrid:false,
               
-              caption: "Pivots <%= @farm ? "for #{@farm.name}" : '' %>"
+              caption: "Pivot <%= @farm ? "for #{@farm.name}" : '' %>"
             })
-            // .navGrid('#pivot_setup_pager',
-            //   {edit:false,add:true,del:true,search:false,refresh:true},
-            //   {afterSubmit:function(r,data){return true;(r,data,'edit');}},
-            //   {afterSubmit:function(r,data){return true;(r,data,'add');}},
-            //   {afterSubmit:function(r,data){return true;(r,data,'delete');}}
-            // )
-            
-            mygrid.filterToolbar();mygrid[0].toggleToolbar()
           });
           
         </script>

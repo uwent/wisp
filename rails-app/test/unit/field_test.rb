@@ -6,7 +6,6 @@ class FieldTest < ActiveSupport::TestCase
   def setup
     @pcf = fields(:one)
     @pct_cover_method = EtMethod.find_by_type('PctCoverEtMethod')
-    @pct_cover_pivot = Pivot.all.select { |p| p.farm.et_method.class == PctCoverEtMethod }.first
   end
   
   test "et_method method works" do
@@ -103,7 +102,9 @@ class FieldTest < ActiveSupport::TestCase
   end
 
   def setup_field_with_AD
-    field = create_a_field(@pct_cover_pivot[:id])
+    field = create_a_field
+    field.et_method = @pct_cover_method
+    field.save!
     emi = emergence_index(field)
     # before we change anything, fdw[emi] will be at FC, and the next one will be nil
     assert_in_delta(field.field_capacity * 100.0, field.field_daily_weather[emi].pct_moisture, 2 ** -20)
@@ -389,8 +390,8 @@ class FieldTest < ActiveSupport::TestCase
   
   def setup_pct_cover_field_with_emergence
     farm = farms(:ricks_other_farm)
-    assert_equal(PctCoverEtMethod, farm.et_method.class,farm.et_method)
-    field = Field.create(:pivot_id => farm.pivots.first[:id],:field_capacity => 0.4, :perm_wilting_pt => 0.13)
+    field = Field.create(:pivot_id => farm.pivots.first[:id],:field_capacity => 0.4, :perm_wilting_pt => 0.13,
+      et_method: Field::PCT_COVER_METHOD)
     emergence_date = Date.civil(2011,05,01)
     [field,emergence_date]
   end
@@ -755,6 +756,7 @@ class FieldTest < ActiveSupport::TestCase
     assert_in_delta(0.240238, max_adj_et, 2 ** -20)
   end
   
+<<<<<<< .working
   test "getting problem ad" do
     field = Field.create(name: 'Problem field', pivot_id: Pivot.first[:id])
     ed = field.current_crop.emergence_date
@@ -803,6 +805,19 @@ class FieldTest < ActiveSupport::TestCase
     
   end
   
+  test "get_dds works" do
+    field,emergence_data = setup_pct_cover_field_with_emergence
+    field.pivot.latitude = 44.12
+    field.pivot.longitude = -89.3
+    field.pivot.save!
+    field.get_dds
+    date = field.field_daily_weather[100].date
+    fdw = FieldDailyWeather.where(field_id: field.id).where(date: date).first
+    assert(fdw)
+    assert(fdw.degree_days)
+    assert(fdw.degree_days > 0,fdw.inspect)
+  end
+
   test "RingBuffer works with default" do
     rb = nil
     assert_nothing_raised(RuntimeError) { rb = RingBuffer.new }
@@ -876,8 +891,6 @@ class FieldTest < ActiveSupport::TestCase
     rb.add(2.0)
     assert_in_delta(2.0, rb.last_nonzero, 2 ** -20)
     rb.add(-4.0)
-    assert_in_delta(-4.0, rb.last_nonzero, 2 ** -20)
-    
+    assert_in_delta(-4.0, rb.last_nonzero, 2 ** -20)    
   end
-  
 end

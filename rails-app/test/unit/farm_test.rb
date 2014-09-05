@@ -24,7 +24,7 @@ class FarmTest < ActiveSupport::TestCase
   
   def needle_hierarchy(name="A farm")
     group_id = Group.first[:id]
-    farm = Farm.new(:name => name, :et_method_id => 1, :year => CROPPING_YEAR, :group_id => group_id)
+    farm = Farm.new(:name => name, :year => CROPPING_YEAR, :group_id => group_id)
     farm.save!
     farm
   end

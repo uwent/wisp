@@ -2,11 +2,17 @@ require 'owned'
 
 class Crop < ActiveRecord::Base
   include Owned
+  belongs_to :plant
   belongs_to :field
+  after_create :create_dependent_objects
   after_save :update_field_with_emergence_date
   # Only go through the painful process of updating the canopy and recalcing all balances if needed
   attr_accessor :dont_update_canopy
   # validates :field, :presence => true
+
+  def create_dependent_objects
+    plant = Plant.default_plant  
+  end
   
   # Do we really need to update the canopy?
   def must_update_canopy?(attribs)

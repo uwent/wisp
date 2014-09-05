@@ -15,7 +15,6 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   def setup
     pivot = pivots(:one)
     assert(pivot, "No pivot!")
-    assert_equal(LaiEtMethod, pivot.farm.et_method.class)
     @default_field_params = {:name => 'test field', :pivot => pivots(:one), 
       :perm_wilting_pt => WILT, :field_capacity => FC}
     @default_crop_params = {:name => 'test crop', :emergence_date => Date.civil(2011,05,01),
@@ -27,9 +26,18 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   def create_field_with_crop(field_params={},crop_params={})
     @default_field_params.each { |k,v| field_params[k] = v unless field_params[k] }
     @default_crop_params.each { |k,v| crop_params[k] = v unless crop_params[k] }
+    puts "about to create field ******************* "
     field = Field.create(field_params)
+    # puts "********* create done, about to update crop with needed params"
     field.crops.first.update_attributes(crop_params)
+    # puts "******** crop update done"
+    # puts field.inspect
+    # puts "about to save the field *************"
     # field.save!
+    # puts "*********** saved"
+    # puts "After save, first FDW is #{field.field_daily_weather[0].inspect}"
+    field.field_daily_weather.reload
+    # puts "After reload, first FDW is #{field.field_daily_weather[0].inspect}"
     field
   end
   
@@ -47,16 +55,26 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert_equal(LaiEtMethod, field.et_method.class)
     assert_equal(2.88, field.field_daily_weather[0].ad)
   end
+
+  test "LAI field and crop have correct attribs" do
+    Field.delete_all
+    field = create_field_with_crop({et_method: Field::LAI_METHOD})
+    assert_in_delta(FC, field.field_capacity, 2 ** -20,"Created field has wrong field capacity")
+    assert_in_delta(WILT, field.perm_wilting_pt, 2 ** -20,"Created field has wrong perm wilting pt")
+    assert_in_delta(MRZD, field.current_crop.max_root_zone_depth, 2 ** -20,"Created field has wrong max rootzone depth")
+    assert_in_delta(MAD_FRAC, field.current_crop.max_allowable_depletion_frac, 2 ** -20,"Created field has wrong max AD fraction")
+    assert_in_delta(6.48, field.ad_max, 2 ** -20,"Created field has wrong max AD")
+  end
   
   test "update_balances does something useful" do
-    assert_equal(LaiEtMethod, @field.et_method.class)
+    assert_equal("Pct Cover", @field.et_method_name)
     fdw_first = @field.field_daily_weather[50]
     orig_ad = fdw_first.ad
     assert_not_in_delta(0.0,orig_ad,0.1)
     assert(fdw_first.field, "Field daily weather should have a field! #{fdw_first.inspect}")
     fdw_first.ref_et = ET
     fdw_first.save!                        
-    # puts "\nsaved the first day, it's now #{fdw_first.inspect}"; $stdout.flush
+    puts "saved the first day, it's now #{fdw_first.inspect}"; $stdout.flush
     fdw_second = @field.field_daily_weather[51]
     assert(fdw_second.field, "Field daily weather should have a field! #{fdw_second.inspect}")
     fdw_second.ref_et = ET
@@ -168,8 +186,8 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   
   test "update_balances is correct for pct_cover when interval is based at emergence" do
     pivot = pivots(:other)
-    assert_equal(PctCoverEtMethod, pivot.farm.et_method.class)
-    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
+    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP, et_method: Field::PCT_COVER_METHOD},{max_allowable_depletion_frac: MAD})
+    assert_equal("Pct Cover", field.et_method_name)
     emi = emergence_index(field)
     assert_equal(30, emi)
     span = 19
@@ -215,18 +233,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   
   # Spew debug info to stdout (for failed assertions)
   def dbgprt(fdw,field)
-    "\n  #{fdw.inspect},\n  field is #{field.inspect},\n  crop is #{field.current_crop.inspect}"
-  end
-
-  # Select the appropriate pivot for a field, one belonging to either an LAI or % cover farm
-  def set_pivot(field,et_method=LaiEtMethod)
-    unless field.pivot.farm.et_method.class == et_method
-      field.pivot = Pivot.all.find do |pivot|
-        pivot.farm.et_method.class == et_method
-      end
-    end
-    assert(field.pivot,"Could not find a pivot whose farm has #{et_method.to_s}")
-    assert_equal(PctCoverEtMethod,field.pivot.farm.et_method.class)
+    "  #{fdw.inspect},  field is #{field.inspect}, crop is #{field.current_crop.inspect}"
   end
   
   ET = 0.2
@@ -235,13 +242,13 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   MAD = 0.5
   # deep drainage occurs when we go over field capacity -- check an LAI field first...
   test "deep drainage with LAI" do
-    field = create_field_with_crop({field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
-    assert_equal(field.et_method.class,LaiEtMethod)
+    field = create_field_with_crop({field_capacity: FC, perm_wilting_pt: PWP, et_method: Field::LAI_METHOD},{max_allowable_depletion_frac: MAD})
+    assert_equal("LAI",field.et_method_name)
     fdw = field.field_daily_weather.first
     assert(fdw,'Should be able to get the first day of FDW')
     fdw.ref_et = ET
     fdw.save! # Should now have an AD calculated
-    assert_in_delta(field.ad_max, fdw.ad, 2 ** -10, "AD should start out at max ad in inches"+dbgprt(fdw,field))
+    assert_in_delta(field.ad_max, fdw.ad, 2 ** -10, "AD should start out at max ad in inches #{field.ad_max} but was #{fdw.inspect}")
     fdw.ref_et = ET
     fdw.leaf_area_index = 1.6 # Should yield adj. ET == ref. ET
     fdw.irrigation = 0.3 # Add some irrigation at FC, 0.2 balanced by ET, 0.1 should drain out
@@ -255,9 +262,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   # deep drainage occurs when we go over field capacity -- now a percent cover field.
   test "deep drainage with percent cover" do
     pivot = pivots(:other)
-    assert_equal(PctCoverEtMethod, pivot.farm.et_method.class)
-    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
-    # set_pivot(field,PctCoverEtMethod)
+    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP, et_method: Field::PCT_COVER_METHOD},{max_allowable_depletion_frac: MAD})
     fdw = field.field_daily_weather.first
     assert(fdw,'Should be able to get the first day of FDW')
     fdw.ref_et = ET
@@ -339,7 +344,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     assert(field, "Field was not created")
     assert((fdw = field.field_daily_weather) && fdw.size > 0, "FDW nil or no records")
     assert_equal(field.field_capacity * 100.0, fdw[0].pct_moisture,"First FDW should be set to field capacity")
-    assert_equal(LaiEtMethod, field.et_method.class)
+    assert_equal("LAI", field.et_method_name)
     n_days = 40
     # puts fdw[0].inspect
     emergence_day = 30 # May 1, the default
@@ -365,9 +370,8 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   
   test "summary has the fields I expect" do
     pivot = pivots(:other)
-    assert_equal(PctCoverEtMethod, pivot.farm.et_method.class)
     season_year = pivot.cropping_year
-    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
+    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP, et_method: Field::PCT_COVER_METHOD},{max_allowable_depletion_frac: MAD})
     summary = FieldDailyWeather.summary(field[:id])
     [:rain,:irrigation,:deep_drainage,:adj_et].each do |column|
       assert_equal(0.0, summary[column],"#{column.to_s} not found in summary  #{summary.inspect}  field: #{field.inspect}")
@@ -378,9 +382,8 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   
   test "summary produces sensible results" do
     pivot = pivots(:other)
-    assert_equal(PctCoverEtMethod, pivot.farm.et_method.class)
     season_year = pivot.cropping_year
-    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
+    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP, et_method: Field::PCT_COVER_METHOD},{max_allowable_depletion_frac: MAD})
     # Pull the summary. Of course there should be no nonzero values, so it should sum to all zeroes.
     summary = FieldDailyWeather.summary(field[:id])
     [:adj_et,:rain,:irrigation,:deep_drainage].each { |thing| assert_equal(0.0, summary[thing]) }
@@ -414,7 +417,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     # Check all of the four params like this one
     #puts expected_adj_et.inspect
     #puts summary[:adj_et].inspect
-    assert_equal(n_fdw,summary[:count],"Did not set values for the correct number of FDW records. #{n_fdw}, #{summary[:count]}")
+    assert_equal(n_fdw,summary[:count],"Did not set values for the correct number of FDW records. #{n_fdw}, #{summary.inspect}")
     assert_in_delta(expected_adj_et,summary[:adj_et], 10 ** -8, "Expected Adj ET wrong, adj et for first day #{field.field_daily_weather[emi][:adj_et]}, last day  #{field.field_daily_weather[-1][:adj_et]}")
     assert_in_delta(expected_rain,summary[:rain], 10 ** -8, "Expected Rain wrong, Rain for first day #{field.field_daily_weather[emi][:rain]}, last day  #{field.field_daily_weather[-1][:rain]}")
     assert_in_delta(expected_irrigation,summary[:irrigation], 10 ** -8, "Expected Irrigation wrong, irrigation for first day #{field.field_daily_weather[emi][:irrigation]}, last day  #{field.field_daily_weather[-1][:irrigation]}")
@@ -435,9 +438,8 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   test "summary produces sensible results over a subset of the season" do
     DAYS_FROM_SEASON_END = 50
     pivot = pivots(:other)
-    assert_equal(PctCoverEtMethod, pivot.farm.et_method.class)
     season_year = pivot.cropping_year
-    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
+    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP, et_method: Field::PCT_COVER_METHOD},{max_allowable_depletion_frac: MAD})
     emi = field.fdw_index(field.current_crop.emergence_date)
     # simulate a summary taken on a particular day by specifying a finish date (the production code
     # defaults the finish date to "today" if we're looking at a current-year field)
@@ -480,8 +482,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
   
   test "CSV production works" do
     pivot = pivots(:other)
-    assert_equal(PctCoverEtMethod, pivot.farm.et_method.class)
-    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP},{max_allowable_depletion_frac: MAD})
+    field = create_field_with_crop({pivot: pivot, field_capacity: FC, perm_wilting_pt: PWP, et_method: Field::PCT_COVER_METHOD},{max_allowable_depletion_frac: MAD})
     fdws = fdws_from_emergence(field)
     assert_equal(Array, fdws.class)
     assert_equal(3, fdws.size)
@@ -495,5 +496,39 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     fdws = fdws_from_emergence(field)
     assert(csv = fdws[1].to_csv)
     assert_equal("2011-05-02,0.31,2.70,30.00,0.00,0.21,1.01,0.01,1.21", csv)
+  end
+  
+  test "moisture method works" do
+    field=create_field_with_crop({perm_wilting_pt: 0.05, field_capacity: 0.15})
+    field.current_crop.max_root_zone_depth = 15.0
+    field.save!
+    fdw = field.field_daily_weather[60]
+    total_available_water = taw(
+      field.field_capacity, field.perm_wilting_pt, field.current_crop.max_root_zone_depth
+    )
+
+    assert_in_delta(0.75, fdw[:ad], 2 ** -20)
+    assert_in_delta(15.0, fdw.moisture(
+      field.current_crop.max_allowable_depletion_frac,
+      total_available_water,
+      field.perm_wilting_pt,
+      field.field_capacity,
+      fdw[:ad],
+      field.current_crop.max_root_zone_depth
+      ),0.00001
+    )
+    fdw.ad *= -8
+    fdw.save!
+    field.field_daily_weather.reload
+    fdw = field.field_daily_weather[60]
+    assert_in_delta(0.05, fdw.moisture(
+      field.current_crop.max_allowable_depletion_frac,
+      total_available_water,
+      field.perm_wilting_pt,
+      field.field_capacity,
+      fdw[:ad],
+      field.current_crop.max_root_zone_depth
+      ), 2 ** -20)
+    assert_in_delta(0.05, fdw.calculated_pct_moisture, 2 ** -20)
   end
 end

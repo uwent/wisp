@@ -9,7 +9,6 @@ class FieldDailyWeatherController < ApplicationController
     :irrigation, 
     :pct_moisture, 
     :entered_pct_cover, 
-    :leaf_area_index, 
     :ad, 
     :notes
     ]
@@ -77,8 +76,8 @@ class FieldDailyWeatherController < ApplicationController
                                                                params[:page] || 1, params[:rows] || 7, wx_size) }
       else
         json = @field_daily_weather.to_jqgrid_json([
-          :date,:ref_et,:rain,:irrigation,:pct_moisture,:pct_cover,
-          :leaf_area_index, :adj_et,:ad,:deep_drainage,:id], 
+          :date,:ref_et,:rain,:irrigation,:display_pct_moisture,:pct_cover_for_json,
+          :leaf_area_index, :adj_et_for_json,:ad,:deep_drainage,:id], 
           page, page_size, wx_size)
         # logger.info json.inspect
         format.json { render :json => json }
@@ -139,21 +138,26 @@ class FieldDailyWeatherController < ApplicationController
     do_pct_cover = false
     if attribs[:entered_pct_cover]
       unless cover_changed?(attribs[:entered_pct_cover].to_f,fdw.pct_cover.to_f) # it's not changing
-        logger.info "Cover value supplied is the same as old one, so don't bother"
+        # logger.info "Cover value supplied is the same as old one, so don't bother"
         attribs.delete(:entered_pct_cover) # so we don't need to update it and trigger sacredness
       else
-        logger.info "new cover is #{attribs[:entered_pct_cover].to_f} and old was #{fdw.pct_cover.to_f}, setting it"
+        # logger.info "new cover is #{attribs[:entered_pct_cover].to_f} and old was #{fdw.pct_cover.to_f}, setting it"
         do_pct_cover = true
       end
     end
     
-    
+    # logger.info "before update_attributes, fdw was #{fdw.inspect}"
     fdw.update_attributes(attribs)
+    # logger.info "after update_attributes, fdw now #{fdw.inspect}"
     if do_pct_cover
       fdw.field.pct_cover_changed(fdw)
     end
     fdw.field.save! # triggers do_balances
-    # logger.info "fdw now #{fdw.inspect}"
+    
+    # DEBUG ONLY
+    # fdw = FieldDailyWeather.find(params[:id])
+    # logger.info "after field save, fdw now #{fdw.inspect}"
+    
     render :nothing => true
   end
   

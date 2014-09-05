@@ -68,6 +68,9 @@ class Field < ActiveRecord::Base
   DEFAULT_PERM_WILTING_PT = 0.14
   EPSILON = 0.0000001
   
+  PCT_COVER_METHOD = 1
+  LAI_METHOD = 2
+  
   include ADCalculator
   include ETCalculator
   
@@ -75,6 +78,7 @@ class Field < ActiveRecord::Base
   belongs_to :soil_type
   has_many :crops, :dependent => :destroy
   has_many :field_daily_weather, :dependent => :destroy, :order => :date # , :autosave => true
+  before_create :set_default_et_method
   
   before_save :target_ad_pct_or_nil
   after_save :set_fdw_initial_moisture, :do_balances
@@ -83,15 +87,30 @@ class Field < ActiveRecord::Base
   # ACCESSORS
   #
   
-  def et_method
-    raise "Error: Field with no parent pivot" unless pivot
-    raise "Error: Field with no parent farm" unless pivot.farm
-    if pivot.farm.et_method
-      return pivot.farm.et_method
+  def set_default_et_method
+    unless self[:et_method]
+      self[:et_method] = PCT_COVER_METHOD
+    end
+  end
+  
+  def et_method_name
+    if et_method == PCT_COVER_METHOD
+      "Pct Cover"
+    elsif et_method == LAI_METHOD
+      "LAI"
+    end
+  end
+  
+  def adj_et(fdw)
+    return nil unless current_crop && current_crop.plant && fdw.ref_et
+    if et_method == PCT_COVER_METHOD
+      return nil unless fdw.pct_cover
+      current_crop.plant.calc_adj_et_pct_cover(fdw.ref_et,fdw.pct_cover)
+    elsif et_method == LAI_METHOD
+      return nil unless fdw.leaf_area_index
+      current_crop.plant.calc_adj_et_lai(fdw.ref_et,fdw.leaf_area_index)
     else
-      # apparently during object construction the ID can be set, but the association isn't real
-      raise "Farm has no ET method set: #{pivot.farm.inspect}" unless pivot.farm[:et_method_id]
-      EtMethod.find(pivot.farm[:et_method_id])
+      raise "Unknown ET method invoked for field.adj_et: #{et_method}"
     end
   end
   
@@ -159,13 +178,19 @@ class Field < ActiveRecord::Base
   end
   
   def create_dependent_objects
-    # puts "CDO...#{self.inspect}, fdw #{field_daily_weather.size} records" if et_method.class == PctCoverEtMethod
     create_crop
-    # puts "...crops are #{crops.inspect}" if et_method.class == PctCoverEtMethod
     create_field_daily_weather
-    # puts "...fdw now #{field_daily_weather.size} records" if et_method.class == PctCoverEtMethod
     crops.each { |crop| crop.dont_update_canopy = false }
     save!
+  end
+  
+  def create_crop
+    plant = Plant.default_plant
+    Crop.create!(:field_id => self[:id],
+      :name => "New crop (field ID: #{self[:id]})", :variety => 'A variety', :plant_id => plant[:id],
+      :emergence_date => default_emergence_date,
+      :max_root_zone_depth => plant.default_max_root_zone_depth, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self.field_capacity,
+      :dont_update_canopy => true) # TODO: take this back out?
   end
   
   def create_field_daily_weather
@@ -176,10 +201,11 @@ class Field < ActiveRecord::Base
     (start_date..end_date).each do |date|
       # Could use update_canopy for this, but why go 'round twice? Still, there's a smell.
       days_since_emergence = date - current_crop.emergence_date
-      if et_method.class == LaiEtMethod
+      if et_method == LAI_METHOD
+        # FIXME: This call to lai_corn s/b delegated to current_crop.plant
         lai = days_since_emergence >= 0 ? lai_corn(days_since_emergence) : 0.0
         pct_cover = nil
-      elsif et_method.class == PctCoverEtMethod
+      elsif et_method == PCT_COVER_METHOD
         pct_cover = 0.0
         lai = nil
       end
@@ -188,14 +214,6 @@ class Field < ActiveRecord::Base
       )
     end
     set_fdw_initial_moisture
-  end
-  
-  def create_crop
-    # puts "create crop"
-    crops << Crop.new(:name => "New crop (field ID: #{self[:id]})", :variety => 'A variety', :emergence_date => default_emergence_date,
-      :max_root_zone_depth => 36.0, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self.field_capacity,
-      :dont_update_canopy => true) # TODO: take this back out?
-    # puts "crop created"
   end
   
   def default_emergence_date
@@ -232,17 +250,18 @@ class Field < ActiveRecord::Base
   end
   
   def update_canopy(emergence_date)
-    if et_method.class == LaiEtMethod
+    if et_method == LAI_METHOD
       # FIXME: Would probably speed up creating new fields and crops A LOT if we did defer_balances here!
       days_since_emergence = 0
       field_daily_weather.each do |fdw|
         next unless fdw.date >= emergence_date
-        fdw.leaf_area_index = lai_corn(days_since_emergence)
+        puts "update_canopy: dsi #{days_since_emergence}, fdw #{fdw.inspect}"
+        fdw.leaf_area_index = current_crop.plant.lai_for(days_since_emergence,fdw)
         fdw.save!
         days_since_emergence += 1
       end
       save!
-    elsif et_method.class == PctCoverEtMethod
+    elsif et_method == PCT_COVER_METHOD
       # There is no automatic canopy calculation for % cover, at least not now. So just set everything that's nil to 0.0.
       FieldDailyWeather.defer_balances
       field_daily_weather.each do |fdw|
@@ -255,7 +274,7 @@ class Field < ActiveRecord::Base
       # Now that we've gone through and saved everything, we can trigger once through for AD balances
       field_daily_weather.first.save!
     else
-      raise "Unknown ET Method for this field: #{et_method.inspect}"
+      raise "Unknown ET Method for this field: #{et_method}"
     end
   end
 
@@ -300,6 +319,61 @@ class Field < ActiveRecord::Base
     logger.info "done with get_et"
   end
   
+  # Does this field need to download degree days?
+  def need_dds
+    current_crop.plant.uses_dds(self.et_method)
+  end
+  
+  def get_dds(method="Simple",base_temp=50.0,upper_temp=nil)
+    unless pivot.latitude && pivot.longitude
+      logger.info "get_dds: no lat/long for pivot"
+      return
+    end
+    start_date = field_daily_weather[0].date.to_s
+    end_date = field_daily_weather[-1].date.to_s
+    logger.info "Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}"
+    
+    vals = {}
+	  # To use a test url use "http://agwx.soils.wisc.edu/devel/thermal_models/get_dds" Note: et data not automatically updated on devel.
+    url = "http://agwx.soils.wisc.edu/uwex_agwx/thermal_models/get_dds"
+    begin
+      uri = URI.parse(url)
+	    logger.info uri
+      # Note that we code the nested params with the [] format, since they'll irremediably be
+      # formatted to escaped braces if we just use the grid_date => {start_date: } nested hash
+      # {"utf8"=>"✓", "authenticity_token"=>"sxzJVoSvOXQSOm8RAr8hUtNrhnhEn0yGp3dkWbuPxMI=",
+      #   "latitude"=>"42.0", "longitude"=>"-98.0", "method"=>"Simple",
+      #   "grid_date"=>{"start_date(1i)"=>"2014", "start_date(2i)"=>"5", "start_date(3i)"=>"1", "end_date(1i)"=>"2014", "end_date(2i)"=>"8", "end_date(3i)"=>"5"},
+      #   "base_temp"=>"50", "upper_temp"=>"None", "commit"=>"Get Data Series "}
+      
+      res = Net::HTTP.post_form(uri,
+        "latitude"=>pivot.latitude, "longitude"=>pivot.longitude, "method"=>method,
+        "grid_date[start_date]" => start_date, "grid_date[end_date]"=>end_date,
+        "base_temp"=>base_temp, "upper_temp" => upper_temp ? upper_temp : "None",
+        "format" => "csv")
+
+      vals = {}
+      res.body.split("\n").each do |line|
+        if line =~ /([\d]{4}-[\d]{2}-[\d]{2}),([\d.]+)$/
+          vals[$1] = $2.to_i
+        end
+      end
+    rescue Exception => e
+      logger.warn "Could not get DDs from the net; connected? (#{e.to_s})"
+    end
+    field_daily_weather.each do |fdw|
+      if fdw.degree_days == nil || fdw.degree_days == 0.0
+        if vals[fdw.date.to_s]
+          fdw.degree_days = vals[fdw.date.to_s]
+          # TODO: Determine if this is really the appropriate place to trigger this
+          fdw.adj_et = adj_et(fdw)
+          fdw.save!
+        end
+      end
+    end
+    logger.info "done with get_dds"
+  end
+  
   def fdw_index(date)
     # why the *^$@ can't I just subtract the database field instead of this rigamarole?
     return nil unless field_daily_weather.first
@@ -324,6 +398,12 @@ class Field < ActiveRecord::Base
     taw = taw(field_capacity, perm_wilting_pt, current_crop.max_root_zone_depth)
     mad_frac = current_crop.max_allowable_depletion_frac
     ad_max_inches(mad_frac,taw)
+  end
+  
+  def ad_at_pwp
+    taw = taw(field_capacity, perm_wilting_pt, current_crop.max_root_zone_depth)
+    # Call method from ADCalculator
+    ad_inches_at_pwp(taw,current_crop.max_allowable_depletion_frac)
   end
   
   def pct_cover_changed_by_date(date)
@@ -409,6 +489,7 @@ class Field < ActiveRecord::Base
   end                                                                                                      
   
   def groom_for_defaults(incoming_attribs)
+    incoming_attribs.delete(:et_method) if incoming_attribs[:et_method] == nil
     my_soil = soil_type
     if incoming_attribs[:soil_type_id].to_i == soil_type_id
       # why set it if it hasn't changed? Just biff it
@@ -482,7 +563,7 @@ class Field < ActiveRecord::Base
   end
   
   def do_balances(date=nil)
-    # puts "do_balances called with date #{date}"
+    # logger.info "do_balances called with date #{date}"
     day = date ? fdw_index(date) : 0
     return unless field_daily_weather && field_daily_weather[0]
     # Get yesterday's index to initialize prev_ad, but don't go below 0!
@@ -494,7 +575,9 @@ class Field < ActiveRecord::Base
     field_daily_weather[day..-1].each do |fdw|
       # Remember the max adjusted ET within the last week. If there wasn't a nonzero one, use the last available one.
       last_adj_et = rb.max || rb.last_nonzero
+      # logger.info "do_balances on #{fdw.date}: prev_ad is #{prev_ad} and last_adj_et is #{last_adj_et}"
       fdw.old_update_balances(prev_ad,last_adj_et)
+      # puts "after update_balances, ad now #{fdw.ad}" if day < 5
       prev_ad = fdw.ad
       rb.add(fdw.adj_et) # Add this one's adj_et value to the running list
       fdw.save!

@@ -43,8 +43,9 @@
       $.ajax(
         {
           type: "GET",
+          // Had farm ID tacked on using & notation
           url: "<%= url_for(:controller => 'farms', :action => :problems,
-                            :user_id => @user) %>&farm_id="+id,
+                            :user_id => @user) %>",
           dataType: 'html',
           async: false,
           success: function(newHtml)

@@ -10,21 +10,22 @@ class PivotsController < ApplicationController
   # GET /pivots.xml
   def index
     get_current_ids
-    @pivots = Pivot.find(:all, :conditions => ['farm_id = ?', @farm_id])
     session[:farm_id] = @farm_id
     @farm = Farm.find(@farm_id)
-    @pivot = @pivots.first
-    if params[:id]
+    if params[:pivot_id]
       begin
-        @pivot = @pivots.find { |f| f[:id] == params[:id] }
+        @pivot_id = params[:pivot_id]
+        @pivots = [Pivot.find(@pivot_id)]
+        
       rescue
         logger.warn "Attempt to GET nonexistent pivot #{params[:id]}"
       end
+    else
+      @pivots = Pivot.where(:farm_id => @farm_id).order(:name) do
+        paginate :page => params[:page], :per_page => params[:rows]
+      end
     end
 
-    @pivots = Pivot.where(:farm_id => @farm_id).order(:name) do
-      paginate :page => params[:page], :per_page => params[:rows]
-    end
   # puts "getting pivots for pivot #{@pivot_id}, found #{@pivots.size} entries"
     @pivots ||= []
     respond_to do |format|
@@ -42,7 +43,7 @@ class PivotsController < ApplicationController
     if params[:oper] == "del"
       pivot = Pivot.find(params[:id])
       # check that we're in the right hierarchy, and not some random id
-      if pivot.farm == @farm
+      if pivot.farm == @farm && @farm.pivots.size > 1
         pivot.destroy
       end
     else

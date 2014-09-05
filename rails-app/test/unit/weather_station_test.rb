@@ -126,7 +126,6 @@ class WeatherStationTest < ActiveSupport::TestCase
     fdw_24 = wx_for(f2.field_daily_weather,'2012-08-24')
     fdw_25 = wx_for(f2.field_daily_weather,'2012-08-25')
     assert(wsd = wx_for(@station.weather_station_data,'2012-08-24'))
-    assert_in_delta(-14.82, fdw_25.ad, 0.05)
     old_moisture = fdw_25.calculated_pct_moisture
     old_ad = fdw_25.ad
     wsd.update_attributes(wx_attribs_to_set)
@@ -136,4 +135,47 @@ class WeatherStationTest < ActiveSupport::TestCase
     assert_not_equal(old_ad, fdw_25.ad)
   end
   
+  test "entered_pct_cover propagates to field_daily_weather" do
+    DATE_TO_TEST = '2012-08-25'
+    Field.delete_all
+    Crop.delete_all
+    assert(def_plant = Plant.default_plant)
+    assert_equal(Potato, def_plant.class)
+    field = Field.create(:pivot => @pivot, :name => 'Test Field', :et_method => Field::PCT_COVER_METHOD)
+    assert(wsd = wx_for(@station.weather_station_data,DATE_TO_TEST))
+    fdw_25 = wx_for(field.field_daily_weather,DATE_TO_TEST)
+    assert(field.current_crop,"Field has no crop")
+    assert(field.current_crop.plant,"Crop has no plant")
+    assert(field.current_crop.plant.adj_et_pct_cover(fdw_25.ref_et,fdw_25.pct_cover),"Plant couldn't do adj_et")
+    fdw_25.entered_pct_cover = old_pct_cover = 3.0
+    fdw_25.save!
+    wsd.update_attributes({:entered_pct_cover => old_pct_cover + 5.0}) # peturb it by some arbitrary amount
+    field.field_daily_weather.reload
+    fdw_25 = wx_for(field.field_daily_weather,DATE_TO_TEST)
+    assert_not_equal(old_pct_cover,fdw_25.entered_pct_cover)
+  end
+
+  # def set_up_field_for_ad_balance()
+  #   f2 = Field.create(:pivot => @pivot,:name => 'Test field f2')
+  #   f3 = Field.create(:pivot => @pivot,:name => 'Test field f3')
+  #   [f2,f3].each { |f| f.field_daily_weather.each { |fdw| fdw.ref_et = 0.2 }; f.save! }
+  #   fdw_24 = wx_for(f2.field_daily_weather,'2012-08-24')
+  #   fdw_25 = wx_for(f2.field_daily_weather,'2012-08-25')
+  #   assert(wsd = wx_for(@station.weather_station_data,'2012-08-24'))
+  #   assert_in_delta(-14.82, fdw_25.ad, 0.05)
+  #   old_moisture = fdw_25.calculated_pct_moisture
+  #   old_ad = fdw_25.ad
+  #   [f2,wsd,old_moisture,old_ad]
+  # end
+  #
+  # test "AD balances get updated" do
+  #   f2,wsd,old_moisture,old_ad = set_up_field_for_ad_balance
+  #   wx_attribs_to_set = {:rain => 14.0, :irrigation => 2.0, :ref_et => 0.2} #, :entered_pct_moisture => 0.33
+  #   wsd.update_attributes(wx_attribs_to_set)
+  #   f2.field_daily_weather.reload
+  #   fdw_25 = wx_for(f2.field_daily_weather,'2012-08-25')
+  #   assert_not_equal(old_moisture, fdw_25.calculated_pct_moisture)
+  #   assert_not_equal(old_ad, fdw_25.ad)
+  # end
+  #
 end

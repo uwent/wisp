@@ -5,9 +5,6 @@
 #
 #   cities = City.create({ :name => 'Chicago' }, { :name => 'Copenhagen' }])
 #   Mayor.create(:name => 'Daley', :city => cities.first)
-require File.join(File.dirname(__FILE__),'..','app','models','et_method')
-pct_cover_id = PctCoverEtMethod.create(:name => "Percent Cover", :description => "Uses regressions derived with WI A3600 tables")[:id]
-lai_id = LaiEtMethod.create(:name => "Leaf Area Index", :description => "Uses LAI measurements and to derive a crop coefficient")[:id]
 
 # note that this ID should be the same as AuthenticationHelper.SINGLE_USER_ID 
 user = User.create( :id => 1, :email => 'anonymous@mailinator.com', :identifier_url => nil,
@@ -16,5 +13,4 @@ user = User.create( :id => 1, :email => 'anonymous@mailinator.com', :identifier_
 # remaining IDs are set to 1 just as a convenience
 group = Group.create(:id => 1, :description => 'Default Group')
 membership = Membership.create(:id => 1, :group_id => group[:id], :user_id => user[:id], :is_admin => true)
-# farm = Farm.create(:id => 1, :name => 'Default Farm', :group_id => group[:id], :year => Time.now.year, :et_method_id => lai_id)
 

@@ -1,8 +1,7 @@
 class FieldDailyWeather < ActiveRecord::Base
   belongs_to :field
   before_create :zero_rain_and_irrig
-  # before_update :old_update_balances
-  # after_update :update_next_days_balances, :update_pct_covers
+  before_save :set_adj_et
   
   SEASON_DAYS = 244
   REF_ET_EPSILON = 0.00001
@@ -40,8 +39,24 @@ class FieldDailyWeather < ActiveRecord::Base
     logger.info "I now have an entered pct moisture: #{moisture}"
   end
   
+  def adj_et_for_json
+    if entered_pct_moisture
+      'n/a'
+    else
+      self[:adj_et]
+    end
+  end
+  
   def pct_cover
     entered_pct_cover || calculated_pct_cover
+  end
+  
+  def pct_cover_for_json
+    if entered_pct_cover
+      entered_pct_cover.to_s + 'E'
+    else
+      calculated_pct_cover
+    end
   end
   
   def entered_pct_cover=(new_value)
@@ -98,6 +113,14 @@ class FieldDailyWeather < ActiveRecord::Base
     self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
   end
   
+  # if we have the wherewithal and the adj_et is 0.0 or nil, calculate it
+  def set_adj_et
+    unless adj_et && adj_et > 0.0
+      # logger.warn "setting adj_et for #{date} to #{field.adj_et(self)}, was #{adj_et}"
+      self[:adj_et] = field.adj_et(self)
+    end
+  end
+  
   # TODO: Why does this work, while the one using balance_calcs doesn't? FIXME
   def old_update_balances(previous_ad=nil,previous_max_adj_et=nil)
     return unless @@do_balances
@@ -107,21 +130,22 @@ class FieldDailyWeather < ActiveRecord::Base
       self[:calculated_pct_moisture] = entered_pct_moisture
       self[:ad] = [ad_from_moisture(total_available_water),total_available_water].min
       self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
-      logger.info "#{self[:date]}: Deep drainage #{self[:deep_drainage]} from entered moisture of #{entered_pct_moisture}" if self[:deep_drainage] > 0.0
+      # logger.info "#{self[:date]}: Deep drainage #{self[:deep_drainage]} from entered moisture of #{entered_pct_moisture}" if self[:deep_drainage] > 0.0
     else
       return unless ref_et || previous_max_adj_et
-      unless (self[:adj_et] = feeld.et_method.adj_et(self))
-        logger.warn "#{self.inspect } couldn't calculate adj_et"
-        return
+      unless (self[:adj_et] = feeld.adj_et(self))
+        logger.warn "#{date}: couldn't calculate adj_et out of ref_et #{ref_et} pct c #{pct_cover} lai #{leaf_area_index}"
+        # FIXME: Why was this "return" here? Shouldn't it fall through to code just below?
+        # return
       end
       # If ref_et is zero (i.e. missing) and we have a previous adjusted ET use that instead.
       # This should work for both gaps in the reference ET record and for extrapolations.
       if (self[:ref_et] < REF_ET_EPSILON) && previous_max_adj_et
         self[:adj_et] = previous_max_adj_et
-        # print "#{self[:adj_et]},"; $stdout.flush 
+        # logger.info "#{date}: used previous_max_adj_et: #{self[:adj_et]},"; $stdout.flush
       end
       
-      # puts "fdw#update_balances: date #{date} ref_et #{ref_et} adj_et #{adj_et}" if (date >= Date.parse('2011-06-01') && date <= Date.parse('2011-06-20'))
+      #logger.info "fdw#update_balances: date #{date} ref_et #{ref_et} adj_et #{adj_et}"
       previous_ad ||= find_previous_ad
       # puts "Got previous AD of #{previous_ad}"
       requirements = [ "ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
@@ -140,8 +164,10 @@ class FieldDailyWeather < ActiveRecord::Base
       delta_storage = change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
       # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
       
-      # Should check that AD doesn't go any lower than PWP
-      self[:ad],self[:deep_drainage] = daily_ad_and_dd(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+      ad,dd = daily_ad_and_dd(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+      # coerce AD to be no lower than water in inches at PWP
+      ad = [ad,ad_inches_at_pwp(total_available_water,feeld.current_crop.max_allowable_depletion_frac)].max
+      self[:ad],self[:deep_drainage] = [ad,dd]
       
       #FIXME: why any at all?
       self[:deep_drainage] = 0.0 if self[:deep_drainage] < 0.01
@@ -159,36 +185,6 @@ class FieldDailyWeather < ActiveRecord::Base
       )
     end
   end
-  
-  # def update_balances
-  #   return unless self[:ref_et]
-  #   balance_calcs.each { |attrib_name,val| self[attrib_name] = val }
-  # end
-  # 
-  # def balance_calcs
-  #   # print " #{self.date.yday} "; $stdout.flush
-  #   # deb_puts "balance_calcs for #{self.date} (#{self.field.name})"
-  #   ret = {}
-  #   ret[:adj_et] = field.et_method.adj_et(self)
-  #   previous_ad = find_previous_ad
-  #   # deb_puts "no previous ad" unless previous_ad
-  #   if ret[:adj_et] && previous_ad
-  #     delta_storage = change_in_daily_storage(rain, irrigation, adj_et)
-  #     total_available_water = taw(field.field_capacity, field.perm_wilting_pt, field.current_crop.max_root_zone_depth)
-  #     ret[:deep_drainage] = [0.0,(delta_storage + previous_ad) - total_available_water].max
-  #     ret[:ad] = daily_ad(previous_ad, delta_storage, field.current_crop.max_allowable_depletion_frac, total_available_water)
-  #     ret[:calculated_pct_moisture]= moisture(
-  #       field.current_crop.max_allowable_depletion_frac,
-  #       total_available_water,
-  #       field.perm_wilting_pt,
-  #       field.field_capacity,
-  #       ret[:ad],
-  #       field.current_crop.max_root_zone_depth
-  #     )
-  #   end
-  #   # deb_puts "balance_calcs returning with #{ret.inspect}"
-  #   ret
-  # end
   
   def update_next_days_balances
     if self[:ad] && @@do_balances

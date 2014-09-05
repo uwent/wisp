@@ -3,7 +3,7 @@ class WeatherStationData < ActiveRecord::Base
   before_save :send_changes
 
   # only copy the following to the corresponding fdw
-  COLUMNS_TO_PROPAGATE = [:ref_et, :rain, :entered_pct_moisture, :irrigation]
+  COLUMNS_TO_PROPAGATE = [:ref_et, :rain, :entered_pct_moisture, :irrigation, :entered_pct_cover]
   # don't bother propagating (and triggering cascading balance calcs for) changes smaller than:
   CHANGE_EPSILON = 0.00001
   

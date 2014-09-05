@@ -1,5 +1,5 @@
 class FarmsController < ApplicationController
-  COLUMN_NAMES = [:name,:et_method_id,:notes]
+  COLUMN_NAMES = [:name,:notes]
   before_filter :ensure_signed_in, :get_current_ids
   
   # GET /farms
@@ -27,7 +27,6 @@ class FarmsController < ApplicationController
     end
     logger.warn "No farms for group #{@group_id} found!" unless (@farms && @farms.size > 0)
     @farms ||= []
-    @et_methods = EtMethod.all
     clone_year = params[:clone_pivots_to_year] || Time.now.year
     if (@pivots_need_cloning = check_pivots_for_cloning(clone_year))
       @pivots_need_cloning.each { |p| p.clone_for(clone_year) }
@@ -36,7 +35,7 @@ class FarmsController < ApplicationController
       format.html # index.html.erb
       format.xml  { render :xml => @farms }
       format.json do
-        json = @farms.to_jqgrid_json([:name,:et_method_id,:notes,:problem,:act,:group_id,:id], 
+        json = @farms.to_jqgrid_json([:name,:notes,:problem,:act,:group_id,:id], 
                                      params[:page], params[:rows],@farms.size)
         render :json => json
       end
@@ -66,7 +65,6 @@ class FarmsController < ApplicationController
         case col_name
         when :id
         when :problem
-        when :et_method_id
           attribs[col_name] = params[col_name] if params[col_name]
         else
           attribs[col_name] = params[col_name]
@@ -97,9 +95,12 @@ class FarmsController < ApplicationController
   
   def problems
     if params[:farm_id]
-      @farm = Farm.find(params[:farm_id].to_i)
+      @farms = [Farm.find(params[:farm_id].to_i)]
+    else
+      @farms = @user.groups.collect { |g| g.farms }.flatten
     end
-    @problems = @farm.problems
+    # Add farm name to problems structure
+    @problems = @farms.collect { |f| f.problems }.flatten
     render :partial => '/wisp/partials/farm_problems'
   end  
 
@@ -107,7 +108,6 @@ class FarmsController < ApplicationController
   # GET /farms/1.xml
   def show
     @farm = Farm.find(params[:id])
-
     respond_to do |format|
       format.html # show.html.erb
       format.xml  { render :xml => @farm }
@@ -118,7 +118,6 @@ class FarmsController < ApplicationController
   # GET /farms/new.xml
   def new
     @farm = Farm.new
-
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @farm }

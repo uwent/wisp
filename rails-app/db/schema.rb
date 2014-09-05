@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120327185336) do
+ActiveRecord::Schema.define(:version => 20140813164515) do
 
   create_table "blogs", :force => true do |t|
     t.date     "date"
@@ -34,21 +34,13 @@ ActiveRecord::Schema.define(:version => 20120327185336) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "initial_soil_moisture"
-  end
-
-  create_table "et_methods", :force => true do |t|
-    t.string   "name"
-    t.string   "description"
-    t.string   "type"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.integer  "plant_id"
   end
 
   create_table "farms", :force => true do |t|
     t.integer  "group_id"
     t.integer  "year"
     t.string   "name"
-    t.integer  "et_method_id"
     t.string   "notes"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -71,6 +63,7 @@ ActiveRecord::Schema.define(:version => 20120327185336) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "calculated_pct_cover"
+    t.integer  "degree_days"
   end
 
   create_table "fields", :force => true do |t|
@@ -87,6 +80,7 @@ ActiveRecord::Schema.define(:version => 20120327185336) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "target_ad_pct"
+    t.integer  "et_method"
   end
 
   create_table "groups", :force => true do |t|
@@ -127,6 +121,14 @@ ActiveRecord::Schema.define(:version => 20120327185336) do
     t.datetime "updated_at"
   end
 
+  create_table "plants", :force => true do |t|
+    t.string   "name"
+    t.string   "type"
+    t.float    "default_max_root_zone_depth"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "soil_types", :force => true do |t|
     t.string   "name"
     t.string   "description"
@@ -155,6 +157,8 @@ ActiveRecord::Schema.define(:version => 20120327185336) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.float    "irrigation"
+    t.float    "entered_pct_cover"
+    t.float    "leaf_area_index"
   end
 
   create_table "weather_stations", :force => true do |t|

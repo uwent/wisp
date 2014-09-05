@@ -3,7 +3,6 @@
         <script type="text/javascript">
         <%= grid_javascript_settings %>
           var lastsel;
-          var et_methods = <%= @et_methods.html_safe %>;
           
           // Display "Yes" or "No" for boolean
           function yesNoBoolFormat(cellvalue,options,rowObject) {
@@ -47,9 +46,9 @@
             }
           }
   
-          function addNewFarmRow(method) {
+          function addNewFarmRow() {
             var grid = $('#farm_setup');
-            newFarm = createNewFarm(method);
+            newFarm = createNewFarm();
             curID = newFarm['id'];
             grid.addRowData(curID, newFarm); // add a new row with the new field's data
             addDeleteButton(curID);
@@ -57,21 +56,15 @@
             $('#farm_setup').trigger('reloadGrid');
           }
           
-          function createNewFarm(method) {
+          function createNewFarm() {
             var frm={};
-            et_method_id = et_methods[method];
-            if (et_method_id == null) {
-              et_method_id = et_methods['PctCoverEtMethod'];
-            }
             // Why in heaven's name do I have to add the authenticity_token in here manually, when the other
             // forms seem to add it in just fine via application.js?
             $.ajax(
               {
                 type: "POST",
                 url: '<%= url_for :controller => 'farms', :action => :post_data %>',
-                data: {group_id:group_id,parent_id:group_id,et_method_id:et_method_id,oper:'add',id:'_empty'},
-                // url: '<%= grid_post_data_url "farms", @group %>' +
-                // '&oper=add&id=_empty&authenticity_token='+encodeURIComponent(AUTH_TOKEN)+'&et_method_id='+et_method_id, 
+                data: {group_id:group_id,parent_id:group_id,oper:'add',id:'_empty'},
                 dataType: "json",
                 contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
                 async: false,
@@ -98,16 +91,9 @@
               // editurl:'<%= url_for :controller => "farms", :action => :post_data, :parent_id => @group %>',
               editurl: '<%= grid_post_data_url "farms", @group_id %>',
               datatype: "json",
-              colNames:['Name','ET Method','Notes','AD < 0?','Delete','Group ID','ID'],
+              colNames:['Name','Notes','AD < 0?','Delete','Group ID','ID'],
               colModel:[
                 {name:'name', index:'name',width:83,editable:true},
-                {
-                  name:'et_method_id',index:'et_method_id', width:50,resizable:true,   
-                  align:"left",sorttype:"text",editable:false,edittype:"select",
-                  formatter:'select',
-                  editoptions:   
-                    { value:"1:Percent Cover;2:Leaf Area Index"},editrules:{required:true}
-                },
                 {name:'notes', index:'notes',width:87,editable:true, align:'right'},
                 {name:'problem', index:'problem',formatter:yesNoBoolFormat,unformat:yesNoBoolUnformat,width:20, align:'right'},
                 {name:'act', index:'act', width:20},
@@ -162,8 +148,7 @@
         </script>
 
         <table id="farm_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
-        <button type="button" onclick="addNewFarmRow('PctCoverEtMethod');">Add New Farm (% Cover)</button>
-        <button type="button" onclick="addNewFarmRow('LaiEtMethod');">Add New Farm (Leaf Area Index)</button>
+        <button type="button" onclick="addNewFarmRow();">Add New Farm</button>
         
         <!-- <div id="farm_setup_pager" class="scroll" style="text-align:center;"></div> -->
       

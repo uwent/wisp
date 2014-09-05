@@ -304,6 +304,13 @@
       showSummaryBox(cur_date);
     }
     
+    function hoverColor(id,hover) {
+      if (hover)
+        $(id).css({'background-color':'blue','color':'white'}); 
+      else
+        $(id).css({'background-color':'#DDD','color':'black'});
+      }
+    
     jQuery(document).ready(function(){
       plotGraph();
       showSummaryBox(cur_date);
@@ -348,7 +355,10 @@
         <% end %>
       });
       </script>
-      &nbsp;&nbsp;<span class="week-button" onclick="changeDate(lastWeek);">&lt;</span>&nbsp;<input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>"></input>&nbsp;<span class="week-button" onclick="changeDate(nextWeek);">&gt;</span>
+      &nbsp;&nbsp;
+      <span id="backAWeek" class="week-button" onmouseover="hoverColor('#backAWeek',true)" onmouseout="hoverColor('#backAWeek',false)" onclick="changeDate(lastWeek);">&lt;</span>&nbsp;
+      <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>"></input>&nbsp;
+      <span id="forwardAWeek" class="week-button" onmouseover="hoverColor('#forwardAWeek',true)" onmouseout="hoverColor('#forwardAWeek',false)" onclick="changeDate(nextWeek);">&gt;</span>
     </td>
   </tr></table>
 </div>
