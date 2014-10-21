@@ -23,7 +23,7 @@ RailsApp::Application.configure do
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
   
-  # Turn of voluminous SQL logging for now
+  # Turn off voluminous SQL logging
   config.log_level = :info
 end
 

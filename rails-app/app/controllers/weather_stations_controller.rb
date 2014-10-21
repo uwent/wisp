@@ -34,7 +34,7 @@ class WeatherStationsController < ApplicationController
   # GET /weather_stations/new.xml
   def new
     @weather_station = WeatherStation.new
-    @pivots = pivots_for_group
+    @available_fields = @group.fields_for
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @weather_station }
@@ -44,7 +44,8 @@ class WeatherStationsController < ApplicationController
   # GET /weather_stations/1/edit
   def edit
     @weather_station = WeatherStation.find(params[:id])
-    @pivots = pivots_for_group
+    # @pivots = pivots_for_group
+    @available_fields = @group.fields_for
   end
 
   # POST /weather_stations
@@ -71,7 +72,7 @@ class WeatherStationsController < ApplicationController
     params[:weather_station][:group_id] = @group[:id]
     respond_to do |format|
       if @weather_station.update_attributes(params[:weather_station])
-        format.html { redirect_to(@weather_station, :notice => 'Weather station was successfully updated.') }
+        format.html { redirect_to(action: :index, :notice => 'Weather station was successfully updated.') }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

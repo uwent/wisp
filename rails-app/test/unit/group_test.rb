@@ -24,6 +24,27 @@ class GroupTest < ActiveSupport::TestCase
     assert(@crops.size > 0, "No crops")
   end
 
+  test "fields_for" do
+    Farm.delete_all
+    Field.delete_all
+    @group = Group.create!
+    @fields = []
+    (1..1).each do |f|
+      farm = Farm.create! name: "Farm #{f}", year: 2014, group_id: @group[:id]
+      (1..2).each do |p|
+        pivot = Pivot.create! name: "Pivot #{p}", cropping_year: 2014, farm_id: farm[:id]
+        (1..2).each do |fi|
+          field = Field.create! name: "Field #{fi}", pivot_id: pivot[:id]
+        end
+      end
+    end
+    @group.save!
+    @group.farms.each { |farm| farm.pivots.each { |pivot| pivot.fields.each { |field| @fields << field } } }
+    expected = @fields.collect { |f| f[:id] }.sort
+    actual = @group.fields_for.collect { |f| f[:id] }.sort
+    assert_equal(expected,actual)
+  end
+  
   ## This does not work. And I'm not even sure that it should -- there is no UI for deleting groups right now,
   ## and so this is unneeded, and can be thought through better when it becomes so.
   

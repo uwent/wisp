@@ -15,18 +15,17 @@
 <% end %>
 
 <table>
-  <tr><th>Pivot</th><th>Name</th><th>Location</th><th>Notes</th></tr>
+  <tr><th>Name</th><th>Location</th><th>Notes</th><th>Fields</th></tr>
 <% @weather_stations.each do |weather_station| %>
   <tr>
-    <td>
-      <% p = weather_station.pivot
-         p_name = p ? p.name : "No pivot assigned"
-      %>
-      <%=h p_name %>
-    </td>
     <td><%=h weather_station.name %></td>
     <td><%=h weather_station.location %></td>
     <td><%=h weather_station.notes %></td>
+    <td>
+      <% for field in weather_station.fields %>
+      <%= field.name %>&nbsp;
+      <% end %>
+    </td>
     <td><%= link_to 'Show', weather_station %></td>
     <td><%= link_to 'Edit', edit_weather_station_path(weather_station) %></td>
     <td><%= button_to 'Delete', weather_station, :confirm => 'Are you sure?', :method => :delete %></td>

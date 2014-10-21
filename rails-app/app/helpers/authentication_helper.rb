@@ -1,5 +1,5 @@
 module AuthenticationHelper
-  USING_OPENID = true
+  USING_OPENID = !('true' == ENV['OFFLINE'])
   SINGLE_USER_ID = 1
   def signed_in?
     logger.info "signed_in?: session[:user_id] is #{session[:user_id]}"

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140813164515) do
+ActiveRecord::Schema.define(:version => 20140912185919) do
 
   create_table "blogs", :force => true do |t|
     t.date     "date"
@@ -103,6 +103,13 @@ ActiveRecord::Schema.define(:version => 20140813164515) do
     t.integer  "group_id"
     t.integer  "user_id"
     t.boolean  "is_admin"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "multi_edit_links", :force => true do |t|
+    t.integer  "field_id"
+    t.integer  "weather_station_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -13,11 +13,6 @@
 <p id="notice"><%= notice %></p>
 
 <p>
-  <b>Pivot:</b>
-  <%= @weather_station.pivot ? @weather_station.pivot.name : "No pivot selected" %>
-</p>
-
-<p>
   <b>Name:</b>
   <%= @weather_station.name %>
 </p>
@@ -32,6 +27,12 @@
   <%= @weather_station.notes %>
 </p>
 
+<p>
+  <b>Fields:</b><br/>
+  <% for field in @weather_station.fields %>
+    <%= field.name %><br/>
+  <% end %>
+</p>
 
 <%= link_to 'Edit', edit_weather_station_path(@weather_station) %> |
 <%= link_to 'Back', weather_stations_path %>

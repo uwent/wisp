@@ -23,4 +23,15 @@ class Group < ActiveRecord::Base
     @clobber_farms || farms.size > 1
   end
   
+  # enumerate all the fields belonging to this group
+  def fields_for
+    fields = []
+    farms.each do |farm|
+      farm.pivots.each do |pivot|
+        fields += pivot.fields
+      end
+    end
+    fields
+  end
+  
 end

@@ -78,6 +78,8 @@ class Field < ActiveRecord::Base
   belongs_to :soil_type
   has_many :crops, :dependent => :destroy
   has_many :field_daily_weather, :dependent => :destroy, :order => :date # , :autosave => true
+  has_many :multi_edit_groups
+  has_many :weather_stations, through: :multi_edit_links
   before_create :set_default_et_method
   
   before_save :target_ad_pct_or_nil
