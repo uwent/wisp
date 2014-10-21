@@ -96,7 +96,7 @@ class FieldDailyWeather < ActiveRecord::Base
     pct_moisture_from_ad(pwp,fc,ad_max,ad,mrzd)
   end
 
-  def ad_from_moisture(taw,fc=field[:field_capacity])
+  def ad_from_moisture(taw,fc=field.field_capacity)
     raise "need field capacity for #{self[:id]}; field is #{field.inspect}" unless fc
     mrzd = field.current_crop.max_root_zone_depth
     mad_frac = field.current_crop.max_allowable_depletion_frac
