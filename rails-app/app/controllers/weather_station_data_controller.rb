@@ -21,7 +21,7 @@ class WeatherStationDataController < ApplicationController
     @weather_data = WeatherStationData.where(:weather_station_id => weather_station_id,:date => wx_start_date..wx_end_date).order(:date) do
       paginate :page => params[:page], :per_page => ROWS_PER_PAGE
     end
-    puts "getting wx stn data for #{weather_station_id} #{@year}, found #{@weather_data.size} entries"
+    # puts "getting wx stn data for #{weather_station_id} #{@year}, found #{@weather_data.size} entries"
     @weather_data ||= []
 
     respond_to do |format|

@@ -257,7 +257,6 @@ class Field < ActiveRecord::Base
       days_since_emergence = 0
       field_daily_weather.each do |fdw|
         next unless fdw.date >= emergence_date
-        puts "update_canopy: dsi #{days_since_emergence}, fdw #{fdw.inspect}"
         fdw.leaf_area_index = current_crop.plant.lai_for(days_since_emergence,fdw)
         fdw.save!
         days_since_emergence += 1

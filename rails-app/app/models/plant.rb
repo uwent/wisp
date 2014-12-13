@@ -55,7 +55,7 @@ class SweetCorn < Plant
   end
   
   def lai_for(days_since_emergence,fdw)
-    puts "SweetCorn::lai_for: fdw is #{fdw.inspect}"
+    # puts "SweetCorn::lai_for: fdw is #{fdw.inspect}"
     lai_thermal(fdw)
   end
 end
