@@ -449,15 +449,17 @@ class Field < ActiveRecord::Base
 
     existing_problem = nil
     # Is start date AD below zero?
-    if existing_wx.last.ad < ad_problem_threshold
+    if existing_wx && existing_wx.size > 0 existing_wx.last.ad < ad_problem_threshold
       existing_problem = [existing_wx.last.date,existing_wx.last.ad]
     else
       #Start date AD is above zero so check projected two days ahead for problem.
       projected_problem = nil
-      projected_wx.each do |prj_wx|
-        if prj_wx && prj_wx.ad && prj_wx.ad < ad_problem_threshold
-          projected_problem = [prj_wx.date,prj_wx.ad]
-          break
+      if projected_wx
+        projected_wx.each do |prj_wx|
+          if prj_wx && prj_wx.ad && prj_wx.ad < ad_problem_threshold
+            projected_problem = [prj_wx.date,prj_wx.ad]
+            break
+          end
         end
       end
     end
