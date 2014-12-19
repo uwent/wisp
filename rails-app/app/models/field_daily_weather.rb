@@ -311,10 +311,10 @@ class FieldDailyWeather < ActiveRecord::Base
   REPORT_COLS_TO_IGNORE = ["id", "created_at", "updated_at"]
 
   def cover_param
-    case et_method[:type]
-    when 'PctCoverEtMethod'
+    case et_method
+    when Field::PCT_COVER_METHOD
       ['Percent Cover',:pct_cover]
-    when 'LaiEtMethod'
+    when Field::LAI_METHOD
       ['Leaf Area Index', :leaf_area_index]
     end
   end

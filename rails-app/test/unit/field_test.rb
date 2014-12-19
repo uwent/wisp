@@ -756,7 +756,6 @@ class FieldTest < ActiveSupport::TestCase
     assert_in_delta(0.240238, max_adj_et, 2 ** -20)
   end
   
-<<<<<<< .working
   test "getting problem ad" do
     field = Field.create(name: 'Problem field', pivot_id: Pivot.first[:id])
     ed = field.current_crop.emergence_date
