@@ -174,4 +174,13 @@ class FarmsController < ApplicationController
       format.xml  { head :ok }
     end
   end
+  
+  def clone_for_this_year
+    if current_user.identifier_url == @rick_identifier_url
+      Farm.all.each do |farm|
+        farm.clone_pivots_for(Time.now.year)
+      end
+    end
+    render :text => 'All done.'
+  end
 end
