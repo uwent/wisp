@@ -10,7 +10,7 @@ gem 'rails', '3.0.20'
 # gem 'unicorn'
 
 # Deploy with Capistrano
-gem 'capistrano'
+gem 'capistrano', '~> 2.15'
 
 # Install this gem, do "rails g jquery:install", then javascript_include_tag :defaults for any page needing it
 # (which includes confirmation dialogs on button_to)
