@@ -19,4 +19,18 @@ module WispHelper
     # but unsure how to compose it. Hash of hashes? Array of Arrays? Need
     # some properties (name and id) as well as children for all but leaf level.
   end
+  
+  # Per https://github.com/plataformatec/devise/wiki/How-To:-Display-a-custom-sign_in-form-anywhere-in-your-app
+  def resource_name
+    :user
+  end
+ 
+  def resource
+    @resource ||= User.new
+  end
+ 
+  def devise_mapping
+    @devise_mapping ||= Devise.mappings[:user]
+  end
+  
 end

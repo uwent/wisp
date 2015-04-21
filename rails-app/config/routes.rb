@@ -1,4 +1,8 @@
 RailsApp::Application.routes.draw do
+  get "omniauth_callbacks/google_oauth2"
+
+  devise_for :users, controllers: {omniauth_callbacks: "omniauth_callbacks"}
+
   resources :plants
 
   match 'fdw/irrig_only/:id' => 'field_daily_weather#irrig_only'

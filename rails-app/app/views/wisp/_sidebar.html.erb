@@ -39,18 +39,16 @@
 <% (0..4).each do %>
 <br/>
 <% end %>
-  
-  <% if AuthenticationHelper::USING_OPENID && signed_in? %>
-    <% if @new_login %>
-      <h3 id="new_login">New user account created</h3>
-    <% end %>
-    <%= button_to "Logout " + current_user.email, {:controller => 'sessions', :action => :destroy}, {:id => 'logout'} %>
-    <% if current_user.identifier_url == @rick_identifier_url %>
-      <form action="/sessions/su">
-        <input name="su_to"/>
-      </form>
-    <% end %>
-  <% end %>
+<% if user_signed_in? %>
+Signed in as <%= current_user.email %>.<br/><div style="float: left; width: auto; margin-top: 0.3em">Not you?</div>
+<%= button_to "Sign out", destroy_user_session_path,:method => :delete %>
+<% else %>
+ <!--  link_to "Sign up", new_user_registration_path %> or
+       link_to "Sign in", new_user_session_path %>
+ -->
+<%= link_to "Sign in with Google", user_omniauth_authorize_path(:google_oauth2) %>
+<% end %>
+
 
 <% if flash[:notice] %>
   <br/>

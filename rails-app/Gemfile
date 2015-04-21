@@ -12,14 +12,14 @@ gem 'rails', '3.0.20'
 # Deploy with Capistrano
 gem 'capistrano'
 
-# Use OpenID for authentication
-gem "ruby-openid"
-gem "rack-openid" 
-
 # Install this gem, do "rails g jquery:install", then javascript_include_tag :defaults for any page needing it
 # (which includes confirmation dialogs on button_to)
 gem 'jquery-rails'
 
+# Omniauth Google authentication with Devise
+gem 'devise'
+gem 'omniauth'
+gem 'omniauth-google-oauth2'
 
 gem 'asigbiophys', :path => "vendor/asigbiophys"
 
