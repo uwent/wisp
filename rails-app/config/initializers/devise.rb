@@ -199,9 +199,16 @@ Devise.setup do |config|
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', :scope => 'user,public_repo'
   # See https://github.com/zquestz/omniauth-google-oauth2/issues/118 for the APIs and profile requirement
+  if Rails.env.development?
+    id = '26150412718-f8v3adua89ennao0kkb56j63bcbjl1nf.apps.googleusercontent.com'
+    secret = 'ZZcNpn0QZVl9dyGgredday0V'
+  else
+    id = '519049934520-3c6una4oo4quk600mdrrd57kpsmtrrb5.apps.googleusercontent.com'
+    secret = 'eOxWnCO33-EAMJKmtACEjbvC'
+  end
   config.omniauth :google_oauth2,
-    '26150412718-f8v3adua89ennao0kkb56j63bcbjl1nf.apps.googleusercontent.com',
-    'ZZcNpn0QZVl9dyGgredday0V', {access_type: "offline", approval_prompt: "", scope: "userinfo.email,userinfo.profile"}
+    id,
+    secret, {access_type: "offline", approval_prompt: "", scope: "userinfo.email,userinfo.profile"}
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
