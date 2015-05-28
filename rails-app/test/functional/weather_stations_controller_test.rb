@@ -6,4 +6,8 @@ class WeatherStationsControllerTest < ActionController::TestCase
     @weather_station = weather_stations(:one)
   end
 
+  test "create a station" do
+    post :create, weather_station: {"name" => "test"}
+    assert_response :redirect, @response.body 
+  end
 end
