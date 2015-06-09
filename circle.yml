@@ -1,4 +1,5 @@
 general:
   build_dir: rails_app
 test:
-  override: rake test
+  override:
+    - rake test
