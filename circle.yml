@@ -2,4 +2,4 @@ general:
   build_dir: rails-app
 test:
   override:
-    - rake test
+    - bundle exec rake test
