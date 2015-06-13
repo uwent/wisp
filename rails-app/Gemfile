@@ -39,7 +39,12 @@ group :development, :test do
   # Per http://stackoverflow.com/questions/10918019/gem-issue-database-rake-aborted:
   # gem 'debugger'
 end
-group :production do 
+
+group :test do
+  gem 'simplecov', require: false
+end
+
+group :production do
   gem 'mysql2'
   # Later versions of the Mysql2 gem do not include the AR adapter, so pull that in too
   gem 'activerecord-mysql2-adapter'
