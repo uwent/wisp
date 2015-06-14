@@ -16,8 +16,8 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
   create_table "blogs", :force => true do |t|
     t.date     "date"
     t.text     "content"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "crops", :force => true do |t|
@@ -31,8 +31,8 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.float    "max_allowable_depletion_frac"
     t.float    "max_allowable_depletion_inches"
     t.string   "notes"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
     t.float    "initial_soil_moisture"
     t.integer  "plant_id"
   end
@@ -42,8 +42,8 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.integer  "year"
     t.string   "name"
     t.string   "notes"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "field_daily_weather", :force => true do |t|
@@ -60,8 +60,8 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.float    "ad"
     t.float    "deep_drainage"
     t.string   "notes"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
     t.float    "calculated_pct_cover"
     t.integer  "degree_days"
   end
@@ -77,16 +77,16 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.integer  "rain_station_id"
     t.integer  "soil_moisture_station_id"
     t.string   "notes"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",               :null => false
+    t.datetime "updated_at",               :null => false
     t.float    "target_ad_pct"
     t.integer  "et_method"
   end
 
   create_table "groups", :force => true do |t|
     t.string   "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
   end
 
   create_table "irrigation_events", :force => true do |t|
@@ -95,23 +95,23 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.float    "inches_applied"
     t.float    "run_time"
     t.float    "total_volume"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
   create_table "memberships", :force => true do |t|
     t.integer  "group_id"
     t.integer  "user_id"
     t.boolean  "is_admin"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "multi_edit_links", :force => true do |t|
     t.integer  "field_id"
     t.integer  "weather_station_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",         :null => false
+    t.datetime "updated_at",         :null => false
   end
 
   create_table "pivots", :force => true do |t|
@@ -124,16 +124,16 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.float    "some_energy_rate_metric"
     t.integer  "cropping_year"
     t.string   "notes"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
   end
 
   create_table "plants", :force => true do |t|
     t.string   "name"
     t.string   "type"
     t.float    "default_max_root_zone_depth"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                  :null => false
+    t.datetime "updated_at",                  :null => false
   end
 
   create_table "soil_types", :force => true do |t|
@@ -141,8 +141,8 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.string   "description"
     t.float    "field_capacity"
     t.float    "perm_wilting_pt"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",      :null => false
+    t.datetime "updated_at",      :null => false
   end
 
   create_table "users", :force => true do |t|
@@ -150,8 +150,8 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.string   "first_name"
     t.string   "last_name"
     t.string   "identifier_url"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                             :null => false
+    t.datetime "updated_at",                             :null => false
     t.string   "provider"
     t.string   "uid"
     t.string   "email",                  :default => "", :null => false
@@ -176,8 +176,8 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.float    "rain"
     t.float    "entered_pct_moisture"
     t.string   "notes"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
     t.float    "irrigation"
     t.float    "entered_pct_cover"
     t.float    "leaf_area_index"
@@ -188,8 +188,8 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.string   "name"
     t.string   "location"
     t.string   "notes"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
     t.integer  "pivot_id"
   end
 
