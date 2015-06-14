@@ -244,6 +244,9 @@ Devise.setup do |config|
   if Rails.env.development?
     id = '26150412718-f8v3adua89ennao0kkb56j63bcbjl1nf.apps.googleusercontent.com'
     secret = 'ZZcNpn0QZVl9dyGgredday0V'
+  elsif Rails.env.staging?
+    id = '811810532580-14tnlal37m696o96tak9rfm6713d8p6v.apps.googleusercontent.com'
+    secret = 'O2cRuS4nAPQdC-9cpnLS8KuE'
   else
     id = '519049934520-3c6una4oo4quk600mdrrd57kpsmtrrb5.apps.googleusercontent.com'
     secret = 'eOxWnCO33-EAMJKmtACEjbvC'
