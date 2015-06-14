@@ -1,10 +1,8 @@
 class RenameWxStnIdCol < ActiveRecord::Migration
   def self.up
-    begin
+    if column_exists?(:weather_station_data, :station_id)
       rename_column :weather_station_data, :station_id, :weather_station_id
-    rescue
-      "Must have already renamed the column"
-    end  
+    end
   end
 
   def self.down
