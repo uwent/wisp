@@ -1,0 +1,60 @@
+<script type="text/javascript">
+  var new_login = <%= @new_login ? "true" : "false"%>;
+  window.onload = function(){
+    // This serves as a proxy for "Are we on a page requiring login?"
+    if (document.getElementById('logout')) {
+      if (new_login) {
+        // Expand the "New User Account Created" head to draw attention to it
+        $('#new_login').animate({fontSize:'200%'},600);
+        // Likewise the "Logout" button, so they see the name
+        $('#logout').animate({fontSize:'150%'},600);
+        // Shrink the "Logout" button back to normal, and shrink the CNA head
+        $('#logout').animate({fontSize:'100%'},800,
+          function() {
+              $('#new_login').animate({fontSize:'90%'},100);
+          }
+        );
+      }
+    }
+  };
+</script>
+<h2>WISP: Wisconsin Irrigation Scheduling Program 2012 Version 1.1.0</h2>
+<br/>
+<br/>
+  <ul>
+    <li><%= link_to "WISP Home", :controller => 'wisp', :action => :home %></li>
+  </ul>
+  <ul>
+    <li><%= link_to "Farm Status", :controller => 'wisp', :action => :farm_status %></li>
+    <li><%= link_to "Pivots, Fields, and Crops", :controller => 'wisp', :action => :pivot_crop %></li>
+    <li><%= link_to "Field Status", :controller => 'wisp', :action => :field_status %></li>
+    <li><%= link_to "Weather Stations", :controller => 'weather_stations', :group_id => @group %></li>
+    <li><%= link_to "Multi-Edit Daily Data", :controller => 'wisp', :action => :weather %></li>
+    <li><%= link_to "User's Guide", :controller => 'wisp', :action => :userguide %></li>
+    <li><%= link_to "Latest Info (updated 13 Dec 2014)", {:controller => 'wisp', :action => :project_status}, {style: "color:yellow"} %></li>
+    <!-- 
+    <li><%= link_to "Report Setup", :controller => 'wisp', :action => :report_setup %></li>
+    -->
+  </ul>
+<% (0..4).each do %>
+<br/>
+<% end %>
+<% if user_signed_in? %>
+Signed in as <%= current_user.email %>.<br/><div style="float: left; width: auto; margin-top: 0.3em">Not you?</div>
+<%= button_to "Sign out", destroy_user_session_path,:method => :delete %>
+<% else %>
+ <!--  link_to "Sign up", new_user_registration_path %> or
+       link_to "Sign in", new_user_session_path %>
+ -->
+<%= link_to "Sign in with Google", user_omniauth_authorize_path(:google_oauth2) %>
+<% end %>
+
+
+<% if flash[:notice] %>
+  <br/>
+  <%= flash[:notice] %>
+<% end %>
+<% if flash[:error] %>
+  <br/>
+  <%= flash[:error] %>
+<% end %>

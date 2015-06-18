@@ -1,0 +1,54 @@
+More-automated scheduler: Simpler than a spreadsheet
+WISDOM is accepted as a simpler approach
+"Multiple levels of complexity"
+
+People don't do this because of having to go out and get the ET everyday.
+
+Paul: Make the ET-getter easily modifiable so that others can put up a service.
+John: Growers want to be able to put in their own ET, rainfall, and canopy percent cover. Turf, 
+potato, veg crops...
+
+Need %cover models for other crops (PALMS). Current Norman equation gives a LAI-driven crop 
+coefficient number (independent of crop).
+KanSched has its own tables; comes up with its own crop coefficients.
+-Monteith option is in KanSched; should allow user to pick Priestly-Taylor too. Should be usable
+anywhere in the world.
+Danny Rogers is the Kansas State irrigation extension engineer.
+WISDOM users want reports for DNR (gallons pumped per season)
+
+Scott: ET models for other crops are out there
+
+Precip projection (PoP)
+
+Field groups? Definitely need to be able to assign same ET source to fields. Doesn't matter so
+much for auto-download, but manual entry definitely streamlined.
+
+Might have one pivot serving two crops
+Large farm might have 60 pivots, 100 acres avg field size
+Big pivots take two days to go around a field
+
+Cost calculator?
+
+Problem with current KanSched: Much of the data are hardwired, want to be able to modify easily.
+Paul: Anything that the user should be able to change should be in easily-editable format 
+(e.g. text files).
+
+Forecast: In KS, can go out two days to predict wetter/drier cloudier/sunnier, which is nice.
+Can potentially use NWS PoP and...cloudiness? Temperature?
+
+Paul: Need to have a dashboard.
+Available water today, how much I can put on w/irrig, projected for next couple of days...
+sort on any of the columns and print out a report.
+
+"As an irrigation manager, what do I need to know to decide whether to turn the system on or off
+today?"
+
+John: Mockups and show to Hancock, other irrig guys
+
+Users: Probably mostly the growers themselves rather than consultants
+
+Soil properties: Per-field
+
+Soil moisture monitoring: Program can predict, but need to be able to correct on-the-fly
+
+Water deficit in inches: Precip/irrig need; % is what soil-moisture probes give you.

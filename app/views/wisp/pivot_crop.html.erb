@@ -1,0 +1,90 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler 2012
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+  <%= jqgrid_stylesheets.html_safe -%>
+  <style type="text/css">
+  	h2.pagehead {text-align:center;}
+  	#pivotDataBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:130px;
+  		width:920px;
+  		padding:2px;
+  		margin:0px;
+  	}
+  	.field {
+  	  display:inline;
+  	}
+		
+  	#fieldDataBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:235px;
+  		width:920px;
+  		padding:2px;
+  		margin:0px;
+  	}
+  	#cropsDataBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:600px;
+  		width:920px;
+  		padding:2px;
+  		margin:0px;
+  	}
+  	table.center
+  	{
+  	  margin-left:auto;
+  	  margin-right:auto;
+  	}
+		
+   </style>
+<% end %>
+<%= content_for :scripts do %>
+  <%= jqgrid_javascripts.html_safe %>
+<% end %>
+
+
+<% content_for :welcome do %>
+  <%= render :partial => 'sidebar' %>
+<% end %>
+
+<table class="center"><tr>
+  <td><h2 class="pagehead">WISP Pivot, Field and Crops Data for</h2>
+  </td>
+  <td>
+    <%= form_tag(url_for(:controller => "wisp", :action => :pivot_crop, :pivot_id => "", :field_id => ""), :method => 'GET') do %>
+      <input type="hidden" name="pivot_id" value=""></input>
+      <input type="hidden" name="field_id" value=""></input>
+      <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %> 
+    <% end %>      
+  </td>
+  <td>
+    <%= form_tag(url_for :controller => "wisp", :action => :pivot_crop, :field_id => "") do %>
+      <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot),{ :onchange => "this.form.submit();"} %> 
+    <% end %>      
+  </td>
+</tr></table>
+
+<div id="pivotDataBox">
+	<%= render :partial => '/wisp/partials/pivot_setup_grid' %>
+	
+</div>
+
+<div id="fieldDataBox">
+  <div id="fieldDataGrid"></div>
+</div>
+<div id="cropsDataBox">
+	<div id="cropDataGrid"></div>
+</div>
+
+
+<% content_for :footer do %>
+<!-- Nothing needed in here for now -->
+<% end %>

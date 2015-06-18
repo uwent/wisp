@@ -1,0 +1,76 @@
+<div id="irrigationDataGrid">
+        <script type="text/javascript">
+          var lastsel;
+          jQuery(document).ready(function(){
+          var mygrid = jQuery("#irrig_events").jqGrid({
+              url:'<%= url_for :controller => "irrigation_events", :q => 1 %>',
+              editurl:'<%= url_for :controller => "irrigation_events", :action => :post_irrig_data %>',
+              datatype: "json",
+              colNames:['Date','Inches Applied','ID'],
+              colModel:[{name:'date', index:'date',width:83},
+                             {name:'inches_applied', index:'inches_applied',width:47,editable:true, align:'right'},
+                             {name:'id', index:'id',width:1}
+                             ],
+              pager: '#irrig_events_pager',
+              rowNum:180,
+              rowList:[180],
+              imgpath: '<%= image_folder_path("jqgrid") %>',
+              sortname: '',
+              viewrecords: true,
+              height: 100,
+              width: 400,
+              sortorder: '',
+              gridview: false,
+              scrollrows: true,
+              autowidth: false,
+              rownumbers: false,
+              multiselect: false,
+ 
+              onSelectRow: function(ids) { 
+                if(ids == null) { 
+                  ids=0; 
+                  if(jQuery("#irrig_events_details").getGridParam('records') >0 ) 
+                  { 
+                    jQuery("#irrig_events_details").setGridParam({url:"<%= url_for :controller => 'field_daily_weather', :irrig_only => true, :q => 1 %>&id="+ids,page:1})
+                    .setCaption("Field Irrigation Events: "+ids)
+                    .trigger('reloadGrid'); 
+                  } 
+                } 
+                else 
+                { 
+                  jQuery("#irrig_events_details").setGridParam({url:"<%= url_for :controller => 'field_daily_weather', :irrig_only => true, :q => 1 %>&id="+ids,page:1})
+                  .setCaption("Field Irrigation Events : "+ids)
+                  .trigger('reloadGrid'); 
+                } 
+              },
+              
+              // onSelectRow: function(id){ 
+              //   if(id && id!==lastsel){ 
+              //     jQuery('#irrig_events').restoreRow(lastsel);
+              //     jQuery('#irrig_events').editRow(id,true); 
+              //     lastsel=id; 
+              //   } 
+              // },             
+              
+              
+              subGrid:false,
+              
+              caption: "Irrigation Events"
+            })
+            .navGrid('#irrig_events_pager',
+              {edit:false,add:true,del:true,search:false,refresh:true},
+              {afterSubmit:function(r,data){return true;(r,data,'edit');}},
+              {afterSubmit:function(r,data){return true;(r,data,'add');}},
+              {afterSubmit:function(r,data){return true;(r,data,'delete');}}
+            )
+            .navButtonAdd("#irrig_events_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
+            
+            
+            mygrid.filterToolbar();mygrid[0].toggleToolbar()
+          });
+        </script>
+
+        <table id="irrig_events" class="scroll" cellpadding="0" cellspacing="0" style="display:inline"></table>
+        <div id="irrig_events_pager" class="scroll" style="text-align:center;"></div>
+
+</div>

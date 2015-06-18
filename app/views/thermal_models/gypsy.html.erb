@@ -1,0 +1,177 @@
+<% @title = "Gypsy Moth Development"%>
+<% content_for :title do %>
+  <%= @title %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= image_tag "gypsy.jpg",{:width => "231", :height => "231", :alt => "lake mendota tree"} %>
+  <p style="font-size:75%">Image copyright <a href="http://www.entomart.be/">http://www.entomart.be/</a>
+  <h2><%= @title %></h2>
+  
+<% end %>
+
+<H4>Introduction</H4>
+The gypsy moth phenology information accessed through the calculator
+below is generated with the GMPHEN model authored by Katherine A.
+Sheehan with the U.S. Dept. of Agriculture, Forest Service, using
+weather data gathered by the WI-MN Cooperative Extension.
+
+<P>GMPHEN is a computer model that uses daily temperature and previously
+published data to predict the timing for gypsy moth and host development.
+This model simulates gypsy moth (<EM>Lymantria dispar</EM>) egg hatch,
+larval and pupal development, and budbreak and leaf expansion for six
+eastern hardwoods.  GMPHEN reports the percentage of gypsy moths in each
+life stage, mean life stage, mean percent leaf expansion, and for each
+host species, percent budbreak and leaf expansion.
+
+<P>To use this model, select the county of interest and enter the
+approximate percentage of each of the six tree species in the
+area.  After the model runs, you can choose to view the data
+as a color or black and white plot, or in a numerical table.
+
+<P><%= link_to "More information", :action => "gypsyinfo" %> about GMPHEN and gypsy moth phenology.
+
+<P>
+<H4>Gypsy Moth Phenology Calculator</H4>
+
+
+<FORM METHOD="POST" ACTION="http://www.soils.wisc.edu/cgi-bin/asig/gypsymoth.pl" >
+<CENTER>
+<TABLE BORDER=5 WIDTH=550 CELLPADDING=10>
+<TR>
+<TD COLSPAN=2 ALIGN="CENTER">
+<INPUT TYPE="submit" name="submit1" value="Run Model">
+<INPUT TYPE="reset" value="Reset Defaults">
+<TR>
+<TD><B>Select county:</B>
+<TD ALIGN="RIGHT">
+<select name="region">
+<option value="ADM">Adams
+
+<option value="ASH">Ashland
+<option value="BAR">Barron
+<option value="BAY">Bayfield
+<option value="BRW">Brown
+<option value="BUF">Buffalo
+<option value="BUR">Burnett
+<option value="CAL">Calumet
+<option value="CHP">Chippewa
+<option value="CLK">Clark
+<option value="COL">Columbia
+<option value="CRW">Crawford
+<option value="DAN">Dane
+<option value="DOD">Dodge
+<option value="DOR">Door
+<option value="DUG">Douglas
+<option value="DUN">Dunn
+<option value="ECL">Eau Claire
+
+<option value="FLO">Florence
+<option value="FDL">Fond du Lac
+<option value="FOR">Forest
+<option value="GRA">Grant
+<option value="GRN">Green
+<option value="GRL">Green Lake
+<option value="IOW">Iowa
+<option value="IRN">Iron
+<option value="JAC">Jackson
+<option value="JEF">Jefferson
+<option value="JUN">Juneau
+<option value="KEN">Kenosha
+<option value="KEW">Kewaunee
+<option value="LAC">La Crosse
+<option value="LAF">Lafayette
+<option value="LAN">Langlade
+<option value="LIN">Lincoln
+
+<option value="MAN">Manitowoc
+<option value="MAR">Marathon
+<option value="MRN">Marinette
+<option value="MRQ">Marquette
+<option value="MEN">Menominee
+<option value="MKE">Milwaukee
+<option value="MON">Monroe
+<option value="OCO">Oconto
+<option value="OND">Oneida
+<option value="OUT">Outagamie
+<option value="OZK">Ozaukee
+<option value="PEP">Pepin
+<option value="PRC">Pierce
+<option value="PLK">Polk
+<option value="POR">Portage
+<option value="PRI">Price
+<option value="RAC">Racine
+
+<option value="RIC">Richland
+<option value="ROK">Rock
+<option value="RUS">Rusk
+<option value="STC">St. Croix
+<option value="SAK">Sauk
+<option value="SAW">Sawyer
+<option value="SHA">Shawano
+<option value="SBG">Sheboygan
+<option value="TAY">Taylor
+<option value="TRM">Trempealeau
+<option value="VER">Vernon
+<option value="VIL">Vilas
+<option value="WAL">Walworth
+<option value="WSB">Washburn
+<option value="WSH">Washington
+<option value="WAU">Waukesha
+<option value="WPC">Waupaca
+
+<option value="WSR">Waushara
+<option value="WIN">Winnebago
+<option value="WOO">Wood
+</select>
+
+<input type="hidden" name="ichill" value="0">
+<input type="hidden" name="chill" value="5">
+<input type="hidden" name="ddmethod" value="1">
+<input type="hidden" name="bbmethod" value="1">
+<input type="hidden" name="lemethod" value="1">
+
+<TR>
+<TD><B>Tree Species Composition:</B>
+<TD ALIGN="RIGHT"> 
+<TABLE>
+<TR>
+
+<TD><EM>White Oak:</EM></TD>
+<TD><input type=text size=3 maxlength=3 name="wopct" value=100> %</TD>
+<TR>
+<TD><EM>Red Oak:</EM></TD>
+<TD><input type=text size=3 maxlength=3 name="ropct" value=0> %</TD>
+<TR>
+<TD><EM>Black Oak:</EM></TD>
+<TD><input type=text size=3 maxlength=3 name="bopct" value=0> %</TD>
+
+<TR>
+<TD><EM>Red Maple:</EM></TD>
+<TD><input type=text size=3 maxlength=3 name="rmpct" value=0> %</TD>
+<TR>
+<TD><EM>Sugar Maple:</EM></TD>
+<TD><input type=text size=3 maxlength=3 name="smpct" value=0> %</TD>
+<TR>
+<TD><EM>American Beech:</EM></TD>
+<TD><input type=text size=3 maxlength=3 name="abpct" value=0> %</TD>
+
+</TABLE>
+</TABLE>
+</FORM>
+
+<EM><A HREF="http://www.soils.wisc.edu/uwex_agwx_data/tree/gypsymoth_full.html">
+Access expanded input list for GMPHEN model</A></EM>
+
+<P>
+<CENTER>
+<EM><FONT SIZE=-1>If you have questions regarding the
+use of this <BR>gypsy moth prediction model, please contact<BR> 
+<A HREF="mailto:gypsymoth@datcp.state.wi.us">
+gypsymoth@datcp.state.wi.us</A></FONT></EM>
+
+</CENTER>

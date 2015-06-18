@@ -1,0 +1,31 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler 2012
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'wisp/sidebar' %>
+<% end %>
+
+<table>
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @weather_station_data.each do |weather_station_data| %>
+  <tr>
+    <td><%= link_to 'Show', weather_station_data %></td>
+    <td><%= link_to 'Edit', edit_weather_station_data_path(weather_station_data) %></td>
+    <td><%= button_to 'Destroy', weather_station_data, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Weather station datum', new_weather_station_data_path %>

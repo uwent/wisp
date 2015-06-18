@@ -1,2 +1,0 @@
-module PivotsHelper
-end

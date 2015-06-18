@@ -1,9 +1,0 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-
-one:
-  field_id: 1
-  weather_station_id: 1
-
-two:
-  field_id: 1
-  weather_station_id: 1

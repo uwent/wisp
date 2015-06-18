@@ -1,0 +1,57 @@
+<%= form_for(@crop) do |f| %>
+  <% if @crop.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@crop.errors.count, "error") %> prohibited this crop from being saved:</h2>
+
+      <ul>
+      <% @crop.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :field_id %><br />
+    <%= f.text_field :field_id %>
+  </div>
+  <div class="field">
+    <%= f.label :end_date %><br />
+    <%= f.date_select :end_date %>
+  </div>
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :variety %><br />
+    <%= f.text_field :variety %>
+  </div>
+  <div class="field">
+    <%= f.label :emergence_date %><br />
+    <%= f.date_select :emergence_date %>
+  </div>
+  <div class="field">
+    <%= f.label :harvest_or_kill_date %><br />
+    <%= f.date_select :harvest_or_kill_date %>
+  </div>
+  <div class="field">
+    <%= f.label :max_root_zone_depth %><br />
+    <%= f.text_field :max_root_zone_depth %>
+  </div>
+  <div class="field">
+    <%= f.label :max_allowable_depletion_frac %><br />
+    <%= f.text_field :max_allowable_depletion_frac %>
+  </div>
+  <div class="field">
+    <%= f.label :max_allowable_depletion_inches %><br />
+    <%= f.text_field :max_allowable_depletion_inches %>
+  </div>
+  <div class="field">
+    <%= f.label :notes %><br />
+    <%= f.text_field :notes %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

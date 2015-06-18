@@ -1,0 +1,57 @@
+<%= form_for(@pivot) do |f| %>
+  <% if @pivot.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@pivot.errors.count, "error") %> prohibited this pivot from being saved:</h2>
+
+      <ul>
+      <% @pivot.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <% if @farm %>
+      <input type="hidden" name="pivot[farm_id]" value="<%= @farm[:id] %>"/>
+    <% else %>
+      <%= f.label :farm_id %><br />
+      <%= select_tag "farm_id", options_from_collection_for_select(@farms,"id","name") %>
+    <% end %>
+  </div>
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :latitude %><br />
+    <%= f.text_field :latitude %>
+  </div>
+  <div class="field">
+    <%= f.label :longitude %><br />
+    <%= f.text_field :longitude %>
+  </div>
+  <div class="field">
+    <%= f.label :equipment %><br />
+    <%= f.text_field :equipment %>
+  </div>
+  <div class="field">
+    <%= f.label :pump_capacity %><br />
+    <%= f.text_field :pump_capacity %>
+  </div>
+  <div class="field">
+    <%= f.label :some_energy_rate_metric %><br />
+    <%= f.text_field :some_energy_rate_metric %>
+  </div>
+  <div class="field">
+    <%= f.label :cropping_year %><br />
+    <%= f.text_field :cropping_year %>
+  </div>
+  <div class="field">
+    <%= f.label :notes %><br />
+    <%= f.text_field :notes %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

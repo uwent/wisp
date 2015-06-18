@@ -1,0 +1,69 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler 2012
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'sidebar' %>
+<% end %>
+<!-- Content for the remainder (body) of the page goes here -->
+<h2>WISP Software Status: Compatibility, News, Bug List</h2>
+<p>
+  Here you can find out the latest scoop on WISP --  what features we've tested with which browsers, what new features and fixes have been added, and what's broken.
+</p>
+<p>
+  For assistance with using the software, please contact <a href="mailto:jcpanuska@wisc.edu">John Panuska</a>, who is the scientist behind the software. To report a bug in the software, email <a href="mailto:fewayne@wisc.edu">Rick Wayne</a>.
+</p>
+<h3>Compatibility Matrix</h3>
+<p>These browsers have been tested (last update 18 August 2014) and are known to support the following features:</p>
+<p>Version 1.0.1, Build <%= render :partial => '/wisp/partials/build' %></p>
+<table border="1">
+  <tr>
+    <th>Platform</th><th>Browser</th><th align="center">Data Grids</th><th align="center">Graphs</th>
+   </tr>
+    <tr><th rowspan="4">Windows 7</th><td>Internet Explorer 10</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Internet Explorer 8</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Firefox 14.1</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Google Chrome 20.0</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><th rowspan="2">Windows XP</th><td>Internet Explorer 6</td><td align="center">Poor HTML rendering</td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Internet Explorer 6</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><th rowspan="3">Mac OS X 10.9.4</th><td>Safari 7.0.6</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Firefox 31.0</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Google Chrome 36.0.1985.143/td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><th rowspan="2">iOS 7.1.2 (iPad, iPhone)</th><td>Safari (default browser)</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><td>Google Chrome</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "check.png"%></td></tr>
+    <tr><th>Android 2.3</th><td>Default (Google) browser</td><td align="center"><%= image_tag "check.png"%></td><td align="center"><%= image_tag "x.png"%></td></tr>
+    <tr><th>Android 3 (tablets)</th><td>Default (Google) browser</td><td>Not tested (should work)</td><td>Not tested (should work)</td></tr>
+    <tr><th>Android 4 ("Ice Cream Sandwich" phones)</th><td>Default (Google) browser</td><td>Not tested (should work)</td><td>Not tested (should work)</td></tr>
+</table>
+<h3>News</h3>
+<p>
+  <ul>
+    <li>13 December 2014 (Build 403): Deployed new multi-edit features, adjusted colors in field status.</li>
+    <li>18 August 2014 (Build 377): Changed field problems reporting on the farm status page. Problem search now searches just today and the next two days.</li>
+    <li>1 July 2014 (Build 349): Bug fixes. Embedded spaces in names broke the grid displays.</li>
+    <li>20 June 2014 (Build 346): Bug fixes.</li>
+    <li>10 June 2014 (Build 340): Bug fixes. Field summary data now ends with kill/harvest date.</li>
+    <li>4 June 2014 (Build 338): Bug fixes.</li>
+    <li>22 April 2014 (Build 330): Bug fixes.</li>
+    <li>13 March 2014 (Build 325): Bug fixes.</li>
+    <li>9 December 2013 (Build 320): Extended growing season through October.</li>
+    <li>22 May 2013 (Build 308): Updated user's guide, tested with Internet Explorer 10, updated this page</li>
+    <li>16 May 2013 (Build 307): Added table to Farm Status page displaying fields with balance below allowable depletion</li>
+    <li>13 April 2013 (Build 288): Redid balance graph design</li>
+    <li>12 February 2013 (Build 273): Completely rebuilt how balance calculations are triggered -- up to 10x speed increase</li>
+    <li>10 January 2013 (Build 264): Fixed bug with changes to field parameters not causing AD to recalculate</li>
+    <li>1 January 2013 (Build 261): Upgraded application platform to fix security vulnerability</li>
+    <li>12 December 2012 (Build 251): Fixed bug with deep-drainage calcs</li>
+    <li>3 August 2012 (Build 221): Added this status page.</li>
+    <li>1 August 2012 (Build 220): Made grids and graphs compatible with IE browser, at the expense of graphs in Android 2.3</li>
+  </ul>
+</p>
+<h3>Known Bugs</h3>
+<p>
+  <ul>
+  </ul>
+</p>

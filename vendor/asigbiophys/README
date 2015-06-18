@@ -1,0 +1,8 @@
+This project encapsulates a Allowable Depletion (AD) and Adjusted ET calculators for use in agricultural modeling, such as irrigation schedulers.
+
+The source lives as part of the Wisconsin Irrigation Scheduling Program, see wisp.cals.wisc.edu for more details.
+
+Test code is in the "test" folder and uses Test::Unit; the Rakefile in this folder runs those tests, so change folders ("cd" in the
+command line) to this one and simply run "rake" to run the tests.
+
+To rebuild the gem, "cd" to this folder and run "gem build asigbiophys.gemspec".

@@ -1,0 +1,37 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler 2012
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= render :partial => 'wisp/sidebar' %>
+<% end %>
+<%= render 'form' %>
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Group:</b>
+  <%= @farm.group_id %>
+</p>
+
+<p>
+  <b>Name:</b>
+  <%= @farm.name %>
+</p>
+
+<p>
+  <b>Et method:</b>
+  <%= @farm.et_method_id %>
+</p>
+
+<p>
+  <b>Notes:</b>
+  <%= @farm.notes %>
+</p>
+
+
+<%= link_to 'Edit', edit_farm_path(@farm) %> |
+<%= link_to 'Back', farms_path %>

@@ -1,0 +1,38 @@
+<% @title = "Corn Stalk Borer" %>
+<% content_for :title do
+    @title
+   end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" %>
+<% end %>
+
+<% content_for :welcome do %>
+  <%= image_tag "corn.jpg",{:width => "231", :height => "156", :alt => "Corn"} %>
+  <h2><%= @title %></h2>
+  <p>Our thermal model for corn stalk borer allows you to plan control measures for this pest.</p>
+<% end %>
+
+<h2><%= @title %> Degree Days</h2>
+<center>
+  <a href="http://www.soils.wisc.edu/uwex_agwx_data/ddgifs/WIMNDDSine41_1.png">
+    <IMG SRC="http://www.soils.wisc.edu/uwex_agwx_data/ddgifs/WIMNDDSine41_1.png"
+      width="480" height="400" ALT="Yesterday's Stalk Borer DD Map"/>
+  </a>
+</center> 
+
+<p> 
+<a href="http://www.soils.wisc.edu/uwex_agwx_data/ddgifs/WIMNDDSine41_1_bw.png"> 
+Download the Image in Black and White</a>
+<p> 
+
+<p/>
+<div class="fineline"></div>
+The stalk borer is increasingly a significant pest in fields 
+managed with reduced tillage.  Eggs are laid during late summer and fall in 
+grassy areas adjacent to cornfields, then hatch in spring.  Movement from these 
+areas into corn fields first occurs at about 600 degree days (calculated by the 
+sine method with a base of 41 F), and continues until about 900 degree days are 
+accumulated.<P>
+
+<P>

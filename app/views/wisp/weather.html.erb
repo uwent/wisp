@@ -1,0 +1,75 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduling Program <%= Time.now.year %>
+<% end %>
+
+<% content_for :stylesheet do %>
+  <%= stylesheet_link_tag "style" -%>
+  <%= jqgrid_stylesheets.html_safe -%>
+  <style type="text/css">
+  	h2 {text-align:center;}
+  	#stationDataBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:120px;
+  		width:920px;
+  		padding:2px;
+  		border:1px solid gray;
+  		margin:0px;
+  	}
+		
+  	#stationDataGrid
+  	{
+  	}
+
+  	#stationAffectsBox
+  	{
+  		position:absolute;
+  		left:275px;
+  		top:520px;
+  		width:920px;
+  		padding:2px;
+  		border:1px solid gray;
+  		margin:0px;
+  	}
+  </style>
+<% end %>
+<%= content_for :scripts do %>
+  <%= jqgrid_javascripts.html_safe %>
+<% end %>
+<% content_for :welcome do %>
+  <%= render :partial => 'sidebar' %>
+<% end %>
+
+<h2>WISP Weather and Irrigation Multi-Edit</h2>
+
+<div id="stationDataBox">
+<table><tr>
+  <td>
+    <%= form_tag(url_for :controller => "wisp", :action => :weather, :group => @group) do %>
+      <%= select_tag(
+        "weather_station_id",
+        options_from_collection_for_select(@weather_stations,:id,:name,@weather_station[:id].to_i),
+        { :onchange => "this.form.submit();"}
+        )
+       %> 
+    <% end %>      
+  </td>
+  <td>
+    <%= form_tag(url_for :controller => "wisp", :action => :weather, :group => @group, :weather_station_id => @weather_station) do %>
+      <%= select_tag(
+        "year",
+        options_from_collection_for_select(@years,:to_i,:to_s,@year),
+        { :onchange => "this.form.submit();"}
+        )
+       %> 
+    <% end %>
+  </td>
+  <td>Note: Entering data here will <strong>overwrite any corresponding values entered</strong> for the crop fields listed below!</td>
+</tr></table>
+	<%= render :partial => 'wisp/partials/weather_station_data_grid'%>
+</div>
+
+<div id="stationAffectsBox">
+  <%= render :partial => 'wisp/partials/wx_stn_pivots_fields', :locals => {:show_station => false} %>
+</div>
