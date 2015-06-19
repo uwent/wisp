@@ -1,25 +1,26 @@
-<% content_for :title do %>
-  WISP: Wisconsin Irrigation Scheduler 2012
+<h2>Log in</h2>
+
+<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+  <div class="field">
+    <%= f.label :email %><br />
+    <%= f.email_field :email, autofocus: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :password %><br />
+    <%= f.password_field :password, autocomplete: "off" %>
+  </div>
+
+  <% if devise_mapping.rememberable? -%>
+    <div class="field">
+      <%= f.check_box :remember_me %>
+      <%= f.label :remember_me %>
+    </div>
+  <% end -%>
+
+  <div class="actions">
+    <%= f.submit "Log in" %>
+  </div>
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-<% end %>
-
-<% content_for :welcome do %>
-  <%= render :partial => 'wisp/sidebar' %>
-<% end %>
-<!-- Content for the remainder (body) of the page goes here -->
-<h2>Sign in</h2>
-
-<p>WISP uses Google authentication (and has since first released). As of April 2015, Google deprecated the mechanism (OpenID) that
-	WISP had been using. Fortunately they provided a migration path to a more-current technology (OAuth2), and WISP has been updated
-	to use it.</p>
-	
-<p>Your WISP account is still there, and still linked to your Google account; now you merely have to
-	click the link below to access it.</p>
-	
-<p>If you sign in to a Google account different from the one you've previously used with WISP, the program will treat it as
-	<em>an entirely new account</em> and create a new farm, pivot, and field for you.</p>
-
-<%= render :partial => "devise/shared/links" %>
+<%= render "devise/shared/links" %>
