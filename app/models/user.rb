@@ -30,39 +30,4 @@ class User < ActiveRecord::Base
                                     :is_admin => true)
     user # return whatever User.create! does
   end
-  
-  def self.find_for_google_oauth2(access_token, signed_in_resource=nil)
-    data = access_token.info
-    logger.info "User find_for_google_oauth2: got back #{data.inspect}"
-    user = User.where(:provider => access_token.provider, :uid => access_token.uid ).first
-    if user
-      logger.info "ffgo: Found them by provider and uid"
-      return user
-    else
-      registered_user = User.where(:email => access_token.info.email).first
-      if registered_user
-        logger.info "ffgo: Found them by email"
-        return registered_user
-      # added rw 20 April: look also for user whose "orig_mail" matches, they haven't authenticated
-      # with new system yet. Update their record to set provide, uid, and email.
-      elsif (registered_user = User.where(orig_email: data["email"]).first)
-        registered_user.email = registered_user.orig_email
-        registered_user.provider = access_token.provider
-        registered_user.uid = access_token.uid
-        registered_user.save!
-        logger.info "ffgo: Found them by orig_email"
-        return registered_user
-      else
-        logger.info "ffgo: Creating them"
-        user = User.new_user(
-          last_name: data["last_name"],
-          first_name: data["first_name"],
-          provider: access_token.provider,
-          email: data["email"],
-          uid: access_token.uid ,
-          password: Devise.friendly_token[0,20],
-        )
-      end
-   end
-  end
 end

@@ -1,4 +1,3 @@
-require 'omniauth-google-oauth2'
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
@@ -235,25 +234,6 @@ Devise.setup do |config|
 
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :delete
-
-  # ==> OmniAuth
-  # Add a new OmniAuth provider. Check the wiki for more information on setting
-  # up on your models and hooks.
-  # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-  # See https://github.com/zquestz/omniauth-google-oauth2/issues/118 for the APIs and profile requirement
-  if Rails.env.development?
-    id = '26150412718-f8v3adua89ennao0kkb56j63bcbjl1nf.apps.googleusercontent.com'
-    secret = 'ZZcNpn0QZVl9dyGgredday0V'
-  elsif Rails.env.staging?
-    id = '811810532580-14tnlal37m696o96tak9rfm6713d8p6v.apps.googleusercontent.com'
-    secret = 'O2cRuS4nAPQdC-9cpnLS8KuE'
-  else
-    id = '519049934520-3c6una4oo4quk600mdrrd57kpsmtrrb5.apps.googleusercontent.com'
-    secret = 'eOxWnCO33-EAMJKmtACEjbvC'
-  end
-  config.omniauth :google_oauth2,
-    id,
-    secret, {access_type: "offline", approval_prompt: "", scope: "userinfo.email,userinfo.profile"}
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
