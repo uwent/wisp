@@ -2,9 +2,9 @@ class WispController < ApplicationController
   USER_GUIDE = "USERS_GUIDE.pdf"
   before_filter :authenticate_user!, except: [:home, :index, :userguide]
   before_filter :current_user
-  before_filter :get_current_ids, :except => [:home,:index, :userguide]
-  before_filter :get_farm_id, :except => [:home, :index, :userguide]
-  
+  before_filter :get_current_ids, except: [:home, :index, :userguide]
+  before_filter :get_farm_id, except: [:home, :index, :userguide]
+
   def index
   end
 
