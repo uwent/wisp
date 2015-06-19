@@ -14,13 +14,12 @@ class User < ActiveRecord::Base
     :remember_me
 
   has_many :memberships
-  has_many :groups, :through => :memberships
-  devise :omniauthable
-  
+  has_many :groups, through: :memberships
+
   def name
     "#{first_name} #{last_name}"
   end
-  
+
   # new_user wraps the User.create! method, so that every user has a group created for them
   # for which they are the admin.
   def self.new_user(arg_hash)
