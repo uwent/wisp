@@ -7,6 +7,7 @@ class User < ActiveRecord::Base
     :trackable,
     :validatable
 
+  # TODO: Use strong params
   attr_accessible \
     :email,
     :password,
