@@ -12,7 +12,7 @@
 <% end %>
 
 <% content_for :welcome do %>
-  <%= render :partial => 'wisp/sidebar' %>
+  <%= render partial: 'welcome/sidebar' %>
 <% end %>
 
 <%= jqgrid("Field Daily Weather", "weather", "/field_daily_weather",
