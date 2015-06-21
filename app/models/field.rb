@@ -4,20 +4,20 @@ require 'uri'
 class RingBuffer
   @vals = nil
   attr_accessor :last_nonzero
-  
+
   EPSILON = 0.00000001
-  
+
   def self.big_enough(val)
     val && (0.0 - val).abs > EPSILON
   end
-  
+
   def initialize(size=10)
     @vals = Array.new(size)
     @last = -1
     @n_vals = 0
     @last_nonzero = nil
   end
-  
+
   def add(val)
     return unless val # Ignore nils
     @last = (@last + 1) % @vals.size
@@ -31,7 +31,7 @@ class RingBuffer
     return nil unless @n_vals > 0
     @vals[0..@n_vals-1].max
   end
-  
+
   def mean(ignore_zeros=false)
     return nil unless @n_vals > 0
     if ignore_zeros
@@ -51,7 +51,7 @@ class RingBuffer
       (@vals[0..@n_vals-1].inject(0.0) { |sum, val| sum + val } || 0.0).to_f / @n_vals.to_f
     end
   end
-  
+
   def dump
     [@last,@n_vals,@vals]
   end
@@ -60,20 +60,20 @@ end
 class Field < ActiveRecord::Base
   after_create :create_dependent_objects
   before_destroy :mother_may_i  # check with parent if it's OK to go
-  
+
   START_DATE = [4,1]
   END_DATE = [11,30]
   EMERGENCE_DATE = [5,1]
   DEFAULT_FIELD_CAPACITY = 0.31
   DEFAULT_PERM_WILTING_PT = 0.14
   EPSILON = 0.0000001
-  
+
   PCT_COVER_METHOD = 1
   LAI_METHOD = 2
-  
+
   include ADCalculator
   include ETCalculator
-  
+
   belongs_to :pivot
   belongs_to :soil_type
   has_many :crops, :dependent => :destroy
@@ -81,20 +81,20 @@ class Field < ActiveRecord::Base
   has_many :multi_edit_groups
   has_many :weather_stations, through: :multi_edit_links
   before_create :set_default_et_method
-  
+
   before_save :target_ad_pct_or_nil
   after_save :set_fdw_initial_moisture, :do_balances
-  
+
   #
   # ACCESSORS
   #
-  
+
   def set_default_et_method
     unless self[:et_method]
       self[:et_method] = PCT_COVER_METHOD
     end
   end
-  
+
   def et_method_name
     if et_method == PCT_COVER_METHOD
       "Pct Cover"
@@ -102,7 +102,7 @@ class Field < ActiveRecord::Base
       "LAI"
     end
   end
-  
+
   def adj_et(fdw)
     return nil unless current_crop && current_crop.plant && fdw.ref_et
     if et_method == PCT_COVER_METHOD
@@ -115,10 +115,10 @@ class Field < ActiveRecord::Base
       raise "Unknown ET method invoked for field.adj_et: #{et_method}"
     end
   end
-  
+
   #FIXME: this is just a placeholder hack for now, returning the one w/the
   # latest emergence date
-  
+
   # pseduocode for the "real" algorithm
   # given a date:
   # look for the latest crop in the current year whose emergence date is past
@@ -128,12 +128,12 @@ class Field < ActiveRecord::Base
     end
     sorted.first
   end
-  
+
   def year
     return Time.now.year unless pivot && pivot.farm
     pivot.farm.year
   end
-  
+
   def field_capacity
     if (val = read_attribute(:field_capacity)) && val != 0.0
       val
@@ -148,7 +148,7 @@ class Field < ActiveRecord::Base
     val = val.to_f / 100.0
     write_attribute(:field_capacity, val)
   end
-  
+
   def field_capacity=(val)
     write_attribute(:field_capacity, val.to_f)
   end
@@ -156,7 +156,7 @@ class Field < ActiveRecord::Base
   def field_capacity_pct
     field_capacity * 100.0
   end
-  
+
   def perm_wilting_pt
     if (val = read_attribute(:perm_wilting_pt)) && val != 0.0
       val
@@ -170,7 +170,7 @@ class Field < ActiveRecord::Base
   def perm_wilting_pt=(val)
     write_attribute(:perm_wilting_pt,val.to_f)
   end
-  
+
   def perm_wilting_pt_pct
     perm_wilting_pt * 100.0
   end
@@ -178,14 +178,14 @@ class Field < ActiveRecord::Base
   def perm_wilting_pt_pct=(val)
     write_attribute(:perm_wilting_pt,val.to_f / 100.0)
   end
-  
+
   def create_dependent_objects
     create_crop
     create_field_daily_weather
     crops.each { |crop| crop.dont_update_canopy = false }
     save!
   end
-  
+
   def create_crop
     plant = Plant.default_plant
     Crop.create!(:field_id => self[:id],
@@ -194,7 +194,7 @@ class Field < ActiveRecord::Base
       :max_root_zone_depth => plant.default_max_root_zone_depth, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self.field_capacity,
       :dont_update_canopy => true) # TODO: take this back out?
   end
-  
+
   def create_field_daily_weather
     start_date,end_date = date_endpoints
     # puts "create_fdw for #{start_date}, #{end_date}"
@@ -217,12 +217,12 @@ class Field < ActiveRecord::Base
     end
     set_fdw_initial_moisture
   end
-  
+
   def default_emergence_date
     season_start,season_end = date_endpoints
     Date.civil(season_start.year,*EMERGENCE_DATE)
   end
-  
+
   # When we're called with default params (e.g. when a Pivot is created, choose the dates for the season)
   def date_endpoints
     year = pivot.cropping_year || Time.now.year
@@ -231,7 +231,7 @@ class Field < ActiveRecord::Base
     ep2 = Date.civil(year,*END_DATE)
     [ep1,ep2]
   end
-  
+
   def initial_ad
     # puts "field#initial_ad called"
     unless (current_crop && current_crop.max_root_zone_depth && field_capacity && perm_wilting_pt &&
@@ -242,15 +242,15 @@ class Field < ActiveRecord::Base
     taw = taw(field_capacity, perm_wilting_pt, mrzd)
     mad_frac = current_crop.max_allowable_depletion_frac
     # puts "Field#taw returns #{taw}; max allowable depletion frac is #{mad_frac}"
-    
+
     pct_mad_min = pct_moisture_at_ad_min(field_capacity, ad_max_inches(mad_frac,taw), mrzd)
-    
+
     obs_pct_moisture = current_crop.initial_soil_moisture
     # puts "about to do the calc with crop's initial moisture at #{obs_pct_moisture}"
     daily_ad_from_moisture(mad_frac,taw,mrzd,pct_mad_min,obs_pct_moisture)
-    
+
   end
-  
+
   def update_canopy(emergence_date)
     if et_method == LAI_METHOD
       # FIXME: Would probably speed up creating new fields and crops A LOT if we did defer_balances here!
@@ -286,7 +286,7 @@ class Field < ActiveRecord::Base
     logger.info "Starting get_et"
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
-    
+
     vals = {}
 	# To use a test url use "http://agwx.soils.wisc.edu/devel/sun_water/get_grid" Note: et data not automatically updated on devel.
     url = "http://agwx.soils.wisc.edu/uwex_agwx/sun_water/get_grid"
@@ -319,12 +319,12 @@ class Field < ActiveRecord::Base
     end
     logger.info "done with get_et"
   end
-  
+
   # Does this field need to download degree days?
   def need_dds
     current_crop.plant.uses_dds(self.et_method)
   end
-  
+
   def get_dds(method="Simple",base_temp=50.0,upper_temp=nil)
     unless pivot.latitude && pivot.longitude
       logger.info "get_dds: no lat/long for pivot"
@@ -333,7 +333,7 @@ class Field < ActiveRecord::Base
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
     logger.info "Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}"
-    
+
     vals = {}
 	  # To use a test url use "http://agwx.soils.wisc.edu/devel/thermal_models/get_dds" Note: et data not automatically updated on devel.
     url = "http://agwx.soils.wisc.edu/uwex_agwx/thermal_models/get_dds"
@@ -346,7 +346,7 @@ class Field < ActiveRecord::Base
       #   "latitude"=>"42.0", "longitude"=>"-98.0", "method"=>"Simple",
       #   "grid_date"=>{"start_date(1i)"=>"2014", "start_date(2i)"=>"5", "start_date(3i)"=>"1", "end_date(1i)"=>"2014", "end_date(2i)"=>"8", "end_date(3i)"=>"5"},
       #   "base_temp"=>"50", "upper_temp"=>"None", "commit"=>"Get Data Series "}
-      
+
       res = Net::HTTP.post_form(uri,
         "latitude"=>pivot.latitude, "longitude"=>pivot.longitude, "method"=>method,
         "grid_date[start_date]" => start_date, "grid_date[end_date]"=>end_date,
@@ -374,14 +374,14 @@ class Field < ActiveRecord::Base
     end
     logger.info "done with get_dds"
   end
-  
+
   def fdw_index(date)
     # why the *^$@ can't I just subtract the database field instead of this rigamarole?
     return nil unless field_daily_weather.first
     fdw_date = Date.parse(field_daily_weather.first.date.to_s)
     (date - fdw_date).to_i
   end
-  
+
   # hook method for FDW objects to alert us of their (newly changed?) AD
   def update_fdw(field_daily_wx)
     # puts "field#update_fdw: wx calling us has #{field_daily_wx.field.inspect}"
@@ -393,24 +393,24 @@ class Field < ActiveRecord::Base
     # puts "updating field daily wx for day #{day}"
     # field_daily_wx.update_balances(day == 0 ? nil : field_daily_weather[day-1])
   end
-  
+
   # return the Max AD (in inches)
   def ad_max
     taw = taw(field_capacity, perm_wilting_pt, current_crop.max_root_zone_depth)
     mad_frac = current_crop.max_allowable_depletion_frac
     ad_max_inches(mad_frac,taw)
   end
-  
+
   def ad_at_pwp
     taw = taw(field_capacity, perm_wilting_pt, current_crop.max_root_zone_depth)
     # Call method from ADCalculator
     ad_inches_at_pwp(taw,current_crop.max_allowable_depletion_frac)
   end
-  
+
   def pct_cover_changed_by_date(date)
     pct_cover_changed(field_daily_weather[fdw_index(date)])
   end
-  
+
   def pct_cover_changed(fdw)
     # could re-interpolate everything, but let's just do the ones around the new point
     midpoint_pct_cover = fdw.pct_cover
@@ -429,7 +429,7 @@ class Field < ActiveRecord::Base
       end
     end
   end
-  
+
   def weather_for(date,end_date=nil)
     if end_date
       field_daily_weather.select { |fdw| fdw.date >= date && fdw.date <= end_date }
@@ -437,7 +437,7 @@ class Field < ActiveRecord::Base
       field_daily_weather.select { |fdw| fdw.date == date }
     end
   end
-  
+
   # For a given date range, determine if we have an AD below zero, whether in the range
   # or in the projected data. We assume that the projected data follow the range.
   # Return {self => {date => ad}} or nil if no problems.
@@ -473,7 +473,7 @@ class Field < ActiveRecord::Base
       nil
     end
   end
-  
+
   def mother_may_i
     pivot.may_destroy(self)
   end
@@ -481,7 +481,7 @@ class Field < ActiveRecord::Base
   def within_epsilon(val,other_val)
     (val - other_val).abs < EPSILON
   end
-  
+
   # If the incoming attributes have an entry for attrib symbol, and it's the same value (within EPSILON)
   # as the default value for our soil, delete the entry from the attributes.
   def remove_incoming_if_default(my_soil,incoming_attribs,attrib_symbol)
@@ -489,8 +489,8 @@ class Field < ActiveRecord::Base
       incoming_attribs.delete(attrib_symbol)
     end
     incoming_attribs
-  end                                                                                                      
-  
+  end
+
   def groom_for_defaults(incoming_attribs)
     incoming_attribs.delete(:et_method) if incoming_attribs[:et_method] == nil
     my_soil = soil_type
@@ -522,7 +522,7 @@ class Field < ActiveRecord::Base
     mad_inches = ad_max_inches(crop_mad_frac,taw(fc,pwp,mrzd))
     (tadp / 100.0) * mad_inches
   end
-  
+
   ###### VALIDATORS & LIFECYCLE #########
   def target_ad_pct_or_nil
     if self[:target_ad_pct] != nil
@@ -536,7 +536,7 @@ class Field < ActiveRecord::Base
       end
     end
   end
-  
+
   def set_fdw_initial_moisture
     fc = self[:field_capacity] || field_capacity
     first_fdw = field_daily_weather[0]
@@ -564,7 +564,7 @@ class Field < ActiveRecord::Base
     fdw_index = 0 if fdw_index < 0
     field_daily_weather[fdw_index,max_index].inject(0.0) { |max, fdw| [max,fdw.adj_et].max }
   end
-  
+
   def do_balances(date=nil)
     # logger.info "do_balances called with date #{date}"
     day = date ? fdw_index(date) : 0
@@ -586,9 +586,9 @@ class Field < ActiveRecord::Base
       fdw.save!
     end
   end
-  
+
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
     ""
   end
-  
+
 end
