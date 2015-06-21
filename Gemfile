@@ -9,6 +9,7 @@ gem 'jquery-rails'
 
 group :development, :test do
   gem 'factory_girl_rails'
+  gem 'pry'
   gem 'rspec-rails'
 end
 
