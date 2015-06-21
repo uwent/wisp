@@ -54,8 +54,9 @@ class ApplicationController < ActionController::Base
   def get_current_ids
     @user = current_user
     @user_id = current_user.id
-    @group = user.groups.first
+    @group = current_user.groups.first
     @group_id = @group.id
+    @farm = @group.farms.first
   end
 
   def current_day

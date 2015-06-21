@@ -1,10 +1,8 @@
 class PivotsController < AuthenticatedController
-  before_filter :ensure_signed_in, :get_current_ids, :get_current_farm # get_current_farm sets farm_id
-
-    COLUMN_NAMES = [
-      :name, :latitude, :longitude, :equipment, :pump_capacity,
-      :some_energy_rate_metric, :cropping_year, :notes, :act, :farm_id, :id
-    ]
+  COLUMN_NAMES = [
+    :name, :latitude, :longitude, :equipment, :pump_capacity,
+    :some_energy_rate_metric, :cropping_year, :notes, :act, :farm_id, :id
+  ]
 
   # GET /pivots
   # GET /pivots.xml

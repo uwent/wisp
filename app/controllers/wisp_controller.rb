@@ -5,12 +5,6 @@ class WispController < AuthenticatedController
   def project_status
   end
 
-  # TODO: Remove this
-  def get_farm_id
-    @farm = @group.farms.first
-    @farm_id = @farm.id
-  end
-
   def pivot_crop
     # these variables are the initial values when the page is loaded. After the user
     # starts clicking, all bets are off!
@@ -61,7 +55,6 @@ class WispController < AuthenticatedController
   end
 
   def weather
-    ensure_group
     @weather_stations = @group.weather_stations
     if @weather_stations == [] || @weather_stations == nil
       flash[:notice] = 'You must first create at least one weather station.'
