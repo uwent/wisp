@@ -17,18 +17,23 @@ class User < ActiveRecord::Base
   has_many :memberships
   has_many :groups, through: :memberships
 
+  after_create :create_group_and_membership
+
   def name
-    "#{first_name} #{last_name}"
+    [first_name, last_name].join(' ').strip
   end
 
-  # new_user wraps the User.create! method, so that every user has a group created for them
-  # for which they are the admin.
-  def self.new_user(arg_hash)
-    users_name = "#{arg_hash[:first_name]} #{arg_hash[:last_name]}"
-    my_group = Group.create!(:description => users_name + "'s group")
-    user = create!(arg_hash)
-    membership = Membership.create!(:user_id => user[:id], :group_id => my_group[:id],
-                                    :is_admin => true)
-    user # return whatever User.create! does
+  # TODO: Is this used at all?
+  def group_description
+    "#{name}'s group"
+  end
+
+  private
+
+  def create_group_and_membership
+    transaction do
+      group = Group.create!(description: group_description)
+      memberships.create!(group_id: group.id, is_admin: true)
+    end
   end
 end
