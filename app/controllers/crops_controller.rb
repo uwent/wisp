@@ -1,7 +1,7 @@
-class CropsController < ApplicationController
-  set_default_filters
+class CropsController < AuthenticatedController
+  # TODO: Remove this.
   before_filter(:only => [:post_data, :show, :edit, :update, :destroy]) {|controller| @crop = Crop.find(params[:id]) if (params[:id] && params[:id] != '_empty')}
-  
+
   COLUMN_NAMES = [
     :name,
     :plant_id,
@@ -12,7 +12,7 @@ class CropsController < ApplicationController
     :max_allowable_depletion_frac,
     :notes
   ]
-  
+
   # GET /crops
   # GET /crops.xml
   def index
@@ -138,5 +138,5 @@ class CropsController < ApplicationController
   #   @pivot_id = params[:pivot_id] || session[:pivot_id]
   #   @field_id = params[:field_id] || session[:field_id]
   # end
-  
+
 end

@@ -1,27 +1,18 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
 
+  # TODO: Remove this.
   # Implicit conversion of nil into string error with stylesheet tags and content_for, per
   # http://stackoverflow.com/questions/16044008/no-implicit-conversion-of-nil-into-string
   ActionController::Base.config.relative_url_root = ''
 
-  def self.set_default_filters
-    :ensure_signed_in
-    :get_current_ids
-  end
-
+  # TODO: Remove this.
   def self.jsonify(hash)
     hash.inject({}) {|ret,entry| ret.merge({entry[0].to_s => entry[1].to_s})}
   end
 
   private
-  def get_group
-    unless @user
-      return nil
-    end
-    @group = @user.groups.first
-  end
-
+  # TODO: Remove most of this.
   def get_by_parent(klass,parent_klass,parent_id)
     begin
       plural = klass.to_s.downcase + 's'
@@ -59,23 +50,13 @@ class ApplicationController < ActionController::Base
     [id,obj]
   end
 
+  # TODO: Delete this.
   def get_current_ids
-    # Should we really be allowing user id in a param? Shouldn't it live in the session and be controlled only by
-    # the login stuff?
-    @user_id = params[:user_id] || session[:user_id]
-    @user = User.find(@user_id)
-    @group_id,@group = get_and_set(Group,User,@user_id)
+    @user = current_user
+    @user_id = current_user.id
+    @group = user.groups.first
+    @group_id = @group.id
   end
-
-  # Filter method to flag errors and redirect when we need a group to be present
-  def ensure_group
-    unless @group
-      flash[:notice] = 'Sorry, a login error has occurred'
-      logger.error 'Error: method called, but no group was available '+params.inspect+'; session '+session.inspect
-      redirect_to :controller => :wisp
-    end
-  end
-
 
   def current_day
     # There will always be a field around with field ID 1
@@ -92,11 +73,6 @@ class ApplicationController < ActionController::Base
     day = Date.today
     day = earliest if day < earliest
     day
-  end
-
-  # debugging
-  def log_current_ids
-    logger.info "group_id #{@group_id}, @user #{@user}, @farm_id #{@farm_id}, @field_id #{@field_id}"
   end
 
   def set_parent_id(attribs,params,parent_id_sym,parent_var)
@@ -120,5 +96,4 @@ class ApplicationController < ActionController::Base
     latest_pivot_year = latest_pivots.first.cropping_year
     (latest_pivot_year < clone_to) ? latest_pivots : nil
   end
-
 end

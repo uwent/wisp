@@ -1,6 +1,4 @@
-class WeatherStationsController < ApplicationController
-  before_filter :ensure_signed_in, :get_current_ids, :ensure_group
-  
+class WeatherStationsController < AuthenticatedController
   def pivots_for_group
     Pivot.where("farm_id IS NOT NULL").select { |p| p.farm && p.farm.group && p.farm.group[:id] == @group[:id]}
   end

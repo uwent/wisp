@@ -1,11 +1,11 @@
-class PivotsController < ApplicationController
+class PivotsController < AuthenticatedController
   before_filter :ensure_signed_in, :get_current_ids, :get_current_farm # get_current_farm sets farm_id
-  
+
     COLUMN_NAMES = [
       :name, :latitude, :longitude, :equipment, :pump_capacity,
       :some_energy_rate_metric, :cropping_year, :notes, :act, :farm_id, :id
     ]
-  
+
   # GET /pivots
   # GET /pivots.xml
   def index
@@ -16,7 +16,7 @@ class PivotsController < ApplicationController
       begin
         @pivot_id = params[:pivot_id]
         @pivots = [Pivot.find(@pivot_id)]
-        
+
       rescue
         logger.warn "Attempt to GET nonexistent pivot #{params[:id]}"
       end
@@ -140,7 +140,7 @@ class PivotsController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
+
   private
   def get_current_farm
     @farm_id = params[:farm_id]

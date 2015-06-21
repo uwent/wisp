@@ -1,20 +1,6 @@
-class FarmsController < ApplicationController
+class FarmsController < AuthenticatedController
   COLUMN_NAMES = [:name,:notes]
-  before_filter :ensure_signed_in, :get_current_ids
-  
-  # GET /farms
-  # GET /farms.xml
-  def old_index
-    gid = @group[:id]
-    @farms = Farm.find(:all, :conditions => ['group_id = ?',gid])
-        
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @farms }
-    end
-  end
-  # GET /field_daily_weather
-  # GET /field_daily_weather.xml
+
   def index
     get_current_ids
     raise "no group!" unless @group_id
@@ -35,17 +21,14 @@ class FarmsController < ApplicationController
       format.html # index.html.erb
       format.xml  { render :xml => @farms }
       format.json do
-        json = @farms.to_jqgrid_json([:name,:notes,:problem,:act,:group_id,:id], 
+        json = @farms.to_jqgrid_json([:name,:notes,:problem,:act,:group_id,:id],
                                      params[:page], params[:rows],@farms.size)
         render :json => json
       end
     end
-    
-  end # index
-  
+  end
+
   def post_data
-    # logger.info "Session has #{session.size} keys in it"
-    # session.each {|key,value| logger.info "session #{key} == #{value}"}
     @group = Group.find(params[:parent_id])
     session[:group_id] = params[:parent_id]
     if params[:oper] == "del"
@@ -57,7 +40,7 @@ class FarmsController < ApplicationController
           get_current_ids
         end
       else
-        logger.warn "Attempt to destroy farm #{params[:id]}, whose group #{farm.group} is not #{@group}"  
+        logger.warn "Attempt to destroy farm #{params[:id]}, whose group #{farm.group} is not #{@group}"
       end
     else
       attribs = {}
@@ -77,7 +60,7 @@ class FarmsController < ApplicationController
         end
         attribs[:name] = 'New Farm'
         # unless @group
-          set_parent_id(attribs,params,:group_id,params[:parent_id])          
+          set_parent_id(attribs,params,:group_id,params[:parent_id])
         # end
         farm = Farm.create(attribs)
       else
@@ -92,7 +75,7 @@ class FarmsController < ApplicationController
     end
     render :json => ApplicationController.jsonify(farm.attributes)
   end
-  
+
   def problems
     if params[:farm_id]
       @farms = [Farm.find(params[:farm_id].to_i)]
@@ -102,7 +85,7 @@ class FarmsController < ApplicationController
     # Add farm name to problems structure
     @problems = @farms.collect { |f| f.problems }.flatten
     render :partial => '/wisp/partials/farm_problems'
-  end  
+  end
 
   # GET /farms/1
   # GET /farms/1.xml
@@ -174,7 +157,7 @@ class FarmsController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
+
   def clone_for_this_year
     if current_user.identifier_url == @rick_identifier_url
       Farm.all.each do |farm|

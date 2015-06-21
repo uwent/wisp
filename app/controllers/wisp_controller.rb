@@ -1,28 +1,14 @@
-class WispController < ApplicationController
-  USER_GUIDE = "USERS_GUIDE.pdf"
-  before_filter :authenticate_user!, except: [:home, :index, :userguide]
-  before_filter :current_user
-  before_filter :get_current_ids, except: [:home, :index, :userguide]
-  before_filter :get_farm_id, except: [:home, :index, :userguide]
-
+class WispController < AuthenticatedController
   def index
-  end
-
-  def home
-    index
-    render :template => 'wisp/index'
-  end
-
-  def userguide
-    send_file "#{RAILS_ROOT}/public/#{USER_GUIDE}"
   end
 
   def project_status
   end
 
+  # TODO: Remove this
   def get_farm_id
-    @farm_id,@farm = get_and_set(Farm,Group,@group_id)
-    raise "No farm!" unless @farm
+    @farm = @group.farms.first
+    @farm_id = @farm.id
   end
 
   def pivot_crop
