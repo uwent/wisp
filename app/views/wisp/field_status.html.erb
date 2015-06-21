@@ -7,7 +7,7 @@
   <%= jqgrid_stylesheets.html_safe -%>
   <style type="text/css">
   	h2 {text-align:center;}
-	
+
   	#fieldSelectionBox
   	{
   	  text-align: center;
@@ -51,7 +51,7 @@
   		border:1px solid gray;
   		margin:0px;
   	}
-	
+
   	#graphBox
   	{
   		position:absolute;
@@ -63,7 +63,7 @@
   		border:1px solid gray;
   		margin:0px;
   	}
-	
+
   	#imageADBox
   	{
   		position:absolute;
@@ -71,13 +71,13 @@
   		top:375px;
   		width:300px;
   	}
-	
+
   	table.center
   	{
   	  margin-left:auto;
   	  margin-right:auto;
   	}
-	
+
   	span.week-button
   	{
   	  background:#DDD;
@@ -105,7 +105,7 @@
       nextWeek.setDate(nextWeek.getDate()+7);
       nextWeek = dateToS(nextWeek);
     }
-    
+
     <%= grid_javascript_settings %>
     var cur_date = '<%= @cur_date %>;'
     var lastWeek
@@ -161,9 +161,9 @@
       ad_max = td(<%= @field.ad_max %>);
       ad_min = 0.0;
       $.ajax(
-      { 
+      {
         type: "GET",
-        url: url, 
+        url: url,
         dataType: "json",
         async: false,
         success: function(json)
@@ -172,9 +172,9 @@
          prj_data = json['projected_ad_data'];
          targ_data = json['target_ad_data'];
          labels = json['labels'];
-        }                                   
+        }
       });
-      
+
        // Create the data table.
        // Field Capacity, AD, [Target], [Projected], 0.0 AD
        var data = new google.visualization.DataTable();
@@ -228,7 +228,7 @@
          }
          data.addRow(row);
        }
-       
+
        if (targ_data) {
          // target line present
          series = {0:{lineWidth:8,areaOpacity:0.2,visibleInLegend:false},1:{pointSize:15},2:{lineWidth:8,visibleInLegend:false},3:{areaOpacity:0,visibleInLegend:false}};
@@ -250,7 +250,7 @@
                       'titleTextStyle':{fontSize:18},
                       'series':series,
                       // Set vertical axis range to run between fudge-factored values to make the annotations show nicely
-                      'vAxis': {baseline:baseLine(ad_data,prj_data),maxValue:Math.ceil(ad_max + 0.2)}, 
+                      'vAxis': {baseline:baseLine(ad_data,prj_data),maxValue:Math.ceil(ad_max + 0.2)},
                       'annotation':{style:'line'}
                      };
 
@@ -258,7 +258,7 @@
        var chart = new google.visualization.AreaChart(document.getElementById('graphBox'));
        chart.draw(data, options);
      }
-    
+
     function curPage(initial_date_str,cur_date_str) {
       initial_date_obj = parseDate(initial_date_str);
       // set the global
@@ -287,7 +287,7 @@
       adValue = <%= @field.target_ad_pct || "''".html_safe %>;
       document.getElementById('target_ad').value = adValue;
     }
-    
+
     function changeDate(newDate) {
       /* Detect if the passed-in object is coming from the calendar's "change" event, or
          passed in explicitly by one of our button handlers */
@@ -303,27 +303,23 @@
       plotGraph();
       showSummaryBox(cur_date);
     }
-    
+
     function hoverColor(id,hover) {
       if (hover)
-        $(id).css({'background-color':'blue','color':'white'}); 
+        $(id).css({'background-color':'blue','color':'white'});
       else
         $(id).css({'background-color':'#DDD','color':'black'});
       }
-    
+
     jQuery(document).ready(function(){
       plotGraph();
       showSummaryBox(cur_date);
       showTargetAD();
       $("#date_input").change(changeDate);
     });
-    
-  </script>
-  
-<% end %>
 
-<% content_for :welcome do %>
-  <%= render :partial => 'sidebar' %>
+  </script>
+
 <% end %>
 
 <h2 style="margin-top:0px;padding-top:0px">WISP Field Status</h2>
@@ -332,21 +328,21 @@
   <tr>
     <td>
       <%= form_tag(url_for :controller => "wisp", :action => :field_status, :pivot_id => "", :field_id => "") do %>
-        <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %> 
-      <% end %>      
-    </td>
-    <td>
-      <%= form_tag(url_for :controller => "wisp", :action => :field_status, :field_id => "") do %>
-        <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot),{ :onchange => "this.form.submit();"} %> 
-      <% end %>      
-    </td>
-    <td>
-      <%= form_tag(url_for :controller => "wisp", :action => :field_status) do %>
-        <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field),{ :onchange => "this.form.submit();"} %> 
+        <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %>
       <% end %>
     </td>
     <td>
-      <script>   
+      <%= form_tag(url_for :controller => "wisp", :action => :field_status, :field_id => "") do %>
+        <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot),{ :onchange => "this.form.submit();"} %>
+      <% end %>
+    </td>
+    <td>
+      <%= form_tag(url_for :controller => "wisp", :action => :field_status) do %>
+        <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field),{ :onchange => "this.form.submit();"} %>
+      <% end %>
+    </td>
+    <td>
+      <script>
       $(function() {
         <% if @cur_date %>
           $( "#date_input" ).datepicker({dateFormat: 'yy-mm-dd', defaultDate:<%= @cur_date %>});
@@ -368,7 +364,7 @@
 Farm: <%= truncate(@farm.name, :length => 32) if @farm %><br/>
 Pivot: <%= truncate(@pivot.name, :length => 32) if @pivot %><br/>
 Field/soil: <%= truncate(@field.name, :length => 30) %><br/>
-Crop: <%= truncate((@field.current_crop.name + " " + @field.current_crop.variety), :length => 32) %><br/>   
+Crop: <%= truncate((@field.current_crop.name + " " + @field.current_crop.variety), :length => 32) %><br/>
 <hr/>
 Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %> in<br/>
 Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>

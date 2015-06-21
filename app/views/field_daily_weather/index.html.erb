@@ -11,10 +11,6 @@
   <%= jqgrid_javascripts.html_safe %>
 <% end %>
 
-<% content_for :welcome do %>
-  <%= render partial: 'welcome/sidebar' %>
-<% end %>
-
 <%= jqgrid("Field Daily Weather", "weather", "/field_daily_weather",
   [
     { :field => "id", :label => "ID", :width => 30 },

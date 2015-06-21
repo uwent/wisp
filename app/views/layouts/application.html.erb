@@ -19,7 +19,11 @@
     </script>
     <title>
       <%= yield :title -%></title>
-    <%= yield :stylesheet -%>
+    <% if content_for?(:stylesheet) %>
+      <%= yield :stylesheet -%>
+    <% else %>
+      <%= stylesheet_link_tag "style" -%>
+    <% end %>
     <%= yield :scripts -%>
     <!-- This is part of the protect_from_forgery fix from http://henrik.nyh.se/2008/05/rails-authenticity-token-with-jquery -->
     <%= javascript_tag "var AUTH_TOKEN = #{form_authenticity_token.inspect};" if protect_against_forgery? %>
@@ -28,16 +32,20 @@
 
   <body>
     <div id="wrapper">
-      <h1><%= link_to "UW Extension Ag Weather", :controller => "navigation" %></h1>
+      <h1><%= link_to "UW Extension Ag Weather", weather_welcome_index_path %></h1>
       <div id="nav">
         <%= link_to "WISP Home", root_path %>
         <%= link_to "Weather", "http://agwx.soils.wisc.edu/uwex_agwx/weather/index" %>
         <%= link_to "Sun/Water", "http://agwx.soils.wisc.edu/uwex_agwx/sun_water" %>
-        <%= link_to "About Us", :controller => "navigation", :action => :about %>
+        <%= link_to "About Us", about_welcome_index_path %>
       </div>
       <div id="main_body">
         <div id="welcome">
-          <%= yield :welcome -%>
+          <% if content_for?(:welcome) %>
+            <%= yield :welcome -%>
+          <% else %>
+            <%= render partial: 'welcome/sidebar' %>
+          <% end %>
         </div>
         <div id="content">
           <%= yield -%>

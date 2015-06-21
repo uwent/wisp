@@ -9,19 +9,15 @@
   </style>
 <% end %>
 
-<% content_for :welcome do %>
-  <%= render :partial => 'sidebar' %>
-<% end %>
-
 <h2>WISP Report Setup</h2>
 	<br />
   <br />
-	<b>Select Report</b> 
+	<b>Select Report</b>
 	<select name="user[role_id]">
     <option value="1" selected="selected">Irrigation Summary</option>
     <option value="2">Energy and Water Use Summary</option>
     <option value="3">Some Other Report</option>
-	</select> 
+	</select>
 	<b>Notes:</b> <input id="notes" name="notes" type="text" />
 	<br />
   <br />
@@ -31,4 +27,4 @@
 	<br />
   <br />
 	<%= submit_tag "Create Report", :type => 'button', :onclick => 'alert("Creating report")' %>
-	
+
