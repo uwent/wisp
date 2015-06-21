@@ -1,7 +1,7 @@
 RailsApp::Application.routes.draw do
   devise_for :users
 
-  match '/userguide' => 'wisp#userguide'
+  match '/userguide' => 'welcome#guide'
   match 'fdw/irrig_only/:id' => 'field_daily_weather#irrig_only'
 
   resources :field_daily_weather
@@ -10,5 +10,8 @@ RailsApp::Application.routes.draw do
   resources :weather_station_data, collection: { post_data: :post }
   resources :weather_stations
 
-  root to: "wisp#index"
+  root to: 'welcome#index'
+
+  # TODO: Remove this.
+  match ':controller(/:action(/:id(.:format)))'
 end
