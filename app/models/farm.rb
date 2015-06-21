@@ -7,9 +7,10 @@ class Farm < ActiveRecord::Base
 
 
   @@clobberable = nil
-  
+
+  # TODO: rename to for_group
   def self.my_farms(group_id)
-    Farm.find(:all, :conditions => ['group_id = ?',group_id])
+    where(group_id: group_id)
   end
   
   def self.latest_pivots(farms)
