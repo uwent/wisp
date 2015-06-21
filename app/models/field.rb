@@ -548,7 +548,7 @@ class Field < ActiveRecord::Base
     pwp = self[:perm_wilting_pt] || perm_wilting_pt
     unless pwp
       logger.warn "set_fdw_initial_moisture: pwp for field was nil, using default soil type"
-      pwp = SoilType.initial_types.select { |st| st[:name] == SoilType.DEFAULT_SOIL_TYPE_NAME }.first[:perm_wilting_pt]
+      pwp = SoilType.default_soil_type.perm_wilting_pt
     end
     first_fdw.set_ad_from_calculated_moisture(fc,pwp,current_crop.max_root_zone_depth)
     first_fdw.save!
