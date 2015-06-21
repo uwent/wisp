@@ -1,19 +1,10 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
-  include AuthenticationHelper
-  before_filter :rick_is
-  
-  # Implicit conversion of nil into string error with stylesheet tags and content_for, per 
+
+  # Implicit conversion of nil into string error with stylesheet tags and content_for, per
   # http://stackoverflow.com/questions/16044008/no-implicit-conversion-of-nil-into-string
   ActionController::Base.config.relative_url_root = ''
-  
-  def rick_is
-    logger.info "rick is..."
-    rick = User.where(:email => 'fewayne@gmail.com')
-    rick &&= rick.first
-    @rick_identifier_url = rick ? rick.identifier_url : "Rick's not here man"
-  end
-  
+
   def self.set_default_filters
     :ensure_signed_in
     :get_current_ids
