@@ -13,7 +13,7 @@ class ApplicationController < ActionController::Base
   def self.jsonify(hash)
     hash.inject({}) {|ret,entry| ret.merge({entry[0].to_s => entry[1].to_s})}
   end
-  
+
   private
   def get_group
     unless @user
@@ -35,7 +35,7 @@ class ApplicationController < ActionController::Base
     end
     [id,obj]
   end
-  
+
   def get_and_set(klass,parent_klass,parent_id,preserve_session=nil)
     klassname = klass.to_s.downcase
     sym = (klassname + '_id').to_sym
@@ -58,7 +58,7 @@ class ApplicationController < ActionController::Base
     end
     [id,obj]
   end
-  
+
   def get_current_ids
     # Should we really be allowing user id in a param? Shouldn't it live in the session and be controlled only by
     # the login stuff?
@@ -66,7 +66,7 @@ class ApplicationController < ActionController::Base
     @user = User.find(@user_id)
     @group_id,@group = get_and_set(Group,User,@user_id)
   end
-  
+
   # Filter method to flag errors and redirect when we need a group to be present
   def ensure_group
     unless @group
@@ -76,12 +76,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  
+
   def current_day
     # There will always be a field around with field ID 1
     session[:today] || today_or_latest(1)
   end
-  
+
   def today_or_latest(field_id)
     field = Field.find(field_id)
     earliest = field.current_crop.emergence_date
@@ -93,19 +93,19 @@ class ApplicationController < ActionController::Base
     day = earliest if day < earliest
     day
   end
-  
+
   # debugging
   def log_current_ids
     logger.info "group_id #{@group_id}, @user #{@user}, @farm_id #{@farm_id}, @field_id #{@field_id}"
   end
-  
+
   def set_parent_id(attribs,params,parent_id_sym,parent_var)
     parent_id = attribs[parent_id_sym]
     if parent_id == nil || parent_id == '' || parent_id == '_empty'
       attribs[parent_id_sym] = params[:parent_id] == '' ? parent_var : params[:parent_id]
     end
   end
-  
+
   # Check to see if any of our pivots need to be cloned.
   def check_pivots_for_cloning(clone_to = nil)
     clone_to ||= Time.now.year
@@ -120,5 +120,5 @@ class ApplicationController < ActionController::Base
     latest_pivot_year = latest_pivots.first.cropping_year
     (latest_pivot_year < clone_to) ? latest_pivots : nil
   end
-  
+
 end

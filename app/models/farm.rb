@@ -4,7 +4,7 @@ class Farm < ActiveRecord::Base
   validates :year, :presence => true
   after_create :create_default_data
   before_destroy :mother_may_i
-  
+
 
   @@clobberable = nil
   
