@@ -17,7 +17,7 @@
   		border:1px solid gray;
   		margin:0px;
   	}
-		
+
   	#stationDataGrid
   	{
   	}
@@ -52,8 +52,8 @@
         options_from_collection_for_select(@weather_stations,:id,:name,@weather_station[:id].to_i),
         { :onchange => "this.form.submit();"}
         )
-       %> 
-    <% end %>      
+       %>
+    <% end %>
   </td>
   <td>
     <%= form_tag(url_for :controller => "wisp", :action => :weather, :group => @group, :weather_station_id => @weather_station) do %>
@@ -62,7 +62,7 @@
         options_from_collection_for_select(@years,:to_i,:to_s,@year),
         { :onchange => "this.form.submit();"}
         )
-       %> 
+       %>
     <% end %>
   </td>
   <td>Note: Entering data here will <strong>overwrite any corresponding values entered</strong> for the crop fields listed below!</td>
