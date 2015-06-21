@@ -2,43 +2,43 @@ class FieldDailyWeather < ActiveRecord::Base
   belongs_to :field
   before_create :zero_rain_and_irrig
   before_save :set_adj_et
-  
+
   SEASON_DAYS = 244
   REF_ET_EPSILON = 0.00001
-  
+
   @@debug = nil
   @@do_balances = true
-  
+
   def et_method
     field.et_method
   end
-  
+
   def self.defer_balances
     @@do_balances = false
   end
-  
+
   def self.undefer_balances
     @@do_balances = true
   end
-  
+
   include ADCalculator
   # from the ActsAsAdjacent plugin, which (with this) we don't need
   scope :previous, lambda { |i| {:limit => 1, :conditions => ["#{self.table_name}.date < ? and #{self.table_name}.field_id = ?", i.date,i.field_id], :order => "#{self.table_name}.date DESC"} }
   scope :next, lambda { |i| {:limit => 1, :conditions => ["#{self.table_name}.date > ? and #{self.table_name}.field_id = ?", i.date,i.field_id], :order => "#{self.table_name}.date ASC"}}
-  
+
   def pct_moisture
     entered_pct_moisture || calculated_pct_moisture
   end
-  
+
   def display_pct_moisture
     entered_pct_moisture ? entered_pct_moisture.to_s + 'E' : calculated_pct_moisture
   end
-  
+
   def pct_moisture=(moisture)
     self[:entered_pct_moisture] = moisture
     logger.info "I now have an entered pct moisture: #{moisture}"
   end
-  
+
   def adj_et_for_json
     if entered_pct_moisture
       'n/a'
@@ -46,11 +46,11 @@ class FieldDailyWeather < ActiveRecord::Base
       self[:adj_et]
     end
   end
-  
+
   def pct_cover
     entered_pct_cover || calculated_pct_cover
   end
-  
+
   def pct_cover_for_json
     if entered_pct_cover
       entered_pct_cover.to_s + 'E'
@@ -58,7 +58,7 @@ class FieldDailyWeather < ActiveRecord::Base
       calculated_pct_cover
     end
   end
-  
+
   def entered_pct_cover=(new_value)
     return unless new_value # don't overwrite an entered value, e.g. from mindless grid update
     if read_attribute(:entered_pct_cover) # if we already have a value...(otherwise, just record the new value)
@@ -68,7 +68,7 @@ class FieldDailyWeather < ActiveRecord::Base
     @need_pct_cover_update = true
     write_attribute(:entered_pct_cover,new_value)
   end
-  
+
   # This gets called after we're updated (i.e., the field's array of FDW objects has our new entered_pct_cover value, if any)
   def update_pct_covers
     if @need_pct_cover_update
@@ -76,11 +76,11 @@ class FieldDailyWeather < ActiveRecord::Base
       field.pct_cover_changed(self)
     end
   end
-  
+
   # def leaf_area_index
   #   if leaf_area_index then return leaf_area_index; else raise 'leaf_area_index not yet implemented'; end
   # end
-  
+
   def crop_coeff
     # Here's an example of how to call one of the module methods
     # TAW(1.0,1.0,1.0)
@@ -105,14 +105,14 @@ class FieldDailyWeather < ActiveRecord::Base
     # puts "ad_from_moisture (#{date}): fc #{fc}, ad_max_inches #{mad_in}, mrzd #{mrzd}, pct_moisture #{pct_moisture}, pct_moisture at min ad #{pct_moisture_at_ad_min(fc, mad_in, mrzd)}"
     mrzd * (pct_moisture - pct_moisture_at_ad_min(fc, mad_in, mrzd))/100
   end
-  
+
   def set_ad_from_calculated_moisture(fc,pwp,mrzd)
     total_available_water = taw(fc, pwp, mrzd)
     self[:ad] = [ad_from_moisture(total_available_water,fc),total_available_water].min
     # puts "set ad from calculated moisture: fc #{fc}, pwp #{pwp}, mrzd #{mrzd}, mad_frac #{field.current_crop.max_allowable_depletion_frac}, new ad #{self[:ad]}"
     self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
   end
-  
+
   # if we have the wherewithal and the adj_et is 0.0 or nil, calculate it
   def set_adj_et
     unless adj_et && adj_et > 0.0
@@ -120,7 +120,7 @@ class FieldDailyWeather < ActiveRecord::Base
       self[:adj_et] = field.adj_et(self)
     end
   end
-  
+
   # TODO: Why does this work, while the one using balance_calcs doesn't? FIXME
   def old_update_balances(previous_ad=nil,previous_max_adj_et=nil)
     return unless @@do_balances
@@ -144,7 +144,7 @@ class FieldDailyWeather < ActiveRecord::Base
         self[:adj_et] = previous_max_adj_et
         # logger.info "#{date}: used previous_max_adj_et: #{self[:adj_et]},"; $stdout.flush
       end
-      
+
       #logger.info "fdw#update_balances: date #{date} ref_et #{ref_et} adj_et #{adj_et}"
       previous_ad ||= find_previous_ad
       # puts "Got previous AD of #{previous_ad}"
@@ -163,12 +163,12 @@ class FieldDailyWeather < ActiveRecord::Base
       # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"
       delta_storage = change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
       # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
-      
+
       ad,dd = daily_ad_and_dd(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
       # coerce AD to be no lower than water in inches at PWP
       ad = [ad,ad_inches_at_pwp(total_available_water,feeld.current_crop.max_allowable_depletion_frac)].max
       self[:ad],self[:deep_drainage] = [ad,dd]
-      
+
       #FIXME: why any at all?
       self[:deep_drainage] = 0.0 if self[:deep_drainage] < 0.01
       dbg = <<-END
@@ -185,28 +185,28 @@ class FieldDailyWeather < ActiveRecord::Base
       )
     end
   end
-  
+
   def update_next_days_balances
     if self[:ad] && @@do_balances
       self.succ.save! if self.succ # triggers the update_balances method
     end
     false
   end
-  
+
   def zero_rain_and_irrig
     self.rain ||= 0.0
     self.irrigation ||= 0.0
   end
-  
+
   # Instance method using the scope above
   def pred
     FieldDailyWeather.previous(self).first
   end
-  
+
   def succ
     FieldDailyWeather.next(self).first
   end
- 
+
   def find_previous_ad
     feeld = self.field
     if (self.pred && self.pred.ad)
@@ -225,7 +225,7 @@ class FieldDailyWeather < ActiveRecord::Base
         previous_ad = feeld.initial_ad
       end
     end
-    
+
   end
   # CLASS METHODS
   def self.today_or_latest(field_id)
@@ -243,14 +243,14 @@ class FieldDailyWeather < ActiveRecord::Base
       return today
     end
   end
-  
-  
+
+
   def self.page_for(rows_per_page,start_date,date=nil)
     date ||= today_or_latest(1)
     # Numb-nuts JS programmers start arrays at 1...
     ((date - start_date) / rows_per_page).to_i + 1
   end
-  
+
   def self.summary(field_id,start_date=nil,finish_date=nil)
     field = Field.find(field_id)
     season_year = field.current_crop.emergence_date.year
@@ -267,7 +267,7 @@ class FieldDailyWeather < ActiveRecord::Base
       # 1) today if in current year and earlier than harvest/kill date,
       # 2) harvest/kill date if specified and is prior to today,
       # 3) end of data if earlier than today or harvest/kill
-      # FIXME: What if today is after the current 
+      # FIXME: What if today is after the current
       today = Date.today
       last_data_date = Date.new(season_year,Field::END_DATE[0],Field::END_DATE[1])
       kill_date ||= last_data_date
@@ -280,7 +280,7 @@ class FieldDailyWeather < ActiveRecord::Base
         finish_date ||= [kill_date,last_data_date].min
       end
       #Is the following better than the lines above? pk 6/3/14
-      # if today.year != season_year 
+      # if today.year != season_year
         # today.year = season_year
       # end
       # today = [today,kill_date,last_data_date].min
@@ -298,16 +298,16 @@ class FieldDailyWeather < ActiveRecord::Base
       "field_id=? and date >= ? and date <= ?",field_id,start_date,end_date
     ).sort {|fdw,fdw2| fdw[:date] <=> fdw2[:date]}
   end
-  
+
   def self.debug_on
     @@debug = true
   end
-  
+
   def deb_puts(something)
     puts something if @@debug
     $stdout.flush
   end
-  
+
   REPORT_COLS_TO_IGNORE = ["id", "created_at", "updated_at"]
 
   def cover_param
@@ -318,7 +318,7 @@ class FieldDailyWeather < ActiveRecord::Base
       ['Leaf Area Index', :leaf_area_index]
     end
   end
-  
+
   def csv_cols
     # cols = attributes.merge(balance_calcs).keys
     # REPORT_COLS_TO_IGNORE.each { |rcti| cols.delete(rcti) }
