@@ -8,7 +8,8 @@ gem 'devise'
 gem 'jquery-rails'
 
 group :development, :test do
-  gem 'mongrel', '1.2.0.pre2'
+  gem 'factory_girl_rails'
+  gem 'rspec-rails'
 end
 
 group :test do
