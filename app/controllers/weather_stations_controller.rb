@@ -1,6 +1,6 @@
 class WeatherStationsController < ApplicationController
   before_filter :ensure_signed_in, :get_current_ids, :ensure_group
-  
+
   def pivots_for_group
     Pivot.where("farm_id IS NOT NULL").select { |p| p.farm && p.farm.group && p.farm.group[:id] == @group[:id]}
   end
@@ -34,7 +34,7 @@ class WeatherStationsController < ApplicationController
   # GET /weather_stations/new.xml
   def new
     @weather_station = WeatherStation.new
-    @available_fields = @group.fields_for
+    @available_fields = @group.fields
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @weather_station }
@@ -45,7 +45,7 @@ class WeatherStationsController < ApplicationController
   def edit
     @weather_station = WeatherStation.find(params[:id])
     # @pivots = pivots_for_group
-    @available_fields = @group.fields_for
+    @available_fields = @group.fields
   end
 
   # POST /weather_stations

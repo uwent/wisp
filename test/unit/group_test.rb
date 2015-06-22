@@ -44,18 +44,4 @@ class GroupTest < ActiveSupport::TestCase
     actual = @group.fields_for.collect { |f| f[:id] }.sort
     assert_equal(expected,actual)
   end
-  
-  ## This does not work. And I'm not even sure that it should -- there is no UI for deleting groups right now,
-  ## and so this is unneeded, and can be thought through better when it becomes so.
-  
-  # test "wipe group" do
-  #   id = @group[:id]
-  #   @group.destroy_my_hierarchy
-  #   assert_raise(ActiveRecord::RecordNotFound,"Group #{id} should be gone") { Group.find(id) }
-  #   @farm_ids.each { |id| assert_raise(ActiveRecord::RecordNotFound,"Farm #{id} should be gone") {Farm.find(id)  } }
-  #   @pivot_ids.each { |id| assert_raise(ActiveRecord::RecordNotFound,"Pivot #{id} should be gone") { Pivot.find(id) } }
-  #   @field_ids.each { |id| assert_raise(ActiveRecord::RecordNotFound,"Field #{id} should be gone") { Field.find(id) } }
-  #   @field_daily_weather_ids.each { |id| assert_raise(ActiveRecord::RecordNotFound,"FDW #{id} should be gone") { FieldDailyWeather.find(id) } }
-  #   @crop_ids.each { |id| assert_raise(ActiveRecord::RecordNotFound,"Crop #{id} should be gone") { Crop.find(id) } }
-  # end
 end

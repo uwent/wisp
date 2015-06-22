@@ -4,11 +4,11 @@ class Pivot < ActiveRecord::Base
   has_many :irrigation_events, :dependent => :destroy
   before_save :set_cropping_year
   before_destroy :mother_may_i
-  
+
   after_create :create_new_default_field
-  
+
   @@clobberable = nil
-  
+
   def set_cropping_year
     unless self[:cropping_year]
       self[:cropping_year] = Time.now.year
@@ -22,7 +22,7 @@ class Pivot < ActiveRecord::Base
       :pivot_id => self[:id]
       )
   end
-  
+
   def mother_may_i
     if farm.may_destroy(self)
       @@clobberable = id
@@ -32,19 +32,19 @@ class Pivot < ActiveRecord::Base
       return false
     end
   end
-  
+
   def may_destroy(field)
     fields.size > 1 || @@clobberable == id
   end
-  
+
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
     ""
   end
-  
+
   def problem
     fields.inject([]) {|problems,field| problems << field if field.problem; problems }
   end
-  
+
   def clone_for(year=Time.now.year)
     return nil if cropping_year == year # Can't clone to same year
     new_attrs = {}
