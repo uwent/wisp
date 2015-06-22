@@ -2,10 +2,11 @@ class WeatherStation < ActiveRecord::Base
   belongs_to :group
   has_many :multi_edit_links
   has_many :fields, through: :multi_edit_links
+
   attr_accessible :field_ids, :name, :location, :notes
   # belongs_to :pivot
   has_many :weather_station_data
-  
+
   def ensure_data_for(year)
     ep1 = Date.civil(year,*Field::START_DATE)
     ep2 = Date.civil(year,*Field::END_DATE)
@@ -18,7 +19,7 @@ class WeatherStation < ActiveRecord::Base
       save!
     end
   end
-  
+
   def wx_record_saved(attribs_to_update)
     fields.each do |field|
       begin

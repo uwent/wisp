@@ -14,3 +14,11 @@
 * Ask John about double forms
 
 * Add foreign keys
+
+* Ask John about deleting objects; it would be nice to remove the conditional
+  may destroy stuff
+
+* Ask John whether any external programs depend on this?
+
+* WeatherStation no longer belongs to pivot, but did at some point; safe to
+  delete the weather_stations.pivot_id column?

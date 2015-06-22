@@ -1,53 +1,34 @@
 class WeatherStationsController < AuthenticatedController
-  def pivots_for_group
-    Pivot.where("farm_id IS NOT NULL").select { |p| p.farm && p.farm.group && p.farm.group[:id] == @group[:id]}
-  end
-  # GET /weather_stations
-  # GET /weather_stations.xml
+  expose(:weather_station) { current_group.weather_stations.find(params[:id]) }
+  expose(:weather_stations) { current_group.weather_stations }
+  expose(:available_fields) { current_group.fields }
+
   def index
-    @weather_stations = WeatherStation.where(:group_id => @group)
-
     respond_to do |format|
-      format.html # index.html.erb
-      format.xml  { render :xml => @weather_stations }
+      format.html
+      format.xml { render xml: weather_stations }
     end
   end
 
-  # GET /weather_stations/1
-  # GET /weather_stations/1.xml
   def show
-    @weather_station = WeatherStation.find(params[:id])
-    unless @weather_station.group == @group
-      flash[:notice] = 'Weather station not found'
-      redirect_to(weather_stations_url)
-    end
-
     respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @weather_station }
+      format.html
+      format.xml { render xml: weather_station }
     end
   end
 
-  # GET /weather_stations/new
-  # GET /weather_stations/new.xml
   def new
-    @weather_station = WeatherStation.new
-    @available_fields = @group.fields
+    weather_station = current_group.weather_stations.build
+
     respond_to do |format|
-      format.html # new.html.erb
-      format.xml  { render :xml => @weather_station }
+      format.html
+      format.xml { render xml: weather_station }
     end
   end
 
-  # GET /weather_stations/1/edit
   def edit
-    @weather_station = WeatherStation.find(params[:id])
-    # @pivots = pivots_for_group
-    @available_fields = @group.fields
   end
 
-  # POST /weather_stations
-  # POST /weather_stations.xml
   def create
     @weather_station = WeatherStation.new(params[:weather_station])
     @weather_station.group = @group
@@ -63,8 +44,6 @@ class WeatherStationsController < AuthenticatedController
     end
   end
 
-  # PUT /weather_stations/1
-  # PUT /weather_stations/1.xml
   def update
     @weather_station = WeatherStation.find(params[:id])
     params[:weather_station][:group_id] = @group[:id]
@@ -79,8 +58,6 @@ class WeatherStationsController < AuthenticatedController
     end
   end
 
-  # DELETE /weather_stations/1
-  # DELETE /weather_stations/1.xml
   def destroy
     @weather_station = WeatherStation.find(params[:id])
     if @weather_station.group == @group

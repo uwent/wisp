@@ -1,26 +1,23 @@
 class Pivot < ActiveRecord::Base
   belongs_to :farm
-  has_many :fields, :dependent => :destroy
-  has_many :irrigation_events, :dependent => :destroy
+  has_many :fields, dependent: :destroy
+  has_many :irrigation_events, dependent: :destroy
+
   before_save :set_cropping_year
   before_destroy :mother_may_i
 
-  after_create :create_new_default_field
+  after_create :create_dependent_objects
 
   @@clobberable = nil
 
   def set_cropping_year
-    unless self[:cropping_year]
-      self[:cropping_year] = Time.now.year
-    end
+    self.cropping_year ||= Time.now.year
   end
 
-  def create_new_default_field
-    fields << Field.create(:name => "New field (Pivot ID: #{self[:id]})",
-      :soil_type_id => SoilType.default_soil_type[:id],
-      # try this because we might not be saved and thus the association won't work yet...?
-      :pivot_id => self[:id]
-      )
+  def create_dependent_objects
+    fields.create!(
+      name: "New field (Pivot ID: #{id})",
+      soil_type_id: SoilType.default_soil_type.id)
   end
 
   def mother_may_i
