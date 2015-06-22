@@ -5,7 +5,7 @@ class CropTest < ActiveSupport::TestCase
     crop = Crop.first
     assert_nothing_raised(NotImplementedError) { crop.owner }
   end
-  
+
   test "implements Owned#auth" do
     crop = Crop.first
     actor = crop.field.pivot.farm.group

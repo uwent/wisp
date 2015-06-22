@@ -32,7 +32,7 @@ class WeatherStationsController < AuthenticatedController
   # GET /weather_stations/new.xml
   def new
     @weather_station = WeatherStation.new
-    @available_fields = @group.fields_for
+    @available_fields = @group.fields
     respond_to do |format|
       format.html # new.html.erb
       format.xml  { render :xml => @weather_station }
@@ -43,7 +43,7 @@ class WeatherStationsController < AuthenticatedController
   def edit
     @weather_station = WeatherStation.find(params[:id])
     # @pivots = pivots_for_group
-    @available_fields = @group.fields_for
+    @available_fields = @group.fields
   end
 
   # POST /weather_stations

@@ -1,10 +1,12 @@
 class Farm < ActiveRecord::Base
   belongs_to :group
-  has_many :pivots, :dependent => :destroy
-  validates :year, :presence => true
-  after_create :create_default_data
-  before_destroy :mother_may_i
+  has_many :pivots, dependent: :destroy
 
+  validates :year, presence: true
+
+  after_create :create_dependent_objects
+
+  before_destroy :mother_may_i
 
   @@clobberable = nil
 
@@ -36,12 +38,11 @@ class Farm < ActiveRecord::Base
     ""
   end
 
-  def create_default_data
-    logger.warn "Farm#create_default_data: #{self.inspect}"
-    pivots << Pivot.create(:name => "New pivot (farm ID: #{self[:id]})", :farm_id => self[:id],
-      :cropping_year => year || Time.now.year)
+  def create_dependent_objects
+    pivots.create!(
+      name: "New pivot (farm ID: #{id})",
+      cropping_year: year || Time.now.year)
   end
-
 
   def mother_may_i
     if group.may_destroy(self)

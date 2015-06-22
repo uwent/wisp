@@ -17,10 +17,10 @@ class CropsController < AuthenticatedController
   # GET /crops.xml
   def index
     get_current_ids
-    @field_id = params[:parent_id]
-    @field = Field.find(@field_id)
 
-    @crops = Crop.where(:field_id => @field_id).order(:name) do
+    @crops = Crop.joins(field: [pivot: [:farm]])
+      .where(farm_id: @farm_id)
+      .order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
     @crop = @field.current_crop

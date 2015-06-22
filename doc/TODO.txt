@@ -1,0 +1,16 @@
+* Provide default content via content_for? to remove some of the redundant view
+  content
+
+* Use routing logic to determine current farm, etc.; get rid of all the get/set
+  stuff.
+
+* Identify all static pages that don't require authentication and serve them
+  from WelcomeController
+
+* Install and configure mail_safe
+
+* Setup sendgrid
+
+* Ask John about double forms
+
+* Add foreign keys

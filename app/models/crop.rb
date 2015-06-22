@@ -11,9 +11,9 @@ class Crop < ActiveRecord::Base
   # validates :field, :presence => true
 
   def create_dependent_objects
-    plant = Plant.default_plant  
+    plant = Plant.default_plant
   end
-  
+
   # Do we really need to update the canopy?
   def must_update_canopy?(attribs)
     # puts attribs.inspect; $stdout.flush
@@ -26,7 +26,7 @@ class Crop < ActiveRecord::Base
     end
     return false
   end
-  
+
   def do_attribs(attribs)
     # Check if we can skip the painfully long canopy update
     @dont_update_canopy = !(must_update_canopy?(attribs))
@@ -34,7 +34,7 @@ class Crop < ActiveRecord::Base
     @dont_update_canopy = true
     # puts "done updating"; $stdout.flush
   end
-  
+
   def update_field_with_emergence_date
     unless @dont_update_canopy || !(emergence_date)
       # puts "updating our field's canopy (#{field[:id]})"; $stdout.flush
@@ -44,19 +44,19 @@ class Crop < ActiveRecord::Base
       logger.info "************************************* update canopy finished *****************"
     end
   end
-  
+
   # Implement the Owned interface
   def owner
     field.pivot.farm.group
   end
-  
+
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
     ""
   end
-  
+
   # Shadows the atttribute -- I'm pulling this out of field/crop setup process and making them put it in on field status
   def initial_soil_moisture
     field.field_capacity * 100.0
   end
-  
+
 end
