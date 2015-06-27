@@ -2,18 +2,18 @@ module ApplicationHelper
   def date_selectors(opts={})
     @yesterday = 1.day.ago
     opts = opts_with_defaults opts, {:names => %w(startyear startmonth startday), :first_year => 2000, :day => @yesterday.day, :sep_str => " "}
-    
+
     year_select =  select_tag(opts[:names][0], options_for_select(opts[:first_year]..@yesterday.year, @yesterday.year))
     month_select = my_select_month(@yesterday,opts)
     day_select = select_tag(opts[:names][2], options_for_select(1..31, opts[:day]))
     "#{year_select}#{opts[:sep_str]}#{month_select}#{opts[:sep_str]}#{day_select}".html_safe
   end
-  
+
   def coord_select_options(start=42.0,finish=50.0,step=0.4)
     @coords = []; (start).step(finish,step) {|coord| @coords << coord }
     options_for_select @coords
   end
-  
+
   def opts_with_defaults(opts,defaults)
     new_opts={}
     defaults.keys.each {|defkey| new_opts[defkey] = opts[defkey] || defaults[defkey]}
@@ -21,15 +21,15 @@ module ApplicationHelper
   end
 
   private
-  
+
   def my_select_month(date,opts)
     fix_month_fieldname(select_month(date,:use_short_month => true),opts)
   end
-  
+
   def fix_month_fieldname(str,opts)
     str.gsub("name=\"date[month]","name=\"#{opts[:names][1]}")
   end
-  
+
   def abr(date)
     if date
       date.strftime('%D')
@@ -37,12 +37,12 @@ module ApplicationHelper
       ""
     end
   end
-  
+
   def image_folder_path(folder)
     path = image_path(folder)
     path.gsub(/[^\d][\d]+$/,'')
   end
-  
+
   def merge_usuals(args)
     ret = args.merge(
       :user_id => @user[:id],
@@ -55,21 +55,21 @@ module ApplicationHelper
     puts "mu: user_id #{ret[:user_id]}, group_id #{ret[:group_id]}, farm_id #{ret[:farm_id]}, pivot_id #{ret[:pivot_id]}, field_id #{ret[:field_id]}, crop_id #{ret[:crop_id]}"
     ret
   end
-  
+
   def url_with_usuals(args)
     # Going to try going without this one
     # url_for(merge_usuals(args))
     url_for(args)
   end
-  
+
   def grid_data_url(what,parent_object)
     url_with_usuals :controller => what.to_s, :q => 1, :parent_id => parent_object, :user_id => @user_id
   end
-  
+
   def grid_post_data_url(what,parent_object)
     url_with_usuals :controller => what.to_s, :action  => :post_data, :parent_id => parent_object
   end
-  
+
   def grid_javascript_settings
     ret = "\n// State variables:"
     ret += "\nvar user_id = #{@user_id};" if @user_id
@@ -80,7 +80,7 @@ module ApplicationHelper
     ret += "\nvar crop_id = #{@crop_id};" if @crop_id
     ret
   end
-  
+
   def so_far(str,delimiter=',')
     if str == ''
       str
@@ -88,42 +88,42 @@ module ApplicationHelper
       str + delimiter
     end
   end
-  
+
   # make COLUMN_NAMES available to Javascript
   def column_names_to_s(controller_class)
     '[' + controller_class::COLUMN_NAMES.inject("") {|str,col_sym| so_far(str) + "'#{col_sym.to_s}'"} + ']'
   end
-  
+
   def soil_types_for_select
     # 1:Sandy Loam;2:Silt Loam
     soils = SoilType.all
     soils.inject("") {|str,soil_type| so_far(str,';') + "#{soil_type[:id]}:#{soil_type.name}"}
   end
-  
+
   def plant_types_for_select
     # 1:Potato;2:Snap Bean
     plants = Plant.all.sort { |a, b| a.name <=> b.name }
     plants.inject("") {|str,plant| so_far(str,';') + "#{plant[:id]}:#{plant.name}"}
   end
-  
+
   def soil_characteristics
     soils = SoilType.all
     str = soils.inject("") do |str,soil_type|
-      so_far(str) + 
-        soil_type[:id].to_s + ':' + 
+      so_far(str) +
+        soil_type[:id].to_s + ':' +
         '{field_capacity_pct:' + (100*soil_type[:field_capacity]).to_s + ',' +
          'perm_wilting_pt_pct:' + (100*soil_type[:perm_wilting_pt]).to_s + '}'
     end
     "{#{str}}"
   end
-  
+
   # Helper method to enumerate all plant characteristics in JSON format, suitable for use in a grid
   # to fill in default values
   def plant_characteristics
     plants = Plant.all.sort { |a, b| a.name <=> b.name }
     str = plants.inject("") do |str,plant|
-      so_far(str) + 
-        plant[:id].to_s + ':' + 
+      so_far(str) +
+        plant[:id].to_s + ':' +
         '{default_max_root_zone_depth:' + (plant[:default_max_root_zone_depth]).to_s + '}'
     end
     "{#{str}}"
