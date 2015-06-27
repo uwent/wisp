@@ -1,7 +1,8 @@
 class WeatherStationsController < AuthenticatedController
-  expose(:weather_station) { current_group.weather_stations.find(params[:id]) }
-  expose(:weather_stations) { current_group.weather_stations }
-  expose(:available_fields) { current_group.fields }
+  # TODO: Install decent_exposure
+  # expose(:weather_station) { current_group.weather_stations.find(params[:id]) }
+  # expose(:weather_stations) { current_group.weather_stations }
+  # expose(:available_fields) { current_group.fields }
 
   def index
     respond_to do |format|
