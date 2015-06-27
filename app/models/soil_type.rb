@@ -1,5 +1,4 @@
 class SoilType < ActiveRecord::Base
-  # TODO: Add unique index at db level
   validates :name, uniqueness: true
 
   DEFAULT_SOIL_TYPE_NAME = 'Sandy Loam'
