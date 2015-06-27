@@ -13,7 +13,15 @@
 
 * Ask John about double forms
 
-* Add foreign keys
+* Database
+
+  * Install gem for foreign keys
+
+  * Install gem to add foreign keys (dev only)
+
+  * Review nulls, alter
+
+* Validation
 
 * Ask John about deleting objects; it would be nice to remove the conditional
   may destroy stuff
