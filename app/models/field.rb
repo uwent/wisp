@@ -35,9 +35,7 @@ class Field < ActiveRecord::Base
   #
 
   def set_default_et_method
-    unless self[:et_method]
-      self[:et_method] = PCT_COVER_METHOD
-    end
+    self.et_method ||= PCT_COVER_METHOD
   end
 
   def et_method_name
@@ -233,11 +231,11 @@ class Field < ActiveRecord::Base
     end_date = field_daily_weather[-1].date.to_s
 
     vals = {}
-	# To use a test url use "http://agwx.soils.wisc.edu/devel/sun_water/get_grid" Note: et data not automatically updated on devel.
+    # To use a test url use "http://agwx.soils.wisc.edu/devel/sun_water/get_grid" Note: et data not automatically updated on devel.
     url = "http://agwx.soils.wisc.edu/uwex_agwx/sun_water/get_grid"
     begin
       uri = URI.parse(url)
-	  #logger.info uri
+      #logger.info uri
       # Note that we code the nested params with the [] format, since they'll irremediably be
       # formatted to escaped braces if we just use the grid_date => {start_date: } nested hash
       res = response = Net::HTTP.post_form(uri,
@@ -265,26 +263,25 @@ class Field < ActiveRecord::Base
     logger.info "done with get_et"
   end
 
-  # Does this field need to download degree days?
-  def need_dds
-    current_crop.plant.uses_dds(self.et_method)
+  def need_degree_days?
+    current_crop.plant.uses_degree_days?(et_method)
   end
 
-  def get_dds(method="Simple",base_temp=50.0,upper_temp=nil)
-    unless pivot.latitude && pivot.longitude
-      logger.info "get_dds: no lat/long for pivot"
-      return
-    end
+  def get_degree_days(method='Simple', base_temp=50.0 ,upper_temp=nil)
+    return unless pivot.latitude && pivot.longitude
+
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
+
+    # TODO: Extract method.
     logger.info "Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}"
 
     vals = {}
-	  # To use a test url use "http://agwx.soils.wisc.edu/devel/thermal_models/get_dds" Note: et data not automatically updated on devel.
+    # To use a test url use "http://agwx.soils.wisc.edu/devel/thermal_models/get_dds" Note: et data not automatically updated on devel.
     url = "http://agwx.soils.wisc.edu/uwex_agwx/thermal_models/get_dds"
     begin
       uri = URI.parse(url)
-	    logger.info uri
+      logger.info uri
       # Note that we code the nested params with the [] format, since they'll irremediably be
       # formatted to escaped braces if we just use the grid_date => {start_date: } nested hash
       # {"utf8"=>"✓", "authenticity_token"=>"sxzJVoSvOXQSOm8RAr8hUtNrhnhEn0yGp3dkWbuPxMI=",

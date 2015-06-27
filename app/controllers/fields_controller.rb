@@ -53,7 +53,7 @@ class FieldsController < AuthenticatedController
         attribs[:perm_wilting_pt] = SoilType.default_soil_type[:perm_wilting_pt] unless attribs[:perm_wilting_pt]
         field = Field.create(attribs)
         field.get_et
-        field.get_dds if field.current_crop.plant.uses_dds(field.et_method)
+        field.get_degree_days if field.current_crop.plant.uses_degree_days?(field.et_method)
       else
         field = Field.find(params[:id], :include => :field_daily_weather)
         attribs = field.groom_for_defaults(attribs)

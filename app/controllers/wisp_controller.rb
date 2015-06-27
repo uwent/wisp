@@ -171,11 +171,11 @@ class WispController < AuthenticatedController
         break
       end
     end
-    # run it around again for DDs
-    if @field.need_dds
+    # run it around again for degree days
+    if @field.need_degree_days?
       @ad_recs.each do |adr|
         if adr.degree_days == nil || adr.degree_days == 0.0
-          @field.get_dds
+          @field.get_degree_days
           break
         end
       end
