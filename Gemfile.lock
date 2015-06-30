@@ -1,3 +1,12 @@
+GIT
+  remote: git://github.com/m5rk/mysql2postgres.git
+  revision: 1e463607ba2a79d43e23b90070359c147d3e6145
+  specs:
+    mysql2psql (0.2.0)
+      mysql (= 2.8.1)
+      mysql2psql
+      pg (~> 0.18.0)
+
 PATH
   remote: vendor/asigbiophys
   specs:
@@ -65,6 +74,7 @@ GEM
     method_source (0.8.2)
     mime-types (1.25.1)
     multi_json (1.11.1)
+    mysql (2.8.1)
     orm_adapter (0.5.0)
     pg (0.18.2)
     polyglot (0.3.5)
@@ -145,6 +155,7 @@ DEPENDENCIES
   devise
   factory_girl_rails
   jquery-rails
+  mysql2psql!
   pg
   pry
   rails (~> 3.1)

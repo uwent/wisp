@@ -8,6 +8,7 @@ gem 'devise'
 gem 'jquery-rails'
 
 group :development, :test do
+  gem 'mysql2psql', github: 'm5rk/mysql2postgres'
   gem 'factory_girl_rails'
   gem 'pry'
   gem 'rspec-rails'
