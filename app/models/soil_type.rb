@@ -13,6 +13,7 @@ class SoilType < ActiveRecord::Base
     where(default_soil_type_attrs).first
   end
 
+  # TODO: Is this an attr_accessible issue
   def self.seed
     initial_types.each do |attrs|
       where(attrs).first_or_create
