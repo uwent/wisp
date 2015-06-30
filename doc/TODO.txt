@@ -11,7 +11,7 @@
 
 * Setup sendgrid
 
-* Ask John about double forms
+* Ask John about double forms; these forms may not be used?
 
 * Database
 
@@ -24,9 +24,11 @@
 * Validation
 
 * Ask John about deleting objects; it would be nice to remove the conditional
-  may destroy stuff
+  may destroy stuff. Ask Rick.
 
-* Ask John whether any external programs depend on this?
+* Ask John whether any external programs depend on this? No
 
 * WeatherStation no longer belongs to pivot, but did at some point; safe to
-  delete the weather_stations.pivot_id column?
+  delete the weather_stations.pivot_id column
+
+* Get rid of orig_email, consolidate all email values into User#email
