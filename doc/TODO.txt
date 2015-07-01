@@ -21,6 +21,12 @@
 
   * Review nulls, alter
 
+  [done] add_index :users, :email, unique: true unless index_exists?(:users, :email, unique: true)
+
+  [done] Rectify users.encrypted_password limit: 128
+
+  [done] Rectify nullability of timestamps
+
 * Validation
 
 * Ask John about deleting objects; it would be nice to remove the conditional
