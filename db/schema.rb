@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150701000828) do
+ActiveRecord::Schema.define(:version => 20150701001104) do
 
   create_table "blogs", :force => true do |t|
     t.date     "date"
@@ -148,14 +148,10 @@ ActiveRecord::Schema.define(:version => 20150701000828) do
   add_index "soil_types", ["name"], :name => "index_soil_types_on_name", :unique => true
 
   create_table "users", :force => true do |t|
-    t.string   "orig_email"
     t.string   "first_name"
     t.string   "last_name"
-    t.string   "identifier_url"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
-    t.string   "provider"
-    t.string   "uid"
     t.string   "email",                  :default => "", :null => false
     t.string   "encrypted_password",     :default => "", :null => false
     t.string   "reset_password_token"
