@@ -16,7 +16,7 @@ rake db:drop:all db:create:all
 Run the conversion:
 
 ```
-mysql2psql
+bundle exec mysql2psql dumps/mysql2psql.yml
 ```
 
 Dump the local database:
