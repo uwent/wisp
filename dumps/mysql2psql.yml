@@ -21,9 +21,9 @@ destination:
 #- table1
 #- table2
 # if exclude_tables is given, exclude the listed tables from the conversion.
-#exclude_tables:
-#- table3
-#- table4
+exclude_tables:
+  - jeff_farms
+  - jeff_pivots
 
 # if supress_data is true, only the schema definition will be exported/migrated, and not the data
 supress_data: false
