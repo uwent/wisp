@@ -1,9 +1,7 @@
-require 'owned'
-
 class Crop < ActiveRecord::Base
-  include Owned
   belongs_to :plant
   belongs_to :field
+
   after_create :create_dependent_objects
   after_save :update_field_with_emergence_date
   # Only go through the painful process of updating the canopy and recalcing all balances if needed
@@ -45,11 +43,6 @@ class Crop < ActiveRecord::Base
     end
   end
 
-  # Implement the Owned interface
-  def owner
-    field.pivot.farm.group
-  end
-
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
     ""
   end
@@ -58,5 +51,4 @@ class Crop < ActiveRecord::Base
   def initial_soil_moisture
     field.field_capacity * 100.0
   end
-
 end
