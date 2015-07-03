@@ -4,11 +4,8 @@ class Pivot < ActiveRecord::Base
   has_many :irrigation_events, dependent: :destroy
 
   before_save :set_cropping_year
-  before_destroy :mother_may_i
 
   after_create :create_dependent_objects
-
-  @@clobberable = nil
 
   def set_cropping_year
     self.cropping_year ||= Time.now.year
@@ -18,20 +15,6 @@ class Pivot < ActiveRecord::Base
     fields.create!(
       name: "New field (Pivot ID: #{id})",
       soil_type_id: SoilType.default_soil_type.id)
-  end
-
-  def mother_may_i
-    if farm.may_destroy(self)
-      @@clobberable = id
-      Field.destroy_all "pivot_id = #{id}"
-      return true
-    else
-      return false
-    end
-  end
-
-  def may_destroy(field)
-    fields.size > 1 || @@clobberable == id
   end
 
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid

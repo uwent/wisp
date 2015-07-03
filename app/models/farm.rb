@@ -6,10 +6,6 @@ class Farm < ActiveRecord::Base
 
   after_create :create_dependent_objects
 
-  before_destroy :mother_may_i
-
-  @@clobberable = nil
-
   # TODO: rename to for_group
   def self.my_farms(group_id)
     where(group_id: group_id)
@@ -42,19 +38,6 @@ class Farm < ActiveRecord::Base
     pivots.create!(
       name: "New pivot (farm ID: #{id})",
       cropping_year: year || Time.now.year)
-  end
-
-  def mother_may_i
-    if group.may_destroy(self)
-      @@clobberable = id
-      Pivot.destroy_all "farm_id = #{id}"
-      return true
-    else
-      return false
-    end
-  end
-  def may_destroy(pivot)
-    pivots.size > 1 || @@clobberable == id
   end
 
   def clone_pivots_for(year=Time.now.year)
