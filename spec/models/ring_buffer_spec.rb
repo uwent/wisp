@@ -4,6 +4,45 @@ describe RingBuffer do
   let(:ring_buffer) { RingBuffer.new }
   let(:delta) { 2 ** -20 }
 
+  describe '#last_nonzero' do
+    let(:ring_buffer) { RingBuffer.new }
+    let(:values) { [] }
+
+    before do
+      values.each do |value|
+        ring_buffer.add(value.to_f)
+      end
+    end
+
+    context 'when the buffer is empty' do
+      it 'is nil' do
+        expect(ring_buffer.last_nonzero).to be_nil
+      end
+    end
+
+    context 'when the buffer only has zeroes' do
+      let(:values) { [RingBuffer::EPSILON, 0, 0] }
+
+      it 'is nil' do
+        expect(ring_buffer.last_nonzero).to be_nil
+      end
+    end
+
+    context 'when the buffer has non-zero values in it' do
+      it 'is the last value added' do
+        (1..10).to_a.shuffle.each do |value|
+          ring_buffer.add(value.to_f)
+
+          expect(ring_buffer.last_nonzero).to be_within(delta).of(value)
+
+          ring_buffer.add(0)
+
+          expect(ring_buffer.last_nonzero).to be_within(delta).of(value)
+        end
+      end
+    end
+  end
+
   describe '#mean' do
     [
       {
@@ -17,6 +56,18 @@ describe RingBuffer do
         values: [0, 1, 2, 3, 4, 0, 10, 9, 8, 7],
         ignore_zero: true,
         expected: 5.5
+      },
+      {
+        size: 3,
+        values: [0, 0, 0],
+        ignore_zero: true,
+        expected: nil
+      },
+      {
+        size: 3,
+        values: [],
+        ignore_zero: true,
+        expected: nil
       }
     ].each do |scenario|
       context "when the size is #{scenario[:size]}" do
@@ -28,33 +79,18 @@ describe RingBuffer do
           end
         end
 
-        it "is #{scenario[:expected]}" do
-          expect(ring_buffer.mean(scenario[:ignore_zero])).to be_within(delta).of(scenario[:expected])
+        if scenario[:expected].nil?
+          it 'is nil' do
+            expect(ring_buffer.mean(scenario[:ignore_zero])).to be_nil
+          end
+        else
+          it "is #{scenario[:expected]}" do
+            expect(ring_buffer.mean(scenario[:ignore_zero])).to be_within(delta).of(scenario[:expected])
+          end
         end
       end
     end
-  #
-  # test "RingBuffer ignore_zeros returns nil when called on an all-zero buffer" do
-  #   rb = RingBuffer.new(3)
-  #   assert_nil(rb.mean(true),'Should return nil when called on empty buffer with ignore_zeros flag')
-  #   3.times { rb.add(0.0)}
-  #   assert_nil(rb.mean(true),'Should return nil when called on buffer full of zeros with ignore_zeros flag')
-  # end
-  #
-  # test "RingBuffer last_nonzero works" do
-  #   rb = RingBuffer.new(6)
-  #   assert_nil(rb.last_nonzero,'last_nonzero should return nil on empty buffer')
-  #   [0.0,0.0].each { |val| rb.add(val) }
-  #   assert_nil(rb.last_nonzero,'last_nonzero should return nil on buffer with nothing but zeros')
-  #   rb.add(1.0)
-  #   assert_in_delta(1.0, rb.last_nonzero, 2 ** -20)
-  #   rb.add(0.0)
-  #   assert_in_delta(1.0, rb.last_nonzero, 2 ** -20)
-  #   rb.add(2.0)
-  #   assert_in_delta(2.0, rb.last_nonzero, 2 ** -20)
-  #   rb.add(-4.0)
-  #   assert_in_delta(-4.0, rb.last_nonzero, 2 ** -20)
-  # end
+
 
     context 'when zero is not ignored' do
       context 'when no values are added' do
