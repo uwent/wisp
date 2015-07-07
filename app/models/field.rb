@@ -124,22 +124,18 @@ class Field < ActiveRecord::Base
   def create_dependent_objects
     create_crop
     create_field_daily_weather
-    crops.each { |crop| crop.dont_update_canopy = false }
     save!
   end
 
   def create_crop
-    plant = Plant.default_plant
-    Crop.create!(:field_id => self[:id],
-      :name => "New crop (field ID: #{self[:id]})", :variety => 'A variety', :plant_id => plant[:id],
-      :emergence_date => default_emergence_date,
-      :max_root_zone_depth => plant.default_max_root_zone_depth, :max_allowable_depletion_frac => 0.5, :initial_soil_moisture => 100*self.field_capacity,
-      :dont_update_canopy => true) # TODO: take this back out?
+    crops.create!(
+      emergence_date: default_emergence_date,
+      max_allowable_depletion_frac: 0.5,
+      initial_soil_moisture: 100 * field_capacity)
   end
 
   def create_field_daily_weather
-    start_date,end_date = date_endpoints
-    # puts "create_fdw for #{start_date}, #{end_date}"
+    start_date, end_date = date_endpoints
     pct_cover = nil
     lai = nil
     (start_date..end_date).each do |date|
@@ -153,9 +149,12 @@ class Field < ActiveRecord::Base
         pct_cover = 0.0
         lai = nil
       end
-      field_daily_weather << FieldDailyWeather.new(
-        :date => date, :ref_et => 0.0, :adj_et => 0.0, :leaf_area_index => lai, :calculated_pct_cover => pct_cover
-      )
+      field_daily_weather.create!(
+        date: date,
+        ref_et: 0.0,
+        adj_et: 0.0,
+        leaf_area_index: lai,
+        calculated_pct_cover: pct_cover)
     end
     set_fdw_initial_moisture
   end
@@ -193,6 +192,14 @@ class Field < ActiveRecord::Base
 
   end
 
+  def update_with_emergence_date(emergence_date)
+    transaction do
+      update_canopy(emergence_date)
+      set_fdw_initial_moisture
+      do_balances
+    end
+  end
+
   def update_canopy(emergence_date)
     if et_method == LAI_METHOD
       # FIXME: Would probably speed up creating new fields and crops A LOT if we did defer_balances here!
@@ -215,7 +222,7 @@ class Field < ActiveRecord::Base
       end
       FieldDailyWeather.undefer_balances
       # Now that we've gone through and saved everything, we can trigger once through for AD balances
-      field_daily_weather.first.save!
+      field_daily_weather.first.save! if field_daily_weather.first
     else
       raise "Unknown ET Method for this field: #{et_method}"
     end

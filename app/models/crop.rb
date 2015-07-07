@@ -2,46 +2,12 @@ class Crop < ActiveRecord::Base
   belongs_to :plant
   belongs_to :field
 
-  after_create :create_dependent_objects
-  after_save :update_field_with_emergence_date
-  # Only go through the painful process of updating the canopy and recalcing all balances if needed
-  attr_accessor :dont_update_canopy
-  # validates :field, :presence => true
+  before_validation :set_defaults, on: :create
 
-  def create_dependent_objects
-    plant = Plant.default_plant
-  end
+  before_save :update_field_with_emergence_date
 
-  # Do we really need to update the canopy?
-  def must_update_canopy?(attribs)
-    # puts attribs.inspect; $stdout.flush
-    # puts self.inspect; $stdout.flush
-    [:emergence_date, :max_root_zone_depth, :max_allowable_depletion_frac,
-      :initial_soil_moisture].each do |attrib_name|
-      if self[attrib_name].to_s != attribs[attrib_name].to_s
-        return true
-      end
-    end
-    return false
-  end
-
-  def do_attribs(attribs)
-    # Check if we can skip the painfully long canopy update
-    @dont_update_canopy = !(must_update_canopy?(attribs))
-    update_attributes(attribs)
-    @dont_update_canopy = true
-    # puts "done updating"; $stdout.flush
-  end
-
-  def update_field_with_emergence_date
-    unless @dont_update_canopy || !(emergence_date)
-      # puts "updating our field's canopy (#{field[:id]})"; $stdout.flush
-      field.update_canopy(emergence_date)
-      field.set_fdw_initial_moisture
-      field.do_balances
-      logger.info "************************************* update canopy finished *****************"
-    end
-  end
+  validates :field, presence: true
+  validates :plant, presence: true
 
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
     ""
@@ -50,5 +16,39 @@ class Crop < ActiveRecord::Base
   # Shadows the atttribute -- I'm pulling this out of field/crop setup process and making them put it in on field status
   def initial_soil_moisture
     field.field_capacity * 100.0
+  end
+
+  private
+
+  def attributes_that_trigger_field_update
+    %w(
+      emergence_date
+      initial_soil_moisture
+      max_allowable_depletion_frac
+      max_root_zone_depth
+    )
+  end
+
+  def attributes_that_trigger_field_update_changed?
+    (changed & attributes_that_trigger_field_update).any?
+  end
+
+  def must_update_field?
+    attributes_that_trigger_field_update_changed?
+  end
+
+  def update_field_with_emergence_date
+    return unless must_update_field?
+
+    return unless emergence_date
+
+    field.update_with_emergence_date(emergence_date)
+  end
+
+  def set_defaults
+    self.name ||= "New crop (field ID: #{field.id})" if field
+    self.variety ||= 'A variety'
+    self.plant ||= Plant.default_plant
+    self.max_root_zone_depth ||= plant.default_max_root_zone_depth
   end
 end
