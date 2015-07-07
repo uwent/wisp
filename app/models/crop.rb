@@ -46,9 +46,9 @@ class Crop < ActiveRecord::Base
   end
 
   def set_defaults
-    self.name ||= "New crop (field ID: #{field.id})" if field
-    self.variety ||= 'A variety'
-    self.plant ||= Plant.default_plant
     self.max_root_zone_depth ||= plant.default_max_root_zone_depth
+    self.name ||= "New crop (field ID: #{field.id})" if field
+    self.plant ||= Plant.default_plant
+    self.variety ||= 'A variety'
   end
 end
