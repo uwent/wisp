@@ -6,19 +6,19 @@ class WeatherStationData < ActiveRecord::Base
   COLUMNS_TO_PROPAGATE = [:ref_et, :rain, :entered_pct_moisture, :irrigation, :entered_pct_cover]
   # don't bother propagating (and triggering cascading balance calcs for) changes smaller than:
   CHANGE_EPSILON = 0.00001
-  
+
   # Here's the deal: ActiveRecord gives us a "changes" hash where column names (as strings)
   # point to an array of [old_value,new_value]. So we go through our list of significant cols
   # COLUMNS_TO_PROPAGATE; if any of them show up in the changes, we assess if the new value is nil
-  # (if so, don't bother proceeding), if the old value was nil (if so, proceed regardless), and 
+  # (if so, don't bother proceeding), if the old value was nil (if so, proceed regardless), and
   # if the values differ by more than CHANGE_EPSILON.
-  
+
   # returns [old_value,new_value] or nil
   def extract_changes(col_sym)
     return nil unless (change = changes[col_sym.to_s])
     [change[0],change[1]]
   end
-  
+
   def send_changes
     changes_to_send = COLUMNS_TO_PROPAGATE.inject({}) do |hash, col|
       old_value,new_value = extract_changes(col)
