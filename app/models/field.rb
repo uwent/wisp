@@ -29,6 +29,14 @@ class Field < ActiveRecord::Base
   before_save :target_ad_pct_or_nil
   after_save :set_fdw_initial_moisture, :do_balances
 
+  def self.starts_on(year)
+    Date.civil(year, *Field::START_DATE)
+  end
+
+  def self.ends_on(year)
+    Date.civil(year, *Field::END_DATE)
+  end
+
   #
   # ACCESSORS
   #
