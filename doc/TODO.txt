@@ -27,10 +27,12 @@
 
   [done] Rectify nullability of timestamps
 
+  * add_index :weather_station_data, [:weather_station_id, :date], unique: true
+
 * Validation
 
 * Ask John about deleting objects; it would be nice to remove the conditional
-  may destroy stuff. Ask Rick.
+  may destroy stuff. Ask Rick. Asked: It's OK.
 
 * Ask John whether any external programs depend on this? No
 
@@ -38,3 +40,7 @@
   delete the weather_stations.pivot_id column
 
 * Get rid of orig_email, consolidate all email values into User#email
+
+* Add webmock
+
+* Profile tests
