@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150701001104) do
+ActiveRecord::Schema.define(:version => 20150717014015) do
 
   create_table "blogs", :force => true do |t|
     t.date     "date"
@@ -168,8 +168,8 @@ ActiveRecord::Schema.define(:version => 20150701001104) do
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
 
   create_table "weather_station_data", :force => true do |t|
-    t.integer  "weather_station_id"
-    t.date     "date"
+    t.integer  "weather_station_id",   :null => false
+    t.date     "date",                 :null => false
     t.float    "ref_et"
     t.float    "rain"
     t.float    "entered_pct_moisture"
