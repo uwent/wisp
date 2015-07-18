@@ -6,6 +6,13 @@ class WeatherStationData < ActiveRecord::Base
     where(date: date)
   end
 
+  def empty?
+    attributes
+      .except('id', 'date', 'weather_station_id', 'updated_at', 'created_at')
+      .values
+      .none?(&:present?)
+  end
+
   # only copy the following to the corresponding fdw
   COLUMNS_TO_PROPAGATE = [:ref_et, :rain, :entered_pct_moisture, :irrigation, :entered_pct_cover]
   # don't bother propagating (and triggering cascading balance calcs for) changes smaller than:
