@@ -181,6 +181,8 @@ ActiveRecord::Schema.define(:version => 20150717014015) do
     t.float    "leaf_area_index"
   end
 
+  add_index "weather_station_data", ["weather_station_id", "date"], :name => "index_weather_station_data_on_weather_station_id_and_date", :unique => true
+
   create_table "weather_stations", :force => true do |t|
     t.integer  "group_id"
     t.string   "name"
