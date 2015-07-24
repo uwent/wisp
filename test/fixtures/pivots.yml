@@ -32,11 +32,11 @@ two:
   some_energy_rate_metric: 1.5
   cropping_year: 2011
   notes:
-    
+
 default:
   id: 1
   farm_id: 1
-  name: Default Pivot 
+  name: Default Pivot
   latitude: 1.5
   longitude: 1.5
   equipment: MyString
@@ -44,7 +44,7 @@ default:
   some_energy_rate_metric: 1.5
   cropping_year: 2011
   notes: For single-user mode, when nothing has yet been entered
-  
+
 pivot_2012:
   farm: ricks_farm
   name: Pivot for 2012 year on Rick's Farm
