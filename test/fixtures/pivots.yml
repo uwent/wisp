@@ -56,5 +56,5 @@ pivot_pct_2012:
   farm: ricks_other_farm
   name: Pivot for 2012 on Rick's Other Farm (% cover)
   latitude: 45.0
-  Longitude: -88.7 # WERN, Madison!
+  longitude: -88.7 # WERN, Madison!
   cropping_year: 2012
