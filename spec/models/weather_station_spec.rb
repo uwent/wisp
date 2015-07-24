@@ -61,7 +61,19 @@ describe WeatherStation do
           end
         end
 
-        context 'when '
+        context 'when the weather station data includes percent cover' do
+          let(:pct_cover) { 3.0 }
+          let(:new_entered_pct_cover) { 5.0 }
+
+          before do
+            field_daily_weather.entered_pct_cover = pct_cover
+            field_daily_weather.save!
+          end
+
+          it 'propagates to field daily weather' do
+            expect { weather_station_data.update_attributes(entered_pct_cover: new_entered_pct_cover) }.to change { field_daily_weather.reload.entered_pct_cover }.to(new_entered_pct_cover)
+          end
+        end
       end
     end
   end
