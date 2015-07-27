@@ -13,11 +13,12 @@ class Pivot < ActiveRecord::Base
     ""
   end
 
-  def problem
-    fields.select do |field|
-      field.problem
-    end
-  end
+  # TODO: Remove, this appears unused.
+  # def problem
+  #   fields.select do |field|
+  #     field.problem
+  #   end
+  # end
 
   def clone_for(year=Time.now.year)
     return if cropping_year == year # Can't clone to same year

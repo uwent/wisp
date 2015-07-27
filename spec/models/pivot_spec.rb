@@ -3,17 +3,17 @@ require 'rails_helper'
 describe Pivot do
   let(:pivot) { create :pivot }
 
-  describe '#act' do
-    it 'is an empty string' do
-      expect(pivot.act).to eq('')
-    end
-  end
-
   describe '#after_create' do
     let(:pivot) { build :pivot }
 
     it 'creates a field' do
       expect { pivot.save }.to change { pivot.fields.count }.by(1)
+    end
+  end
+
+  describe '#act' do
+    it 'is an empty string' do
+      expect(pivot.act).to eq('')
     end
   end
 
