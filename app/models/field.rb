@@ -4,6 +4,7 @@ require 'uri'
 
 class Field < ActiveRecord::Base
   after_create :create_dependent_objects
+  before_validation :set_defaults, on: :create
 
   START_DATE = [4,1]
   END_DATE = [11,30]
@@ -543,4 +544,10 @@ class Field < ActiveRecord::Base
     ""
   end
 
+  private
+
+  def set_defaults
+    self.name ||= "New field (Pivot ID: #{pivot_id})"
+    self.soil_type = SoilType.default_soil_type
+  end
 end
