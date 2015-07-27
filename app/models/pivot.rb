@@ -20,7 +20,7 @@ class Pivot < ActiveRecord::Base
   end
 
   def clone_for(year=Time.now.year)
-    return nil if cropping_year == year # Can't clone to same year
+    return if cropping_year == year # Can't clone to same year
 
     new_pivot = self.dup
     new_pivot.cropping_year = year
