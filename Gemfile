@@ -12,6 +12,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'pry'
   gem 'rspec-rails'
+  gem 'valid_attribute'
 end
 
 group :test do
