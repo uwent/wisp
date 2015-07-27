@@ -4,6 +4,7 @@ require 'uri'
 
 class Field < ActiveRecord::Base
   after_create :create_dependent_objects
+  after_save :set_fdw_initial_moisture, :do_balances
   before_validation :set_defaults, on: :create
 
   START_DATE = [4,1]
@@ -21,49 +22,54 @@ class Field < ActiveRecord::Base
 
   belongs_to :pivot
   belongs_to :soil_type
-  has_many :crops, :dependent => :destroy
-  has_many :field_daily_weather, :dependent => :destroy, :order => :date # , :autosave => true
+  has_many :crops, dependent: :destroy
+  has_many :field_daily_weather, dependent: :destroy, order: :date
   has_many :multi_edit_groups
   has_many :weather_stations, through: :multi_edit_links
-  before_create :set_default_et_method
 
-  before_save :target_ad_pct_or_nil
-  after_save :set_fdw_initial_moisture, :do_balances
+  validates :target_ad_pct,
+    numericality: {
+      greater_than_or_equal_to: 1.0,
+      less_than_or_equal_to: 100.0
+    },
+    allow_nil: true
+
+  validates :et_method,
+    inclusion: {
+      in: [PCT_COVER_METHOD, LAI_METHOD]
+    },
+    allow_nil: false
 
   def self.starts_on(year)
-    Date.civil(year, *Field::START_DATE)
+    Date.civil(year, *START_DATE)
   end
 
   def self.ends_on(year)
-    Date.civil(year, *Field::END_DATE)
+    Date.civil(year, *END_DATE)
   end
 
-  #
-  # ACCESSORS
-  #
-
-  def set_default_et_method
-    self.et_method ||= PCT_COVER_METHOD
+  def self.emerges_on(year)
+    Date.civil(year, *EMERGENCE_DATE)
   end
 
   def et_method_name
-    if et_method == PCT_COVER_METHOD
-      "Pct Cover"
-    elsif et_method == LAI_METHOD
-      "LAI"
-    end
+    {
+      PCT_COVER_METHOD => 'Pct Cover',
+      LAI_METHOD => 'LAI'
+    }[et_method]
   end
 
   def adj_et(fdw)
-    return nil unless current_crop && current_crop.plant && fdw.ref_et
+    return unless current_crop && current_crop.plant && fdw.ref_et
+
     if et_method == PCT_COVER_METHOD
-      return nil unless fdw.pct_cover
-      current_crop.plant.calc_adj_et_pct_cover(fdw.ref_et,fdw.pct_cover)
+      return unless fdw.pct_cover
+
+      current_crop.plant.calc_adj_et_pct_cover(fdw.ref_et, fdw.pct_cover)
     elsif et_method == LAI_METHOD
-      return nil unless fdw.leaf_area_index
-      current_crop.plant.calc_adj_et_lai(fdw.ref_et,fdw.leaf_area_index)
-    else
-      raise "Unknown ET method invoked for field.adj_et: #{et_method}"
+      return unless fdw.leaf_area_index
+
+      current_crop.plant.calc_adj_et_lai(fdw.ref_et, fdw.leaf_area_index)
     end
   end
 
@@ -74,10 +80,7 @@ class Field < ActiveRecord::Base
   # given a date:
   # look for the latest crop in the current year whose emergence date is past
   def current_crop
-    sorted = crops.sort do |a, b|
-      b.emergence_date <=> a.emergence_date
-    end
-    sorted.first
+    @current_crop ||= crops.order(:emergence_date).last
   end
 
   def year
@@ -477,18 +480,6 @@ class Field < ActiveRecord::Base
   end
 
   ###### VALIDATORS & LIFECYCLE #########
-  def target_ad_pct_or_nil
-    if self[:target_ad_pct] != nil
-      begin
-        self[:target_ad_pct] = self[:target_ad_pct].to_f
-        self[:target_ad_pct] = nil if (self[:target_ad_pct] < 1.0) || (self[:target_ad_pct] > 100.0)
-        logger.info "field validation: target_ad_pct #{self[:target_ad_pct]}"
-      rescue Exception => e
-        logger.error "Tried to set field target_ad_pct to #{self[:target_ad_pct]}"
-        self[:target_ad_pct] = nil
-      end
-    end
-  end
 
   def set_fdw_initial_moisture
     fc = self[:field_capacity] || field_capacity
@@ -549,5 +540,6 @@ class Field < ActiveRecord::Base
   def set_defaults
     self.name ||= "New field (Pivot ID: #{pivot_id})"
     self.soil_type = SoilType.default_soil_type
+    self.et_method ||= PCT_COVER_METHOD
   end
 end
