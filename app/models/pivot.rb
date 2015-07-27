@@ -9,15 +9,6 @@ class Pivot < ActiveRecord::Base
 
   attr_accessor :cloning
 
-  def create_dependent_objects
-    return if fields || cloning
-
-    # TODO: Move defaults to Field#set_defaults
-    fields.create!(
-      name: "New field (Pivot ID: #{id})",
-      soil_type_id: SoilType.default_soil_type.id)
-  end
-
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
     ""
   end
@@ -53,5 +44,11 @@ class Pivot < ActiveRecord::Base
   def set_defaults
     self.name ||= "New pivot (farm ID: #{farm_id})"
     self.cropping_year ||= Time.now.year
+  end
+
+  def create_dependent_objects
+    return if fields.any? || cloning
+
+    fields.create!
   end
 end
