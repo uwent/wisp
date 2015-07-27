@@ -35,9 +35,7 @@ class Farm < ActiveRecord::Base
   end
 
   def create_dependent_objects
-    pivots.create!(
-      name: "New pivot (farm ID: #{id})",
-      cropping_year: year || Time.now.year)
+    pivots.create!
   end
 
   def clone_pivots_for(year=Time.now.year)
