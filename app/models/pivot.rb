@@ -3,15 +3,16 @@ class Pivot < ActiveRecord::Base
   has_many :fields, dependent: :destroy
   has_many :irrigation_events, dependent: :destroy
 
-  before_save :set_cropping_year
+  before_validation :set_defaults, on: :create
 
   after_create :create_dependent_objects
 
-  def set_cropping_year
-    self.cropping_year ||= Time.now.year
-  end
+  attr_accessor :cloning
 
   def create_dependent_objects
+    return if fields || cloning
+
+    # TODO: Move defaults to Field#set_defaults
     fields.create!(
       name: "New field (Pivot ID: #{id})",
       soil_type_id: SoilType.default_soil_type.id)
@@ -22,25 +23,35 @@ class Pivot < ActiveRecord::Base
   end
 
   def problem
-    fields.inject([]) {|problems,field| problems << field if field.problem; problems }
+    fields.select do |field|
+      field.problem
+    end
   end
 
   def clone_for(year=Time.now.year)
     return nil if cropping_year == year # Can't clone to same year
-    new_attrs = {}
-    attributes.each { |key,val| new_attrs[key] = val unless key == :id || key == 'id' }
-    new_attrs[:cropping_year] = year
-    new_piv = Pivot.create(new_attrs)
-    dead_field_walking = new_piv.fields.first
-    fields.each do |field|
-      f_attrs = field.attributes
-      f_attrs.delete(:id)
-      f_attrs[:pivot_id] = new_piv[:id]
-      Field.create(f_attrs)
+
+    new_pivot = self.dup
+    new_pivot.cropping_year = year
+    new_pivot.cloning = true
+
+    transaction do
+      new_pivot.save!
+
+      fields.each do |field|
+        new_field = field.dup
+        new_field.pivot = new_pivot
+        new_field.save!
+      end
     end
-    # Now delete the automatically-created one
-    fields.delete(dead_field_walking)
-    dead_field_walking.destroy
-    new_piv
+
+    new_pivot
+  end
+
+  private
+
+  def set_defaults
+    self.name ||= "New pivot (farm ID: #{farm_id})"
+    self.cropping_year ||= Time.now.year
   end
 end
