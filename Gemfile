@@ -7,6 +7,10 @@ gem 'asigbiophys', path: 'vendor/asigbiophys'
 gem 'devise'
 gem 'jquery-rails'
 
+group :development, :staging do
+  gem 'mail_safe'
+end
+
 group :development, :test do
   gem 'mysql2psql', github: 'm5rk/mysql2postgres'
   gem 'factory_girl_rails'
