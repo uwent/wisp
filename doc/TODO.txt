@@ -7,7 +7,7 @@
 * Identify all static pages that don't require authentication and serve them
   from WelcomeController
 
-* Install and configure mail_safe
+* [done] Install and configure mail_safe
 
 * Setup sendgrid
 
@@ -27,7 +27,7 @@
 
   [done] Rectify nullability of timestamps
 
-  * add_index :weather_station_data, [:weather_station_id, :date], unique: true
+  [done] add_index :weather_station_data, [:weather_station_id, :date], unique: true
 
 * Validation
 
@@ -36,8 +36,9 @@
 
 * Ask John whether any external programs depend on this? No
 
-* WeatherStation no longer belongs to pivot, but did at some point; safe to
-  delete the weather_stations.pivot_id column
+* [done] WeatherStation no longer belongs to pivot, but did at some point; safe
+  to delete the weather_stations.pivot_id column (deprecated to
+  pivot_id_deleted)
 
 * Get rid of orig_email, consolidate all email values into User#email
 
