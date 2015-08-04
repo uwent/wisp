@@ -1,0 +1,46 @@
+<% content_for :title do %>
+  WISP: Wisconsin Irrigation Scheduler 2012
+<% end %>
+
+<!-- Content for the remainder (body) of the page goes here -->
+<h2>WISP Home</h2>
+<%= image_tag "pivot.jpg", :width => 200, :style => "float:left; margin-right:30px; margin-bottom:30px; margin-top:10px"  %>
+
+<div class="wisp_description" id="wisp_description">
+
+  <h3>About WISP</h3>
+  <p>The Wisconsin Irrigation Scheduling Program (WISP), is an irrigation water management tool developed by the Departments of Soil Science and Biological Systems Engineering at the Wisconsin-Madison.  WISP is designed to help growers optimize crop water use efficiency by tracking the root zone water inputs and outputs (water balance).</p>
+  <p>Using WISP's water balance predictions, along with root zone soil moisture monitoring, a grower can plan irrigation timing and amount to take maximum advantage of natural rainfall while minimizing over-application of water resulting in leaching.</p>
+
+  <h3>Organization</h3>
+  <p>WISP accommodates multiple Farms, Pivots, Fields and Crops with a hierarchy:</p>
+  <ul>
+    <li> --  A <strong>farm</strong> can be any set of pivots the user chooses (e.g. common ownership, location or management).  </li>
+    <li> --  A <strong>pivot</strong> can have one or more fields growing different crops.</li>
+    <li> --  A <strong>field</strong> is typically defined by a set of common physical or management characteristics (e.g., crop type, soil water holding capacity or irrigation management) assigned to a land area.  Field characteristics can change from year to year and have multiple crops per year.</li>
+    <li> --  For each succeeding <strong>crop</strong> on a field, you specify an emergence date, starting soil moisture, depth of the managed root zone, and AD fraction.</li>
+  </ul>
+  <p>To simplify entering daily data which is the same for multiple fields, <strong>weather stations</strong> are provided. Fields can be associated with a weather station; daily data entered for the weather station (e.g., rainfall or irrigation) are automatically propagated to all the fields. The groupings can be changed at any time.</p>
+
+  <h3>Getting Started</h3>
+    <p>Secure access to your WISP data is provided using a service called OpenID (OID).  Google is the OID provider currently used by WISP, so you will need a Google account.  When you start WISP you are directed to a login page where you enter your email address and password. That's all there is to it!</p>
+
+    <ol>
+      <li> --  <%= link_to 'Create a Google account', 'https://accounts.google.com/NewAccount' %> if you don't already have one.</li>
+      <li> --  Back on this WISP site, the <%= link_to 'Farm Status', :controller => 'wisp', :action => :farm_status %> link in the navigation bar on the left side of the screen. Your login credentials will be requested, and you will be asked to approve their use for this site.</li>
+      <li> --  Upon successful login, you will see the WISP farm screen</li>
+      <li> --  When you first use WISP, a default farm, pivot, field, and crop are created for you, along with weather/irrigation records for the season. </li>
+            You can add more farms on the "Farm Status" page; pivots, the fields they serve, and crops in the field are managed from the "Pivots, Fields, and Crops" page.
+      <li> --  Click on the "Pivots" link in the navigation bar, and use the "Add Pivots" button to add pivots for the farm.</li>
+      <li> --  All field information is required except "Notes".</li>
+      <li> --  If you have multiple fields under a pivot for which you would like to combine data entry, create a weather station and use "Multi-Edit Daily Data" to enter data for it.</li>
+    </ol>
+
+
+  <p>The <%= link_to 'User Guide',  'userguide' %> provides additional model input and application guidance.</p>
+  <h3>About WISP</h3>
+  <ul>
+    <li>Version: 1.1.0</li>
+    <li>Build Number: <%= render :partial => '/wisp/partials/build' %></li>
+  </ul>
+</div>

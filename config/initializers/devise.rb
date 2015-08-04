@@ -1,4 +1,3 @@
-require 'omniauth-google-oauth2'
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
@@ -7,7 +6,7 @@ Devise.setup do |config|
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` on Rails 4+ applications as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  config.secret_key = 'b5579d5dbabf9aa051780f002d672d3680559ce0dab5532cc95b9bb7dd3ed84a090660da41a7917975cbb423c8fefe4b8775f1f25eddedb85ee8e01574fe05d0'
+  config.secret_key = '2f1455d59c7de7b4ece65ef8916b12e05c2d9d53789ffd3ee0dea0f896564050ec80dadfb767f8fa01975997004be4213bba43e79e5654980a5debb354d546fa'
 
   # ==> Mailer Configuration
   # Configure the e-mail address which will be shown in Devise::Mailer,
@@ -100,7 +99,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 10
 
   # Setup a pepper to generate the encrypted password.
-  # config.pepper = 'f69fec578c1cce7b58d378e0424b900cada8b943c1b2bf010b3a674e510e4186a39c294c007db1d822052caa2a5acbb8b599a0fb407771eb1b5a0d53a226dca8'
+  # config.pepper = '7c537f43dac95bab769bc8e45307653848a99b7e829375fef83e344730bc75db1a48e2d60e9d8318048af56a6fc6ff95a1ba3ecff581967795500afc0987643e'
 
   # ==> Configuration for :confirmable
   # A period that the user is allowed to access the website even without
@@ -240,20 +239,6 @@ Devise.setup do |config|
   # Add a new OmniAuth provider. Check the wiki for more information on setting
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
-  # See https://github.com/zquestz/omniauth-google-oauth2/issues/118 for the APIs and profile requirement
-  if Rails.env.development?
-    id = '26150412718-f8v3adua89ennao0kkb56j63bcbjl1nf.apps.googleusercontent.com'
-    secret = 'ZZcNpn0QZVl9dyGgredday0V'
-  elsif Rails.env.staging?
-    id = '811810532580-14tnlal37m696o96tak9rfm6713d8p6v.apps.googleusercontent.com'
-    secret = 'O2cRuS4nAPQdC-9cpnLS8KuE'
-  else
-    id = '519049934520-3c6una4oo4quk600mdrrd57kpsmtrrb5.apps.googleusercontent.com'
-    secret = 'eOxWnCO33-EAMJKmtACEjbvC'
-  end
-  config.omniauth :google_oauth2,
-    id,
-    secret, {access_type: "offline", approval_prompt: "", scope: "userinfo.email,userinfo.profile"}
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

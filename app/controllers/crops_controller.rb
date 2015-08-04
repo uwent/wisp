@@ -1,7 +1,7 @@
-class CropsController < ApplicationController
-  set_default_filters
+class CropsController < AuthenticatedController
+  # TODO: Remove this.
   before_filter(:only => [:post_data, :show, :edit, :update, :destroy]) {|controller| @crop = Crop.find(params[:id]) if (params[:id] && params[:id] != '_empty')}
-  
+
   COLUMN_NAMES = [
     :name,
     :plant_id,
@@ -12,15 +12,15 @@ class CropsController < ApplicationController
     :max_allowable_depletion_frac,
     :notes
   ]
-  
+
   # GET /crops
   # GET /crops.xml
   def index
     get_current_ids
-    @field_id = params[:parent_id]
-    @field = Field.find(@field_id)
 
-    @crops = Crop.where(:field_id => @field_id).order(:name) do
+    @crops = Crop.joins(field: [pivot: [:farm]])
+      .where(farm_id: @farm_id)
+      .order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
     @crop = @field.current_crop
@@ -138,5 +138,5 @@ class CropsController < ApplicationController
   #   @pivot_id = params[:pivot_id] || session[:pivot_id]
   #   @field_id = params[:field_id] || session[:field_id]
   # end
-  
+
 end

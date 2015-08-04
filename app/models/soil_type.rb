@@ -1,18 +1,27 @@
 class SoilType < ActiveRecord::Base
+  validates :name, uniqueness: true
+
   DEFAULT_SOIL_TYPE_NAME = 'Sandy Loam'
-  def self.default_soil_type
-    find_by_name(DEFAULT_SOIL_TYPE_NAME) || first
+
+  def self.default_soil_type_attrs
+    initial_types.find do |attrs|
+      attrs[:name] == DEFAULT_SOIL_TYPE_NAME
+    end
   end
-  
+
+  def self.default_soil_type
+    where(default_soil_type_attrs).first
+  end
+
+  def self.seed
+    initial_types.each do |attrs|
+      where(attrs).first_or_create
+    end
+  end
+
   def self.initial_types
-    [
-      {:name => 'Sand', :field_capacity => 0.10, :perm_wilting_pt => 0.04},
-      {:name => 'Sandy Loam', :field_capacity => 0.15, :perm_wilting_pt => 0.05},
-      {:name => 'Loam', :field_capacity => 0.24, :perm_wilting_pt => 0.08},
-      {:name => 'Silt Loam', :field_capacity => 0.30, :perm_wilting_pt => 0.16},
-      {:name => 'Silt', :field_capacity => 0.31, :perm_wilting_pt => 0.10},
-      {:name => 'Clay Loam', :field_capacity => 0.34, :perm_wilting_pt => 0.15},
-      {:name => 'Clay', :field_capacity => 0.37, :perm_wilting_pt => 0.20},
-    ]
+    YAML.load_file(Rails.root.join('db', 'soil_types.yml')).map do |attrs|
+      attrs.with_indifferent_access
+    end
   end
 end

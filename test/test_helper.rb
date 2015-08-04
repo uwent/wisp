@@ -7,6 +7,9 @@ end
 
 SimpleCov.start 'rails' do
   add_filter 'vendor'
+
+  # TODO: Enable this eventually
+  # minimum_coverage 100
 end
 
 ENV["RAILS_ENV"] = "test"

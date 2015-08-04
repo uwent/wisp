@@ -1,27 +1,26 @@
-class FieldDailyWeatherController < ApplicationController
-  set_default_filters
+class FieldDailyWeatherController < AuthenticatedController
   MOISTURE_EPSILON = 0.01 # Amount by which an incoming pct moist must differ to be treated as "new"
   PCT_COVER_EPSILON = 0.001 # Likewise for percent cover
-  
+
   COLUMN_NAMES = [
-    :ref_et, 
-    :rain, 
-    :irrigation, 
-    :pct_moisture, 
-    :entered_pct_cover, 
-    :ad, 
+    :ref_et,
+    :rain,
+    :irrigation,
+    :pct_moisture,
+    :entered_pct_cover,
+    :ad,
     :notes
     ]
-  
+
   def moisture_changed?(old,incoming)
     (old - incoming).abs > MOISTURE_EPSILON
   end
-  
+
   def cover_changed?(old,incoming)
       (old - incoming).abs > PCT_COVER_EPSILON
     end
 
-  
+
   # GET /field_daily_weather
   # GET /field_daily_weather.xml
   def index
@@ -72,12 +71,12 @@ class FieldDailyWeatherController < ApplicationController
       format.html # index.html.erb
       format.xml  { render :xml => @field_daily_weather }
       if params[:irrig_only]
-        format.json { render :json => @field_daily_weather.to_jqgrid_json([:field_name,:irrigation,:id], 
+        format.json { render :json => @field_daily_weather.to_jqgrid_json([:field_name,:irrigation,:id],
                                                                params[:page] || 1, params[:rows] || 7, wx_size) }
       else
         json = @field_daily_weather.to_jqgrid_json([
           :date,:ref_et,:rain,:irrigation,:display_pct_moisture,:pct_cover_for_json,
-          :leaf_area_index, :adj_et_for_json,:ad,:deep_drainage,:id], 
+          :leaf_area_index, :adj_et_for_json,:ad,:deep_drainage,:id],
           page, page_size, wx_size)
         # logger.info json.inspect
         format.json { render :json => json }
@@ -93,7 +92,7 @@ class FieldDailyWeatherController < ApplicationController
         render :template => 'field_daily_weather/daily_report', :filename => 'field_summary.csv', :content_type => "text/csv"
       end
     end
-    
+
     def calc_page(fdw,date,page_size)
       days = date - fdw.first.date
       days = 7 if days < 7
@@ -116,7 +115,7 @@ class FieldDailyWeatherController < ApplicationController
     #   deep_drainage =~ "%#{params[:deep_drainage]}%" if params[:deep_drainage].present?
     # end
   end # index
-  
+
   def post_data
     attribs = {}
     for col_name in COLUMN_NAMES
@@ -145,7 +144,7 @@ class FieldDailyWeatherController < ApplicationController
         do_pct_cover = true
       end
     end
-    
+
     # logger.info "before update_attributes, fdw was #{fdw.inspect}"
     fdw.update_attributes(attribs)
     # logger.info "after update_attributes, fdw now #{fdw.inspect}"
@@ -153,14 +152,14 @@ class FieldDailyWeatherController < ApplicationController
       fdw.field.pct_cover_changed(fdw)
     end
     fdw.field.save! # triggers do_balances
-    
+
     # DEBUG ONLY
     # fdw = FieldDailyWeather.find(params[:id])
     # logger.info "after field save, fdw now #{fdw.inspect}"
-    
+
     render :nothing => true
   end
-  
+
   # GET /field_daily_weather/1
   # GET /field_daily_weather/1.xml
   def show

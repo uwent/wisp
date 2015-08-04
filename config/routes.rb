@@ -1,32 +1,25 @@
 RailsApp::Application.routes.draw do
-  get "omniauth_callbacks/google_oauth2"
+  devise_for :users
 
-  devise_for :users, controllers: {omniauth_callbacks: "omniauth_callbacks"}
-
-  resources :plants
-
+  match '/userguide' => 'welcome#guide'
   match 'fdw/irrig_only/:id' => 'field_daily_weather#irrig_only'
 
   resources :field_daily_weather
-
-  resources :weather_station_data, :collection => {:post_data => :post}
-
+  resources :irrigation_events
+  resources :plants
+  resources :weather_station_data, collection: { post_data: :post }
   resources :weather_stations
 
-  resources :irrigation_events
+  resources :welcome, only: [:index] do
+    collection do
+      get :about
+      get :weather
+      get :guide
+    end
+  end
 
-  get "sessions/new"
+  root to: 'welcome#index'
 
-  get "sessions/create"
-
-  get "sessions/destroy"
-
-  match "/userguide" => "wisp#userguide"
-
-  root :to => "wisp#index"
-
-  resource :session
-  match '/signin', :to => 'sessions#signin'
-
+  # TODO: Remove this.
   match ':controller(/:action(/:id(.:format)))'
 end

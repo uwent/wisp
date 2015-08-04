@@ -19,7 +19,7 @@
   	.field {
   	  display:inline;
   	}
-		
+
   	#fieldDataBox
   	{
   		position:absolute;
@@ -43,16 +43,11 @@
   	  margin-left:auto;
   	  margin-right:auto;
   	}
-		
+
    </style>
 <% end %>
 <%= content_for :scripts do %>
   <%= jqgrid_javascripts.html_safe %>
-<% end %>
-
-
-<% content_for :welcome do %>
-  <%= render :partial => 'sidebar' %>
 <% end %>
 
 <table class="center"><tr>
@@ -62,19 +57,19 @@
     <%= form_tag(url_for(:controller => "wisp", :action => :pivot_crop, :pivot_id => "", :field_id => ""), :method => 'GET') do %>
       <input type="hidden" name="pivot_id" value=""></input>
       <input type="hidden" name="field_id" value=""></input>
-      <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %> 
-    <% end %>      
+      <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %>
+    <% end %>
   </td>
   <td>
     <%= form_tag(url_for :controller => "wisp", :action => :pivot_crop, :field_id => "") do %>
-      <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot),{ :onchange => "this.form.submit();"} %> 
-    <% end %>      
+      <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot),{ :onchange => "this.form.submit();"} %>
+    <% end %>
   </td>
 </tr></table>
 
 <div id="pivotDataBox">
 	<%= render :partial => '/wisp/partials/pivot_setup_grid' %>
-	
+
 </div>
 
 <div id="fieldDataBox">

@@ -6,14 +6,6 @@
  <%= javascript_include_tag :defaults %>
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-<% end %>
-
-<% content_for :welcome do %>
-  <%= render :partial => 'wisp/sidebar' %>
-<% end %>
-
 <table>
   <tr><th>Name</th><th>Location</th><th>Notes</th><th>Fields</th></tr>
 <% @weather_stations.each do |weather_station| %>

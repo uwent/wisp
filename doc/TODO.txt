@@ -1,0 +1,46 @@
+* Provide default content via content_for? to remove some of the redundant view
+  content
+
+* Use routing logic to determine current farm, etc.; get rid of all the get/set
+  stuff.
+
+* Identify all static pages that don't require authentication and serve them
+  from WelcomeController
+
+* Install and configure mail_safe
+
+* Setup sendgrid
+
+* Ask John about double forms; these forms may not be used?
+
+* Database
+
+  * Install gem for foreign keys
+
+  * Install gem to add foreign keys (dev only)
+
+  * Review nulls, alter
+
+  [done] add_index :users, :email, unique: true unless index_exists?(:users, :email, unique: true)
+
+  [done] Rectify users.encrypted_password limit: 128
+
+  [done] Rectify nullability of timestamps
+
+  * add_index :weather_station_data, [:weather_station_id, :date], unique: true
+
+* Validation
+
+* Ask John about deleting objects; it would be nice to remove the conditional
+  may destroy stuff. Ask Rick. Asked: It's OK.
+
+* Ask John whether any external programs depend on this? No
+
+* WeatherStation no longer belongs to pivot, but did at some point; safe to
+  delete the weather_stations.pivot_id column
+
+* Get rid of orig_email, consolidate all email values into User#email
+
+* Add webmock
+
+* Profile tests

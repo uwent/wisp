@@ -17,7 +17,7 @@
   		border:1px solid gray;
   		margin:0px;
   	}
-		
+
   	#stationDataGrid
   	{
   	}
@@ -37,9 +37,6 @@
 <%= content_for :scripts do %>
   <%= jqgrid_javascripts.html_safe %>
 <% end %>
-<% content_for :welcome do %>
-  <%= render :partial => 'sidebar' %>
-<% end %>
 
 <h2>WISP Weather and Irrigation Multi-Edit</h2>
 
@@ -52,8 +49,8 @@
         options_from_collection_for_select(@weather_stations,:id,:name,@weather_station[:id].to_i),
         { :onchange => "this.form.submit();"}
         )
-       %> 
-    <% end %>      
+       %>
+    <% end %>
   </td>
   <td>
     <%= form_tag(url_for :controller => "wisp", :action => :weather, :group => @group, :weather_station_id => @weather_station) do %>
@@ -62,7 +59,7 @@
         options_from_collection_for_select(@years,:to_i,:to_s,@year),
         { :onchange => "this.form.submit();"}
         )
-       %> 
+       %>
     <% end %>
   </td>
   <td>Note: Entering data here will <strong>overwrite any corresponding values entered</strong> for the crop fields listed below!</td>

@@ -1,6 +1,4 @@
-class FieldsController < ApplicationController
-  set_default_filters
- 
+class FieldsController < AuthenticatedController
   COLUMN_NAMES = [:name,:et_method,:area,:soil_type_id,:field_capacity_pct,:perm_wilting_pt_pct,:target_ad_pct,
                   :ref_et_station_id,:rain_station_id,:soil_moisture_station_id,:notes,:act,:pivot_id,:id]
   # GET /fields
@@ -55,7 +53,7 @@ class FieldsController < ApplicationController
         attribs[:perm_wilting_pt] = SoilType.default_soil_type[:perm_wilting_pt] unless attribs[:perm_wilting_pt]
         field = Field.create(attribs)
         field.get_et
-        field.get_dds if field.current_crop.plant.uses_dds(field.et_method)
+        field.get_degree_days if field.current_crop.plant.uses_degree_days?(field.et_method)
       else
         field = Field.find(params[:id], :include => :field_daily_weather)
         attribs = field.groom_for_defaults(attribs)
@@ -73,7 +71,7 @@ class FieldsController < ApplicationController
     attrs = ApplicationController.jsonify(attrs)
     render :json => attrs
   end
-  
+
   def update_target_ad_pct
     field = Field.find(params[:id])
     attribs = {:target_ad_pct => params[:target_ad_pct]}
@@ -85,7 +83,7 @@ class FieldsController < ApplicationController
     end
     render :json => {:target_ad_pct => params[:target_ad_pct], :target_ad_in => tadin_str}
   end
-  
+
   # GET /fields/1
   # GET /fields/1.xml
   def show
@@ -118,7 +116,7 @@ class FieldsController < ApplicationController
   def create
     @field = Field.new(params[:field])
     @field.pivot_id = @pivot_id
-  
+
     respond_to do |format|
       if @field.save
         format.html { redirect_to(@field, :notice => 'Field was successfully created.') }
@@ -162,5 +160,5 @@ class FieldsController < ApplicationController
     end
   end
 
-  
+
 end

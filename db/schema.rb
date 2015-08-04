@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150420201434) do
+ActiveRecord::Schema.define(:version => 20150717014015) do
 
   create_table "blogs", :force => true do |t|
     t.date     "date"
@@ -145,15 +145,13 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.datetime "updated_at",      :null => false
   end
 
+  add_index "soil_types", ["name"], :name => "index_soil_types_on_name", :unique => true
+
   create_table "users", :force => true do |t|
-    t.string   "orig_email"
     t.string   "first_name"
     t.string   "last_name"
-    t.string   "identifier_url"
     t.datetime "created_at",                             :null => false
     t.datetime "updated_at",                             :null => false
-    t.string   "provider"
-    t.string   "uid"
     t.string   "email",                  :default => "", :null => false
     t.string   "encrypted_password",     :default => "", :null => false
     t.string   "reset_password_token"
@@ -170,8 +168,8 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
   add_index "users", ["reset_password_token"], :name => "index_users_on_reset_password_token", :unique => true
 
   create_table "weather_station_data", :force => true do |t|
-    t.integer  "weather_station_id"
-    t.date     "date"
+    t.integer  "weather_station_id",   :null => false
+    t.date     "date",                 :null => false
     t.float    "ref_et"
     t.float    "rain"
     t.float    "entered_pct_moisture"
@@ -182,6 +180,8 @@ ActiveRecord::Schema.define(:version => 20150420201434) do
     t.float    "entered_pct_cover"
     t.float    "leaf_area_index"
   end
+
+  add_index "weather_station_data", ["weather_station_id", "date"], :name => "index_weather_station_data_on_weather_station_id_and_date", :unique => true
 
   create_table "weather_stations", :force => true do |t|
     t.integer  "group_id"

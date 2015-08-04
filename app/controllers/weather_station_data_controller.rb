@@ -1,10 +1,7 @@
-class WeatherStationDataController < ApplicationController
-  before_filter :ensure_signed_in, :except => [:post_data]
-  before_filter :get_current_ids, :ensure_group
-  
+class WeatherStationDataController < AuthenticatedController
   COLUMN_NAMES = [:rain,:irrigation,:entered_pct_moisture,:ref_et,:entered_pct_cover,:notes]
   ROWS_PER_PAGE = 14
-  
+
   def index
     if params[:weather_station_id]
       weather_station_id = params[:weather_station_id].to_i
@@ -17,7 +14,7 @@ class WeatherStationDataController < ApplicationController
     @weather_station = WeatherStation.find(weather_station_id)
     @year = params[:year] ? params[:year].to_i : Time.now.year
     wx_start_date,wx_end_date = date_endpoints(@year)
-    
+
     @weather_data = WeatherStationData.where(:weather_station_id => weather_station_id,:date => wx_start_date..wx_end_date).order(:date) do
       paginate :page => params[:page], :per_page => ROWS_PER_PAGE
     end
@@ -27,11 +24,11 @@ class WeatherStationDataController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @weather_data }
-      format.json { render :json => @weather_data.to_jqgrid_json([:date]+COLUMN_NAMES+[:id], 
+      format.json { render :json => @weather_data.to_jqgrid_json([:date]+COLUMN_NAMES+[:id],
                                                              params[:page], params[:rows],@weather_data.size) }
     end
-  end  
-  
+  end
+
   def post_data
     attribs = {}
     if params[:id]
@@ -117,7 +114,7 @@ class WeatherStationDataController < ApplicationController
       format.xml  { head :ok }
     end
   end
-  
+
   private
   def date_endpoints(year=nil)
     year ||= Time.now.year
