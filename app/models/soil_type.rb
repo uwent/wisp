@@ -10,7 +10,7 @@ class SoilType < ActiveRecord::Base
   end
 
   def self.default_soil_type
-    where(default_soil_type_attrs).first
+    where(name: DEFAULT_SOIL_TYPE_NAME).first
   end
 
   def self.seed
