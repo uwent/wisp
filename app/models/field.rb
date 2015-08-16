@@ -172,8 +172,8 @@ class Field < ActiveRecord::Base
   end
 
   def default_emergence_date
-    season_start,season_end = date_endpoints
-    Date.civil(season_start.year,*EMERGENCE_DATE)
+    season_start, season_end = date_endpoints
+    Date.civil(season_start.year, *EMERGENCE_DATE)
   end
 
   # When we're called with default params (e.g. when a Pivot is created, choose the dates for the season)
