@@ -37,8 +37,7 @@ class Field < ActiveRecord::Base
   validates :et_method,
     inclusion: {
       in: [PCT_COVER_METHOD, LAI_METHOD]
-    },
-    allow_nil: false
+    }
 
   def self.starts_on(year)
     Date.civil(year, *START_DATE)
