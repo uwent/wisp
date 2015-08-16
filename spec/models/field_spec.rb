@@ -134,4 +134,25 @@ describe Field do
       end
     end
   end
+
+  describe '#year' do
+    let(:field) { build :field }
+    let(:pivot_farm) { nil }
+
+    before { allow(field).to receive(:pivot_farm).and_return pivot_farm }
+
+    context 'when there is a farm via the pivot' do
+      let(:pivot_farm) { build :farm, year: 1999 }
+
+      it 'is the farm year' do
+        expect(field.year).to eq(1999)
+      end
+    end
+
+    context 'when there is not a farm via the pivot' do
+      it 'is the current year' do
+        expect(field.year).to eq(Time.now.year)
+      end
+    end
+  end
 end

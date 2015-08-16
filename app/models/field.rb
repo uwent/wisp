@@ -27,6 +27,8 @@ class Field < ActiveRecord::Base
   has_many :multi_edit_groups
   has_many :weather_stations, through: :multi_edit_links
 
+  delegate :farm, to: :pivot, prefix: true, allow_nil: true
+
   validates :target_ad_pct,
     numericality: {
       greater_than_or_equal_to: 1.0,
@@ -83,8 +85,9 @@ class Field < ActiveRecord::Base
   end
 
   def year
-    return Time.now.year unless pivot && pivot.farm
-    pivot.farm.year
+    return Time.now.year unless pivot_farm
+
+    pivot_farm.year
   end
 
   def field_capacity
