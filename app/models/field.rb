@@ -7,9 +7,9 @@ class Field < ActiveRecord::Base
   after_save :set_fdw_initial_moisture, :do_balances
   before_validation :set_defaults, on: :create
 
-  START_DATE = [4,1]
-  END_DATE = [11,30]
-  EMERGENCE_DATE = [5,1]
+  START_DATE = [4, 1]
+  END_DATE = [11, 30]
+  EMERGENCE_DATE = [5, 1]
   DEFAULT_FIELD_CAPACITY = 0.31
   DEFAULT_PERM_WILTING_PT = 0.14
   EPSILON = 0.0000001
