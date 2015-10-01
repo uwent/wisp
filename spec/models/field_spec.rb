@@ -155,4 +155,55 @@ describe Field do
       end
     end
   end
+
+  describe '#field_capacity' do
+    let(:field) { build :field, soil_type: soil_type, field_capacity: field_capacity }
+    let(:soil_type) { build :soil_type, field_capacity: 0.2 }
+
+    context 'when field_capacity is set' do
+      context 'but it is zero' do
+        let(:field_capacity) { 0.0 }
+
+        context 'and it has a soil type' do
+          it 'is the soil type field capacity' do
+            expect(field.field_capacity).to eq(0.2)
+          end
+        end
+
+        context 'and it does not have a soil type' do
+          let(:soil_type) { nil }
+
+          it 'is the default field capacity' do
+            expect(field.field_capacity).to eq(0.31)
+          end
+        end
+      end
+
+      context 'and it is not zero' do
+        let(:field_capacity) { 0.1 }
+
+        it 'is the field capacity' do
+          expect(field.field_capacity).to eq(0.1)
+        end
+      end
+    end
+
+    context 'when field capacity is not set' do
+      let(:field_capacity) { nil }
+
+      context 'and it has a soil type' do
+        it 'is the soil type field capacity' do
+          expect(field.field_capacity).to eq(0.2)
+        end
+      end
+
+      context 'and it does not have a soil type' do
+        let(:soil_type) { nil }
+
+        it 'is the default field capacity' do
+          expect(field.field_capacity).to eq(0.31)
+        end
+      end
+    end
+  end
 end
