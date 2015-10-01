@@ -206,4 +206,21 @@ describe Field do
       end
     end
   end
+
+  describe '#field_capacity_pct=' do
+    let(:field) { build :field }
+
+    it 'stores the percentage' do
+      field.field_capacity_pct = 101.0
+      expect(field.field_capacity).to eq(1.01)
+    end
+  end
+
+  describe '#field_capacity_pct' do
+    let(:field) { build :field, field_capacity: 1.01 }
+
+    it 'is the percentage' do
+      expect(field.field_capacity_pct).to eq(101.0)
+    end
+  end
 end
