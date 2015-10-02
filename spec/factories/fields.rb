@@ -1,6 +1,6 @@
 FactoryGirl.define do
   factory :field do
-    pivot
-    soil_type
+    association :pivot, strategy: :build
+    association :soil_type, strategy: :build
   end
 end

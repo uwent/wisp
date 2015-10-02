@@ -154,7 +154,7 @@ class Field < ActiveRecord::Base
     lai = nil
     (start_date..end_date).each do |date|
       # Could use update_canopy for this, but why go 'round twice? Still, there's a smell.
-      days_since_emergence = date - current_crop.emergence_date
+      days_since_emergence = date - emergence_date
       if et_method == LAI_METHOD
         # FIXME: This call to lai_corn s/b delegated to current_crop.plant
         lai = days_since_emergence >= 0 ? lai_corn(days_since_emergence) : 0.0
@@ -173,18 +173,19 @@ class Field < ActiveRecord::Base
     set_fdw_initial_moisture
   end
 
-  def default_emergence_date
-    season_start, season_end = date_endpoints
-    Date.civil(season_start.year, *EMERGENCE_DATE)
+  def emergence_date
+    @emergence_date ||= current_crop.try(:emergence_date) || default_emergence_date
   end
 
-  # When we're called with default params (e.g. when a Pivot is created, choose the dates for the season)
+  def cropping_year
+    @cropping_year ||= pivot.try(:cropping_year) || Time.now.year
+  end
+
   def date_endpoints
-    year = pivot.cropping_year || Time.now.year
-    # puts "date_endpoints: #{year} / #{START_DATE[0]} / #{START_DATE[1]}"
-    ep1 = Date.civil(year,*START_DATE)
-    ep2 = Date.civil(year,*END_DATE)
-    [ep1,ep2]
+    [
+      Date.civil(cropping_year, *START_DATE),
+      Date.civil(cropping_year, *END_DATE)
+    ]
   end
 
   def initial_ad
@@ -538,6 +539,10 @@ class Field < ActiveRecord::Base
   end
 
   private
+
+  def default_emergence_date
+    Date.civil(cropping_year, *EMERGENCE_DATE)
+  end
 
   def set_defaults
     self.name ||= "New field (Pivot ID: #{pivot_id})"

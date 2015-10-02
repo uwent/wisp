@@ -1,5 +1,5 @@
 FactoryGirl.define do
   factory :farm do
-    group
+    association :group, strategy: :build
   end
 end
