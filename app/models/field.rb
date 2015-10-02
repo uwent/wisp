@@ -10,8 +10,11 @@ class Field < ActiveRecord::Base
   START_DATE = [4, 1]
   END_DATE = [11, 30]
   EMERGENCE_DATE = [5, 1]
+
+  DEFAULT_INITIAL_AD = -999.0
   DEFAULT_FIELD_CAPACITY = 0.31
   DEFAULT_PERM_WILTING_PT = 0.14
+
   EPSILON = 0.0000001
 
   PCT_COVER_METHOD = 1
@@ -188,23 +191,26 @@ class Field < ActiveRecord::Base
     ]
   end
 
+  def can_calculate_initial_ad?
+    current_crop &&
+      current_crop.max_root_zone_depth &&
+      field_capacity &&
+      perm_wilting_pt &&
+      current_crop.max_allowable_depletion_frac &&
+      current_crop.initial_soil_moisture
+  end
+
   def initial_ad
-    # puts "field#initial_ad called"
-    unless (current_crop && current_crop.max_root_zone_depth && field_capacity && perm_wilting_pt &&
-      current_crop.max_allowable_depletion_frac && current_crop.initial_soil_moisture)
-      return -999.0
-    end
+    return DEFAULT_INITIAL_AD unless can_calculate_initial_ad?
+
     mrzd = current_crop.max_root_zone_depth
     taw = taw(field_capacity, perm_wilting_pt, mrzd)
     mad_frac = current_crop.max_allowable_depletion_frac
-    # puts "Field#taw returns #{taw}; max allowable depletion frac is #{mad_frac}"
 
-    pct_mad_min = pct_moisture_at_ad_min(field_capacity, ad_max_inches(mad_frac,taw), mrzd)
+    pct_mad_min = pct_moisture_at_ad_min(field_capacity, ad_max_inches(mad_frac, taw), mrzd)
 
     obs_pct_moisture = current_crop.initial_soil_moisture
-    # puts "about to do the calc with crop's initial moisture at #{obs_pct_moisture}"
-    daily_ad_from_moisture(mad_frac,taw,mrzd,pct_mad_min,obs_pct_moisture)
-
+    daily_ad_from_moisture(mad_frac, taw, mrzd, pct_mad_min, obs_pct_moisture)
   end
 
   def update_with_emergence_date(emergence_date)

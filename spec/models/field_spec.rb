@@ -344,6 +344,20 @@ describe Field do
   end
 
   describe '#initial_ad' do
+    context 'when the preconditions are satisfied' do
+      let(:field) { create :field }
 
+      it 'is not the default value' do
+        expect(field.initial_ad).not_to eq(-999.0)
+      end
+    end
+
+    context 'when the preconditions are not satisfied' do
+      let(:field) { build :field }
+
+      it 'is the default value' do
+        expect(field.initial_ad).to eq(-999.0)
+      end
+    end
   end
 end
