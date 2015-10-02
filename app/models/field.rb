@@ -123,16 +123,16 @@ class Field < ActiveRecord::Base
     end
   end
 
+  def perm_wilting_pt_pct=(val)
+    write_attribute(:perm_wilting_pt,val.to_f / 100.0)
+  end
+
   def perm_wilting_pt=(val)
     write_attribute(:perm_wilting_pt,val.to_f)
   end
 
   def perm_wilting_pt_pct
     perm_wilting_pt * 100.0
-  end
-
-  def perm_wilting_pt_pct=(val)
-    write_attribute(:perm_wilting_pt,val.to_f / 100.0)
   end
 
   def create_dependent_objects
