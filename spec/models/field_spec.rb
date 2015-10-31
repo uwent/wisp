@@ -346,9 +346,10 @@ describe Field do
   describe '#initial_ad' do
     context 'when the preconditions are satisfied' do
       let(:field) { create :field }
+      let(:delta) { 2 ** -20 }
 
-      it 'is not the default value' do
-        expect(field.initial_ad).not_to eq(-999.0)
+      it 'is 0.8' do
+        expect(field.initial_ad).to be_within(delta).of(0.8)
       end
     end
 
@@ -358,6 +359,16 @@ describe Field do
       it 'is the default value' do
         expect(field.initial_ad).to eq(-999.0)
       end
+    end
+  end
+
+  describe '#update_canopy' do
+    context 'when the et_method is LAI_METHOD' do
+
+    end
+
+    context 'when the et_method is PCT_COVER_METHOD' do
+
     end
   end
 end

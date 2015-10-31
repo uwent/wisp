@@ -13,10 +13,12 @@ class FieldDailyWeather < ActiveRecord::Base
     field.et_method
   end
 
+  # TODO: Get rid of this
   def self.defer_balances
     @@do_balances = false
   end
 
+  # TODO: Get rid of this
   def self.undefer_balances
     @@do_balances = true
   end
