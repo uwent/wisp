@@ -12,7 +12,7 @@ group :development, :staging do
 end
 
 group :development, :test do
-  gem 'mysql2psql', github: 'm5rk/mysql2postgres'
+  gem 'mysqltopostgres', github: 'maxlapshin/mysql2postgres'
   gem 'factory_girl_rails'
   gem 'pry'
   gem 'rspec-rails'
