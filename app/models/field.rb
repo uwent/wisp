@@ -7,11 +7,14 @@ class Field < ActiveRecord::Base
   after_save :set_fdw_initial_moisture, :do_balances
   before_validation :set_defaults, on: :create
 
-  START_DATE = [4,1]
-  END_DATE = [11,30]
-  EMERGENCE_DATE = [5,1]
+  START_DATE = [4, 1]
+  END_DATE = [11, 30]
+  EMERGENCE_DATE = [5, 1]
+
+  DEFAULT_INITIAL_AD = -999.0
   DEFAULT_FIELD_CAPACITY = 0.31
   DEFAULT_PERM_WILTING_PT = 0.14
+
   EPSILON = 0.0000001
 
   PCT_COVER_METHOD = 1
@@ -27,6 +30,8 @@ class Field < ActiveRecord::Base
   has_many :multi_edit_groups
   has_many :weather_stations, through: :multi_edit_links
 
+  delegate :farm, to: :pivot, prefix: true, allow_nil: true
+
   validates :target_ad_pct,
     numericality: {
       greater_than_or_equal_to: 1.0,
@@ -37,8 +42,7 @@ class Field < ActiveRecord::Base
   validates :et_method,
     inclusion: {
       in: [PCT_COVER_METHOD, LAI_METHOD]
-    },
-    allow_nil: false
+    }
 
   def self.starts_on(year)
     Date.civil(year, *START_DATE)
@@ -80,12 +84,13 @@ class Field < ActiveRecord::Base
   # given a date:
   # look for the latest crop in the current year whose emergence date is past
   def current_crop
-    @current_crop ||= crops.order(:emergence_date).last
+    @current_crop ||= crops(true).order(:emergence_date).last
   end
 
   def year
-    return Time.now.year unless pivot && pivot.farm
-    pivot.farm.year
+    return Time.now.year unless pivot_farm
+
+    pivot_farm.year
   end
 
   def field_capacity
@@ -121,16 +126,16 @@ class Field < ActiveRecord::Base
     end
   end
 
+  def perm_wilting_pt_pct=(val)
+    write_attribute(:perm_wilting_pt,val.to_f / 100.0)
+  end
+
   def perm_wilting_pt=(val)
     write_attribute(:perm_wilting_pt,val.to_f)
   end
 
   def perm_wilting_pt_pct
     perm_wilting_pt * 100.0
-  end
-
-  def perm_wilting_pt_pct=(val)
-    write_attribute(:perm_wilting_pt,val.to_f / 100.0)
   end
 
   def create_dependent_objects
@@ -152,7 +157,7 @@ class Field < ActiveRecord::Base
     lai = nil
     (start_date..end_date).each do |date|
       # Could use update_canopy for this, but why go 'round twice? Still, there's a smell.
-      days_since_emergence = date - current_crop.emergence_date
+      days_since_emergence = date - emergence_date
       if et_method == LAI_METHOD
         # FIXME: This call to lai_corn s/b delegated to current_crop.plant
         lai = days_since_emergence >= 0 ? lai_corn(days_since_emergence) : 0.0
@@ -171,37 +176,41 @@ class Field < ActiveRecord::Base
     set_fdw_initial_moisture
   end
 
-  def default_emergence_date
-    season_start,season_end = date_endpoints
-    Date.civil(season_start.year,*EMERGENCE_DATE)
+  def emergence_date
+    @emergence_date ||= current_crop.try(:emergence_date) || default_emergence_date
   end
 
-  # When we're called with default params (e.g. when a Pivot is created, choose the dates for the season)
+  def cropping_year
+    @cropping_year ||= pivot.try(:cropping_year) || Time.now.year
+  end
+
   def date_endpoints
-    year = pivot.cropping_year || Time.now.year
-    # puts "date_endpoints: #{year} / #{START_DATE[0]} / #{START_DATE[1]}"
-    ep1 = Date.civil(year,*START_DATE)
-    ep2 = Date.civil(year,*END_DATE)
-    [ep1,ep2]
+    [
+      Date.civil(cropping_year, *START_DATE),
+      Date.civil(cropping_year, *END_DATE)
+    ]
+  end
+
+  def can_calculate_initial_ad?
+    current_crop &&
+      current_crop.max_root_zone_depth &&
+      field_capacity &&
+      perm_wilting_pt &&
+      current_crop.max_allowable_depletion_frac &&
+      current_crop.initial_soil_moisture
   end
 
   def initial_ad
-    # puts "field#initial_ad called"
-    unless (current_crop && current_crop.max_root_zone_depth && field_capacity && perm_wilting_pt &&
-      current_crop.max_allowable_depletion_frac && current_crop.initial_soil_moisture)
-      return -999.0
-    end
+    return DEFAULT_INITIAL_AD unless can_calculate_initial_ad?
+
     mrzd = current_crop.max_root_zone_depth
     taw = taw(field_capacity, perm_wilting_pt, mrzd)
     mad_frac = current_crop.max_allowable_depletion_frac
-    # puts "Field#taw returns #{taw}; max allowable depletion frac is #{mad_frac}"
 
-    pct_mad_min = pct_moisture_at_ad_min(field_capacity, ad_max_inches(mad_frac,taw), mrzd)
+    pct_mad_min = pct_moisture_at_ad_min(field_capacity, ad_max_inches(mad_frac, taw), mrzd)
 
     obs_pct_moisture = current_crop.initial_soil_moisture
-    # puts "about to do the calc with crop's initial moisture at #{obs_pct_moisture}"
-    daily_ad_from_moisture(mad_frac,taw,mrzd,pct_mad_min,obs_pct_moisture)
-
+    daily_ad_from_moisture(mad_frac, taw, mrzd, pct_mad_min, obs_pct_moisture)
   end
 
   def update_with_emergence_date(emergence_date)
@@ -536,6 +545,10 @@ class Field < ActiveRecord::Base
   end
 
   private
+
+  def default_emergence_date
+    Date.civil(cropping_year, *EMERGENCE_DATE)
+  end
 
   def set_defaults
     self.name ||= "New field (Pivot ID: #{pivot_id})"

@@ -1,0 +1,629 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  weather_station_id: 1
+  date: 2011-05-20 15:01:52
+  ref_et: 1.5
+  rain: 1.5
+  entered_pct_moisture: 1.5
+  notes: MyString
+
+two:
+  weather_station_id: 1
+  date: 2011-05-20 15:01:52
+  ref_et: 1.5
+  rain: 1.5
+  entered_pct_moisture: 1.5
+  notes: MyString
+
+wsd_pivot_2012_0:
+  weather_station: wx_stn_2012
+  date: 2012-05-01
+
+wsd_pivot_2012_1:
+  weather_station: wx_stn_2012
+  date: 2012-05-02
+
+wsd_pivot_2012_2:
+  weather_station: wx_stn_2012
+  date: 2012-05-03
+
+wsd_pivot_2012_3:
+  weather_station: wx_stn_2012
+  date: 2012-05-04
+
+wsd_pivot_2012_4:
+  weather_station: wx_stn_2012
+  date: 2012-05-05
+
+wsd_pivot_2012_5:
+  weather_station: wx_stn_2012
+  date: 2012-05-06
+
+wsd_pivot_2012_6:
+  weather_station: wx_stn_2012
+  date: 2012-05-07
+
+wsd_pivot_2012_7:
+  weather_station: wx_stn_2012
+  date: 2012-05-08
+
+wsd_pivot_2012_8:
+  weather_station: wx_stn_2012
+  date: 2012-05-09
+
+wsd_pivot_2012_9:
+  weather_station: wx_stn_2012
+  date: 2012-05-10
+
+wsd_pivot_2012_10:
+  weather_station: wx_stn_2012
+  date: 2012-05-11
+
+wsd_pivot_2012_11:
+  weather_station: wx_stn_2012
+  date: 2012-05-12
+
+wsd_pivot_2012_12:
+  weather_station: wx_stn_2012
+  date: 2012-05-13
+
+wsd_pivot_2012_13:
+  weather_station: wx_stn_2012
+  date: 2012-05-14
+
+wsd_pivot_2012_14:
+  weather_station: wx_stn_2012
+  date: 2012-05-15
+
+wsd_pivot_2012_15:
+  weather_station: wx_stn_2012
+  date: 2012-05-16
+
+wsd_pivot_2012_16:
+  weather_station: wx_stn_2012
+  date: 2012-05-17
+
+wsd_pivot_2012_17:
+  weather_station: wx_stn_2012
+  date: 2012-05-18
+
+wsd_pivot_2012_18:
+  weather_station: wx_stn_2012
+  date: 2012-05-19
+
+wsd_pivot_2012_19:
+  weather_station: wx_stn_2012
+  date: 2012-05-20
+
+wsd_pivot_2012_20:
+  weather_station: wx_stn_2012
+  date: 2012-05-21
+
+wsd_pivot_2012_21:
+  weather_station: wx_stn_2012
+  date: 2012-05-22
+
+wsd_pivot_2012_22:
+  weather_station: wx_stn_2012
+  date: 2012-05-23
+
+wsd_pivot_2012_23:
+  weather_station: wx_stn_2012
+  date: 2012-05-24
+
+wsd_pivot_2012_24:
+  weather_station: wx_stn_2012
+  date: 2012-05-25
+
+wsd_pivot_2012_25:
+  weather_station: wx_stn_2012
+  date: 2012-05-26
+
+wsd_pivot_2012_26:
+  weather_station: wx_stn_2012
+  date: 2012-05-27
+
+wsd_pivot_2012_27:
+  weather_station: wx_stn_2012
+  date: 2012-05-28
+
+wsd_pivot_2012_28:
+  weather_station: wx_stn_2012
+  date: 2012-05-29
+
+wsd_pivot_2012_29:
+  weather_station: wx_stn_2012
+  date: 2012-05-30
+
+wsd_pivot_2012_30:
+  weather_station: wx_stn_2012
+  date: 2012-05-31
+
+wsd_pivot_2012_31:
+  weather_station: wx_stn_2012
+  date: 2012-06-01
+
+wsd_pivot_2012_32:
+  weather_station: wx_stn_2012
+  date: 2012-06-02
+
+wsd_pivot_2012_33:
+  weather_station: wx_stn_2012
+  date: 2012-06-03
+
+wsd_pivot_2012_34:
+  weather_station: wx_stn_2012
+  date: 2012-06-04
+
+wsd_pivot_2012_35:
+  weather_station: wx_stn_2012
+  date: 2012-06-05
+
+wsd_pivot_2012_36:
+  weather_station: wx_stn_2012
+  date: 2012-06-06
+
+wsd_pivot_2012_37:
+  weather_station: wx_stn_2012
+  date: 2012-06-07
+
+wsd_pivot_2012_38:
+  weather_station: wx_stn_2012
+  date: 2012-06-08
+
+wsd_pivot_2012_39:
+  weather_station: wx_stn_2012
+  date: 2012-06-09
+
+wsd_pivot_2012_40:
+  weather_station: wx_stn_2012
+  date: 2012-06-10
+
+wsd_pivot_2012_41:
+  weather_station: wx_stn_2012
+  date: 2012-06-11
+
+wsd_pivot_2012_42:
+  weather_station: wx_stn_2012
+  date: 2012-06-12
+
+wsd_pivot_2012_43:
+  weather_station: wx_stn_2012
+  date: 2012-06-13
+
+wsd_pivot_2012_44:
+  weather_station: wx_stn_2012
+  date: 2012-06-14
+
+wsd_pivot_2012_45:
+  weather_station: wx_stn_2012
+  date: 2012-06-15
+
+wsd_pivot_2012_46:
+  weather_station: wx_stn_2012
+  date: 2012-06-16
+
+wsd_pivot_2012_47:
+  weather_station: wx_stn_2012
+  date: 2012-06-17
+
+wsd_pivot_2012_48:
+  weather_station: wx_stn_2012
+  date: 2012-06-18
+
+wsd_pivot_2012_49:
+  weather_station: wx_stn_2012
+  date: 2012-06-19
+
+wsd_pivot_2012_50:
+  weather_station: wx_stn_2012
+  date: 2012-06-20
+
+wsd_pivot_2012_51:
+  weather_station: wx_stn_2012
+  date: 2012-06-21
+
+wsd_pivot_2012_52:
+  weather_station: wx_stn_2012
+  date: 2012-06-22
+
+wsd_pivot_2012_53:
+  weather_station: wx_stn_2012
+  date: 2012-06-23
+
+wsd_pivot_2012_54:
+  weather_station: wx_stn_2012
+  date: 2012-06-24
+
+wsd_pivot_2012_55:
+  weather_station: wx_stn_2012
+  date: 2012-06-25
+
+wsd_pivot_2012_56:
+  weather_station: wx_stn_2012
+  date: 2012-06-26
+
+wsd_pivot_2012_57:
+  weather_station: wx_stn_2012
+  date: 2012-06-27
+
+wsd_pivot_2012_58:
+  weather_station: wx_stn_2012
+  date: 2012-06-28
+
+wsd_pivot_2012_59:
+  weather_station: wx_stn_2012
+  date: 2012-06-29
+
+wsd_pivot_2012_60:
+  weather_station: wx_stn_2012
+  date: 2012-06-30
+
+wsd_pivot_2012_61:
+  weather_station: wx_stn_2012
+  date: 2012-07-01
+
+wsd_pivot_2012_62:
+  weather_station: wx_stn_2012
+  date: 2012-07-02
+
+wsd_pivot_2012_63:
+  weather_station: wx_stn_2012
+  date: 2012-07-03
+
+wsd_pivot_2012_64:
+  weather_station: wx_stn_2012
+  date: 2012-07-04
+
+wsd_pivot_2012_65:
+  weather_station: wx_stn_2012
+  date: 2012-07-05
+
+wsd_pivot_2012_66:
+  weather_station: wx_stn_2012
+  date: 2012-07-06
+
+wsd_pivot_2012_67:
+  weather_station: wx_stn_2012
+  date: 2012-07-07
+
+wsd_pivot_2012_68:
+  weather_station: wx_stn_2012
+  date: 2012-07-08
+
+wsd_pivot_2012_69:
+  weather_station: wx_stn_2012
+  date: 2012-07-09
+
+wsd_pivot_2012_70:
+  weather_station: wx_stn_2012
+  date: 2012-07-10
+
+wsd_pivot_2012_71:
+  weather_station: wx_stn_2012
+  date: 2012-07-11
+
+wsd_pivot_2012_72:
+  weather_station: wx_stn_2012
+  date: 2012-07-12
+
+wsd_pivot_2012_73:
+  weather_station: wx_stn_2012
+  date: 2012-07-13
+
+wsd_pivot_2012_74:
+  weather_station: wx_stn_2012
+  date: 2012-07-14
+
+wsd_pivot_2012_75:
+  weather_station: wx_stn_2012
+  date: 2012-07-15
+
+wsd_pivot_2012_76:
+  weather_station: wx_stn_2012
+  date: 2012-07-16
+
+wsd_pivot_2012_77:
+  weather_station: wx_stn_2012
+  date: 2012-07-17
+
+wsd_pivot_2012_78:
+  weather_station: wx_stn_2012
+  date: 2012-07-18
+
+wsd_pivot_2012_79:
+  weather_station: wx_stn_2012
+  date: 2012-07-19
+
+wsd_pivot_2012_80:
+  weather_station: wx_stn_2012
+  date: 2012-07-20
+
+wsd_pivot_2012_81:
+  weather_station: wx_stn_2012
+  date: 2012-07-21
+
+wsd_pivot_2012_82:
+  weather_station: wx_stn_2012
+  date: 2012-07-22
+
+wsd_pivot_2012_83:
+  weather_station: wx_stn_2012
+  date: 2012-07-23
+
+wsd_pivot_2012_84:
+  weather_station: wx_stn_2012
+  date: 2012-07-24
+
+wsd_pivot_2012_85:
+  weather_station: wx_stn_2012
+  date: 2012-07-25
+
+wsd_pivot_2012_86:
+  weather_station: wx_stn_2012
+  date: 2012-07-26
+
+wsd_pivot_2012_87:
+  weather_station: wx_stn_2012
+  date: 2012-07-27
+
+wsd_pivot_2012_88:
+  weather_station: wx_stn_2012
+  date: 2012-07-28
+
+wsd_pivot_2012_89:
+  weather_station: wx_stn_2012
+  date: 2012-07-29
+
+wsd_pivot_2012_90:
+  weather_station: wx_stn_2012
+  date: 2012-07-30
+
+wsd_pivot_2012_91:
+  weather_station: wx_stn_2012
+  date: 2012-07-31
+
+wsd_pivot_2012_92:
+  weather_station: wx_stn_2012
+  date: 2012-08-01
+
+wsd_pivot_2012_93:
+  weather_station: wx_stn_2012
+  date: 2012-08-02
+
+wsd_pivot_2012_94:
+  weather_station: wx_stn_2012
+  date: 2012-08-03
+
+wsd_pivot_2012_95:
+  weather_station: wx_stn_2012
+  date: 2012-08-04
+
+wsd_pivot_2012_96:
+  weather_station: wx_stn_2012
+  date: 2012-08-05
+
+wsd_pivot_2012_97:
+  weather_station: wx_stn_2012
+  date: 2012-08-06
+
+wsd_pivot_2012_98:
+  weather_station: wx_stn_2012
+  date: 2012-08-07
+
+wsd_pivot_2012_99:
+  weather_station: wx_stn_2012
+  date: 2012-08-08
+
+wsd_pivot_2012_100:
+  weather_station: wx_stn_2012
+  date: 2012-08-09
+
+wsd_pivot_2012_101:
+  weather_station: wx_stn_2012
+  date: 2012-08-10
+
+wsd_pivot_2012_102:
+  weather_station: wx_stn_2012
+  date: 2012-08-11
+
+wsd_pivot_2012_103:
+  weather_station: wx_stn_2012
+  date: 2012-08-12
+
+wsd_pivot_2012_104:
+  weather_station: wx_stn_2012
+  date: 2012-08-13
+
+wsd_pivot_2012_105:
+  weather_station: wx_stn_2012
+  date: 2012-08-14
+
+wsd_pivot_2012_106:
+  weather_station: wx_stn_2012
+  date: 2012-08-15
+
+wsd_pivot_2012_107:
+  weather_station: wx_stn_2012
+  date: 2012-08-16
+
+wsd_pivot_2012_108:
+  weather_station: wx_stn_2012
+  date: 2012-08-17
+
+wsd_pivot_2012_109:
+  weather_station: wx_stn_2012
+  date: 2012-08-18
+
+wsd_pivot_2012_110:
+  weather_station: wx_stn_2012
+  date: 2012-08-19
+
+wsd_pivot_2012_111:
+  weather_station: wx_stn_2012
+  date: 2012-08-20
+
+wsd_pivot_2012_112:
+  weather_station: wx_stn_2012
+  date: 2012-08-21
+
+wsd_pivot_2012_113:
+  weather_station: wx_stn_2012
+  date: 2012-08-22
+
+wsd_pivot_2012_114:
+  weather_station: wx_stn_2012
+  date: 2012-08-23
+
+wsd_pivot_2012_115:
+  weather_station: wx_stn_2012
+  date: 2012-08-24
+
+wsd_pivot_2012_116:
+  weather_station: wx_stn_2012
+  date: 2012-08-25
+
+wsd_pivot_2012_117:
+  weather_station: wx_stn_2012
+  date: 2012-08-26
+
+wsd_pivot_2012_118:
+  weather_station: wx_stn_2012
+  date: 2012-08-27
+
+wsd_pivot_2012_119:
+  weather_station: wx_stn_2012
+  date: 2012-08-28
+
+wsd_pivot_2012_120:
+  weather_station: wx_stn_2012
+  date: 2012-08-29
+
+wsd_pivot_2012_121:
+  weather_station: wx_stn_2012
+  date: 2012-08-30
+
+wsd_pivot_2012_122:
+  weather_station: wx_stn_2012
+  date: 2012-08-31
+
+wsd_pivot_2012_123:
+  weather_station: wx_stn_2012
+  date: 2012-09-01
+
+wsd_pivot_2012_124:
+  weather_station: wx_stn_2012
+  date: 2012-09-02
+
+wsd_pivot_2012_125:
+  weather_station: wx_stn_2012
+  date: 2012-09-03
+
+wsd_pivot_2012_126:
+  weather_station: wx_stn_2012
+  date: 2012-09-04
+
+wsd_pivot_2012_127:
+  weather_station: wx_stn_2012
+  date: 2012-09-05
+
+wsd_pivot_2012_128:
+  weather_station: wx_stn_2012
+  date: 2012-09-06
+
+wsd_pivot_2012_129:
+  weather_station: wx_stn_2012
+  date: 2012-09-07
+
+wsd_pivot_2012_130:
+  weather_station: wx_stn_2012
+  date: 2012-09-08
+
+wsd_pivot_2012_131:
+  weather_station: wx_stn_2012
+  date: 2012-09-09
+
+wsd_pivot_2012_132:
+  weather_station: wx_stn_2012
+  date: 2012-09-10
+
+wsd_pivot_2012_133:
+  weather_station: wx_stn_2012
+  date: 2012-09-11
+
+wsd_pivot_2012_134:
+  weather_station: wx_stn_2012
+  date: 2012-09-12
+
+wsd_pivot_2012_135:
+  weather_station: wx_stn_2012
+  date: 2012-09-13
+
+wsd_pivot_2012_136:
+  weather_station: wx_stn_2012
+  date: 2012-09-14
+
+wsd_pivot_2012_137:
+  weather_station: wx_stn_2012
+  date: 2012-09-15
+
+wsd_pivot_2012_138:
+  weather_station: wx_stn_2012
+  date: 2012-09-16
+
+wsd_pivot_2012_139:
+  weather_station: wx_stn_2012
+  date: 2012-09-17
+
+wsd_pivot_2012_140:
+  weather_station: wx_stn_2012
+  date: 2012-09-18
+
+wsd_pivot_2012_141:
+  weather_station: wx_stn_2012
+  date: 2012-09-19
+
+wsd_pivot_2012_142:
+  weather_station: wx_stn_2012
+  date: 2012-09-20
+
+wsd_pivot_2012_143:
+  weather_station: wx_stn_2012
+  date: 2012-09-21
+
+wsd_pivot_2012_144:
+  weather_station: wx_stn_2012
+  date: 2012-09-22
+
+wsd_pivot_2012_145:
+  weather_station: wx_stn_2012
+  date: 2012-09-23
+
+wsd_pivot_2012_146:
+  weather_station: wx_stn_2012
+  date: 2012-09-24
+
+wsd_pivot_2012_147:
+  weather_station: wx_stn_2012
+  date: 2012-09-25
+
+wsd_pivot_2012_148:
+  weather_station: wx_stn_2012
+  date: 2012-09-26
+
+wsd_pivot_2012_149:
+  weather_station: wx_stn_2012
+  date: 2012-09-27
+
+wsd_pivot_2012_150:
+  weather_station: wx_stn_2012
+  date: 2012-09-28
+
+wsd_pivot_2012_151:
+  weather_station: wx_stn_2012
+  date: 2012-09-29
+
+wsd_pivot_2012_152:
+  weather_station: wx_stn_2012
+  date: 2012-09-30

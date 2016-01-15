@@ -1,0 +1,19 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+
+default:
+  id: 1
+  email: your_email@your_isp.com
+  first_name: Your
+  last_name: Name
+
+rick:
+  email: fewayne@gmail.com
+  first_name: Rick
+  last_name: Wayne
+  # memberships: ricks_membership
+
+finn:
+  email: something_private@mailinator.com
+  first_name: finn
+  last_name: k

@@ -1,0 +1,43 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+
+one:
+  field_id: 1
+  name: Corn
+  variety: Fabulous Hybrid
+  emergence_date: 2011-05-23 15:01:43
+  harvest_or_kill_date: 2011-05-30 15:01:43
+  max_root_zone_depth: 1.5
+  max_allowable_depletion_frac: 1.5
+  max_allowable_depletion_inches: 1.5
+  notes: 
+
+two:
+  field_id: 
+  name: MyString
+  variety: MyString
+  emergence_date: 2011-05-20 15:01:43
+  harvest_or_kill_date: 2011-05-20 15:01:43
+  max_root_zone_depth: 1.5
+  max_allowable_depletion_frac: 1.5
+  max_allowable_depletion_inches: 1.5
+  notes: 
+
+default:
+  id: 1
+  field_id: 1
+  name: Corn
+  variety: Late Bloomer Hybrid
+  emergence_date: 2011-07-01 15:01:43
+  harvest_or_kill_date: 2011-07-20 15:01:43
+  max_root_zone_depth: 1.5
+  max_allowable_depletion_frac: 1.5
+  max_allowable_depletion_inches: 1.5
+  notes: For the default field
+  
+crop_for_wx_station_testing:
+  field: field_for_pivot_2012
+  name: Some crop
+  emergence_date: 2012-05-01
+  max_root_zone_depth: 30
+  max_allowable_depletion_frac: 0.4
+  

@@ -1,3 +1,5 @@
+* [done] Fix the sequences after importing
+
 * Provide default content via content_for? to remove some of the redundant view
   content
 

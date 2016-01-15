@@ -3,14 +3,8 @@ class SoilType < ActiveRecord::Base
 
   DEFAULT_SOIL_TYPE_NAME = 'Sandy Loam'
 
-  def self.default_soil_type_attrs
-    initial_types.find do |attrs|
-      attrs[:name] == DEFAULT_SOIL_TYPE_NAME
-    end
-  end
-
   def self.default_soil_type
-    where(name: DEFAULT_SOIL_TYPE_NAME).first
+    where(name: DEFAULT_SOIL_TYPE_NAME).first!
   end
 
   def self.seed

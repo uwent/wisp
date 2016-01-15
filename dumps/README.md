@@ -1,5 +1,9 @@
 # README
 
+# Issues
+
+* https://github.com/ajokela/mysql-pr/pull/1
+
 Run this to restore the production database locally:
 
 ```
@@ -10,7 +14,7 @@ mysql -u root wisp < mysql_production.sql
 Recreate local databases:
 
 ```
-rake db:drop:all db:create:all
+bundle exec rake db:drop:all db:create:all
 ```
 
 Run the conversion:
