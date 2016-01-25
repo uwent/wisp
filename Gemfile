@@ -4,6 +4,7 @@ gem 'rails', '4.2.5'
 gem 'pg'
 
 gem 'asigbiophys', path: 'vendor/asigbiophys'
+gem 'calendar_date_select'
 gem 'devise'
 gem 'jquery-rails'
 gem 'will_paginate'
