@@ -166,6 +166,7 @@ GEM
     valid_attribute (2.0.0)
     warden (1.2.4)
       rack (>= 1.0)
+    will_paginate (3.1.0)
 
 PLATFORMS
   ruby
@@ -183,6 +184,7 @@ DEPENDENCIES
   rspec-rails
   simplecov
   valid_attribute
+  will_paginate
 
 BUNDLED WITH
    1.10.6

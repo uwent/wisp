@@ -6,6 +6,7 @@ gem 'pg'
 gem 'asigbiophys', path: 'vendor/asigbiophys'
 gem 'devise'
 gem 'jquery-rails'
+gem 'will_paginate'
 
 group :development, :staging do
   gem 'mail_safe'
