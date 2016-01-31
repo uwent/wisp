@@ -1,8 +1,8 @@
 RailsApp::Application.routes.draw do
   devise_for :users
 
-  match '/userguide' => 'welcome#guide'
-  match 'fdw/irrig_only/:id' => 'field_daily_weather#irrig_only'
+  get '/userguide' => 'welcome#guide'
+  get 'fdw/irrig_only/:id' => 'field_daily_weather#irrig_only'
 
   resources :field_daily_weather
   resources :irrigation_events
@@ -20,6 +20,6 @@ RailsApp::Application.routes.draw do
 
   root to: 'welcome#index'
 
-  # TODO: Remove this.
-  match ':controller(/:action(/:id(.:format)))'
+  # TODO: Remove this eventually
+  match ':controller(/:action(/:id(.:format)))', via: [:get, :post]
 end

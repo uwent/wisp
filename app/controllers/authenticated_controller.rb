@@ -3,4 +3,8 @@ class AuthenticatedController < ApplicationController
 
   # TODO: Remove this
   before_filter :get_current_ids
+
+  def current_group
+    current_user.groups.first
+  end
 end

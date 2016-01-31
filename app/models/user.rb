@@ -7,13 +7,6 @@ class User < ActiveRecord::Base
     :trackable,
     :validatable
 
-  # TODO: Use strong params
-  attr_accessible \
-    :email,
-    :password,
-    :password_confirmation,
-    :remember_me
-
   has_many :memberships
   has_many :groups, through: :memberships
 

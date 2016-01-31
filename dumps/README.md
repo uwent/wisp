@@ -1,9 +1,5 @@
 # README
 
-# Issues
-
-* https://github.com/ajokela/mysql-pr/pull/1
-
 Run this to restore the production database locally:
 
 ```
@@ -20,7 +16,7 @@ bundle exec rake db:drop:all db:create:all
 Run the conversion:
 
 ```
-bundle exec mysql2psql dumps/mysql2psql.yml
+bundle exec mysqltopostgres dumps/mysql2psql.yml
 ```
 
 Dump the local database:

@@ -14,11 +14,13 @@ class AddIndexToWeatherStationDataForDate < ActiveRecord::Migration
       .group(:weather_station_id, :date)
       .having('count(*) > 1')
 
-    Rails.logger.info("Number of duplicates: #{duplicates.count}")
+    Rails.logger.info("Number of duplicates: #{duplicates.to_a.count}")
 
     duplicates.each do |weather_station_data_key|
+      weather_station_data_key_attributes = weather_station_data_key.attributes.except('id')
+
       uniques = WeatherStationData
-        .where(weather_station_data_key.attributes)
+        .where(weather_station_data_key_attributes)
         .map do |weather_station_data|
         weather_station_data
           .attributes
@@ -27,12 +29,12 @@ class AddIndexToWeatherStationDataForDate < ActiveRecord::Migration
         .uniq
 
       newest = WeatherStationData
-        .where(weather_station_data_key.attributes)
+        .where(weather_station_data_key_attributes)
         .order(:updated_at)
         .last
 
       others = WeatherStationData
-        .where(weather_station_data_key.attributes)
+        .where(weather_station_data_key_attributes)
         .where('id <> ?', newest.id)
 
       if uniques.count == 1
@@ -46,7 +48,7 @@ class AddIndexToWeatherStationDataForDate < ActiveRecord::Migration
         end
 
         if deleting_not_empty.any?
-          Rails.logger.warn("Duplicate: #{weather_station_data_key.attributes}")
+          Rails.logger.warn("Duplicate: #{weather_station_data_key_attributes}")
           Rails.logger.warn("Keeping:\n#{keeping}")
 
           value = deleting_not_empty.join("\n")

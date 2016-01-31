@@ -1,11 +1,4 @@
 class WeatherStation < ActiveRecord::Base
-  # TODO: Use strong params
-  attr_accessible \
-    :field_ids,
-    :location,
-    :name,
-    :notes
-
   belongs_to :group
   has_many :multi_edit_links
   has_many :fields, through: :multi_edit_links

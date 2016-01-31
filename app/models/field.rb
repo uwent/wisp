@@ -26,7 +26,7 @@ class Field < ActiveRecord::Base
   belongs_to :pivot
   belongs_to :soil_type
   has_many :crops, dependent: :destroy
-  has_many :field_daily_weather, dependent: :destroy, order: :date
+  has_many :field_daily_weather, -> { order(:date) }, dependent: :destroy
   has_many :multi_edit_groups
   has_many :weather_stations, through: :multi_edit_links
 
