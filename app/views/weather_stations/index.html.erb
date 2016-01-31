@@ -8,7 +8,7 @@
 
 <table>
   <tr><th>Name</th><th>Location</th><th>Notes</th><th>Fields</th></tr>
-<% @weather_stations.each do |weather_station| %>
+<% weather_stations.each do |weather_station| %>
   <tr>
     <td><%=h weather_station.name %></td>
     <td><%=h weather_station.location %></td>
