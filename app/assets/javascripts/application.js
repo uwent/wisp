@@ -98,8 +98,9 @@ function setLastAndNextWeeks(date) {
   nextWeek = dateToS(nextWeek);
 }
 
-<%= grid_javascript_settings %>
-var cur_date = '<%= @cur_date %>;'
+// TODO: This won't work:
+// <%= grid_javascript_settings %>
+// var cur_date = '<%= @cur_date %>;'
 var lastWeek
 var nextWeek;
 setLastAndNextWeeks(cur_date);
@@ -150,7 +151,8 @@ function plotGraph() {
   var labels = null;
 
   url = '<%= url_for(:action => :projection_data, :field_id => @field_id, :user_id => @user) %>&cur_date='+cur_date;
-  ad_max = td(<%= @field.ad_max %>);
+  // TODO: This won't work:
+  // ad_max = td(<%= @field.ad_max %>);
   ad_min = 0.0;
   $.ajax(
   {
@@ -276,7 +278,8 @@ function showSummaryBox(date) {
 }
 function showTargetAD() {
   // adValue = 0.0;
-  adValue = <%= @field.target_ad_pct || "''".html_safe %>;
+  // TODO: This won't work.
+  // adValue = <%= @field.target_ad_pct || "''".html_safe %>;
   document.getElementById('target_ad').value = adValue;
 }
 
