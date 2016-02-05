@@ -367,3 +367,41 @@ span.week-button
   border:1px solid;
   border-radius:3px
 }
+h2.pagehead {text-align:center;}
+#pivotDataBox
+{
+  position:absolute;
+  left:275px;
+  top:130px;
+  width:920px;
+  padding:2px;
+  margin:0px;
+}
+.field {
+  display:inline;
+}
+
+#fieldDataBox
+{
+  position:absolute;
+  left:275px;
+  top:235px;
+  width:920px;
+  padding:2px;
+  margin:0px;
+}
+#cropsDataBox
+{
+  position:absolute;
+  left:275px;
+  top:600px;
+  width:920px;
+  padding:2px;
+  margin:0px;
+}
+table.center
+{
+  margin-left:auto;
+  margin-right:auto;
+}
+
