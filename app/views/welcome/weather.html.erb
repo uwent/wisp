@@ -2,18 +2,14 @@
   UW Soil Science Weather/Modeling
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-<% end %>
-
 <% content_for :welcome do %>
   <h2>Welcome to our new website!</h2>
-  <%= image_tag "pic_1.jpg", 
-    {:width => "100", :height => "130", :alt => "Soil Science", 
+  <%= image_tag "pic_1.jpg",
+    {:width => "100", :height => "130", :alt => "Soil Science",
      :style => "float:right; margin-left: 1em; margin-right: 0.5em"}%>
   <!-- <p><a href="http://www.uwex.edu/">University of Wisconsin Extension</a> and the <a href="http://www.soils.wisc.edu/">
     UW Soil Science Department</a> hope you'll find useful information here.</p> -->
-	<p>If you're looking for the old WI/MN Extension site, you're in the right place; we've migrated 
+	<p>If you're looking for the old WI/MN Extension site, you're in the right place; we've migrated
 	  our products. For ET and insolation, see <%= link_to 'Sun/Water', :controller => :sun_water %>;
 	   for degree days, see <%= link_to 'Thermal Models', :controller => :thermal_models %>.</p>
   <p>We offer these data so that growers and other stakeholders in our agricultural landscape
@@ -28,11 +24,11 @@
 <div class="content-box">
   <%= image_tag "weather.jpg", {:width => "109",  :height => "115", :alt => "Weather Pic", :class => "left"} %>
   <h2><%= link_to "Weather (and Web Cam)", :controller => "weather"%></h2>
-  <p>We archive <a href="http://www.soils.wisc.edu/cgi-bin/asig/HYDAccessPage.rb#previous">NWS HYD reports</a>, daily weather 
-    summaries throughout Wisconsin 1995-present. Our 
+  <p>We archive <a href="http://www.soils.wisc.edu/cgi-bin/asig/HYDAccessPage.rb#previous">NWS HYD reports</a>, daily weather
+    summaries throughout Wisconsin 1995-present. Our
     <%= link_to "automated weather stations", :controller => 'awon', :action => :index %>, offer a continuous
     hourly record at Hancock and Arlington back to 1985. We integrate hourly
-    observations at airports all over the Upper Midwest to provide 
+    observations at airports all over the Upper Midwest to provide
     <%= link_to "gridded daily temperature data", :controller => 'weather', :action => :grid_temps %>. Finally, there's the
     ever-popular <%= link_to "Web cam", :controller => 'weather', :action => :webcam %> atop our building.
   </p>
@@ -42,17 +38,17 @@
 <div class="content-box">
   <%= image_tag "sunwater.png", {:width => "109", :height => "108", :alt => "Pic 2", :class => "left"} %>
   <h2><%= link_to "Sun & Water", :controller => 'sun_water' %></h2>
-  <p>We use Atmospheric Sciences' insolation model to derive estimates of solar radiation from satellite imagery. Combined with 
+  <p>We use Atmospheric Sciences' insolation model to derive estimates of solar radiation from satellite imagery. Combined with
     atmospheric data from Unidata's Internet Data Distribution project, this allows us to calculate reference evapotranspiration
     via the Priestley-Taylor equation to derive soil moisture and inform irrigation decisions.
   </p>
 </div>
 <div class="fineline"></div>
-	
+
 <div class="content-box">
   <%= image_tag "thermal.png", {:width => "109", :height => "108", :alt => "Pic 2", :class => "left" } %>
   <h2><%= link_to 'Thermal Models', :controller => 'thermal_models' %></h2>
-  <p>Using our database of temperatures gridded across the Midwest, we create degree-day style thermal models for a 
+  <p>Using our database of temperatures gridded across the Midwest, we create degree-day style thermal models for a
     variety of purposes such as predicting pest emergence.
   </p>
 </div>

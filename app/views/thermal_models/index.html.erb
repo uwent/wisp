@@ -2,10 +2,6 @@
  Thermal Models
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-<% end %>
-
 <% content_for :welcome do %>
   <%= image_tag "thermal.png",{:width => "231", :height => "156", :alt => "Hot and Cold"} %>
   <h2>Thermal Models</h2>
@@ -27,7 +23,7 @@
 <p>Degree-day map and information on weevil development.</p>
 <p>&nbsp;</p>
 <div class=", {}, fineline"></div>
-  
+
 <%= image_tag "corn.jpg", {:width => "75", :height => "75", :alt => "Corn", :class => "left"} %>
 <h2><%= link_to "Corn-Specific Thermal Models", :action => :corn %></h2>
 <p>Corn development model and specific degree-day models for corn pests.</p>
@@ -40,10 +36,10 @@
 <p>&nbsp;</p>
 <div class=", {}, fineline"></div>
 
-<%= image_tag "tree.png", {:width => "75", :height => "75", :alt => "tree", :class => "left"} %>    
+<%= image_tag "tree.png", {:width => "75", :height => "75", :alt => "tree", :class => "left"} %>
 <h2>Tree Pests</h2>
 <p>We use a Base 50F degree-day model to predict the development of <%= link_to "many tree pests", :action => :tree%>.</p>
-<p>In addition, we also provide results from the 
+<p>In addition, we also provide results from the
    <%= link_to 'GMPHEN gypsy-moth phenology model', :action => :gypsy %>.</p>
 <div class=", {}, fineline"></div>
 

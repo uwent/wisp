@@ -2,42 +2,6 @@
   WISP: Wisconsin Irrigation Scheduling Program <%= Time.now.year %>
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-  <%= jqgrid_stylesheets.html_safe -%>
-  <style type="text/css">
-  	h2 {text-align:center;}
-  	#stationDataBox
-  	{
-  		position:absolute;
-  		left:275px;
-  		top:120px;
-  		width:920px;
-  		padding:2px;
-  		border:1px solid gray;
-  		margin:0px;
-  	}
-
-  	#stationDataGrid
-  	{
-  	}
-
-  	#stationAffectsBox
-  	{
-  		position:absolute;
-  		left:275px;
-  		top:520px;
-  		width:920px;
-  		padding:2px;
-  		border:1px solid gray;
-  		margin:0px;
-  	}
-  </style>
-<% end %>
-<%= content_for :scripts do %>
-  <%= jqgrid_javascripts.html_safe %>
-<% end %>
-
 <h2>WISP Weather and Irrigation Multi-Edit</h2>
 
 <div id="stationDataBox">

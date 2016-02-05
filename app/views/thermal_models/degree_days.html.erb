@@ -2,10 +2,6 @@
  Degree Day Calculator
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-<% end %>
-
 <% content_for :welcome do %>
   <%= image_tag "thermal.png", {:width => "231", :height => "231", :alt => "Contour map"} %>
   <h2>Thermal Models</h2>
@@ -16,16 +12,16 @@
 <%= image_tag "degree_flower.png", {:width => "109", :height => "80", :alt => "Pic 2", :class => "left"} %>
 <h2>Degree Day Calculator</h2>
 <p>Degree days totalize the amount of heat available above a threshold temperature since a given day.
-The number of degree days accumulated over some period of time is often related to the phenological development of plants and insects, 
-and so can be used to estimate when pests will be at a life stage vulnerable to control. The base, or lower threshold temperature is that 
-below which the organism does not grow or develop. The cap, or upper threshold is the maximum temperature at which organismal development occurs. Some specific examples can be found at our 
+The number of degree days accumulated over some period of time is often related to the phenological development of plants and insects,
+and so can be used to estimate when pests will be at a life stage vulnerable to control. The base, or lower threshold temperature is that
+below which the organism does not grow or develop. The cap, or upper threshold is the maximum temperature at which organismal development occurs. Some specific examples can be found at our
 <%= link_to 'European Corn Borer', :action => :ecb %> and <%= link_to 'Alfalfa weevil', :action => :alfalfa %> web pages.
 </p>
-<!--<P>A general introduction to using degree day calculations can be found on the <a href="http://128.104.239.6/scout/intro/degree_days.htm">UW IPCM website 
+<!--<P>A general introduction to using degree day calculations can be found on the <a href="http://128.104.239.6/scout/intro/degree_days.htm">UW IPCM website
   </a>.-->
 <p>
-<form name="ddform" ACTION=http://www.soils.wisc.edu/asigServlets/DDReport method="Get"> 
-<B>1)</B> First, please select the location for the degree day data you wish to calculate: 
+<form name="ddform" ACTION=http://www.soils.wisc.edu/asigServlets/DDReport method="Get">
+<B>1)</B> First, please select the location for the degree day data you wish to calculate:
 <P>
 <table>
 <tr>
@@ -43,30 +39,30 @@ below which the organism does not grow or develop. The cap, or upper threshold i
 </table>
 
 <P><HR>
-<P> <B>2)</B> Next, please choose the degree day calculation parameters required: 
-<P>Note: These parameters are usually specific for a particular crop and pest. 
-  Make sure you are using the right ones for your particular situation. Some values 
+<P> <B>2)</B> Next, please choose the degree day calculation parameters required:
+<P>Note: These parameters are usually specific for a particular crop and pest.
+  Make sure you are using the right ones for your particular situation. Some values
   for common pests in our area are listed below.
 <table width="100%" border="0">
   <tr>
-    <td width="40%"> 
-      <p><b>Biofix (begin) date:</b> 
+    <td width="40%">
+      <p><b>Biofix (begin) date:</b>
         <br/><%= date_selectors %>
       <p><b>End date:</b>
         <br/><%= date_selectors({:names => %w(endyear endmonth endday)})%>
 
-      <p><b><a href="/uwex_agwx_data/asos/DDDefs.html">Degree day method</a>:</b> 
+      <p><b><a href="/uwex_agwx_data/asos/DDDefs.html">Degree day method</a>:</b>
         <select name="method">
-          <option value="0">Simple 
-          <option value="1">Modified 
-          <option value="2">Sine 
-          <option value="3">PDays 
+          <option value="0">Simple
+          <option value="1">Modified
+          <option value="2">Sine
+          <option value="3">PDays
         </select>
         <br>
-        <b>Lower threshold temperature (Degrees F):</b> 
+        <b>Lower threshold temperature (Degrees F):</b>
         <input name="lowthresh" value="52">
         <br>
-        <b>Upper threshold temperature (Degrees F):</b> 
+        <b>Upper threshold temperature (Degrees F):</b>
         <input name="upthresh">
       </p>
 </td>
@@ -87,7 +83,7 @@ below which the organism does not grow or develop. The cap, or upper threshold i
 				<td>Bud break</td>
 			</tr>
 			<tr>
-				<td><!-- <a href="http://128.104.239.6/scout/field_pdfs/ALTOC.pdf" >Alfalfa Weevil </a>--> 
+				<td><!-- <a href="http://128.104.239.6/scout/field_pdfs/ALTOC.pdf" >Alfalfa Weevil </a>-->
 					Alfalfa Weevil (<%= link_to "DD Map", :action => :alfalfa %>)</td>
 				<td>Sine</td>
 				<td>48F</td>
@@ -229,7 +225,7 @@ below which the organism does not grow or develop. The cap, or upper threshold i
   <input type="radio" name="datadump" value="1"> As text, for selected time period, ready for downloading.
 </p>
 <P><HR>
-<P> <B>4)</B> Finally, click the "Submit" button to obtain your results: 
+<P> <B>4)</B> Finally, click the "Submit" button to obtain your results:
 <P><input type="submit" value="Submit">&nbsp <input type="reset" value="Clear All Inputs">
 
 <script type="text/javascript">

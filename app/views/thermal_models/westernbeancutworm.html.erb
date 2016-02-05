@@ -3,14 +3,10 @@
   <%= @title %>
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-<% end %>
-
 <% content_for :welcome do %>
   <%= image_tag "wbc.jpg",{:width => "231", :height => "150", :alt => "cutworm larva"} %>
   <h2><%= @title %></h2>
-  
+
 <% end %>
 
 <h2><%= @title %></h2>
@@ -32,7 +28,7 @@
 <h4>Host Range
 </h4>
 
-<p>Western bean cutworms are a pest of dry beans (not soybean) and corn.  In dry beans, young larvae will feed on flower parts and newly emerged leaves.  Economic damage occurs when larvae mature and begin to feed on pod and developing seeds.  
+<p>Western bean cutworms are a pest of dry beans (not soybean) and corn.  In dry beans, young larvae will feed on flower parts and newly emerged leaves.  Economic damage occurs when larvae mature and begin to feed on pod and developing seeds.
 </p>
 <h4>Damage/Symptoms</h4>
 
@@ -46,7 +42,7 @@
 
 <p>Time field scouting activities using degree days and pheromone trap catches.  Examine 20 consecutive corn plants at each of five locations/field.  Look for eggs and or larvae on the upper leaves and continue scouting at weekly intervals until after the threat of western bean cutworm has subsided.  For field corn, consider treatment when 5% or more of the corn plants have either eggs or larvae present, but before larvae have entered the ear.  Once larvae have entered the ear they are not susceptible to insecticide applications.  </p>
 
-<h4>Management 
+<h4>Management
 </h4>
 <p>Consult UW Extension Bulletin “Pest Management if Wisconsin Field Crops” management recommendations.  This bulletin maybe purchased from your local county extension office or is available to view, purchase or download from UW Cooperative Extension’s The Learning Store at <%= link_to "http://learningstore.uwex.edu/", 'http://learningstore.uwex.edu/'%></p>
 

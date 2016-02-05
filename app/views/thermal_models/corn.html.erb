@@ -2,10 +2,6 @@
  Corn-Specific Thermal Models
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-<% end %>
-
 <% content_for :welcome do %>
   <%= image_tag "thermal.png",{:width => "231", :height => "156", :alt => "Hot Sun"} %>
   <h2>Corn-Specific Thermal Models</h2>
@@ -18,9 +14,9 @@
 <%= image_tag "corn.jpg", {:width => "50", :height => "50", :alt => "Degree-day plot", :class => "left"} %>
 <h2><%= link_to "Corn Development", :action => :corn_dev %></h2>
 <p>Predicts corn plant development from our thermal model, with a map and predicted dates for biofixes</p>
-  
+
   <div class="fineline"></div>
-  
+
 <%= image_tag "corn.jpg", {:width => "50", :height => "50", :alt => "Corn", :class => "left"} %>
 <h2><%= link_to "European Corn Borer", :action => :ecb %></h2>
 <p>&nbsp;</p>

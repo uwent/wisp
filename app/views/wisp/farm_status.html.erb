@@ -2,36 +2,6 @@
   WISP: Wisconsin Irrigation Scheduler 2012
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-  <%= jqgrid_stylesheets.html_safe -%>
-
-  <style type="text/css">
-  	h2 {text-align:center;}
-  	#farmDataBox
-  	{
-  		position:absolute;
-  		left:275px;
-  		top:150px;
-  		width:920px;
-  		padding:2px;
-  		border:1px solid gray;
-  		margin:0px;
-  	}
-
-  	#farmProblemsBox
-  	{
-  		position:absolute;
-  		left:275px;
-  		top:400px;
-  		width:920px;
-  		padding:2px;
-  		border:1px solid gray;
-  		margin:0px;
-  	}
-  </style>
-<% end %>
-
 <% content_for :scripts do %>
   <%= jqgrid_javascripts.html_safe %>
   <script type="text/javascript">
