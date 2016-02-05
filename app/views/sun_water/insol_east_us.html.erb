@@ -4,10 +4,6 @@
   <%= @title %>
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-<% end %>
-
 <% content_for :welcome do %>
   <%= image_tag "equinox_090922_ladanyi.jpg",{:width => "231", :height => "156", :alt => "Sun"} %>
   <h2><%= @title %></h2>
@@ -21,14 +17,14 @@
 <CENTER>
   <a href="http://www.soils.wisc.edu/uwex_agwx_data/insol/EAST/yestEASTinsol.gif">
     <IMG SRC="http://www.soils.wisc.edu/uwex_agwx_data/insol/EAST/yestEASTinsol.gif"
-      ALT="Yesterday's Solar Insolation in the Eastern U.S." height="640" width="480"/> 
+      ALT="Yesterday's Solar Insolation in the Eastern U.S." height="640" width="480"/>
   </a>
-</CENTER> 
-<P> 
-<a href="http://www.soils.wisc.edu/uwex_agwx_data/insol/EAST/yestEASTinsol.asc"> 
+</CENTER>
+<P>
+<a href="http://www.soils.wisc.edu/uwex_agwx_data/insol/EAST/yestEASTinsol.asc">
 Download the Data in ASCII Format</a><br>
 <p></UL>
- 
+
 <P>
 <CENTER>
 <H4>For previous days, access the archive <a name="previous" href="http://www.soils.wisc.edu/cgi-bin/asig/InsolAccessPage.rb?reportType=EAST#today">here</a>)</H4>

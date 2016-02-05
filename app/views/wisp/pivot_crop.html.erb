@@ -2,54 +2,6 @@
   WISP: Wisconsin Irrigation Scheduler 2012
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-  <%= jqgrid_stylesheets.html_safe -%>
-  <style type="text/css">
-  	h2.pagehead {text-align:center;}
-  	#pivotDataBox
-  	{
-  		position:absolute;
-  		left:275px;
-  		top:130px;
-  		width:920px;
-  		padding:2px;
-  		margin:0px;
-  	}
-  	.field {
-  	  display:inline;
-  	}
-
-  	#fieldDataBox
-  	{
-  		position:absolute;
-  		left:275px;
-  		top:235px;
-  		width:920px;
-  		padding:2px;
-  		margin:0px;
-  	}
-  	#cropsDataBox
-  	{
-  		position:absolute;
-  		left:275px;
-  		top:600px;
-  		width:920px;
-  		padding:2px;
-  		margin:0px;
-  	}
-  	table.center
-  	{
-  	  margin-left:auto;
-  	  margin-right:auto;
-  	}
-
-   </style>
-<% end %>
-<%= content_for :scripts do %>
-  <%= jqgrid_javascripts.html_safe %>
-<% end %>
-
 <table class="center"><tr>
   <td><h2 class="pagehead">WISP Pivot, Field and Crops Data for</h2>
   </td>

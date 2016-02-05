@@ -14,17 +14,10 @@
       ga('send', 'pageview');
 
     </script>
-    <script language="JavaScript">
-      <%= yield :header_script -%>
-    </script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <title>
       <%= yield :title -%></title>
-    <% if content_for?(:stylesheet) %>
-      <%= yield :stylesheet -%>
-    <% else %>
-      <%= stylesheet_link_tag "style" -%>
-    <% end %>
-    <%= yield :scripts -%>
+    <%= stylesheet_link_tag "application" -%>
     <!-- This is part of the protect_from_forgery fix from http://henrik.nyh.se/2008/05/rails-authenticity-token-with-jquery -->
     <%= javascript_tag "var AUTH_TOKEN = #{form_authenticity_token.inspect};" if protect_against_forgery? %>
     <%= javascript_include_tag 'application' %> <!-- Don't want everything in defaults, just the XSS stuff I put in -->

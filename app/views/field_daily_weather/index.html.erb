@@ -2,15 +2,6 @@
   WISP: Wisconsin Irrigation Scheduler 2012
 <% end %>
 
-<% content_for :stylesheet do %>
-  <%= stylesheet_link_tag "style" -%>
-  <%= jqgrid_stylesheets.html_safe -%>
-<% end %>
-
-<%= content_for :scripts do %>
-  <%= jqgrid_javascripts.html_safe %>
-<% end %>
-
 <%= jqgrid("Field Daily Weather", "weather", "/field_daily_weather",
   [
     { :field => "id", :label => "ID", :width => 30 },
