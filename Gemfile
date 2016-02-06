@@ -19,6 +19,10 @@ gem 'turbolinks'
 gem 'uglifier', '>= 1.3.0'
 gem 'will_paginate'
 
+group :staging, :production do
+  gem 'rails_12factor'
+end
+
 group :development do
   gem 'mysqltopostgres', github: 'maxlapshin/mysql2postgres'
   gem 'web-console'
