@@ -1,3 +1,73 @@
+<%= content_for :scripts do %>
+  <script type="text/javascript">
+
+    var formID = $('[id*=weather_station]').attr('id');
+
+    function option(id,text) {
+      return("<option value='"+id+"'>"+text+"</option>");
+    }
+
+    function add() {
+      $('#multi_edit_link_weather_station_id option:selected').each(function(){
+        opt = option($(this).attr("value"),$(this).text());
+        $('#weather_station_field_ids').append(opt);
+        $('#multi_edit_link_weather_station_id option:selected').remove();
+      });
+    }
+
+    function addAll() {
+      // just like add, except don't bother picking out the selected one(s)
+      $('#multi_edit_link_weather_station_id option').each(function(){
+        opt = option($(this).attr("value"),$(this).text());
+        $('#weather_station_field_ids').append(opt);
+        $(this).remove();
+        // $('#multi_edit_link_weather_station_id option:selected').remove();
+      });
+    }
+
+    function removeFromLeft() {
+      // exactly the inverse of add()
+      $('#weather_station_field_ids option:selected').each(function(){
+        opt = option($(this).attr("value"),$(this).text());
+        $('#multi_edit_link_weather_station_id').append(opt);
+        $('#weather_station_field_ids option:selected').remove();
+      });
+    }
+
+    function removeAll() {
+      // same as remove(), except we don't bother with selected
+      $('#weather_station_field_ids option').each(function(){
+        opt = option($(this).attr("value"),$(this).text());
+        $('#multi_edit_link_weather_station_id').append(opt);
+        $(this).remove();
+      });
+    }
+
+    function selectEverything() {
+      $('#weather_station_field_ids option').each(function(){
+        $(this).attr('selected',true);
+      });
+    }
+
+    function clickIt() {
+      form = $(this).parentsUntil('form');
+      selectEverything();
+      form.submit();
+    }
+
+    // double-click handler for adding
+    $('#multi_edit_link_weather_station_id option').live('dblclick',function(){
+      add();
+    });
+
+    // and one for removing
+    $('#weather_station_field_ids option').live('dblclick',function(){
+      removeFromLeft();
+    });
+
+  </script>
+<% end %>
+
 <%= form_for(@weather_station) do |f| %>
   <% if @weather_station.errors.any? %>
     <div id="error_explanation">

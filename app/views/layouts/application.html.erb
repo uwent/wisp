@@ -21,6 +21,9 @@
     <!-- This is part of the protect_from_forgery fix from http://henrik.nyh.se/2008/05/rails-authenticity-token-with-jquery -->
     <%= javascript_tag "var AUTH_TOKEN = #{form_authenticity_token.inspect};" if protect_against_forgery? %>
     <%= javascript_include_tag 'application' %> <!-- Don't want everything in defaults, just the XSS stuff I put in -->
+    <% if content_for?(:scripts) %>
+      <%= yield :scripts -%>
+    <% end %>
   </head>
 
   <body>
