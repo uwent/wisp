@@ -55,7 +55,7 @@ class FieldsController < AuthenticatedController
         field.get_et
         field.get_degree_days if field.current_crop.plant.uses_degree_days?(field.et_method)
       else
-        field = Field.find(params[:id], :include => :field_daily_weather)
+        field = Field.find(params[:id]) # TODO: , :include => :field_daily_weather)
         attribs = field.groom_for_defaults(attribs)
         attribs.delete(:act)
         attribs.delete(:pivot_id) if attribs[:pivot_id]

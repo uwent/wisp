@@ -11,6 +11,8 @@ class WeatherStationsController < AuthenticatedController
   end
 
   def show
+    @weather_station = current_group.weather_stations.find(params[:id])
+
     respond_to do |format|
       format.html
       format.xml { render xml: weather_station }
@@ -18,11 +20,12 @@ class WeatherStationsController < AuthenticatedController
   end
 
   def new
-    weather_station = current_group.weather_stations.build
+    @weather_station = current_group.weather_stations.build
+    @available_fields = current_group.fields
 
     respond_to do |format|
       format.html
-      format.xml { render xml: weather_station }
+      format.xml { render xml: @weather_station }
     end
   end
 
@@ -30,7 +33,7 @@ class WeatherStationsController < AuthenticatedController
   end
 
   def create
-    @weather_station = WeatherStation.new(params[:weather_station])
+    @weather_station = WeatherStation.new(weather_station_params)
     @weather_station.group = @group
 
     respond_to do |format|
@@ -48,7 +51,7 @@ class WeatherStationsController < AuthenticatedController
     @weather_station = WeatherStation.find(params[:id])
     params[:weather_station][:group_id] = @group[:id]
     respond_to do |format|
-      if @weather_station.update_attributes(params[:weather_station])
+      if @weather_station.update_attributes(weather_station_params)
         format.html { redirect_to(action: :index, :notice => 'Weather station was successfully updated.') }
         format.xml  { head :ok }
       else
@@ -68,5 +71,9 @@ class WeatherStationsController < AuthenticatedController
       format.html { redirect_to(weather_stations_url) }
       format.xml  { head :ok }
     end
+  end
+
+  def weather_station_params
+    params.require(:weather_station).permit(:name, :location, :notes, :field_ids, :multi_edit_link)
   end
 end

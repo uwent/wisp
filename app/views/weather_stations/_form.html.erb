@@ -56,12 +56,12 @@
     }
 
     // double-click handler for adding
-    $('#multi_edit_link_weather_station_id option').live('dblclick',function(){
+    $('#multi_edit_link_weather_station_id option').on('dblclick',function(){
       add();
     });
 
     // and one for removing
-    $('#weather_station_field_ids option').live('dblclick',function(){
+    $('#weather_station_field_ids option').on('dblclick',function(){
       removeFromLeft();
     });
 
