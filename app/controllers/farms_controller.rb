@@ -1,6 +1,8 @@
 class FarmsController < AuthenticatedController
   COLUMN_NAMES = [:name,:notes]
 
+  skip_before_action :verify_authenticity_token, only: :post_data
+
   def index
     get_current_ids
     raise "no group!" unless @group_id
