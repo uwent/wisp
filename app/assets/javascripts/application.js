@@ -58,21 +58,19 @@ function clickIt() {
 }
 
 // double-click handler for adding
-$('#multi_edit_link_weather_station_id option').live('dblclick',function(){
+$('#multi_edit_link_weather_station_id option').on('dblclick',function(){
   add();
 });
 
 // and one for removing
-$('#weather_station_field_ids option').live('dblclick',function(){
+$('#weather_station_field_ids option').on('dblclick',function(){
   removeFromLeft();
 });
 
 function fillProblemsBox(id) {
   $.ajax({
     type: "GET",
-    // Had farm ID tacked on using & notation
-    url: "<%= url_for(:controller => 'farms', :action => :problems,
-    :user_id => @user) %>",
+    url: "/farms/problems",
     dataType: 'html',
     async: false,
     success: function(newHtml) {
@@ -101,6 +99,7 @@ function setLastAndNextWeeks(date) {
 // TODO: This won't work:
 // <%= grid_javascript_settings %>
 // var cur_date = '<%= @cur_date %>;'
+var cur_date;
 var lastWeek
 var nextWeek;
 setLastAndNextWeeks(cur_date);
@@ -150,7 +149,7 @@ function plotGraph() {
   var targ_data = null;
   var labels = null;
 
-  url = '<%= url_for(:action => :projection_data, :field_id => @field_id, :user_id => @user) %>&cur_date='+cur_date;
+  url = '/wisp/projection_data?cur_date=&field_id='; // TODO: cur_date and field_id
   // TODO: This won't work:
   // ad_max = td(<%= @field.ad_max %>);
   ad_min = 0.0;
@@ -265,8 +264,7 @@ function showSummaryBox(date) {
   $.ajax(
     {
       type: "GET",
-      url: "<%= url_for(:controller => 'wisp', :action => :summary_box,
-                        :field_id => @field, :user_id => @user) %>&cur_date="+date,
+      url: "/wisp/summary_box?cur_date=" + date, // TODO: field_id
       dataType: 'html',
       async: false,
       success: function(newHtml)
