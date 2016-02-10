@@ -1,6 +1,8 @@
 class FarmsController < AuthenticatedController
   COLUMN_NAMES = [:name,:notes]
 
+  skip_before_action :verify_authenticity_token, only: :post_data
+
   def index
     get_current_ids
     raise "no group!" unless @group_id
@@ -29,10 +31,10 @@ class FarmsController < AuthenticatedController
   end
 
   def post_data
-    @group = Group.find(params[:parent_id])
+    @group = current_user.groups.find(params[:parent_id])
     session[:group_id] = params[:parent_id]
     if params[:oper] == "del"
-      farm = Farm.find(params[:id])
+      farm = @group.farms.find(params[:id])
       if farm.group == @group
         farm.destroy
         if session[:farm_id] == params[:id] # we just destroyed the current farm
@@ -58,7 +60,6 @@ class FarmsController < AuthenticatedController
         unless attribs[:year]
           attribs[:year] = Time.now.year
         end
-        attribs[:name] = 'New Farm'
         # unless @group
           set_parent_id(attribs,params,:group_id,params[:parent_id])
         # end

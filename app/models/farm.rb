@@ -3,6 +3,9 @@ class Farm < ActiveRecord::Base
   has_many :pivots, dependent: :destroy
 
   validates :year, presence: true
+  validates :name, uniqueness: { scope: :group_id }
+
+  before_save :set_defaults, on: :create
 
   after_create :create_dependent_objects
 
@@ -44,5 +47,12 @@ class Farm < ActiveRecord::Base
         pivots << cloned
       end
     end
+  end
+
+  private
+
+  def set_defaults
+    counter = group.farms.count + 1
+    self.name ||= "New Farm #{counter}"
   end
 end
