@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
 
+  skip_before_action :verify_authenticity_token, if: :json_request?
+
   # TODO: Remove this.
   # Implicit conversion of nil into string error with stylesheet tags and content_for, per
   # http://stackoverflow.com/questions/16044008/no-implicit-conversion-of-nil-into-string
@@ -11,6 +13,12 @@ class ApplicationController < ActionController::Base
   # TODO: Remove this.
   def self.jsonify(hash)
     hash.inject({}) {|ret,entry| ret.merge({entry[0].to_s => entry[1].to_s})}
+  end
+
+  protected
+
+  def json_request?
+    request.format.json?
   end
 
   private
