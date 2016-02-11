@@ -60,14 +60,16 @@ class ApplicationController < ActionController::Base
     [id,obj]
   end
 
-  # TODO: Delete this.
+  # TODO: Delete this eventually
   def get_current_ids
     @user = current_user
     @user_id = current_user.id
-    @group = current_user.groups.first
-    @group_id = @group.id
-    @farm = @group.farms.first
-    @farm_id = @farm.id
+    @group_id = session[:group_id] || current_user.groups.first.id
+
+    @group = current_user.groups.find(@group_id)
+
+    @farm_id = session[:farm_id] || @group.farms.first.id
+    @farm = @group.farms.find(@farm_id)
   end
 
   def current_day
