@@ -2,6 +2,88 @@
   WISP: Wisconsin Irrigation Scheduling Program <%= Time.now.year %>
 <% end %>
 
+<% content_for :stylesheet do %>
+  <style type="text/css">
+    h2 {text-align:center;}
+
+    #fieldSelectionBox
+    {
+      text-align: center;
+    }
+
+    #fieldDataBox
+    {
+      position:absolute;
+      left:275px;
+      top:173px;
+      width:246px;
+      height:204px;
+      padding:2px;
+      border:1px solid gray;
+      margin:0px;
+    }
+
+    #tableDataBox
+    {
+      position:absolute;
+      left:544px;
+      top:171px;
+      width:691px;
+      padding:2px;
+      margin:0px;
+    }
+
+    #tableDataBox table tr td.editable
+    {
+      background:white
+    }
+
+    #projectedADBox
+    {
+      position:absolute;
+      left:275px;
+      top:400px;
+      width:246px;
+      height:290px;
+      padding:2px;
+      border:1px solid gray;
+      margin:0px;
+    }
+
+    #graphBox
+    {
+      position:absolute;
+      left:545px;
+      top:400px;
+      width:648px;
+      height: 290px;
+      padding:2px;
+      border:1px solid gray;
+      margin:0px;
+    }
+
+    #imageADBox
+    {
+      position:absolute;
+      left:875px;
+      top:375px;
+      width:300px;
+    }
+
+    table.center
+    {
+      margin-left:auto;
+      margin-right:auto;
+    }
+
+    span.week-button
+    {
+      background:#DDD;
+      border:1px solid;
+      border-radius:3px
+    }
+  </style>
+<% end %>
 <%= content_for :scripts do %>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script type="text/javascript">
@@ -232,7 +314,9 @@
       showTargetAD();
       $("#date_input").change(changeDate);
     });
+
   </script>
+
 <% end %>
 
 <h2 style="margin-top:0px;padding-top:0px">WISP Field Status</h2>

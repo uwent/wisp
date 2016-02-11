@@ -2,6 +2,37 @@
   WISP: Wisconsin Irrigation Scheduling Program <%= Time.now.year %>
 <% end %>
 
+<% content_for :stylesheet do %>
+  <style type="text/css">
+    h2 {text-align:center;}
+    #stationDataBox
+    {
+      position:absolute;
+      left:275px;
+      top:120px;
+      width:920px;
+      padding:2px;
+      border:1px solid gray;
+      margin:0px;
+    }
+
+    #stationDataGrid
+    {
+    }
+
+    #stationAffectsBox
+    {
+      position:absolute;
+      left:275px;
+      top:520px;
+      width:920px;
+      padding:2px;
+      border:1px solid gray;
+      margin:0px;
+    }
+  </style>
+<% end %>
+
 <h2>WISP Weather and Irrigation Multi-Edit</h2>
 
 <div id="stationDataBox">
@@ -28,7 +59,7 @@
   </td>
   <td>Note: Entering data here will <strong>overwrite any corresponding values entered</strong> for the crop fields listed below!</td>
 </tr></table>
-	<%= render :partial => 'wisp/partials/weather_station_data_grid'%>
+  <%= render :partial => 'wisp/partials/weather_station_data_grid'%>
 </div>
 
 <div id="stationAffectsBox">
