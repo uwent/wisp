@@ -78,7 +78,7 @@ class WeatherStationDataController < AuthenticatedController
 
     respond_to do |format|
       if @weather_station_data.save
-        format.html { redirect_to(@weather_station_data, :notice => 'Weather station datum was successfully created.') }
+        format.html { redirect_to(@weather_station_data, :notice => 'Field group was successfully created.') }
         format.xml  { render :xml => @weather_station_data, :status => :created, :location => @weather_station_data }
       else
         format.html { render :action => "new" }
@@ -94,7 +94,7 @@ class WeatherStationDataController < AuthenticatedController
 
     respond_to do |format|
       if @weather_station_data.update_attributes(params[:weather_station_data])
-        format.html { redirect_to(@weather_station_data, :notice => 'Weather station datum was successfully updated.') }
+        format.html { redirect_to(@weather_station_data, :notice => 'Field group successfully updated.') }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

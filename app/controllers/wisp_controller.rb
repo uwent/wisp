@@ -57,7 +57,7 @@ class WispController < AuthenticatedController
   def weather
     @weather_stations = @group.weather_stations
     if @weather_stations == [] || @weather_stations == nil
-      flash[:notice] = 'You must first create at least one weather station.'
+      flash[:notice] = 'You must first create at least one field group.'
       redirect_to :controller => 'weather_stations', :action => :new
       return
     end

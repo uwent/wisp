@@ -17,7 +17,7 @@
                              {name:'id', index:'id',hidden:true,width:1}
                              ],
               pager: '#weather_station_data_pager',
-              rowNum:<%= FieldDailyWeather::SEASON_DAYS %>, 
+              rowNum:<%= FieldDailyWeather::SEASON_DAYS %>,
               rowList:[<%= FieldDailyWeather::SEASON_DAYS %>],
               imgpath: '<%= image_folder_path("jqgrid") %>',
               sortname: '',
@@ -30,24 +30,24 @@
               autowidth: false,
               rownumbers: false,
               multiselect: false,
-              
-              onSelectRow: function(id){ 
-                if(id && id!==lastsel){ 
+
+              onSelectRow: function(id){
+                if(id && id!==lastsel){
                   jQuery('#weather_station_data').restoreRow(lastsel);
-                  jQuery('#weather_station_data').editRow(id,true); 
-                  lastsel=id; 
-                } 
-              },             
-              
-              
+                  jQuery('#weather_station_data').editRow(id,true);
+                  lastsel=id;
+                }
+              },
+
+
               subGrid:false,
-              
-              caption: "Weather Station Data"
+
+              caption: "Field Group"
             })
             mygrid.filterToolbar();mygrid[0].toggleToolbar()
           });
         </script>
 All inputs in inches<br/>
         <table id="weather_station_data" class="scroll" cellpadding="0" cellspacing="0"></table>
-      
+
 </div>

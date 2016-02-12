@@ -28,7 +28,7 @@
     <li><%= link_to "Farm Status", :controller => 'wisp', :action => :farm_status %></li>
     <li><%= link_to "Pivots, Fields, and Crops", :controller => 'wisp', :action => :pivot_crop %></li>
     <li><%= link_to "Field Status", :controller => 'wisp', :action => :field_status %></li>
-    <li><%= link_to "Weather Stations", :controller => 'weather_stations', :group_id => @group %></li>
+    <li><%= link_to "Field Groups", :controller => 'weather_stations', :group_id => @group %></li>
     <li><%= link_to "Multi-Edit Daily Data", :controller => 'wisp', :action => :weather %></li>
     <li><%= link_to "User's Guide", guide_welcome_index_path %>
     <li><%= link_to "Latest Info (updated 13 Dec 2014)", {:controller => 'wisp', :action => :project_status}, {style: "color:yellow"} %></li>
