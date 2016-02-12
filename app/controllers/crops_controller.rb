@@ -25,7 +25,7 @@ class CropsController < AuthenticatedController
     @field = @farm.fields.find(params[:parent_id])
     @crop = @field.current_crop
     @crop_id = @crop.id
-    @crops ||= []
+    @crops = [@crop]
 
     respond_to do |format|
       format.html # index.html.erb
@@ -56,7 +56,7 @@ class CropsController < AuthenticatedController
         set_parent_id(attribs,params,:field_id,@field_id)
         Crop.create(attribs)
       else
-        @crop.do_attribs(attribs)
+        @crop.update_attributes(attribs)
       end
     end
     render :nothing => true
