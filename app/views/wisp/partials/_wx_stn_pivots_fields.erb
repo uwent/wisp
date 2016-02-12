@@ -1,12 +1,12 @@
 <% if @weather_station %>
   <% if @show_station %>
-    <h2>Weather Station <%=h @weather_station.name %></h2>
+    <h2>Field Group <%=h @weather_station.name %></h2>
   <% end %>
   <h4>Fields: </h4>
-  <div style="height:100px;overflow:scroll">  
+  <div style="height:100px;overflow:scroll">
     <% for field in @weather_station.fields %>
       <%=h field.name %><br/>
     <% end %>
   </div>
-  
+
 <% end %>
