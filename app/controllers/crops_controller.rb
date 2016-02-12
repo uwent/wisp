@@ -19,10 +19,8 @@ class CropsController < AuthenticatedController
     get_current_ids
 
     @crops = Crop.joins(field: [pivot: [:farm]])
-      .where(farm_id: @farm_id)
-      .order(:name) do
-      paginate :page => params[:page], :per_page => params[:rows]
-    end
+      .where(farms: { id: @farm_id })
+      .order(:name)
 
     @field = @farm.fields.find(params[:parent_id])
     @crop = @field.current_crop
