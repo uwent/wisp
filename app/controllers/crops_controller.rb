@@ -23,8 +23,10 @@ class CropsController < AuthenticatedController
       .order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
+
+    @field = @farm.fields.find(params[:parent_id])
     @crop = @field.current_crop
-    @crop_id = @crop[:id]
+    @crop_id = @crop.id
     @crops ||= []
 
     respond_to do |format|
