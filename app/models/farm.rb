@@ -1,6 +1,7 @@
 class Farm < ActiveRecord::Base
   belongs_to :group
   has_many :pivots, dependent: :destroy
+  has_many :fields, through: :pivots
 
   validates :year, presence: true
   validates :name, uniqueness: { scope: :group_id }
