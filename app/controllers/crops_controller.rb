@@ -18,14 +18,13 @@ class CropsController < AuthenticatedController
   def index
     get_current_ids
 
-    @crops = Crop.joins(field: [pivot: [:farm]])
-      .where(farms: { id: @farm_id })
-      .order(:name)
+    @field = @group.fields.find(params[:parent_id])
+    @farm = @field.pivot_farm
+    @farm_id = @farm_id
 
-    @field = @farm.fields.find(params[:parent_id])
-    @crop = @field.current_crop
-    @crop_id = @crop.id
+    @crop = @field.crops.first!
     @crops = [@crop]
+    @crop_id = @crop.id
 
     respond_to do |format|
       format.html # index.html.erb
