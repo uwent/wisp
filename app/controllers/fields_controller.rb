@@ -1,4 +1,6 @@
 class FieldsController < AuthenticatedController
+  skip_before_action :verify_authenticity_token, only: :post_data
+
   COLUMN_NAMES = [:name,:et_method,:area,:soil_type_id,:field_capacity_pct,:perm_wilting_pt_pct,:target_ad_pct,
                   :ref_et_station_id,:rain_station_id,:soil_moisture_station_id,:notes,:act,:pivot_id,:id]
   # GET /fields
