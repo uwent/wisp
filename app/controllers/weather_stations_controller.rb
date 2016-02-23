@@ -30,6 +30,8 @@ class WeatherStationsController < AuthenticatedController
   end
 
   def edit
+    @weather_station = weather_station
+    @available_fields = available_fields
   end
 
   def create

@@ -60,12 +60,16 @@ class ApplicationController < ActionController::Base
     [id,obj]
   end
 
+  def current_group
+    @current_group ||= current_user.groups.first
+  end
+
   # TODO: Delete this.
   def get_current_ids
     # Absolute, unchanging:
     @user = current_user
     @user_id = current_user.id
-    @group = current_user.groups.first
+    @group = current_group
     @group_id = @group.id
 
     @farm = @group.farms.find(params[:farm_id]) if params[:farm_id]
@@ -101,12 +105,8 @@ class ApplicationController < ActionController::Base
   # Check to see if any of our pivots need to be cloned.
   def check_pivots_for_cloning(clone_to = nil)
     clone_to ||= Time.now.year
-    return unless @group
-    if @farm
-      farms = [@farm]
-    else
-      farms = @group.farms
-    end
+    return unless current_group
+    farms = current_group.farms
     # What needs cloning? Well, the latest set of pivots whose cropping years are < clone_to
     latest_pivots = Farm.latest_pivots(farms)
     latest_pivot_year = latest_pivots.first.cropping_year

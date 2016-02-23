@@ -36,6 +36,8 @@ class Pivot < ActiveRecord::Base
         new_field.pivot = new_pivot
         new_field.save!
       end
+
+      self.destroy!
     end
 
     new_pivot

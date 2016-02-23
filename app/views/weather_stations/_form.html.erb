@@ -98,7 +98,7 @@
   <p>
     <div class="field">
       <table>
-        <tr><th>Fields selected for this station</th><th align="center">&nbsp;</th><th>Available fields for this station</th></tr>
+        <tr><th>Fields selected for this group</th><th align="center">&nbsp;</th><th>Available fields for this group</th></tr>
         <tr>
           <td width="40%"><%= f.select :field_ids, @weather_station.fields.collect { |f| [f.name,f.id] }, {}, {size: 20, multiple: true, style: "width:98%"} %></td>
           <td width="10%" align="center"><button type="button" onclick="add();">Add</button><br/><button type="button" onclick="addAll();">Add all</button><br/>&nbsp;<br/><button type="button" onclick="removeFromLeft();">Remove </button><br/><button type="button" onclick="removeAll();">Remove all</button></td>
