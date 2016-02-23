@@ -2,6 +2,12 @@
 
 Run this to restore the production database locally:
 
+## Issues
+
+https://github.com/maxlapshin/mysql2postgres/issues/73
+
+https://github.com/ajokela/mysql-pr/pull/1/files
+
 ```
 # untar the tarball first
 mysql -u root wisp < mysql_production.sql
