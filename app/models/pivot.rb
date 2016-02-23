@@ -4,7 +4,7 @@ class Pivot < ActiveRecord::Base
   has_many :crops, through: :fields
   has_many :irrigation_events, dependent: :destroy
 
-  before_validation :set_defaults, on: :create
+  before_validation :set_defaults
 
   after_create :create_dependent_objects
 
