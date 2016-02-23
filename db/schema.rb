@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150816174018) do
+ActiveRecord::Schema.define(version: 20160223161549) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -125,7 +125,7 @@ ActiveRecord::Schema.define(version: 20150816174018) do
     t.string   "equipment",               limit: 255
     t.float    "pump_capacity"
     t.float    "some_energy_rate_metric"
-    t.integer  "cropping_year"
+    t.integer  "cropping_year",                       null: false
     t.string   "notes",                   limit: 255
     t.datetime "created_at",                          null: false
     t.datetime "updated_at",                          null: false
