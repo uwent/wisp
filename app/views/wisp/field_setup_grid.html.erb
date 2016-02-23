@@ -1,24 +1,24 @@
 <script type="text/javascript">
   var lastFieldSel,curFieldID;
-  
+
   var PCT_COVER_METHOD = <%= Field::PCT_COVER_METHOD %>;
   var LAI_METHOD = <%= Field::LAI_METHOD %>;
-  
+
   function loadCropGrid(field_id) {
     $('#cropDataGrid').load('<%= url_for :controller => "wisp", :action => :crop_setup_grid %>',
       {field_id:field_id,user_id:user_id, farm_id:farm_id});
     crop_id = $("#crop_setup").getDataIDs()[0];
   }
   function rowSelect(id) {
-    if(id) { 
+    if(id) {
       if (!lastFieldSel || id !== lastFieldSel) {
         jQuery('#field_setup').restoreRow(lastFieldSel);
-        jQuery('#field_setup').editRow(id,true); 
+        jQuery('#field_setup').editRow(id,true);
         lastFieldSel=id;
         field_id=id;
         loadCropGrid(field_id);
       }
-    } 
+    }
   }
   function useFirstFieldRow(throwaway1,throwaway2) {
     field_id = $("#field_setup").getDataIDs()[0];
@@ -35,17 +35,17 @@
     var fieldIDs = jQuery("#field_setup").getDataIDs();
     var msg = "Field IDs";
     nRows = fieldIDs.length;
-    for(var ii=0;ii<nRows;ii++){ 
+    for(var ii=0;ii<nRows;ii++){
       var id = fieldIDs[ii];
       if (nRows == 1) {
         be = "<input style='height:22px;width:35px;' type='button' value='Del' disabled='true' title='Cannot delete only field'/>";
       } else {
-        be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick='deleteField("+id+");' ></ids>"; 
+        be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick='deleteField("+id+");' ></ids>";
       }
-      jQuery("#field_setup").setRowData(id,{act:be}); 
-    } 
+      jQuery("#field_setup").setRowData(id,{act:be});
+    }
   }
-  
+
   // Add new field based on et mthod selection (currently controlled by separate buttons).
   function addNewFieldRow(method) {
     var grid = $('#field_setup');
@@ -65,7 +65,7 @@
       {
         type: "POST",
         url: '<%= url_for :controller => 'fields', :action => :post_data %>',
-        data: {pivot_id:pivot_id,parent_id:pivot_id,oper:'add',id:'_empty',et_method:method}, 
+        data: {pivot_id:pivot_id,parent_id:pivot_id,oper:'add',id:'_empty',et_method:method},
         dataType: "json",
         contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
         async: false,
@@ -93,7 +93,7 @@
     $("#"+curFieldID+"_field_capacity_pct").val(fc);
     $("#"+curFieldID+"_perm_wilting_pt_pct").val(pwp);
   }
-  
+
   function etMethodFormat(cellvalue,options,rowObject) {
     if (cellvalue === undefined) {
       return("");
@@ -103,9 +103,9 @@
       } else {
         return 'LAI';
       }
-    }   
+    }
   }
-  
+
   function etMethodUnformat(cellvalue,options,cell) {
     return cellvalue;
   }
@@ -116,9 +116,9 @@
       return("");
     } else {
       return(pctUnformat(cellvalue,options)+'%');
-    }   
+    }
   }
-  
+
   // Remove percent sign from displayed value
   function pctUnformat(cellvalue,options,cell) {
     if (cellvalue === undefined) {
@@ -139,12 +139,12 @@
       return num;
     }
   }
-  
+
   function addFieldDeleteButton(cl) {
-    be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick=jQuery('#field_setup').delGridRow("+cl+");$('#field_setup').trigger('reloadGrid'); ></ids>"; 
-    jQuery("#field_setup").setRowData(cl,{act:be}) 
+    be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick=jQuery('#field_setup').delGridRow("+cl+");$('#field_setup').trigger('reloadGrid'); ></ids>";
+    jQuery("#field_setup").setRowData(cl,{act:be})
   }
-  
+
   jQuery(document).ready(function(){
     <%= grid_javascript_settings %>
     // $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:<%=@field_id%>,user_id:<%=@user_id%>});
@@ -156,9 +156,9 @@
       colNames:['Name','ET Method','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD','ET Stn','Rain Stn','Soil Moist. Stn','Notes','Delete','Pivot','ID'],
       colModel:[{name:'name', index:'name',width:83,editable:true},
                 {name:'et_method',index:'et_method',editable:false,formatter:etMethodFormat,width:25},
-                {name:'area', index:'area',width:20,editable:true, align:'right',editrules:{number:true,minValue:0.0}},
+                {name:'area', index:'area',width:20,editable:true,formatter:'number',formatoptions:{decimalPlaces:1},align:'right',editrules:{number:true,minValue:0.0}},
                 {
-                   name:'soil_type_id',index:'soil_type_id', width:40,resizable:true,   
+                   name:'soil_type_id',index:'soil_type_id', width:40,resizable:true,
                    align:"left",sorttype:"text",editable:true,edittype:"select",
                    formatter:'select',
                    editoptions:   // working example for ET methods is '1:Percent Cover;2:Leaf Area Index'
@@ -168,9 +168,9 @@
                    },
                    editrules:{required:true}
                 },
-                {name:'field_capacity_pct', index:'field_capacity_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0,maxValue:100}},
-                {name:'perm_wilting_pt_pct', index:'perm_wilting_pt_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0,maxValue:100}},
-                {name:'target_ad_pct',index:'target_ad_pct',width:25,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:0,maxValue:100}},
+                {name:'field_capacity_pct', index:'field_capacity_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:0},editrules:{number:true,minValue:0,maxValue:100}},
+                {name:'perm_wilting_pt_pct', index:'perm_wilting_pt_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:0},editrules:{number:true,minValue:0,maxValue:100}},
+                {name:'target_ad_pct',index:'target_ad_pct',width:25,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:1},editrules:{number:true,minValue:0,maxValue:100}},
                 // These three are hidden until we get these features running
                 {name:'ref_et_station_id', index:'ref_et_station_id',width:25,editable:true, align:'right',hidden:true},
                 {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right',hidden:true},
@@ -195,18 +195,18 @@
       autowidth: false,
       rownumbers: false,
       multiselect: false,
-        
-      onSelectRow: rowSelect,             
-      
+
+      onSelectRow: rowSelect,
+
       loadComplete: function(){
         addFieldDeleteButtons();
         fieldIDs = jQuery("#field_setup").getDataIDs();
         loadCropGrid(fieldIDs[0]);
       },
-      
-      
+
+
       subGrid:false,
-      
+
       caption: "Fields <%= @pivot ? "for #{@pivot.name}" : '(select pivot above)' %>"
     })
     .navGrid('#field_setup_pager',

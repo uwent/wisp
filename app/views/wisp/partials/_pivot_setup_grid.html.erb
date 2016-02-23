@@ -14,13 +14,13 @@
               '&pivot_id='+pivot_id+'&farm_id='+farm_id);
           }
           function rowSelect(id) {
-            if(id) { 
-              jQuery('#pivot_setup').editRow(id,true,null,updatePivotSelectName); 
+            if(id) {
+              jQuery('#pivot_setup').editRow(id,true,null,updatePivotSelectName);
               pivot_id=id;
               loadFieldGrid(); // will load for the pivot id we just selected
-            } 
+            }
           }
-          
+
           function reloadGrids(pivot_id) {
             $('#pivotDataGrid').load('<%= url_for :controller => "wisp", :action => :pivot_crop %>',
             '&farm_id='+farm_id+'&parent_id='+farm_id+'&pivot_id='+pivot_id+'&ajax=true');
@@ -34,7 +34,7 @@
             jQuery('#pivot_setup').delGridRow(id,{afterSubmit:reloadPage});
           }
           function addPivotToSelect(id,pivot_data) {
-            $('#pivot_id').append($('<option/>', { 
+            $('#pivot_id').append($('<option/>', {
                     value: id,
                     text : pivot_data['name'],
                 }));
@@ -52,11 +52,11 @@
           function addPivotDeleteButtons() {
             var ids = jQuery("#pivot_setup").getDataIDs();
             nRows = ids.length;
-            for(var i=0;i<nRows;i++){ 
+            for(var i=0;i<nRows;i++){
               var id = ids[i];
-                be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick='deletePivot("+id+");' ></ids>"; 
-                jQuery("#pivot_setup").setRowData(id,{act:be}); 
-            } 
+                be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick='deletePivot("+id+");' ></ids>";
+                jQuery("#pivot_setup").setRowData(id,{act:be});
+            }
           }
           function addNewPivotRow() {
             var grid = $('#pivot_setup');
@@ -85,7 +85,7 @@
             );
             return pvt;
           }
-          
+
           jQuery(document).ready(function(){
             // Load the dependent field and crop grids with appropriate values
             <%= grid_javascript_settings %> // Sets pivot_id
@@ -103,10 +103,10 @@
               // t.float    "some_energy_rate_metric"
               // t.integer  "cropping_year"
               // t.string   "notes"
-              // 
+              //
               colNames:['Name','Lat.','Long.','Equipment','Pump Capacity','Energy','Crop Yr','Notes','Delete','Farm ID','ID'],
               // colNames:['Name',' '],
-              colModel:[ 
+              colModel:[
                          {name:'name', index:'name',width:83,editable:true},
                          {name:'latitude', index:'latitude',width:18,editable:true, align:'right',editrules:{number:true,minValue:42.0,maxValue:50.0}},
                          {name:'longitude', index:'longitude',width:18,editable:true, align:'right',editrules:{number:true,minValue:-98.0,maxValue:-86.0}},
@@ -133,22 +133,22 @@
               autowidth: false,
               rownumbers: false,
               multiselect: false,
-              
-              loadComplete: function(){ 
+
+              loadComplete: function(){
                   addPivotDeleteButtons();
               },
               onSelectRow: rowSelect,
               subGrid:false,
-              
+
               caption: "Pivot <%= @farm ? "for #{@farm.name}" : '' %>"
             })
           });
-          
+
         </script>
 
         <table id="pivot_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
         <button type="button" onclick="addNewPivotRow();">Add New Pivot</button>
-        
+
         <!-- <div id="pivot_setup_pager" class="scroll" style="text-align:center;"></div> -->
-      
+
 </div>
