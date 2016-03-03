@@ -48,14 +48,7 @@
     <% end %>
   </td>
   <td>
-    <%= form_tag(url_for :controller => "wisp", :action => :weather, :group => @group, :weather_station_id => @weather_station) do %>
-      <%= select_tag(
-        "year",
-        options_from_collection_for_select(@years,:to_i,:to_s,@year),
-        { :onchange => "this.form.submit();"}
-        )
-       %>
-    <% end %>
+    [<%= @year %>]
   </td>
   <td>Note: Entering data here will <strong>overwrite any corresponding values entered</strong> for the crop fields listed below!</td>
 </tr></table>

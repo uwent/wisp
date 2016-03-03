@@ -73,9 +73,8 @@ class WispController < AuthenticatedController
       logger.info "no wx stn passed, using first wx stn in group"
       @weather_station = @weather_stations.first
     end
-    @years = []
-    (FieldDailyWeather.first.date.year..Time.now.year).each { |yr| @years << yr }
-    @year = params[:year] ? params[:year].to_i : Time.now.year
+    @years = [Time.now.year]
+    @year = Time.now.year
     # Check that this year's data are present for this station
     @weather_station.ensure_data_for(@year)
 
