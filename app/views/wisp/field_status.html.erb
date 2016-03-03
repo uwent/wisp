@@ -146,6 +146,10 @@
     // instantiates the chart, passes in the data and
     // draws it.
     function plotGraph() {
+      // Not ready yet.
+      if (!google.visualization.DataTable) {
+        return;
+      }
       var ad_data = null;
       var prj_data = null;
       var targ_data = null;
