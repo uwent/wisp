@@ -147,7 +147,7 @@
     // draws it.
     function plotGraph() {
       // Not ready yet.
-      if (!google.visualization.DataTable) {
+      if (!(google.visualization && google.visualization.DataTable)) {
         return;
       }
       var ad_data = null;
