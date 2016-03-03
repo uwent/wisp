@@ -14,19 +14,19 @@ end
 
 url_options = {
   development: {
-    host: localhost,
+    host: 'localhost',
     port: 3000,
-    protocol: http
+    protocol: 'http',
   },
   test: {
-    host: localhost,
+    host: 'localhost',
     port: 9887,
-    protocol: http
+    protocol: 'http'
   },
   staging: {
-    host: wisp-staging.herokuapp.com,
+    host: 'wisp-staging.herokuapp.com',
     port: nil,
-    protocol: http
+    protocol: 'http'
   }
 }
 
