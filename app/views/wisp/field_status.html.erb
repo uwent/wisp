@@ -108,8 +108,6 @@
     var nextWeek;
     setLastAndNextWeeks(cur_date);
     var initial_date = '<%= @initial_date %>';
-    // Load the Visualization API and the piechart package.
-    google.load('visualization', '1.0', {'packages':['corechart']});
 
     // We don't know why the Google Vis API suddenly started having a cow over
     // our numbers. But this will reformat to fix it.
@@ -255,6 +253,10 @@
        chart.draw(data, options);
      }
 
+    // Load the Visualization API and the piechart package.
+    google.load('visualization', '1.0', {'packages':['corechart']});
+    google.setOnLoadCallback(plotGraph);
+
     function curPage(initial_date_str,cur_date_str) {
       initial_date_obj = parseDate(initial_date_str);
       // set the global
@@ -281,7 +283,7 @@
     function showTargetAD() {
       // adValue = 0.0;
       adValue = <%= @field.target_ad_pct || "''".html_safe %>;
-      document.getElementById('target_ad').value = adValue;
+      $('#target_ad').val(adValue);
     }
 
     function changeDate(newDate) {
