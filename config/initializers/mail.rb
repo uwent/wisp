@@ -11,3 +11,25 @@ if ActionMailer::Base.delivery_method == :smtp
     domain: 'wisc.edu'
   }
 end
+
+url_options = {
+  development: {
+    host: localhost,
+    port: 3000,
+    protocol: http
+  },
+  test: {
+    host: localhost,
+    port: 9887,
+    protocol: http
+  },
+  staging: {
+    host: wisp-staging.herokuapp.com,
+    port: nil,
+    protocol: http
+  }
+}
+
+Rails.application.routes.default_url_options = url_options
+Rails.application.config.action_mailer.default_url_options = url_options
+Rails.application.config.action_dispatch.default_url_options = url_options
