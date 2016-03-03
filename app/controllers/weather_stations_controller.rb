@@ -51,9 +51,13 @@ class WeatherStationsController < AuthenticatedController
 
   def update
     @weather_station = WeatherStation.find(params[:id])
-    params[:weather_station][:group_id] = @group[:id]
+    @weather_station.assign_attributes(weather_station_params)
+    @weather_station.fields = current_group.fields.where(id: params[:weather_station][:field_ids])
+
+    @weather_station.group = current_group
+
     respond_to do |format|
-      if @weather_station.update_attributes(weather_station_params)
+      if @weather_station.save
         format.html { redirect_to(action: :index, :notice => 'Field group was successfully updated.') }
         format.xml  { head :ok }
       else
@@ -64,10 +68,8 @@ class WeatherStationsController < AuthenticatedController
   end
 
   def destroy
-    @weather_station = WeatherStation.find(params[:id])
-    if @weather_station.group == @group
-      @weather_station.destroy
-    end
+    @weather_station = current_group.weather_stations.find(params[:id])
+    @weather_station.destroy
 
     respond_to do |format|
       format.html { redirect_to(weather_stations_url) }
