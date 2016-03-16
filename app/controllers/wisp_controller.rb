@@ -11,6 +11,8 @@ class WispController < AuthenticatedController
     if (params['pivot_id'] && params['pivot_id'] != '')
       @pivot_id = params['pivot_id']
       @pivot = Pivot.find(@pivot_id)
+      @farm = @pivot.farm
+      @farm_id = @farm.id
     else
       @pivot,@pivot_id = [@farm.pivots.first,@farm.pivots.first[:id]]
     end
