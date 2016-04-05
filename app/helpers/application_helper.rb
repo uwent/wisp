@@ -94,6 +94,22 @@ module ApplicationHelper
     '[' + controller_class::COLUMN_NAMES.inject("") {|str,col_sym| so_far(str) + "'#{col_sym.to_s}'"} + ']'
   end
 
+  def energy_types_for_select
+    [
+      'Diesel',
+      'Electric',
+      'Gasoline',
+      'LP Gas',
+      'Natural Gas',
+      'Pub. water system',
+      'Other'
+    ]
+      .map(&:titleize)
+      .map do |value|
+        [value, value].join(':')
+    end.join(';')
+  end
+
   def soil_types_for_select
     # 1:Sandy Loam;2:Silt Loam
     soils = SoilType.all
