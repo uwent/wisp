@@ -21,6 +21,10 @@ class User < ActiveRecord::Base
     "#{name}'s group"
   end
 
+  def john?
+    email == 'jcpanuska@wisc.edu'
+  end
+
   private
 
   def create_group_and_membership
