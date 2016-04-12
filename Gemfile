@@ -23,6 +23,8 @@ group :staging, :production do
 end
 
 group :development do
+  gem 'capistrano'
+  gem 'capistrano-ext'
   gem 'mysqltopostgres', github: 'maxlapshin/mysql2postgres'
   gem 'web-console'
 end
