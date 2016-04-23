@@ -1,8 +1,11 @@
 # config valid only for current version of Capistrano
 lock '3.4.0'
 
-set :application, 'my_app_name'
-set :repo_url, 'git@example.com:me/my_repo.git'
+set :application, 'wisp'
+set :repo_url, 'git@github.com:m5rk/wisp.git'
+
+set :rbenv_type, :user
+set :rbenv_ruby, '2.2.4'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
@@ -33,6 +36,8 @@ set :repo_url, 'git@example.com:me/my_repo.git'
 
 # Default value for keep_releases is 5
 # set :keep_releases, 5
+
+set :passenger_restart_with_touch, true
 
 namespace :deploy do
 

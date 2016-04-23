@@ -13,3 +13,12 @@ test:
   pool: 5
   username: wisp
   password:
+
+production:
+  host: 127.0.0.1
+  adapter: postgresql
+  encoding: unicode
+  database: wisp_production
+  pool: 5
+  username: wispdb
+  password: f8qj&bcI&dadx

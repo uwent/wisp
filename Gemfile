@@ -24,7 +24,11 @@ end
 
 group :development do
   gem 'capistrano'
+  gem 'capistrano-bundler'
   gem 'capistrano-ext'
+  gem 'capistrano-passenger'
+  gem 'capistrano-rails'
+  gem 'capistrano-rbenv', github: 'capistrano/rbenv'
   gem 'mysqltopostgres', github: 'maxlapshin/mysql2postgres'
   gem 'web-console'
 end
