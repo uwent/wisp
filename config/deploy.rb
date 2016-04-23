@@ -1,42 +1,53 @@
-set :application, "wisp"
-set :scm, "subversion"
+# config valid only for current version of Capistrano
+lock '3.4.0'
 
-# Deploy to branches with cap --set-before branch=BRANCH_NAME deploy
-# from http://www.missiondata.com/blog/system-administration/84/deploying-an-svn-branch-with-capistrano/
-# Note that this deploys the root of the branch, i.e. it doesn't tack rails-app on if that is required.
-# Usually I make branches out of just the rails-app folder, so the branch name by itself is fine.
-if variables.include?(:branch)
-  set :repository,  "https://wayne@svn.soils.wisc.edu/svn_repos/IrrigSched/branches/#{branch}"
-else
-  set :repository,  "https://wayne@svn.soils.wisc.edu/svn_repos/IrrigSched/trunk/rails-app"
-end
-set :user, "root"
-default_run_options[:pty] = true
+set :application, 'wisp'
+set :repo_url, 'git@github.com:m5rk/wisp.git'
 
-# If you aren't deploying to /u/apps/#{application} on the target
-# servers (which is the default), you can specify the actual location
-# via the :deploy_to variable:
-set :deploy_to, "/var/www/"
-set :use_sudo, false
+set :rbenv_type, :user
+set :rbenv_ruby, '2.2.4'
 
-# If you aren't using Subversion to manage your source code, specify
-# your SCM below:
-# set :scm, :subversion
-set :current_dir, 'railsapp'
-role :app, "wisp.cals.wisc.edu"
-role :web, "wisp.cals.wisc.edu"
-role :db,  "wisp.cals.wisc.edu", :primary => true
+# Default branch is :master
+# ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
-task :after_update_code, :roles => :app do
-  # Since we want a different setup even for development -- the grids have us stuck in dev right now...
-  run "cp #{release_path}/config/database.deployed.yml #{release_path}/config/database.yml"
-  # Blip what Cap currently understands to be the repo rev number to the "build" partial
-  run "echo #{revision} > #{current_path}/app/views/wisp/partials/_build.html.erb"
-end
+# Default deploy_to directory is /var/www/my_app_name
+# set :deploy_to, '/var/www/my_app_name'
+
+# Default value for :scm is :git
+# set :scm, :git
+
+# Default value for :format is :pretty
+# set :format, :pretty
+
+# Default value for :log_level is :debug
+# set :log_level, :debug
+
+# Default value for :pty is false
+# set :pty, true
+
+# Default value for :linked_files is []
+# set :linked_files, fetch(:linked_files, []).push('config/database.yml', 'config/secrets.yml')
+
+# Default value for linked_dirs is []
+# set :linked_dirs, fetch(:linked_dirs, []).push('log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'vendor/bundle', 'public/system')
+
+# Default value for default_env is {}
+# set :default_env, { path: "/opt/ruby/bin:$PATH" }
+
+# Default value for keep_releases is 5
+# set :keep_releases, 5
+
+set :passenger_restart_with_touch, true
 
 namespace :deploy do
-  desc 'Restart the Passenger app'
-  task :restart do
-    run "touch #{current_path}/tmp/restart.txt"
+
+  after :restart, :clear_cache do
+    on roles(:web), in: :groups, limit: 3, wait: 10 do
+      # Here we can do anything such as:
+      # within release_path do
+      #   execute :rake, 'cache:clear'
+      # end
+    end
   end
+
 end
