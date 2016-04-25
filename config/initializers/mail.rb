@@ -27,6 +27,11 @@ url_options = {
     host: 'wisp-staging.herokuapp.com',
     port: nil,
     protocol: 'http'
+  },
+  production: {
+    host: 'wisp2.cals.wisc.edu',
+    port: nil,
+    protocol: 'http'
   }
 }[Rails.env.to_sym]
 
