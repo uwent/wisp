@@ -1,0 +1,15 @@
+development:
+  smtp:
+    delivery_method: :file
+
+test:
+  smtp:
+    delivery_method: :test
+
+staging:
+  smtp:
+    delivery_method: :smtp
+
+production:
+  smtp:
+    delivery_method: :smtp

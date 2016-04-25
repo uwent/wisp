@@ -6,6 +6,7 @@ gem 'rails', '4.2.5'
 
 gem 'asigbiophys', path: 'vendor/asigbiophys'
 gem 'calendar_date_select'
+gem 'chamber'
 gem 'coffee-rails', '~> 4.1.0'
 gem 'decent_exposure'
 gem 'devise'
