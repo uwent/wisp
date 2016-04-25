@@ -1,0 +1,23 @@
+development:
+  url_options:
+    host: 'localhost'
+    port: 3000
+    protocol: 'http'
+
+test:
+  url_options:
+    host: 'localhost'
+    port: 9887
+    protocol: 'http'
+
+staging:
+  url_options:
+    host: 'wisp-staging.herokuapp.com'
+    port:
+    protocol: 'http'
+
+production:
+  url_options:
+    host: 'wisp2.cals.wisc.edu'
+    port:
+    protocol: 'http'
