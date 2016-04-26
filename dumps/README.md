@@ -28,7 +28,7 @@ bundle exec mysqltopostgres dumps/mysql2psql.yml
 Dump the local database:
 
 ```
-pg_dump -Fc --no-acl --no-owner -h localhost -U wisp wisp_development > wisp_development.dump
+pg_dump -Fc --no-acl --no-owner -h localhost -U wispdb wisp_development > wisp_development.dump
 ```
 
 Upload the .dump file to S3 and make it public

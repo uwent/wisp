@@ -11,7 +11,7 @@ mysql2psql:
     development:
       hostname: localhost
       port: 5432
-      username: wisp
+      username: wispdb
       password:
       database: wisp_development
 
