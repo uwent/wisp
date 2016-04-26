@@ -14,6 +14,7 @@ if ActionMailer::Base.delivery_method == :smtp
   else
     ActionMailer::Base.smtp_settings = {
       address: 'localhost',
+      openssl_verify_mode: 'none',
       domain: 'wisc.edu'
     }
   end
