@@ -31,7 +31,7 @@ class FarmsController < AuthenticatedController
   end
 
   def post_data
-    @group = current_user.groups.find(params[:parent_id])
+    @group = current_group
     session[:group_id] = params[:parent_id]
     if params[:oper] == "del"
       farm = @group.farms.find(params[:id])
@@ -63,7 +63,7 @@ class FarmsController < AuthenticatedController
         # unless @group
           set_parent_id(attribs,params,:group_id,params[:parent_id])
         # end
-        farm = Farm.create(attribs)
+        farm = current_group.farms.create(attribs)
       else
         # Don't allow parameters to muck with the hierarchy! The group is set when the "add"
         # operation happens, but farms cannot be moved among groups.
