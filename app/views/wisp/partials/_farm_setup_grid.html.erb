@@ -63,7 +63,7 @@
         {
           type: "POST",
           url: '<%= url_for :controller => 'farms', :action => :post_data %>',
-          data: {group_id:group_id,parent_id:group_id,oper:'add',id:'_empty'},
+          data: {oper:'add',id:'_empty'},
           dataType: "json",
           contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
           async: false,
