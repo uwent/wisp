@@ -123,14 +123,12 @@ module ApplicationHelper
   end
 
   def soil_characteristics
-    soils = SoilType.all
-    str = soils.inject("") do |str,soil_type|
-      so_far(str) +
-        soil_type[:id].to_s + ':' +
-        '{field_capacity_pct:' + (100*soil_type[:field_capacity]).to_s + ',' +
-         'perm_wilting_pt_pct:' + (100*soil_type[:perm_wilting_pt]).to_s + '}'
-    end
-    "{#{str}}"
+    SoilType.all.each_with_object({}) do |soil_type, memo|
+      memo[soil_type.id.to_s] = {
+        field_capacity_pct: number_with_precision(100 * soil_type[:field_capacity], precision: 2).to_s,
+        perm_wilting_pt_pct: number_with_precision(100 * soil_type[:perm_wilting_pt], precision: 2).to_s
+      }
+    end.to_json.html_safe
   end
 
   # Helper method to enumerate all plant characteristics in JSON format, suitable for use in a grid
