@@ -96,8 +96,8 @@ module ApplicationHelper
 
   def energy_types_for_select
     [
-      'Diesel',
       'Electric',
+      'Diesel',
       'Gasoline',
       'LP Gas',
       'Natural Gas',
@@ -125,8 +125,8 @@ module ApplicationHelper
   def soil_characteristics
     SoilType.all.each_with_object({}) do |soil_type, memo|
       memo[soil_type.id.to_s] = {
-        field_capacity_pct: number_with_precision(100 * soil_type[:field_capacity], precision: 2).to_s,
-        perm_wilting_pt_pct: number_with_precision(100 * soil_type[:perm_wilting_pt], precision: 2).to_s
+        field_capacity_pct: number_with_precision(100 * soil_type[:field_capacity], precision: 1).to_s,
+        perm_wilting_pt_pct: number_with_precision(100 * soil_type[:perm_wilting_pt], precision: 1).to_s
       }
     end.to_json.html_safe
   end
