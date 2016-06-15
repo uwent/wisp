@@ -263,10 +263,15 @@ class Field < ActiveRecord::Base
       uri = URI.parse(url)
       # Note that we code the nested params with the [] format, since they'll irremediably be
       # formatted to escaped braces if we just use the grid_date => {start_date: } nested hash
-      res = response = Net::HTTP.post_form(uri,
-        "latitude"=>pivot.latitude, "longitude"=>pivot.longitude, "param"=>"ET",
-        "grid_date[start_date]" => start_date, "grid_date[end_date]"=>end_date,
-        "format" => "csv")
+      res = response = Net::HTTP.post_form(
+        uri,
+        "latitude" => pivot.latitude.round(1),
+        "longitude" => pivot.longitude.round(1),
+        "param" => "ET",
+        "grid_date[start_date]" => start_date,
+        "grid_date[end_date]" => end_date,
+        "format" => "csv"
+      )
 
       vals = {}
       res.body.split("\n").each do |line|
