@@ -43,6 +43,7 @@ group :development, :test do
   gem 'factory_girl_rails'
   gem 'rspec-rails'
   gem 'valid_attribute'
+  gem 'guard-rspec'
 end
 
 group :test do
