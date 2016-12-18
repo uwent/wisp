@@ -55,5 +55,9 @@ describe User do
     it 'creates an admin membership' do
       expect { user.save }.to change { user.memberships.admin.count }.by(1)
     end
+    
+    it 'is not an admin' do
+      expect(user.admin).to be_falsey
+    end
   end
 end

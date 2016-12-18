@@ -1,5 +1,5 @@
 class UsersController < AuthenticatedController
-  before_action :ensure_john!
+  before_action :ensure_admin!
 
   def index
     @users = User.order(:email).paginate(page: params[:page], per_page: 30)
@@ -7,7 +7,7 @@ class UsersController < AuthenticatedController
 
   private
 
-  def ensure_john!
-    head :forbidden unless current_user.john?
+  def ensure_admin!
+    head :forbidden unless current_user.admin?
   end
 end
