@@ -5,6 +5,16 @@ class UsersController < AuthenticatedController
     @users = User.order(:email).paginate(page: params[:page], per_page: 30)
   end
 
+  def destroy
+    @user = User.find(params[:id])
+    old_email = @user.email
+    if @user.destroy
+      redirect_to users_path, alert: "User #{old_email} removed."
+    else
+      redirect_to users_path, alert: "ERROR: Unable to remove #{old_email}."
+    end
+  end
+
   private
 
   def ensure_admin!

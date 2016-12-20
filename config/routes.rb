@@ -9,7 +9,7 @@ RailsApp::Application.routes.draw do
   resources :plants
   resources :weather_station_data, collection: { post_data: :post }
   resources :weather_stations
-  resources :users, only: [:index]
+  resources :users, only: [:index, :destroy]
 
   resources :welcome, only: [:index] do
     collection do

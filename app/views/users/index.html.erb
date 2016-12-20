@@ -1,20 +1,27 @@
 <h2>Users</h2>
-
+<% unless alert.blank? %>
+<br />
+<div class="alert">
+  <p id="notice"><%= alert %></p>
+</div>
+<% end %>
 <br />
 <%= will_paginate @users, class: :apple_pagination %>
 
 <table width="90%" style="margin-left: 5%;">
   <thead>
     <tr>
+      <th width="10%">&nbsp;</th>
       <th width="50%">Email</th>
       <th width="20%">Created</th>
       <th width="20%">Last Signed In</th>
-      <th width="10%">&nbsp;</th>
     </tr>
   </thead>
   <tbody>
     <% @users.each do |user| %>
       <tr>
+        <td><%= button_to 'Destroy', user_path(user),
+            data: {:confirm => 'Are you sure?'}, :method => :delete %></td>
         <td><%= user.email %></td>
         <td><%= user.created_at.to_date %></td>
         <td><%= user.last_sign_in_at.try(:to_date) %></td>
