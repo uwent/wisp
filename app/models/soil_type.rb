@@ -9,7 +9,7 @@ class SoilType < ActiveRecord::Base
 
   def self.seed
     initial_types.each do |attrs|
-      where(attrs).first_or_create
+     where(attrs).first_or_create
     end
   end
 

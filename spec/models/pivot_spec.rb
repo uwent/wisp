@@ -1,6 +1,13 @@
 require 'rails_helper'
 
 describe Pivot do
+  before do
+    allow_any_instance_of(Field)
+      .to receive(:date_endpoints)
+      .and_return([Date.yesterday, Date.today])
+    @group = Group.create()
+  end
+
   let(:pivot) { create :pivot }
 
   describe '#after_create' do
@@ -50,6 +57,19 @@ describe Pivot do
             match(field.attributes.except(*%w(id pivot_id created_at updated_at)))
         end
       end
+    end
+  end
+
+  describe '#destroy' do
+    it 'removes associated fields' do
+      pivot.reload
+      expect { pivot.destroy! }.to change { Field.count }
+    end
+
+    it 'removes associated irrigation events' do
+      pivot.reload
+      pivot.irrigation_events << IrrigationEvent.create
+      expect { pivot.destroy! }.to change { IrrigationEvent.count }
     end
   end
 end

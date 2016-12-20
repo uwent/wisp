@@ -8,6 +8,12 @@ describe WeatherStation do
   let(:days) { ends_on - starts_on + 1 }
 
   describe '#ensure_data_for' do
+    before do
+      allow_any_instance_of(Field)
+        .to receive(:date_endpoints)
+        .and_return([Date.yesterday, Date.today])
+    end
+
     context 'when weather station data exists for the start date' do
       before { create(:weather_station_data, weather_station: weather_station, date: starts_on) }
 
@@ -74,6 +80,19 @@ describe WeatherStation do
             expect { weather_station_data.update_attributes(entered_pct_cover: new_entered_pct_cover) }.to change { field_daily_weather.reload.entered_pct_cover }.to(new_entered_pct_cover)
           end
         end
+      end
+    end
+    describe '#destroy' do
+      before do
+        allow_any_instance_of(Field)
+          .to receive(:date_endpoints)
+          .and_return([Date.yesterday, Date.today])
+      end
+
+      it 'should remove weather_station_data' do
+        weather_station.reload
+        weather_station.weather_station_data << create(:weather_station_data, date: Date.yesterday)
+        expect { weather_station.destroy }.to change { WeatherStationData.count }
       end
     end
   end

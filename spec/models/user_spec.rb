@@ -1,6 +1,12 @@
 require 'rails_helper'
 
 describe User do
+  before do
+    allow_any_instance_of(Field)
+      .to receive(:date_endpoints)
+      .and_return([Date.yesterday, Date.today])
+  end
+
   let(:user) { build :user }
 
   describe '#name' do
@@ -58,6 +64,19 @@ describe User do
     
     it 'is not an admin' do
       expect(user.admin).to be_falsey
+    end
+  end
+
+  describe '#destroy' do
+    it 'will remove group if user is admin of group' do
+      user.save!
+      user.reload
+      expect { user.destroy }.to change { Group.count }
+    end
+
+    it 'will remove memberships' do
+      user = create :user
+      expect { user.destroy }.to change { Membership.count }
     end
   end
 end

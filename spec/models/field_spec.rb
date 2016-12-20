@@ -371,4 +371,30 @@ describe Field do
 
     end
   end
+
+  describe '#destroy' do
+    before do
+      allow_any_instance_of(Field)
+        .to receive(:date_endpoints)
+        .and_return([Date.yesterday, Date.today])
+    end
+    let (:field) { create :field }
+
+    it 'should remove crops' do
+      field.reload
+      field.crops  << create(:crop)
+      expect { field.destroy! }.to change { Crop.count }
+    end
+
+    it 'should remove multi_edit_groups' do
+      field.reload
+      field.weather_stations << create(:weather_station)
+      expect { field.destroy! }.to change { MultiEditLink.count }
+    end
+
+    it 'should remove field_daily_weather' do
+      field.reload
+      expect { field.destroy! }.to change { FieldDailyWeather.count }
+    end
+  end
 end

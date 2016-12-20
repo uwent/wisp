@@ -1,8 +1,8 @@
 class WeatherStation < ActiveRecord::Base
   belongs_to :group
-  has_many :multi_edit_links
+  has_many :multi_edit_links, dependent: :destroy
   has_many :fields, through: :multi_edit_links
-  has_many :weather_station_data
+  has_many :weather_station_data, dependent: :destroy
   has_many :field_daily_weather, through: :fields
 
   def has_data_for?(*dates)
@@ -35,7 +35,8 @@ class WeatherStation < ActiveRecord::Base
       # TODO: with_indifferent_access
       fdw.update_attributes(attributes.except(:date))
 
-      # if user entered a % cover number, send that to all the % cover FDWs affected
+      # if user entered a % cover number,
+      # send that to all the % cover FDWs affected
       if (attributes[:entered_pct_cover].present?)
         if field.et_method == Field::PCT_COVER_METHOD
           fdw.field.pct_cover_changed(fdw)

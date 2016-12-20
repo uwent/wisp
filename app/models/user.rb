@@ -7,7 +7,9 @@ class User < ActiveRecord::Base
     :trackable,
     :validatable
 
-  has_many :memberships
+  before_destroy :remove_group_if_group_admin
+
+  has_many :memberships, dependent: :destroy
   has_many :groups, through: :memberships
 
   after_create :create_group_and_membership
@@ -21,16 +23,19 @@ class User < ActiveRecord::Base
     "#{name}'s group"
   end
 
-  def john?
-    email == 'jcpanuska@wisc.edu'
-  end
-
   private
-
-  def create_group_and_membership
-    transaction do
-      group = Group.create!(description: group_description)
-      memberships.create!(group_id: group.id, is_admin: true)
+    def create_group_and_membership
+      transaction do
+        group = Group.create!(description: group_description)
+        memberships.create!(group_id: group.id, is_admin: true)
+      end
     end
-  end
+
+    def remove_group_if_group_admin
+      transaction do
+        memberships.each do |membership|
+          membership.group.destroy! if membership.is_admin
+        end
+      end
+    end
 end
