@@ -35,6 +35,9 @@
     <!--
     <li><%= link_to "Report Setup", :controller => 'wisp', :action => :report_setup %></li>
     -->
+    <% if current_user && current_user.admin? %>
+      <li><%= link_to "Admin Users", users_path %></li>
+    <% end %>
   </ul>
 <% (0..4).each do %>
 <br/>
