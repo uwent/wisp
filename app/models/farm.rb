@@ -42,13 +42,14 @@ class Farm < ActiveRecord::Base
     pivots.create!
   end
 
-  def clone_pivots_for(year=Time.now.year)
-    pivots.each do |piv|
-      if (cloned = piv.clone_for(year))
-        pivots << cloned
-      end
-    end
-  end
+  # FIX ME: REMOVE THIS 
+  # def clone_pivots_for(year=Time.now.year)
+  #   pivots.each do |piv|
+  #     if (cloned = piv.clone_for(year))
+  #       pivots << cloned
+  #     end
+  #   end
+  # end
 
   private
 

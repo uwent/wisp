@@ -102,14 +102,16 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # FIXME: Remove the cloning 
+  # -------------------------
   # Check to see if any of our pivots need to be cloned.
-  def check_pivots_for_cloning(clone_to = nil)
-    clone_to ||= Time.now.year
-    return unless current_group
-    farms = current_group.farms
-    # What needs cloning? Well, the latest set of pivots whose cropping years are < clone_to
-    latest_pivots = Farm.latest_pivots(farms)
-    latest_pivot_year = latest_pivots.first.cropping_year
-    (latest_pivot_year < clone_to) ? latest_pivots : nil
-  end
+  # def check_pivots_for_cloning(clone_to = nil)
+  #   clone_to ||= Time.now.year
+  #   return unless current_group
+  #   farms = current_group.farms
+  #   # What needs cloning? Well, the latest set of pivots whose cropping years are < clone_to
+  #   latest_pivots = Farm.latest_pivots(farms)
+  #   latest_pivot_year = latest_pivots.first.cropping_year
+  #   (latest_pivot_year < clone_to) ? latest_pivots : nil
+  # end
 end

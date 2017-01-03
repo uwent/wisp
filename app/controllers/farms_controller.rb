@@ -15,10 +15,12 @@ class FarmsController < AuthenticatedController
     end
     logger.warn "No farms for group #{@group_id} found!" unless (@farms && @farms.size > 0)
     @farms ||= []
-    clone_year = params[:clone_pivots_to_year] || Time.now.year
-    if (@pivots_need_cloning = check_pivots_for_cloning(clone_year))
-      @pivots_need_cloning.each { |p| p.clone_for(clone_year) }
-    end
+    # FIXME: Remove the cloning of pivots in the controllers.
+    # ----------------------------------------
+    # clone_year = params[:clone_pivots_to_year] || Time.now.year
+    # if (@pivots_need_cloning = check_pivots_for_cloning(clone_year))
+    #   @pivots_need_cloning.each { |p| p.clone_for(clone_year) }
+    # end
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @farms }
@@ -159,12 +161,14 @@ class FarmsController < AuthenticatedController
     end
   end
 
-  def clone_for_this_year
-    if current_user.identifier_url == @rick_identifier_url
-      Farm.all.each do |farm|
-        farm.clone_pivots_for(Time.now.year)
-      end
-    end
-    render :text => 'All done.'
-  end
+  # Not sure what this was for.... testing cloning ??
+  # FIXME: REMOVE THIS
+  # def clone_for_this_year
+  #   if current_user.identifier_url == @rick_identifier_url
+  #     Farm.all.each do |farm|
+  #       farm.clone_pivots_for(Time.now.year)
+  #     end
+  #   end
+  #   render :text => 'All done.'
+  # end
 end

@@ -21,27 +21,28 @@ class Pivot < ActiveRecord::Base
   #   end
   # end
 
-  def clone_for(year=Time.now.year)
-    return if cropping_year == year # Can't clone to same year
+  # FIXME: Remove this.
+  # def clone_for(year=Time.now.year)
+  #   return if cropping_year == year # Can't clone to same year
 
-    new_pivot = self.dup
-    new_pivot.cropping_year = year
-    new_pivot.cloning = true
+  #   new_pivot = self.dup
+  #   new_pivot.cropping_year = year
+  #   new_pivot.cloning = true
 
-    transaction do
-      new_pivot.save!
+  #   transaction do
+  #     new_pivot.save!
 
-      fields.each do |field|
-        new_field = field.dup
-        new_field.pivot = new_pivot
-        new_field.save!
-      end
+  #     fields.each do |field|
+  #       new_field = field.dup
+  #       new_field.pivot = new_pivot
+  #       new_field.save!
+  #     end
 
-      self.destroy!
-    end
+  #     self.destroy!
+  #   end
 
-    new_pivot
-  end
+  #   new_pivot
+  # end
 
   private
 
