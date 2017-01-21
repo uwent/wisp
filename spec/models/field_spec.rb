@@ -372,6 +372,52 @@ describe Field do
     end
   end
 
+  describe '#new_year' do
+    describe 'last year data' do
+      before do
+        allow_any_instance_of(Field)
+          .to receive(:date_endpoints)
+          .and_return([1.year.ago.to_date.beginning_of_month,
+                       1.year.ago.to_date])
+      end
+      let (:field) { create :field }
+
+      it 'should remove old field data' do
+        field.field_daily_weather.each do | fdw |
+          expect(fdw).to receive(:destroy!)
+        end
+        field.new_year
+      end
+
+      it 'should recreate field data' do
+        field.new_year
+        expect(field.field_daily_weather.count).to be > 0
+      end
+    end
+    describe 'this year field data' do
+      before do
+        allow_any_instance_of(Field)
+          .to receive(:date_endpoints)
+          .and_return([Date.today.beginning_of_month,
+                       Date.today])
+      end
+      let (:field) { create :field }
+
+      it 'should not remove current field data' do
+        field.field_daily_weather.each do | fdw |
+          expect(fdw).not_to receive(:destroy!)
+        end
+        field.new_year
+      end
+
+      it 'should call new_year on crops' do
+        field.crops.each { |c| expect(c).to receive(:new_year) }
+        field.new_year
+      end
+
+    end
+  end
+
   describe '#destroy' do
     before do
       allow_any_instance_of(Field)

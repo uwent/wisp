@@ -84,6 +84,24 @@ describe Crop do
     end
   end
 
+  describe 'new year' do
+    let(:crop) { create :crop, emergence_date: 2.days.ago,
+      harvest_or_kill_date: 1.day.ago}
+
+    it 'sets emergence date to default' do
+      crop.new_year
+      crop.reload
+      expect(crop.emergence_date).to eq Date.civil(Time.now.year,
+                                                   *Field::EMERGENCE_DATE)
+    end
+
+    it 'should empty kill/harvest date' do
+      crop.new_year
+      crop.reload
+      expect(crop.harvest_or_kill_date).to be_nil
+    end
+  end
+
   describe 'updating field with emergence date' do
     let(:crop) { create :crop, emergence_date: 2.days.ago }
 

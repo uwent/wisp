@@ -45,4 +45,8 @@ class WeatherStation < ActiveRecord::Base
       fdw.field.save! # Trigger a balance recalc
     end
   end
+
+  def new_year
+    self.weather_station_data = []
+  end
 end

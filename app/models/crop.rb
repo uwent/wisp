@@ -18,6 +18,12 @@ class Crop < ActiveRecord::Base
     field.field_capacity * 100.0
   end
 
+  def new_year
+    self.emergence_date = Date.civil(Time.now.year, *Field::EMERGENCE_DATE)
+    self.harvest_or_kill_date = nil
+    save!
+  end
+
   private
 
   def attributes_that_trigger_field_update

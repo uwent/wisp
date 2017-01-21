@@ -202,6 +202,15 @@ class Field < ActiveRecord::Base
       current_crop.initial_soil_moisture
   end
 
+  def new_year
+    field_daily_weather.each do |daily_weather|
+      daily_weather.destroy! if daily_weather.date.year < Time.now.year
+    end
+    crops.each { |c| c.new_year }
+    self.reload
+    create_field_daily_weather
+  end
+
   def initial_ad
     return DEFAULT_INITIAL_AD unless can_calculate_initial_ad?
 

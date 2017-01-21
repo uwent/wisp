@@ -44,6 +44,13 @@ class Pivot < ActiveRecord::Base
   #   new_pivot
   # end
 
+  def new_year
+    self.irrigation_events = []
+    self.fields.each { | f | f.new_year }
+    self.cropping_year = Time.now.year
+    save!
+  end
+
   private
 
   def set_defaults

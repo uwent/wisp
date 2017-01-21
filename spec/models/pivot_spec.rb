@@ -60,6 +60,29 @@ describe Pivot do
   #   end
   # end
 
+  describe '#new_year' do
+    it 'removes irrigaion events' do
+      pivot.irrigation_events << IrrigationEvent.create
+      expect(pivot.irrigation_events.length).to be 1
+      expect { pivot.new_year }.to change { IrrigationEvent.count }
+      expect(pivot.irrigation_events.length).to be 0
+    end
+
+    it 'sets the croping year' do
+      pivot.cropping_year = Date.today.year - 1
+      pivot.save!
+      pivot.reload
+      expect { pivot.new_year }.to change { pivot.cropping_year }
+      expect(pivot.cropping_year).to be Date.today.year
+    end
+
+    it 'calls a new year for each field' do
+      pivot.fields << Field.new
+      pivot.fields.each { |f| f.should_receive(:new_year).once }
+      pivot.new_year
+    end
+  end
+
   describe '#destroy' do
     it 'removes associated fields' do
       pivot.reload
