@@ -3,6 +3,11 @@ class UsersController < AuthenticatedController
 
   def index
     @users = User.order(:email).paginate(page: params[:page], per_page: 30)
+
+    respond_to do |format|
+      format.html
+      format.csv { send_data User.to_csv, filename: "users-#{Date.today}.csv"}
+    end
   end
 
   def destroy

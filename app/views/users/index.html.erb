@@ -6,6 +6,9 @@
 </div>
 <% end %>
 <br />
+<%=  link_to 'Export Email CSV', users_path(format: :csv) %>
+<br />
+<br />
 <%= will_paginate @users, class: :apple_pagination %>
 
 <table width="90%" style="margin-left: 5%;">

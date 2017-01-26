@@ -23,6 +23,14 @@ class User < ActiveRecord::Base
     "#{name}'s group"
   end
 
+  def self.to_csv
+    CSV.generate(headers: true) do |csv|
+      User.all.each do |user|
+        csv << [user.email]
+      end
+    end
+  end
+
   private
     def create_group_and_membership
       transaction do
