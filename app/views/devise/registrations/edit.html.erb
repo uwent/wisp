@@ -27,13 +27,17 @@
     <%= f.password_field :current_password, autocomplete: "off" %>
   </div>
 
+  <br />
   <div class="actions">
     <%= f.submit "Update" %>
   </div>
 <% end %>
 
+<br />
+<hr />
+<br />
 <h3>Cancel my account</h3>
 
-<p>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>
+<p>Remove your account and all data from this system. (Note: This is final and irreversible). <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>
 
 <%= link_to "Back", :back %>

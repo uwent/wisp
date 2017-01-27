@@ -43,11 +43,17 @@
 <br/>
 <% end %>
 <% if user_signed_in? %>
-Signed in as <%= current_user.email %>.<br/><div style="float: left; width: auto; margin-top: 0.3em">Not you?</div>
-<%= button_to "Sign out", destroy_user_session_path, method: :delete %>
+  Signed in as <%= current_user.email %>.
+  <br/>
+  <br/>
+  <%=  button_to "Manage account", edit_user_registration_path, method: :get %>
+  <br/>
+  <br/>
+  <div style="float: left; width: auto; margin-top: 0.3em">Not you?</div>
+  <%= button_to "Sign out", destroy_user_session_path, method: :delete %>
 <% else %>
-<%= link_to "Sign up", new_user_registration_path %>
-<%= link_to "Sign in", new_user_session_path %>
+  <%= link_to "Sign up", new_user_registration_path %>
+  <%= link_to "Sign in", new_user_session_path %>
 <% end %>
 
 <% if flash[:notice] %>
