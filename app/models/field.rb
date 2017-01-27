@@ -203,11 +203,11 @@ class Field < ActiveRecord::Base
   end
 
   def new_year
+    crops.each { |c|  c.new_year }
     field_daily_weather.each do |daily_weather|
       daily_weather.destroy! if daily_weather.date.year < Time.now.year
     end
     self.reload
-    crops.each { |c| c.new_year }
     create_field_daily_weather
   end
 
