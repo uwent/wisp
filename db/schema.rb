@@ -25,17 +25,17 @@ ActiveRecord::Schema.define(version: 20161218150410) do
 
   create_table "crops", force: :cascade do |t|
     t.integer  "field_id"
-    t.string   "name"
-    t.string   "variety"
+    t.string   "name",                           limit: 255
+    t.string   "variety",                        limit: 255
     t.date     "emergence_date"
     t.date     "end_date"
     t.date     "harvest_or_kill_date"
     t.float    "max_root_zone_depth"
     t.float    "max_allowable_depletion_frac"
     t.float    "max_allowable_depletion_inches"
-    t.string   "notes"
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
+    t.string   "notes",                          limit: 255
+    t.datetime "created_at",                                 null: false
+    t.datetime "updated_at",                                 null: false
     t.float    "initial_soil_moisture"
     t.integer  "plant_id"
   end
@@ -43,10 +43,10 @@ ActiveRecord::Schema.define(version: 20161218150410) do
   create_table "farms", force: :cascade do |t|
     t.integer  "group_id"
     t.integer  "year"
-    t.string   "name"
-    t.string   "notes"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "name",       limit: 255
+    t.string   "notes",      limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   create_table "field_daily_weather", force: :cascade do |t|
@@ -62,15 +62,15 @@ ActiveRecord::Schema.define(version: 20161218150410) do
     t.float    "calculated_pct_moisture"
     t.float    "ad"
     t.float    "deep_drainage"
-    t.string   "notes"
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.string   "notes",                   limit: 255
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
     t.float    "calculated_pct_cover"
     t.integer  "degree_days"
   end
 
   create_table "fields", force: :cascade do |t|
-    t.string   "name"
+    t.string   "name",                     limit: 255
     t.integer  "soil_type_id"
     t.float    "area"
     t.float    "field_capacity"
@@ -79,17 +79,17 @@ ActiveRecord::Schema.define(version: 20161218150410) do
     t.integer  "ref_et_station_id"
     t.integer  "rain_station_id"
     t.integer  "soil_moisture_station_id"
-    t.string   "notes"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
+    t.string   "notes",                    limit: 255
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
     t.float    "target_ad_pct"
     t.integer  "et_method"
   end
 
   create_table "groups", force: :cascade do |t|
-    t.string   "description"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+    t.string   "description", limit: 255
+    t.datetime "created_at",              null: false
+    t.datetime "updated_at",              null: false
   end
 
   create_table "irrigation_events", force: :cascade do |t|
@@ -119,67 +119,67 @@ ActiveRecord::Schema.define(version: 20161218150410) do
 
   create_table "pivots", force: :cascade do |t|
     t.integer  "farm_id"
-    t.string   "name"
+    t.string   "name",                    limit: 255
     t.float    "latitude"
     t.float    "longitude"
-    t.string   "equipment"
+    t.string   "equipment",               limit: 255
     t.float    "pump_capacity"
     t.string   "some_energy_rate_metric"
-    t.integer  "cropping_year",           null: false
-    t.string   "notes"
-    t.datetime "created_at",              null: false
-    t.datetime "updated_at",              null: false
+    t.integer  "cropping_year",                       null: false
+    t.string   "notes",                   limit: 255
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
   end
 
   create_table "plants", force: :cascade do |t|
-    t.string   "name"
-    t.string   "type"
+    t.string   "name",                        limit: 255
+    t.string   "type",                        limit: 255
     t.float    "default_max_root_zone_depth"
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
   end
 
   create_table "soil_types", force: :cascade do |t|
-    t.string   "name"
-    t.string   "description"
+    t.string   "name",            limit: 255
+    t.string   "description",     limit: 255
     t.float    "field_capacity"
     t.float    "perm_wilting_pt"
-    t.datetime "created_at",      null: false
-    t.datetime "updated_at",      null: false
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
   end
 
   add_index "soil_types", ["name"], name: "index_soil_types_on_name", unique: true, using: :btree
 
   create_table "users", force: :cascade do |t|
-    t.string   "first_name"
-    t.string   "last_name"
-    t.datetime "created_at",                             null: false
-    t.datetime "updated_at",                             null: false
-    t.string   "email",                  default: "",    null: false
-    t.string   "encrypted_password",     default: "",    null: false
-    t.string   "reset_password_token"
+    t.string   "first_name",             limit: 255
+    t.string   "last_name",              limit: 255
+    t.datetime "created_at",                                         null: false
+    t.datetime "updated_at",                                         null: false
+    t.string   "email",                              default: "",    null: false
+    t.string   "encrypted_password",                 default: "",    null: false
+    t.string   "reset_password_token",   limit: 255
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",          default: 0
+    t.integer  "sign_in_count",                      default: 0
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
-    t.string   "current_sign_in_ip"
-    t.string   "last_sign_in_ip"
-    t.boolean  "admin",                  default: false
+    t.string   "current_sign_in_ip",     limit: 255
+    t.string   "last_sign_in_ip",        limit: 255
+    t.boolean  "admin",                              default: false
   end
 
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
+  add_index "users", ["reset_password_token"], name: "idx_users_index_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "weather_station_data", force: :cascade do |t|
-    t.integer  "weather_station_id",   null: false
-    t.date     "date",                 null: false
+    t.integer  "weather_station_id",               null: false
+    t.date     "date",                             null: false
     t.float    "ref_et"
     t.float    "rain"
     t.float    "entered_pct_moisture"
-    t.string   "notes"
-    t.datetime "created_at",           null: false
-    t.datetime "updated_at",           null: false
+    t.string   "notes",                limit: 255
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
     t.float    "irrigation"
     t.float    "entered_pct_cover"
     t.float    "leaf_area_index"
@@ -189,11 +189,11 @@ ActiveRecord::Schema.define(version: 20161218150410) do
 
   create_table "weather_stations", force: :cascade do |t|
     t.integer  "group_id"
-    t.string   "name"
-    t.string   "location"
-    t.string   "notes"
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.string   "name",             limit: 255
+    t.string   "location",         limit: 255
+    t.string   "notes",            limit: 255
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
     t.integer  "pivot_id_deleted"
   end
 

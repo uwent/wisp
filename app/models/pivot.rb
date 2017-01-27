@@ -46,9 +46,9 @@ class Pivot < ActiveRecord::Base
 
   def new_year
     self.irrigation_events = []
-    self.fields.each { | f | f.new_year }
     self.cropping_year = Time.now.year
-    save!
+    self.save!
+    self.fields.each { | f | f.new_year }
   end
 
   private

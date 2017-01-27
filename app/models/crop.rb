@@ -21,7 +21,7 @@ class Crop < ActiveRecord::Base
   def new_year
     self.emergence_date = Date.civil(Time.now.year, *Field::EMERGENCE_DATE)
     self.harvest_or_kill_date = nil
-    save!
+    self.save!
   end
 
   private
