@@ -19,9 +19,9 @@ gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'will_paginate'
 
-group :staging, :production do
-  gem 'rails_12factor'
-end
+#group :staging, :production do
+#  gem 'rails_12factor'
+#end
 
 group :development do
   gem 'capistrano'
