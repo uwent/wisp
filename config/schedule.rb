@@ -19,7 +19,7 @@
 #   runner "AnotherModel.prune_old_records"
 # end
 
-every 1.year, at: 'February 6 5:00am' do
+every "0 5 6 2 *" do
   rake "yearly:reset"
 end
 
