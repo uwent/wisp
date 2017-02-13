@@ -1,7 +1,7 @@
 <% field = @field_daily_weather.first.field %>
 "Daily Report (<%=h @field_daily_weather.first.date.year %> Season)"
-"Farm","Pivot","Field"
-"<%= field.pivot.farm.name %>","<%= field.pivot.name %>"
+"Farm","Pivot","WDNR Hicap Well No.","Field"
+"<%= field.pivot.farm.name %>","<%= field.pivot.name %>", "<%= field.pivot.equipment %>"
 "Field","Soil Type","Field capacity","Permanent wilt point","Target AD %"
 "<%= field.name %>","<%= @soil_type %>",<%= field.field_capacity %>,<%= field.perm_wilting_pt %>,<%= field.target_ad_pct %>
 "Crop","Root zone depth","Initial percent moisture","Emergence date","AD at field capacity","Harvest or Kill Date"

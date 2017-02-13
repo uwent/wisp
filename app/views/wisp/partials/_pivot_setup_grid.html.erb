@@ -98,19 +98,19 @@
               // t.string   "name"
               // t.float    "latitude"
               // t.float    "longitude"
-              // t.string   "equipment"
+              // t.string   "equipment" 
               // t.float    "pump_capacity"
               // t.float    "some_energy_rate_metric"
               // t.integer  "cropping_year"
               // t.string   "notes"
               //
-              colNames:['Name','Lat.','Long.','Equipment','Pump Capacity','Energy Type','Crop Yr','Notes','Delete','Farm ID','ID'],
+              colNames:['Name','Lat.','Long.','WDNR Hicap Well No','Pump Capacity','Energy Type','Crop Yr','Notes','Delete','Farm ID','ID'],
               // colNames:['Name',' '],
               colModel:[
                          {name:'name', index:'name',width:83,editable:true},
                          {name:'latitude', index:'latitude',width:18,editable:true, align:'right',formatter:'number',formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:42.0,maxValue:50.0}},
                          {name:'longitude', index:'longitude',width:18,editable:true, align:'right',formatter:'number',formatoptions:{decimalPlaces:2},editrules:{number:true,minValue:-98.0,maxValue:-86.0}},
-                         {name:'equipment', index:'equipment',width:50,editable:true, align:'right'},
+                         {name:'equipment', index:'equipment',width:55,editable:true, align:'right'},
                          {name:'pump_capacity', index:'pump_capacity',width:40,editable:true, align:'right',editrules:{number:true,minValue:0.0}},
                          {name: 'some_energy_rate_metric', index: 'some_energy_rate_metric', resizable: true, width: 60, editable: true, align:'left', editrules: { required: false },
                            sorttype: "text",
