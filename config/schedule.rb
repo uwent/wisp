@@ -19,7 +19,7 @@
 #   runner "AnotherModel.prune_old_records"
 # end
 
-every "0 5 6 2 *" do
+every "0 1 15 2 *" do
   rake "yearly:reset"
 end
 
