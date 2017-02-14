@@ -12,7 +12,6 @@ describe Pivot do
 
   describe '#after_create' do
     let(:pivot) { build :pivot }
-
     it 'creates a field' do
       expect { pivot.save }.to change { pivot.fields.count }.by(1)
     end
@@ -61,6 +60,11 @@ describe Pivot do
   # end
 
   describe '#new_year' do
+    before do
+      pivot.cropping_year = 2015
+      pivot.save!
+    end
+
     it 'removes irrigaion events' do
       pivot.irrigation_events << IrrigationEvent.create
       expect(pivot.irrigation_events.length).to be 1
