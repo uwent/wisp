@@ -45,6 +45,7 @@ class Pivot < ActiveRecord::Base
   # end
 
   def new_year
+    return if self.cropping_year == Time.now.year
     self.irrigation_events = []
     self.cropping_year = Time.now.year
     self.save!
