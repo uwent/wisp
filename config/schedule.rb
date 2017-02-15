@@ -27,7 +27,7 @@ job_type :runner, %q{ cd :path && PATH=:env_path:"$PATH" script/rails runner -e 
 job_type :script, %q{ cd :path && PATH=:env_path:"$PATH" RAILS_ENV=:environment bundle exec script/:task :output }
 
 
-every "0 7 15 2 *" do
+every "0 1 16 2 *" do
   rake "yearly:reset"
 end
 
