@@ -2,9 +2,9 @@
 
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
   <%= devise_error_messages! %>
-
+  
   <div class="field">
-    <%= f.label :email %><br />
+    <%= f.label :email %> <i>(to change, remove current address, enter new address)</i><br />
     <%= f.email_field :email, autofocus: true %>
   </div>
 
@@ -26,8 +26,15 @@
     <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
     <%= f.password_field :current_password, autocomplete: "off" %>
   </div>
+  <div id="change-instructions">
+      To save a new password or email address:<br />
+      <ol>
+          <li>1. Enter change as instructed above.</li>
+          <li>2. Enter current password.</li>
+          <li>3. Click the update button.</li>
+      </ol>
+  </div>
 
-  <br />
   <div class="actions">
     <%= f.submit "Update" %>
   </div>
