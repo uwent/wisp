@@ -1,0 +1,34 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:2.2-node-browsers
+        environment:
+          PG_HOST: localhost
+          PG_USER: wisp
+          RAILS_ENV: test
+          RACK_ENV: test
+      - image: postgres:9.6
+        environment:
+          POSTGRES_USER: wisp
+          POSTGRES_DB: wisp_test
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            gem install bundler
+            bundle
+      - run:
+          name: Set up DB
+          command: |
+            bundle exec rake db:schema:load
+            bundle exec rake db:migrate
+          environment:
+            DATABASE_URL: postgres://wisp@localhost:5432/wisp_test
+      - run:
+          name: Run Specs
+          command: |
+            bundle exec rake spec
+          environment:
+            DATABASE_URL: postgres://wisp@localhost:5432/wisp_test
