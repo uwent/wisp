@@ -7,7 +7,7 @@ set :application, 'wisp'
 set :repo_url, 'git@github.com:adorableio/wisp.git'
 
 set :rbenv_type, :user
-set :rbenv_ruby, '2.2.4'
+set :rbenv_ruby, '2.2.10'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp

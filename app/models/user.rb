@@ -5,7 +5,8 @@ class User < ActiveRecord::Base
     :registerable,
     :rememberable,
     :trackable,
-    :validatable
+    :validatable,
+    :timeoutable
 
   before_destroy :remove_group_if_group_admin
 
