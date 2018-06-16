@@ -171,6 +171,7 @@ class Field < ActiveRecord::Base
       field_daily_weather.create!(
         date: date,
         ref_et: 0.0,
+        ad: 0.0,
         adj_et: 0.0,
         leaf_area_index: lai,
         calculated_pct_cover: pct_cover)
@@ -209,6 +210,8 @@ class Field < ActiveRecord::Base
     end
     self.reload
     create_field_daily_weather
+    set_fdw_initial_moisture
+    do_balances
   end
 
   def initial_ad
