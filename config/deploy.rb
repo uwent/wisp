@@ -1,5 +1,5 @@
 # config valid only for current version of Capistrano
-lock '3.4.0'
+lock '3.11.0'
 
 branch = ENV['BRANCH'] || 'master'
 
@@ -7,14 +7,14 @@ set :application, 'wisp'
 set :repo_url, 'git@github.com:adorableio/wisp.git'
 
 set :rbenv_type, :user
-set :rbenv_ruby, '2.2.10'
+set :rbenv_ruby, '2.4.1'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 set :branch, branch
 
 # Default deploy_to directory is /var/www/my_app_name
-#set :deploy_to, '/var/www/my_app_name'
+set :deploy_to, '/home/deploy/wisp'
 
 # Default value for :scm is :git
 # set :scm, :git
