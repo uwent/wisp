@@ -272,7 +272,7 @@ class Field < ActiveRecord::Base
     end_date = field_daily_weather[-1].date.to_s
 
     vals = {}
-    url = "http://agweather.cals.wisc.edu/sun_water/get_grid"
+    url = "https://agweather.cals.wisc.edu/sun_water/get_grid"
     begin
       uri = URI.parse(url)
       # Note that we code the nested params with the [] format, since they'll irremediably be
