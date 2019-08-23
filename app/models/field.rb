@@ -547,7 +547,10 @@ class Field < ActiveRecord::Base
     rb = RingBuffer.new(7)
     field_daily_weather[day..-1].each do |fdw|
       # Remember the max adjusted ET within the last week. If there wasn't a nonzero one, use the last available one.
-      last_adj_et = rb.max || rb.last_nonzero
+      #last_adj_et = rb.max || rb.last_nonzero
+      # ARB: changed 8/23/19 to take average of top 3 in last 7 days
+      last_adj_et = rb.mean_top_3
+
       # logger.info "do_balances on #{fdw.date}: prev_ad is #{prev_ad} and last_adj_et is #{last_adj_et}"
       fdw.old_update_balances(prev_ad,last_adj_et)
       # puts "after update_balances, ad now #{fdw.ad}" if day < 5

@@ -1,4 +1,4 @@
-server 'wisp2.cals.wisc.edu',
+server '52.36.85.186',
   user: 'deploy',
   roles: %w{app db web},
   ssh_options: {

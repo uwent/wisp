@@ -39,6 +39,16 @@ class RingBuffer
     values.sum / values.count
   end
 
+  def mean_top_3
+    top_3 = non_nil.sort.reserve[0...3]
+
+    if top_3.empty?
+      return 0.0
+    else
+      return top_3.sum/top_3.length
+    end
+  end
+
   private
 
   def non_nil
