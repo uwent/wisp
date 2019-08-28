@@ -177,6 +177,36 @@ describe RingBuffer do
     end
   end
 
+  describe '#mean_top_3' do
+    let(:ring_buffer) { RingBuffer.new(10) }
+
+    context "ring empty" do
+      it "is 0.0" do
+        expect(ring_buffer.mean_top_3).to be_within(delta).of 0.0
+      end
+    end
+
+    context "ring size less than 3" do
+      it 'is the average of the 2 in the ring' do
+        ring_buffer.add(4.0)
+        ring_buffer.add(6.0)
+
+        expect(ring_buffer.mean_top_3).to be_within(delta).of 5.0
+      end
+    end
+
+    context "ring size more than 3" do
+      it 'is the average of the top 3 in the ring' do
+        ring_buffer.add(22.0)
+        ring_buffer.add(1.0)
+        ring_buffer.add(20.0)
+        ring_buffer.add(24.0)
+
+       expect(ring_buffer.mean_top_3).to be_within(delta).of 22.0
+      end
+    end
+end
+
   describe '#big_enough' do
     (0..7).each do |exponent|
       positive_value = (10 ** -exponent).to_f

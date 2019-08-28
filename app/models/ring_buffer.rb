@@ -40,7 +40,7 @@ class RingBuffer
   end
 
   def mean_top_3
-    top_3 = non_nil.sort.reserve[0...3]
+    top_3 = non_nil.sort.reverse[0...3]
 
     if top_3.empty?
       return 0.0
