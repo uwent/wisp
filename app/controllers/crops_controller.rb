@@ -1,6 +1,7 @@
 class CropsController < AuthenticatedController
   # TODO: Remove this.
-  before_filter(:only => [:post_data, :show, :edit, :update, :destroy]) {|controller| @crop = Crop.find(params[:id]) if (params[:id] && params[:id] != '_empty')}
+  # before_filter(:only => [:post_data, :show, :edit, :update, :destroy]) {|controller| @crop = Crop.find(params[:id]) if (params[:id] && params[:id] != '_empty')}
+  before_action(:only => [:post_data, :show, :edit, :update, :destroy]) {|controller| @crop = Crop.find(params[:id]) if (params[:id] && params[:id] != '_empty')}
 
   COLUMN_NAMES = [
     :name,

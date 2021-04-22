@@ -6,7 +6,8 @@ class Farm < ActiveRecord::Base
   validates :year, presence: true
   validates :name, uniqueness: { scope: :group_id }
 
-  before_save :set_defaults, on: :create
+  # before_save :set_defaults, on: :create
+  before_save :set_defaults, :create
 
   after_create :create_dependent_objects
 
@@ -26,7 +27,7 @@ class Farm < ActiveRecord::Base
 
   # Iterate over all the fields on the farm. Return a hash where the keys are fields with problems,
   # the values are the FDW where the AD is negative today or in the next two days.
-  def problems(date=Date.today)
+  def problems(date = Date.today)
     # Collect all fields on the farm
     all_fields = pivots.select { |p| p.cropping_year == date.year }.collect { |p| p.fields }.flatten
     # Is AD negative today or two days ahead?
@@ -39,7 +40,8 @@ class Farm < ActiveRecord::Base
   end
 
   def create_dependent_objects
-    pivots.create!
+    # pivots.create!
+    Pivot.create!
   end
 
   # FIX ME: REMOVE THIS 
@@ -54,7 +56,9 @@ class Farm < ActiveRecord::Base
   private
 
   def set_defaults
-    counter = group.farms.count + 1
+    # counter = group.farms.count + 1
+    counter = Group.farms(:group).count + 1
+    Rails.logger.info("Counter: #{counter}")
     self.name ||= "New Farm #{counter}"
   end
 end
