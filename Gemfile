@@ -10,9 +10,9 @@ source 'https://rubygems.org'
 # gem 'railties', '6.1.3'
 # gem 'activesupport', '6.1.3'
 
-gem 'rails', '~> 5.0'
-gem 'railties', '~> 5.0'
-gem 'activesupport', '~> 5.0'
+gem 'rails', '~> 6.1'
+gem 'railties', '~> 6.1'
+gem 'activesupport', '~> 6.1'
 
 # gem 'pg', '~> 0.15'
 gem 'pg', '~> 1.2'
