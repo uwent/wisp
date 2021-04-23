@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :pivot do
     latitude 44.5
     longitude -89.2
