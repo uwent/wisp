@@ -1,5 +1,5 @@
 class Farm < ApplicationRecord
-  belongs_to :group
+  belongs_to :group, optional: true
   has_many :pivots, dependent: :destroy
   has_many :fields, through: :pivots
 
@@ -56,9 +56,7 @@ class Farm < ApplicationRecord
   private
 
   def set_defaults
-    # counter = group.farms.count + 1
-    counter = Group.farms(:group).count + 1
-    Rails.logger.info("Counter: #{counter}")
+    counter = group.farms.count + 1
     self.name ||= "New Farm #{counter}"
   end
 end
