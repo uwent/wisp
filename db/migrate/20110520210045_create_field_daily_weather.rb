@@ -1,4 +1,4 @@
-class CreateFieldDailyWeather < ActiveRecord::Migration
+class CreateFieldDailyWeather < ActiveRecord::Migration[4.2]
   def self.up
     create_table :field_daily_weather do |t|
       t.integer :field_id

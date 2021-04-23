@@ -1,4 +1,4 @@
-class CreateEtMethods < ActiveRecord::Migration
+class CreateEtMethods < ActiveRecord::Migration[4.2]
   def self.up
     create_table :et_methods do |t|
       t.string :name

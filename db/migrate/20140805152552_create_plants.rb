@@ -1,4 +1,4 @@
-class CreatePlants < ActiveRecord::Migration
+class CreatePlants < ActiveRecord::Migration[4.2]
   def self.up
     create_table :plants do |t|
       t.string :name

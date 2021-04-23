@@ -1,4 +1,4 @@
-class CreateIrrigationEvents < ActiveRecord::Migration
+class CreateIrrigationEvents < ActiveRecord::Migration[4.2]
   def self.up
     create_table :irrigation_events do |t|
       t.integer :pivot_id

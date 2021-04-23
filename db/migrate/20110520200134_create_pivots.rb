@@ -1,4 +1,4 @@
-class CreatePivots < ActiveRecord::Migration
+class CreatePivots < ActiveRecord::Migration[4.2]
   def self.up
     create_table :pivots do |t|
       t.integer :farm_id

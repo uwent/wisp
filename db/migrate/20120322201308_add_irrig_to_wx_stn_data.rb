@@ -1,4 +1,4 @@
-class AddIrrigToWxStnData < ActiveRecord::Migration
+class AddIrrigToWxStnData < ActiveRecord::Migration[4.2]
   def self.up
     add_column :weather_station_data, :irrigation, :float
   end

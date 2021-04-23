@@ -1,4 +1,4 @@
-class RenameWxStnIdCol < ActiveRecord::Migration
+class RenameWxStnIdCol < ActiveRecord::Migration[4.2]
   def self.up
     if column_exists?(:weather_station_data, :station_id)
       rename_column :weather_station_data, :station_id, :weather_station_id

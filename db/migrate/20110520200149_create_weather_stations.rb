@@ -1,4 +1,4 @@
-class CreateWeatherStations < ActiveRecord::Migration
+class CreateWeatherStations < ActiveRecord::Migration[4.2]
   def self.up
     create_table :weather_stations do |t|
       t.integer :group_id

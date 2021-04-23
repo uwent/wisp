@@ -1,4 +1,4 @@
-class CreateFarms < ActiveRecord::Migration
+class CreateFarms < ActiveRecord::Migration[4.2]
   def self.up
     create_table :farms do |t|
       t.integer :group_id

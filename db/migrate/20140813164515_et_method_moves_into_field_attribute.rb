@@ -1,4 +1,4 @@
-class EtMethodMovesIntoFieldAttribute < ActiveRecord::Migration
+class EtMethodMovesIntoFieldAttribute < ActiveRecord::Migration[4.2]
   def self.up    
     # Propagate existing farms' ET methods to all of their fields
     # TODO: After this migration is accomplished, fix cloning code to
