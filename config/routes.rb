@@ -23,5 +23,5 @@ Rails.application.routes.draw do
   root to: 'welcome#index'
 
   # TODO: Remove this eventually
-  match ':controller(/:action(/:id(.:format)))', via: [:get, :post]
+  # match ':controller(/:action(/:id(.:format)))', via: [:get, :post]
 end

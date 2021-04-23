@@ -86,7 +86,8 @@ class Field < ApplicationRecord
   # given a date:
   # look for the latest crop in the current year whose emergence date is past
   def current_crop
-    @current_crop ||= crops(true).order(:emergence_date).last
+    # @current_crop ||= crops(true).order(:emergence_date).last
+    @current_crop ||= crops.order(:emergence_date).last
   end
 
   def year

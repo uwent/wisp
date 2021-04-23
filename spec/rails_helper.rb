@@ -1,13 +1,9 @@
 require 'simplecov'
+SimpleCov.start
 
 if ENV['CIRCLE_ARTIFACTS']
   dir = File.join(ENV['CIRCLE_ARTIFACTS'], "coverage")
   SimpleCov.coverage_dir(dir)
-end
-
-SimpleCov.start 'rails' do
-  # TODO: Enable this eventually
-  # minimum_coverage 100
 end
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
@@ -32,9 +28,22 @@ require 'rspec/rails'
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
-Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+
+ActiveRecord::Migration.maintain_test_schema!
+
+# Dir[Rails.root.join('spec/support/**/*.rb')].each { |f| require f }
+
+# from support/db.rb
+Rails.application.load_seed
 
 RSpec.configure do |config|
+  config.include FactoryBot::Syntax::Methods
+
+  # from support/focused.rb
+  config.filter_run focused: true
+  config.alias_example_to :fit, focused: true
+  config.run_all_when_everything_filtered = true
+
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 

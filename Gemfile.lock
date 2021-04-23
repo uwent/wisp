@@ -116,6 +116,9 @@ GEM
     execjs (2.7.0)
     factory_bot (6.1.0)
       activesupport (>= 5.0.0)
+    factory_bot_rails (6.1.0)
+      factory_bot (~> 6.1.0)
+      railties (>= 5.0.0)
     ffi (1.15.0)
     formatador (0.2.5)
     globalid (0.4.2)
@@ -307,7 +310,7 @@ DEPENDENCIES
   coffee-rails (~> 5.0)
   decent_exposure
   devise
-  factory_bot
+  factory_bot_rails
   guard-rspec
   jbuilder (~> 2.10)
   jqgrid-jquery-rails
