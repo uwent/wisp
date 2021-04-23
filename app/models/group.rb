@@ -9,14 +9,13 @@ class Group < ApplicationRecord
   after_create :create_dependent_objects
 
   def self.farms(group)
-    Farm.where(group: group)
+    where(group: group)
   end
 
   private
 
   # TODO: this is busted. NoMethodError for create
   def create_dependent_objects
-    # farms.create!(name: 'Farm 1', year: Time.now.year)
-    Farm.create!(name: 'Farm 1', year: Time.now.year)
+    farms.create!(name: 'Farm 1', year: Time.now.year)
   end
 end

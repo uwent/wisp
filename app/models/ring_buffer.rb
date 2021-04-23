@@ -1,4 +1,4 @@
-class RingBuffer < ApplicationRecord
+class RingBuffer
   attr_reader \
     :last_index,
     :last_nonzero,
