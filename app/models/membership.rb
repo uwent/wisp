@@ -1,4 +1,4 @@
-class Membership < ActiveRecord::Base
+class Membership < ApplicationRecord
   # TODO: validates
   belongs_to :group
   belongs_to :user

@@ -1,4 +1,4 @@
-class Pivot < ActiveRecord::Base
+class Pivot < ApplicationRecord
   belongs_to :farm
   has_many :fields, dependent: :destroy
   has_many :crops, through: :fields

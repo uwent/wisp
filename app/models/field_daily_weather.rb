@@ -1,4 +1,4 @@
-class FieldDailyWeather < ActiveRecord::Base
+class FieldDailyWeather < ApplicationRecord
   belongs_to :field
   before_create :zero_rain_and_irrig
   before_save :set_adj_et

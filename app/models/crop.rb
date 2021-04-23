@@ -1,4 +1,4 @@
-class Crop < ActiveRecord::Base
+class Crop < ApplicationRecord
   belongs_to :plant
   belongs_to :field
 

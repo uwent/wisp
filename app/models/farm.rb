@@ -1,4 +1,4 @@
-class Farm < ActiveRecord::Base
+class Farm < ApplicationRecord
   belongs_to :group
   has_many :pivots, dependent: :destroy
   has_many :fields, through: :pivots

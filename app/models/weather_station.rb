@@ -1,4 +1,4 @@
-class WeatherStation < ActiveRecord::Base
+class WeatherStation < ApplicationRecord
   belongs_to :group
   has_many :multi_edit_links, dependent: :destroy
   has_many :fields, through: :multi_edit_links

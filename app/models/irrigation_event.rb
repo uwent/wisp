@@ -1,4 +1,4 @@
-class IrrigationEvent < ActiveRecord::Base
+class IrrigationEvent < ApplicationRecord
   belongs_to :pivot
 
   # find the field_daily_weather events that might be affected by us

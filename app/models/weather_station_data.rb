@@ -1,4 +1,4 @@
-class WeatherStationData < ActiveRecord::Base
+class WeatherStationData < ApplicationRecord
   belongs_to :weather_station
   before_save :send_changes
 

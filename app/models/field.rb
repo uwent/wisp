@@ -3,7 +3,7 @@
 require 'net/http'
 require 'uri'
 
-class Field < ActiveRecord::Base
+class Field < ApplicationRecord
   after_create :create_dependent_objects
   after_save :set_fdw_initial_moisture, :do_balances
   before_validation :set_defaults, on: :create
