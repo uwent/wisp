@@ -139,7 +139,7 @@ class FieldsController < AuthenticatedController
     respond_to do |format|
       if @field.update(params[:field])
         format.html do
-          render :nothing => true
+          head :ok, content_type: "text/html"
           # redirect_to(@field, :notice => 'Field was successfully updated.')
         end
         format.xml  { head :ok }

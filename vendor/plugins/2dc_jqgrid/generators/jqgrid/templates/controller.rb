@@ -15,7 +15,7 @@ class <%= model_name.pluralize.camelcase %>Controller < ApplicationController
       end
     end
     
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   def index

@@ -59,7 +59,7 @@ class CropsController < AuthenticatedController
         @crop.update(attribs)
       end
     end
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   # GET /crops/1

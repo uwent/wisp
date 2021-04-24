@@ -46,7 +46,7 @@ class WeatherStationDataController < AuthenticatedController
       logger.warn "wx stn data post_data attempted without id"
     end
     logger.info "posted data successfully"
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   # GET /weather_station_data/1

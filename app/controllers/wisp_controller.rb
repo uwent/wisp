@@ -238,11 +238,11 @@ class WispController < AuthenticatedController
     if @farm_id
       @farm = Farm.find(@farm_id)
     end
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   def set_pivot
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   def set_field

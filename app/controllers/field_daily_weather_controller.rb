@@ -162,7 +162,7 @@ class FieldDailyWeatherController < AuthenticatedController
     # fdw = FieldDailyWeather.find(params[:id])
     # logger.info "after field save, fdw now #{fdw.inspect}"
 
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   # GET /field_daily_weather/1
