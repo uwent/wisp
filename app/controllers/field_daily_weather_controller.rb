@@ -146,7 +146,7 @@ class FieldDailyWeatherController < AuthenticatedController
     end
 
     # logger.info "before update_attributes, fdw was #{fdw.inspect}"
-    fdw.update_attributes(attribs)
+    fdw.update(attribs)
     # logger.info "after update_attributes, fdw now #{fdw.inspect}"
     if do_pct_cover
       fdw.field.pct_cover_changed(fdw)
@@ -210,7 +210,7 @@ class FieldDailyWeatherController < AuthenticatedController
     @field_daily_weather = FieldDailyWeather.find(params[:id])
 
     respond_to do |format|
-      if @field_daily_weather.update_attributes(params[:field_daily_weather])
+      if @field_daily_weather.update(params[:field_daily_weather])
         format.html { redirect_to(@field_daily_weather, :notice => 'Field daily weather was successfully updated.') }
         format.xml  { head :ok }
       else

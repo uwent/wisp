@@ -79,7 +79,7 @@ class IrrigationEventsController < AuthenticatedController
     @irrigation_event = IrrigationEvent.find(params[:id])
 
     respond_to do |format|
-      if @irrigation_event.update_attributes(params[:irrigation_event])
+      if @irrigation_event.update(params[:irrigation_event])
         format.html { redirect_to(@irrigation_event, :notice => 'Irrigation event was successfully updated.') }
         format.xml  { head :ok }
       else

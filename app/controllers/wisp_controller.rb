@@ -157,7 +157,7 @@ class WispController < AuthenticatedController
     @pivot_id,@pivot = get_and_set(Pivot,Farm,@farm_id)
     @field_id,@field = get_and_set(Field,Pivot,@pivot_id)
     if params[:field] && params[:field][:target_ad_pct]
-      @field.update_attributes :target_ad_pct => params[:field][:target_ad_pct]
+      @field.update :target_ad_pct => params[:field][:target_ad_pct]
     else
       @field.do_balances
     end

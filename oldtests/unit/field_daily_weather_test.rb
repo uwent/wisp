@@ -29,7 +29,7 @@ class FieldDailyWeatherTest < ActiveSupport::TestCase
     puts "about to create field ******************* "
     field = Field.create(field_params)
     # puts "********* create done, about to update crop with needed params"
-    field.crops.first.update_attributes(crop_params)
+    field.crops.first.update(crop_params)
     # puts "******** crop update done"
     # puts field.inspect
     # puts "about to save the field *************"

@@ -73,7 +73,7 @@ class FarmsController < AuthenticatedController
           attribs.delete(:group_id)
         end
         farm = Farm.find(params[:id])
-        farm.update_attributes(attribs)
+        farm.update(attribs)
       end
     end
     render :json => ApplicationController.jsonify(farm.attributes)
@@ -139,7 +139,7 @@ class FarmsController < AuthenticatedController
     @farm.group = @group
 
     respond_to do |format|
-      if @farm.update_attributes(params[:farm])
+      if @farm.update(params[:farm])
         format.html { redirect_to(@farm, :notice => 'Farm was successfully updated.') }
         format.xml  { head :ok }
       else

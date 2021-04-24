@@ -36,7 +36,7 @@ class WeatherStationDataController < AuthenticatedController
       for col in COLUMN_NAMES
         attribs[col] = params[col] if (params[col])
       end
-      wx_rec.update_attributes(attribs)
+      wx_rec.update(attribs)
     else
       logger.warn "wx stn data post_data attempted without id"
     end
@@ -93,7 +93,7 @@ class WeatherStationDataController < AuthenticatedController
     @weather_station_data = WeatherStationData.find(params[:id])
 
     respond_to do |format|
-      if @weather_station_data.update_attributes(params[:weather_station_data])
+      if @weather_station_data.update(params[:weather_station_data])
         format.html { redirect_to(@weather_station_data, :notice => 'Field group successfully updated.') }
         format.xml  { head :ok }
       else

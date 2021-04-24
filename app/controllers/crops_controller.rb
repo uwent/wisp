@@ -56,7 +56,7 @@ class CropsController < AuthenticatedController
         set_parent_id(attribs,params,:field_id,@field_id)
         Crop.create(attribs)
       else
-        @crop.update_attributes(attribs)
+        @crop.update(attribs)
       end
     end
     render :nothing => true
@@ -109,7 +109,7 @@ class CropsController < AuthenticatedController
   	@crop.field_id = @field_id
 
     respond_to do |format|
-      if @crop.update_attributes(params[:crop])
+      if @crop.update(params[:crop])
         format.html { redirect_to(@crop, :notice => 'Crop was successfully updated.') }
         format.xml  { head :ok }
       else

@@ -62,7 +62,7 @@ class FieldsController < AuthenticatedController
         attribs.delete(:act)
         attribs.delete(:pivot_id) if attribs[:pivot_id]
         # puts "updating field attributes"
-        field.update_attributes(attribs)
+        field.update(attribs)
         # puts "field attributes updated"
       end
     end
@@ -77,7 +77,7 @@ class FieldsController < AuthenticatedController
   def update_target_ad_pct
     field = Field.find(params[:id])
     attribs = {:target_ad_pct => params[:target_ad_pct]}
-    field.update_attributes(attribs)
+    field.update(attribs)
     if field.target_ad_in
       tadin_str = sprintf('%0.2f"',field.target_ad_in)
     else
@@ -137,7 +137,7 @@ class FieldsController < AuthenticatedController
     @field.pivot_id = @pivot_id
 
     respond_to do |format|
-      if @field.update_attributes(params[:field])
+      if @field.update(params[:field])
         format.html do
           render :nothing => true
           # redirect_to(@field, :notice => 'Field was successfully updated.')
