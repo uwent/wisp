@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  devise_for :users
+  devise_for :users, path: 'wisp'
 
   get '/userguide' => 'welcome#guide'
   get 'fdw/irrig_only/:id' => 'field_daily_weather#irrig_only'
@@ -20,8 +20,24 @@ Rails.application.routes.draw do
     end
   end
 
-  root to: 'welcome#index'
+  resources :wisp, only: [:index] do
+    collection do
+      get :report_setup
+      get :farm_status
+      get :field_status
+      get :project_status
+      get :weather
+      get :pivot_crop
+      get :projection_data
+      get :summary_box
+      get :field_setup_grid
+      get :crop_setup_grid
+    end
+  end
 
   # TODO: Remove this eventually
   match ':controller(/:action(/:id(.:format)))', via: [:get, :post]
+
+  root to: 'welcome#index'
+
 end

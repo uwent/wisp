@@ -44,11 +44,11 @@ class WispController < AuthenticatedController
   end
 
   def crop_setup_grid
-    @farm = Farm.find(@farm_id) if @farm_id
-    @pivot = Pivot.find(@pivot_id) if @pivot_id
+    @farm = Farm.where(:farm_id => @farm_id) if @farm_id
+    @pivot = Pivot.where(:pivot_id => @pivot_id) if @pivot_id
     @pivots = Pivot.where(:farm_id => @farm_id)
     @field,@field_id = get_and_set(Field,Pivot,@pivot_id)
-    @field = Field.find(@field_id) if @field_id
+    @field = Field.where(:id => @field_id) if @field_id
     @fields = Field.where(:pivot_id => @pivot_id)
     @crop = @field.current_crop
     @crop_id = @crop[:id]

@@ -31,13 +31,14 @@ gem 'devise'
 # gem 'jbuilder', '~> 2.0'
 gem 'jbuilder', '~> 2.10'
 
-gem 'jqgrid-jquery-rails'
+gem 'jqgrid-jquery-rails', '~> 4.6'
 gem 'jquery-rails', '~> 4.4'
 gem 'jquery-ui-rails', '~> 6.0'
 gem 'rails-ujs', '0.1.0'
 
 # gem 'sass-rails', '~> 5.0'
-gem 'sass-rails', '~> 6.0'
+# gem 'sass-rails', '~> 6.0'
+gem 'sassc-rails', '~> 2.1'
 
 # gem 'uglifier', '>= 1.3.0'
 gem 'uglifier', '~> 4.2'

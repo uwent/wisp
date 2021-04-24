@@ -42,6 +42,6 @@ jobs:
             DATABASE_URL: postgres://wisp@localhost:5432/wisp_test
       - run:
           name: Run Specs
-          command: bundle exec rake spec
+          command: bundle exec rspec
           environment:
             DATABASE_URL: postgres://wisp@localhost:5432/wisp_test

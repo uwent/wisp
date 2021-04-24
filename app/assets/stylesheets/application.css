@@ -1,4 +1,6 @@
 /*
+ *= require jquery-ui
+ *= require jqgrid-jquery-rails
  *= require_tree .
  *= require_self
  */

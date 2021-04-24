@@ -244,8 +244,6 @@ GEM
       rspec-mocks (~> 3.10)
       rspec-support (~> 3.10)
     rspec-support (3.10.2)
-    sass-rails (6.0.0)
-      sassc-rails (~> 2.1, >= 2.1.1)
     sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
@@ -313,7 +311,7 @@ DEPENDENCIES
   factory_bot_rails
   guard-rspec
   jbuilder (~> 2.10)
-  jqgrid-jquery-rails
+  jqgrid-jquery-rails (~> 4.6)
   jquery-rails (~> 4.4)
   jquery-ui-rails (~> 6.0)
   mail_safe
@@ -322,7 +320,7 @@ DEPENDENCIES
   rails-ujs (= 0.1.0)
   railties (~> 6.1)
   rspec-rails
-  sass-rails (~> 6.0)
+  sassc-rails (~> 2.1)
   simplecov
   uglifier (~> 4.2)
   valid_attribute
