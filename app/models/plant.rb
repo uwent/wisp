@@ -1,4 +1,4 @@
-class Plant < ActiveRecord::Base
+class Plant < ApplicationRecord
   include ETCalculator
 
   def self.default_plant

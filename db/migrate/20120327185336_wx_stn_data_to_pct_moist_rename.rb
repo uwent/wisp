@@ -1,4 +1,4 @@
-class WxStnDataToPctMoistRename < ActiveRecord::Migration
+class WxStnDataToPctMoistRename < ActiveRecord::Migration[4.2]
   # rename this column so it's consistent with the usage in FieldDailyWeather
   def self.up
     begin

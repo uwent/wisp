@@ -1,4 +1,4 @@
-class WeatherStation < ActiveRecord::Base
+class WeatherStation < ApplicationRecord
   belongs_to :group
   has_many :multi_edit_links, dependent: :destroy
   has_many :fields, through: :multi_edit_links
@@ -33,7 +33,7 @@ class WeatherStation < ActiveRecord::Base
 
       # TODO: Should probably be update_attributes!
       # TODO: with_indifferent_access
-      fdw.update_attributes(attributes.except(:date))
+      fdw.update(attributes.except(:date))
 
       # if user entered a % cover number,
       # send that to all the % cover FDWs affected

@@ -1,5 +1,5 @@
-class FieldDailyWeather < ActiveRecord::Base
-  belongs_to :field
+class FieldDailyWeather < ApplicationRecord
+  belongs_to :field, optional: true
   before_create :zero_rain_and_irrig
   before_save :set_adj_et
 

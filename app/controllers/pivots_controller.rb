@@ -30,7 +30,7 @@ class PivotsController < AuthenticatedController
       format.html # index.html.erb
       format.xml  { render :xml => @pivots }
       columns = COLUMN_NAMES
-      format.json { render :json => @pivots.to_jqgrid_json(columns,params[:page], params[:rows],@pivots.size) }
+      format.json { render :json => @pivots.to_a.to_jqgrid_json(columns,params[:page], params[:rows],@pivots.size) }
     end
   end
 
@@ -60,7 +60,7 @@ class PivotsController < AuthenticatedController
       else
         attribs.delete(:farm_id) if attribs[:farm_id]
         pivot = Pivot.find(params[:id])
-        pivot.update_attributes(attribs)
+        pivot.update(attribs)
       end
     end
     render :json => ApplicationController.jsonify(pivot.attributes)
@@ -117,7 +117,7 @@ class PivotsController < AuthenticatedController
     @pivot.farm_id = @farm_id
 
     respond_to do |format|
-      if @pivot.update_attributes(params[:pivot])
+      if @pivot.update(params[:pivot])
         format.html { redirect_to(@pivot, :notice => 'Pivot was successfully updated.') }
         format.xml  { head :ok }
       else

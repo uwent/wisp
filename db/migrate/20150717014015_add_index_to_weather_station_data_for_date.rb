@@ -1,4 +1,4 @@
-class AddIndexToWeatherStationDataForDate < ActiveRecord::Migration
+class AddIndexToWeatherStationDataForDate < ActiveRecord::Migration[4.2]
   def change
     change_column :weather_station_data, :weather_station_id, :integer, null: false
     change_column :weather_station_data, :date, :date, null: false

@@ -63,7 +63,7 @@ describe WeatherStation do
 
         context 'when weather station data is changed' do
           it 'updates the field daily weather' do
-            expect { weather_station_data.update_attributes(rain: 4.0) }.to change { field_daily_weather.reload.rain }.to(4.0)
+            expect { weather_station_data.update(rain: 4.0) }.to change { field_daily_weather.reload.rain }.to(4.0)
           end
         end
 
@@ -77,7 +77,7 @@ describe WeatherStation do
           end
 
           it 'propagates to field daily weather' do
-            expect { weather_station_data.update_attributes(entered_pct_cover: new_entered_pct_cover) }.to change { field_daily_weather.reload.entered_pct_cover }.to(new_entered_pct_cover)
+            expect { weather_station_data.update(entered_pct_cover: new_entered_pct_cover) }.to change { field_daily_weather.reload.entered_pct_cover }.to(new_entered_pct_cover)
           end
         end
       end

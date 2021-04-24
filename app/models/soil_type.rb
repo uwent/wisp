@@ -1,4 +1,4 @@
-class SoilType < ActiveRecord::Base
+class SoilType < ApplicationRecord
   validates :name, uniqueness: true
 
   DEFAULT_SOIL_TYPE_NAME = 'Sandy Loam'

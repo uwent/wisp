@@ -1,4 +1,4 @@
-class RectifyTimestampNullability < ActiveRecord::Migration
+class RectifyTimestampNullability < ActiveRecord::Migration[4.2]
   def change
     tables = ActiveRecord::Base.connection.tables - ["schema_migrations"]
     tables_with_timestamps = tables.select do |table|

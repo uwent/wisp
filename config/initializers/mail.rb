@@ -20,7 +20,9 @@ if ActionMailer::Base.delivery_method == :smtp
   end
 end
 
-url_options = Chamber.url_options.to_h.symbolize_keys
+# Fix Chamber 2.x => 3.x deprecation warning
+# url_options = Chamber.url_options.to_h.symbolize_keys
+url_options = Chamber.dig!('url_options').to_h.symbolize_keys
 
 Rails.application.routes.default_url_options = url_options
 Rails.application.config.action_mailer.default_url_options = url_options

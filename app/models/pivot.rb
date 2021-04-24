@@ -1,10 +1,10 @@
-class Pivot < ActiveRecord::Base
-  belongs_to :farm
+class Pivot < ApplicationRecord
+  belongs_to :farm, optional: true
   has_many :fields, dependent: :destroy
   has_many :crops, through: :fields
   has_many :irrigation_events, dependent: :destroy
 
-  before_validation :set_defaults
+  before_validation :set_defaults, on: :create
 
   after_create :create_dependent_objects
 

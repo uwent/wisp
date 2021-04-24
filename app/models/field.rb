@@ -3,10 +3,13 @@
 require 'net/http'
 require 'uri'
 
-class Field < ActiveRecord::Base
+class Field < ApplicationRecord
   after_create :create_dependent_objects
   after_save :set_fdw_initial_moisture, :do_balances
   before_validation :set_defaults, on: :create
+
+  ET_ENDPOINT = "https://agweather.cals.wisc.edu/ag_weather/evapotranspirations"
+  DD_ENDPOINT = "https://agweather.cals.wisc.edu/ag_weather/degree_days"
 
   START_DATE = [4, 1]
   END_DATE = [11, 30]
@@ -24,8 +27,8 @@ class Field < ActiveRecord::Base
   include ADCalculator
   include ETCalculator
 
-  belongs_to :pivot
-  belongs_to :soil_type
+  belongs_to :pivot, optional: true
+  belongs_to :soil_type, optional: true
 
   has_many :crops, dependent: :destroy
   has_many :field_daily_weather, -> { order(:date) }, dependent: :destroy
@@ -86,7 +89,7 @@ class Field < ActiveRecord::Base
   # given a date:
   # look for the latest crop in the current year whose emergence date is past
   def current_crop
-    @current_crop ||= crops(true).order(:emergence_date).last
+    @current_crop ||= crops.reload.order(:emergence_date).last
   end
 
   def year
@@ -272,7 +275,7 @@ class Field < ActiveRecord::Base
     end_date = field_daily_weather[-1].date.to_s
 
     vals = {}
-    url = "https://agweather.cals.wisc.edu/sun_water/get_grid"
+    url = ET_ENDPOINT
     begin
       uri = URI.parse(url)
       # Note that we code the nested params with the [] format, since they'll irremediably be
@@ -322,7 +325,7 @@ class Field < ActiveRecord::Base
 
     vals = {}
     # To use a test url use "http://agwx.soils.wisc.edu/devel/thermal_models/get_dds" Note: et data not automatically updated on devel.
-    url = "http://agwx.soils.wisc.edu/uwex_agwx/thermal_models/get_dds"
+    url = DD_ENDPOINT
     begin
       uri = URI.parse(url)
       logger.info uri

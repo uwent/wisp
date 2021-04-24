@@ -71,10 +71,15 @@ class FieldDailyWeatherController < AuthenticatedController
       format.html # index.html.erb
       format.xml  { render :xml => @field_daily_weather }
       if params[:irrig_only]
-        format.json { render :json => @field_daily_weather.to_jqgrid_json([:field_name,:irrigation,:id],
-                                                               params[:page] || 1, params[:rows] || 7, wx_size) }
+        format.json {
+          render :json => @field_daily_weather.to_a.to_jqgrid_json(
+            [:field_name,:irrigation,:id],
+            params[:page] || 1,
+            params[:rows] || 7,
+            wx_size)
+          }
       else
-        json = @field_daily_weather.to_jqgrid_json([
+        json = @field_daily_weather.to_a.to_jqgrid_json([
           :date,:ref_et,:rain,:irrigation,:display_pct_moisture,:pct_cover_for_json,
           :leaf_area_index, :adj_et_for_json,:ad,:deep_drainage,:id],
           page, page_size, wx_size)
@@ -146,7 +151,7 @@ class FieldDailyWeatherController < AuthenticatedController
     end
 
     # logger.info "before update_attributes, fdw was #{fdw.inspect}"
-    fdw.update_attributes(attribs)
+    fdw.update(attribs)
     # logger.info "after update_attributes, fdw now #{fdw.inspect}"
     if do_pct_cover
       fdw.field.pct_cover_changed(fdw)
@@ -157,7 +162,7 @@ class FieldDailyWeatherController < AuthenticatedController
     # fdw = FieldDailyWeather.find(params[:id])
     # logger.info "after field save, fdw now #{fdw.inspect}"
 
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   # GET /field_daily_weather/1
@@ -210,7 +215,7 @@ class FieldDailyWeatherController < AuthenticatedController
     @field_daily_weather = FieldDailyWeather.find(params[:id])
 
     respond_to do |format|
-      if @field_daily_weather.update_attributes(params[:field_daily_weather])
+      if @field_daily_weather.update(params[:field_daily_weather])
         format.html { redirect_to(@field_daily_weather, :notice => 'Field daily weather was successfully updated.') }
         format.xml  { head :ok }
       else

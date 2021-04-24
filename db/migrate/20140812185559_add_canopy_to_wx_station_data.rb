@@ -1,4 +1,4 @@
-class AddCanopyToWxStationData < ActiveRecord::Migration
+class AddCanopyToWxStationData < ActiveRecord::Migration[4.2]
   def self.up
     add_column :weather_station_data, :entered_pct_cover, :float
     add_column :weather_station_data, :leaf_area_index, :float

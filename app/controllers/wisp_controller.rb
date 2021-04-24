@@ -44,11 +44,11 @@ class WispController < AuthenticatedController
   end
 
   def crop_setup_grid
-    @farm = Farm.find(@farm_id) if @farm_id
-    @pivot = Pivot.find(@pivot_id) if @pivot_id
+    @farm = Farm.where(id: @farm_id).first if @farm_id
+    @pivot = Pivot.where(id: @pivot_id).first if @pivot_id
     @pivots = Pivot.where(:farm_id => @farm_id)
     @field,@field_id = get_and_set(Field,Pivot,@pivot_id)
-    @field = Field.find(@field_id) if @field_id
+    @field = Field.where(id: @field_id).first if @field_id
     @fields = Field.where(:pivot_id => @pivot_id)
     @crop = @field.current_crop
     @crop_id = @crop[:id]
@@ -157,7 +157,7 @@ class WispController < AuthenticatedController
     @pivot_id,@pivot = get_and_set(Pivot,Farm,@farm_id)
     @field_id,@field = get_and_set(Field,Pivot,@pivot_id)
     if params[:field] && params[:field][:target_ad_pct]
-      @field.update_attributes :target_ad_pct => params[:field][:target_ad_pct]
+      @field.update :target_ad_pct => params[:field][:target_ad_pct]
     else
       @field.do_balances
     end
@@ -238,11 +238,11 @@ class WispController < AuthenticatedController
     if @farm_id
       @farm = Farm.find(@farm_id)
     end
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   def set_pivot
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   def set_field

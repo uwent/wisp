@@ -10,8 +10,12 @@ class IrrigationEventsController < AuthenticatedController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @irrig_events }
-      format.json { render :json => @irrig_events.to_jqgrid_json([:date,:inches_applied,:id],
-                                                             params[:page], params[:rows],@irrig_events.size) }
+      format.json {
+        render :json => @irrig_events.to_a.to_jqgrid_json(
+          [:date,:inches_applied,:id],
+          params[:page], params[:rows],
+          @irrig_events.size)
+        }
     end
    end
 
@@ -79,7 +83,7 @@ class IrrigationEventsController < AuthenticatedController
     @irrigation_event = IrrigationEvent.find(params[:id])
 
     respond_to do |format|
-      if @irrigation_event.update_attributes(params[:irrigation_event])
+      if @irrigation_event.update(params[:irrigation_event])
         format.html { redirect_to(@irrigation_event, :notice => 'Irrigation event was successfully updated.') }
         format.xml  { head :ok }
       else

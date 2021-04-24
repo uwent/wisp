@@ -11,11 +11,11 @@ class <%= model_name.pluralize.camelcase %>Controller < ApplicationController
         <%= model_name %> = <%= camel %>.create(<%= model_name %>_params)
       else
         <%= model_name %> = <%= camel %>.find(params[:id])
-        <%= model_name %>.update_attributes(<%= model_name %>_params)
+        <%= model_name %>.update(<%= model_name %>_params)
       end
     end
     
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   def index

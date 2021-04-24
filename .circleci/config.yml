@@ -1,8 +1,11 @@
-version: 2
+version: 2.1
+orbs:
+  ruby: circleci/ruby@1.1.2
+
 jobs:
   build:
     docker:
-      - image: circleci/ruby:2.2-node-browsers
+      - image: circleci/ruby:2.7.2-node
         environment:
           PG_HOST: localhost
           PG_USER: wisp
@@ -12,23 +15,33 @@ jobs:
         environment:
           POSTGRES_USER: wisp
           POSTGRES_DB: wisp_test
+          POSTGRES_PASSWORD: "password"
     steps:
       - checkout
       - run:
-          name: Install Dependencies
-          command: |
-            gem install bundler
-            bundle
+          name: Update Bundler
+          command: gem install bundler
+      - run:
+          name: Which bundler?
+          command: bundle -v
+      - restore_cache:
+          keys:
+            - wisp-bundle-{{ checksum "Gemfile.lock" }}
+            - wisp-bundle
+      - run:
+          name: Bundle Install
+          command: bundle check --path ./vendor/bundle || bundle install
+      - save_cache:
+         key: wisp-bundle-{{ checksum "Gemfile.lock" }}
+         paths:
+           - ./vendor/bundle
       - run:
           name: Set up DB
-          command: |
-            bundle exec rake db:schema:load
-            bundle exec rake db:migrate
+          command: bin/rails db:setup
           environment:
             DATABASE_URL: postgres://wisp@localhost:5432/wisp_test
       - run:
           name: Run Specs
-          command: |
-            bundle exec rake spec
+          command: bundle exec rspec
           environment:
             DATABASE_URL: postgres://wisp@localhost:5432/wisp_test

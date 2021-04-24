@@ -25,8 +25,11 @@ class FarmsController < AuthenticatedController
       format.html # index.html.erb
       format.xml  { render :xml => @farms }
       format.json do
-        json = @farms.to_jqgrid_json([:name,:notes,:problem,:act,:group_id,:id],
-                                     params[:page], params[:rows],@farms.size)
+        json = @farms.to_a.to_jqgrid_json(
+          [:name, :notes, :problem, :act, :group_id, :id],
+          params[:page],
+          params[:rows],
+          @farms.size)
         render :json => json
       end
     end
@@ -73,7 +76,7 @@ class FarmsController < AuthenticatedController
           attribs.delete(:group_id)
         end
         farm = Farm.find(params[:id])
-        farm.update_attributes(attribs)
+        farm.update(attribs)
       end
     end
     render :json => ApplicationController.jsonify(farm.attributes)
@@ -81,7 +84,7 @@ class FarmsController < AuthenticatedController
 
   def problems
     if params[:farm_id]
-      @farms = [Farm.find(params[:farm_id].to_i)]
+      @farms = [Farm.where(:id => params[:farm_id].to_i)]
     else
       @farms = @user.groups.collect { |g| g.farms }.flatten
     end
@@ -139,7 +142,7 @@ class FarmsController < AuthenticatedController
     @farm.group = @group
 
     respond_to do |format|
-      if @farm.update_attributes(params[:farm])
+      if @farm.update(params[:farm])
         format.html { redirect_to(@farm, :notice => 'Farm was successfully updated.') }
         format.xml  { head :ok }
       else

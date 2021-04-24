@@ -1,4 +1,4 @@
-class UpdateUsersTable < ActiveRecord::Migration
+class UpdateUsersTable < ActiveRecord::Migration[4.2]
   def change
     execute(
     <<-sql

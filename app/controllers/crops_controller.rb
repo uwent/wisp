@@ -1,6 +1,7 @@
 class CropsController < AuthenticatedController
   # TODO: Remove this.
-  before_filter(:only => [:post_data, :show, :edit, :update, :destroy]) {|controller| @crop = Crop.find(params[:id]) if (params[:id] && params[:id] != '_empty')}
+  # before_filter(:only => [:post_data, :show, :edit, :update, :destroy]) {|controller| @crop = Crop.find(params[:id]) if (params[:id] && params[:id] != '_empty')}
+  before_action(:only => [:post_data, :show, :edit, :update, :destroy]) {|controller| @crop = Crop.find(params[:id]) if (params[:id] && params[:id] != '_empty')}
 
   COLUMN_NAMES = [
     :name,
@@ -30,7 +31,7 @@ class CropsController < AuthenticatedController
       format.html # index.html.erb
       format.xml  { render :xml => @crops }
       columns = COLUMN_NAMES; columns << :id; columns << :field_id
-      format.json { render :json => @crops.to_jqgrid_json(columns,params[:page], params[:rows],@crops.size) }
+      format.json { render :json => @crops.to_a.to_jqgrid_json(columns,params[:page], params[:rows],@crops.size) }
     end
 
   end
@@ -55,10 +56,10 @@ class CropsController < AuthenticatedController
         set_parent_id(attribs,params,:field_id,@field_id)
         Crop.create(attribs)
       else
-        @crop.update_attributes(attribs)
+        @crop.update(attribs)
       end
     end
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   # GET /crops/1
@@ -108,7 +109,7 @@ class CropsController < AuthenticatedController
   	@crop.field_id = @field_id
 
     respond_to do |format|
-      if @crop.update_attributes(params[:crop])
+      if @crop.update(params[:crop])
         format.html { redirect_to(@crop, :notice => 'Crop was successfully updated.') }
         format.xml  { head :ok }
       else

@@ -1,4 +1,4 @@
-class CreateCrops < ActiveRecord::Migration
+class CreateCrops < ActiveRecord::Migration[4.2]
   def self.up
     create_table :crops do |t|
       t.integer :field_id

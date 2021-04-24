@@ -24,8 +24,13 @@ class WeatherStationDataController < AuthenticatedController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @weather_data }
-      format.json { render :json => @weather_data.to_jqgrid_json([:date]+COLUMN_NAMES+[:id],
-                                                             params[:page], params[:rows],@weather_data.size) }
+      format.json {
+        render :json => @weather_data.to_a.to_jqgrid_json(
+          [:date]+COLUMN_NAMES+[:id],
+          params[:page],
+          params[:rows],
+          @weather_data.size)
+        }
     end
   end
 
@@ -36,12 +41,12 @@ class WeatherStationDataController < AuthenticatedController
       for col in COLUMN_NAMES
         attribs[col] = params[col] if (params[col])
       end
-      wx_rec.update_attributes(attribs)
+      wx_rec.update(attribs)
     else
       logger.warn "wx stn data post_data attempted without id"
     end
     logger.info "posted data successfully"
-    render :nothing => true
+    head :ok, content_type: "text/html"
   end
 
   # GET /weather_station_data/1
@@ -93,7 +98,7 @@ class WeatherStationDataController < AuthenticatedController
     @weather_station_data = WeatherStationData.find(params[:id])
 
     respond_to do |format|
-      if @weather_station_data.update_attributes(params[:weather_station_data])
+      if @weather_station_data.update(params[:weather_station_data])
         format.html { redirect_to(@weather_station_data, :notice => 'Field group successfully updated.') }
         format.xml  { head :ok }
       else

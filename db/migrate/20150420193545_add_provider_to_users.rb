@@ -1,4 +1,4 @@
-class AddProviderToUsers < ActiveRecord::Migration
+class AddProviderToUsers < ActiveRecord::Migration[4.2]
   def self.up
     add_column :users, :provider, :string
     add_column :users, :uid, :string

@@ -1,12 +1,13 @@
-class Farm < ActiveRecord::Base
-  belongs_to :group
+class Farm < ApplicationRecord
+  belongs_to :group, optional: true
   has_many :pivots, dependent: :destroy
   has_many :fields, through: :pivots
 
   validates :year, presence: true
   validates :name, uniqueness: { scope: :group_id }
 
-  before_save :set_defaults, on: :create
+  # before_save :set_defaults, on: :create
+  before_save :set_defaults
 
   after_create :create_dependent_objects
 
@@ -26,7 +27,7 @@ class Farm < ActiveRecord::Base
 
   # Iterate over all the fields on the farm. Return a hash where the keys are fields with problems,
   # the values are the FDW where the AD is negative today or in the next two days.
-  def problems(date=Date.today)
+  def problems(date = Date.today)
     # Collect all fields on the farm
     all_fields = pivots.select { |p| p.cropping_year == date.year }.collect { |p| p.fields }.flatten
     # Is AD negative today or two days ahead?

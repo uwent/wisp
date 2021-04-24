@@ -119,7 +119,7 @@ class FieldTest < ActiveSupport::TestCase
     unexpected = {}
     vals.each do |index,attrs|
       fdw = field.field_daily_weather[index]
-      fdw.update_attributes(attrs)
+      fdw.update(attrs)
       fdw.save!
       unexpected[fdw[:id]] = {:moisture => fdw.pct_moisture, :ad => fdw.ad}
       assert(fdw.pct_moisture)

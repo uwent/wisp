@@ -1,4 +1,4 @@
-class CreateMultiEditLinks < ActiveRecord::Migration
+class CreateMultiEditLinks < ActiveRecord::Migration[4.2]
   def self.up
     create_table :multi_edit_links do |t|
       t.integer :field_id

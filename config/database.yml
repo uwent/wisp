@@ -1,33 +1,25 @@
-development:
+default: &default
   adapter: postgresql
   encoding: unicode
-  database: wisp_development
   pool: 5
-  username: wisp
-  password:
+
+development:
+  <<: *default
+  database: wisp_development
 
 test:
-  adapter: postgresql
-  encoding: unicode
+  <<: *default
   database: wisp_test
-  pool: 5
-  username: wisp
-  password:
+  url: <%= ENV['DATABASE_URL'] %>
 
 staging:
-  host: 127.0.0.1
-  adapter: postgresql
-  encoding: unicode
+  <<: *default
   database: wisp_staging
-  pool: 5
   username: wispdb
-  password: f8qj&bcI&dadx
+  password: <%= ENV['WISP_DATABASE_PASSWORD'] %>
 
 production:
-  host: 127.0.0.1
-  adapter: postgresql
-  encoding: unicode
+  <<: *default
   database: wisp_production
-  pool: 5
   username: wispdb
-  password: f8qj&bcI&dadx
+  password: <%= ENV['WISP_DATABASE_PASSWORD'] %>

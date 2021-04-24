@@ -1,4 +1,4 @@
-class FixSequences < ActiveRecord::Migration
+class FixSequences < ActiveRecord::Migration[4.2]
   def change
     tables = ActiveRecord::Base.connection.tables - ["schema_migrations"]
     tables.each do |table|

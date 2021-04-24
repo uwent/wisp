@@ -1,4 +1,4 @@
-class CreateWeatherStationData < ActiveRecord::Migration
+class CreateWeatherStationData < ActiveRecord::Migration[4.2]
   def self.up
     create_table :weather_station_data do |t|
       t.integer :weather_station_id

@@ -59,7 +59,7 @@ class PlantsController < ApplicationController
     @plant = Plant.find(params[:id])
 
     respond_to do |format|
-      if @plant.update_attributes(params[:plant])
+      if @plant.update(params[:plant])
         format.html { redirect_to(@plant, :notice => 'Plant was successfully updated.') }
         format.xml  { head :ok }
       else
