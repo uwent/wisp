@@ -17,7 +17,7 @@ class FieldsController < AuthenticatedController
       format.xml  { render :xml => @fields }
       columns = COLUMN_NAMES
       format.json do
-        json = @fields.to_jqgrid_json(columns,params[:page], params[:rows],@fields.size)
+        json = @fields.to_a.to_jqgrid_json(columns,params[:page], params[:rows],@fields.size)
         render :json => json
       end
     end

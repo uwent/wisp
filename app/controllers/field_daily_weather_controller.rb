@@ -71,10 +71,15 @@ class FieldDailyWeatherController < AuthenticatedController
       format.html # index.html.erb
       format.xml  { render :xml => @field_daily_weather }
       if params[:irrig_only]
-        format.json { render :json => @field_daily_weather.to_jqgrid_json([:field_name,:irrigation,:id],
-                                                               params[:page] || 1, params[:rows] || 7, wx_size) }
+        format.json {
+          render :json => @field_daily_weather.to_a.to_jqgrid_json(
+            [:field_name,:irrigation,:id],
+            params[:page] || 1,
+            params[:rows] || 7,
+            wx_size)
+          }
       else
-        json = @field_daily_weather.to_jqgrid_json([
+        json = @field_daily_weather.to_a.to_jqgrid_json([
           :date,:ref_et,:rain,:irrigation,:display_pct_moisture,:pct_cover_for_json,
           :leaf_area_index, :adj_et_for_json,:ad,:deep_drainage,:id],
           page, page_size, wx_size)

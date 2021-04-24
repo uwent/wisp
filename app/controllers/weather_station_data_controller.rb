@@ -24,8 +24,13 @@ class WeatherStationDataController < AuthenticatedController
     respond_to do |format|
       format.html # index.html.erb
       format.xml  { render :xml => @weather_data }
-      format.json { render :json => @weather_data.to_jqgrid_json([:date]+COLUMN_NAMES+[:id],
-                                                             params[:page], params[:rows],@weather_data.size) }
+      format.json {
+        render :json => @weather_data.to_a.to_jqgrid_json(
+          [:date]+COLUMN_NAMES+[:id],
+          params[:page],
+          params[:rows],
+          @weather_data.size)
+        }
     end
   end
 

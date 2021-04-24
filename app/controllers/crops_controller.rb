@@ -31,7 +31,7 @@ class CropsController < AuthenticatedController
       format.html # index.html.erb
       format.xml  { render :xml => @crops }
       columns = COLUMN_NAMES; columns << :id; columns << :field_id
-      format.json { render :json => @crops.to_jqgrid_json(columns,params[:page], params[:rows],@crops.size) }
+      format.json { render :json => @crops.to_a.to_jqgrid_json(columns,params[:page], params[:rows],@crops.size) }
     end
 
   end

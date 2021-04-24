@@ -30,7 +30,7 @@ class PivotsController < AuthenticatedController
       format.html # index.html.erb
       format.xml  { render :xml => @pivots }
       columns = COLUMN_NAMES
-      format.json { render :json => @pivots.to_jqgrid_json(columns,params[:page], params[:rows],@pivots.size) }
+      format.json { render :json => @pivots.to_a.to_jqgrid_json(columns,params[:page], params[:rows],@pivots.size) }
     end
   end
 
