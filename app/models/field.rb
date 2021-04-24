@@ -8,6 +8,9 @@ class Field < ApplicationRecord
   after_save :set_fdw_initial_moisture, :do_balances
   before_validation :set_defaults, on: :create
 
+  ET_ENDPOINT = "https://agweather.cals.wisc.edu/ag_weather/evapotranspirations"
+  DD_ENDPOINT = "https://agweather.cals.wisc.edu/ag_weather/degree_days"
+
   START_DATE = [4, 1]
   END_DATE = [11, 30]
   EMERGENCE_DATE = [5, 1]
@@ -272,7 +275,7 @@ class Field < ApplicationRecord
     end_date = field_daily_weather[-1].date.to_s
 
     vals = {}
-    url = "https://agweather.cals.wisc.edu/sun_water/get_grid"
+    url = ET_ENDPOINT
     begin
       uri = URI.parse(url)
       # Note that we code the nested params with the [] format, since they'll irremediably be
@@ -322,7 +325,7 @@ class Field < ApplicationRecord
 
     vals = {}
     # To use a test url use "http://agwx.soils.wisc.edu/devel/thermal_models/get_dds" Note: et data not automatically updated on devel.
-    url = "http://agwx.soils.wisc.edu/uwex_agwx/thermal_models/get_dds"
+    url = DD_ENDPOINT
     begin
       uri = URI.parse(url)
       logger.info uri
