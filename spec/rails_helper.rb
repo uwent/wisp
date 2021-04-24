@@ -40,12 +40,12 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 
   # from support/focused.rb
-  config.filter_run focused: true
-  config.alias_example_to :fit, focused: true
-  config.run_all_when_everything_filtered = true
+  # config.filter_run focused: true
+  # config.alias_example_to :fit, focused: true
+  # config.run_all_when_everything_filtered = true
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-  config.fixture_path = "#{::Rails.root}/spec/fixtures"
+  # config.fixture_path = "#{::Rails.root}/spec/fixtures"
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false

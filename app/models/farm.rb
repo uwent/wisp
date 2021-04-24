@@ -7,7 +7,7 @@ class Farm < ApplicationRecord
   validates :name, uniqueness: { scope: :group_id }
 
   # before_save :set_defaults, on: :create
-  before_save :set_defaults, :create
+  before_save :set_defaults
 
   after_create :create_dependent_objects
 
@@ -40,8 +40,7 @@ class Farm < ApplicationRecord
   end
 
   def create_dependent_objects
-    # pivots.create!
-    Pivot.create!
+    pivots.create!
   end
 
   # FIX ME: REMOVE THIS 
