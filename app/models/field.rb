@@ -6,7 +6,7 @@ require 'uri'
 class Field < ApplicationRecord
   after_create :create_dependent_objects
   after_save :set_fdw_initial_moisture, :do_balances
-  before_validation :set_defaults, on: :create
+  before_validation :set_defaults
 
   START_DATE = [4, 1]
   END_DATE = [11, 30]
@@ -24,8 +24,8 @@ class Field < ApplicationRecord
   include ADCalculator
   include ETCalculator
 
-  belongs_to :pivot
-  belongs_to :soil_type
+  belongs_to :pivot, optional: true
+  belongs_to :soil_type, optional: true
 
   has_many :crops, dependent: :destroy
   has_many :field_daily_weather, -> { order(:date) }, dependent: :destroy

@@ -1,5 +1,5 @@
 class IrrigationEvent < ApplicationRecord
-  belongs_to :pivot
+  belongs_to :pivot, optional: true
 
   # find the field_daily_weather events that might be affected by us
   def fdw_for(paginate=false)

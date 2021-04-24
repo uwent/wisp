@@ -82,7 +82,8 @@ describe Pivot do
 
     it 'calls a new year for each field' do
       pivot.fields << Field.new
-      pivot.fields.each { |f| f.should_receive(:new_year).once }
+      # pivot.fields.each { |f| f.should_receive(:new_year).once }
+      pivot.fields.each { |f| expect(f).to receive(:new_year).once }
       pivot.new_year
     end
   end

@@ -1,6 +1,6 @@
 class Crop < ApplicationRecord
-  belongs_to :plant
-  belongs_to :field
+  belongs_to :plant, optional: true
+  belongs_to :field, optional: true
 
   before_validation :set_defaults, on: :create
 

@@ -1,5 +1,5 @@
 class Pivot < ApplicationRecord
-  belongs_to :farm
+  belongs_to :farm, optional: true
   has_many :fields, dependent: :destroy
   has_many :crops, through: :fields
   has_many :irrigation_events, dependent: :destroy
