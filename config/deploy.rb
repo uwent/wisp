@@ -1,13 +1,7 @@
-# config valid only for current version of Capistrano
-lock '3.11.0'
-
 branch = ENV['BRANCH'] || 'master'
 
 set :application, 'wisp'
-set :repo_url, 'git@github.com:adorableio/wisp.git'
-
-set :rbenv_type, :user
-set :rbenv_ruby, '2.4.1'
+set :repo_url, 'git@wisp.github.com:uwent/wisp.git'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
@@ -41,9 +35,19 @@ set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets}
 # Default value for keep_releases is 5
 # set :keep_releases, 5
 
-set :passenger_restart_with_touch, true
+# rbenv
+set :rbenv_type, :user
+set :rbenv_ruby, '2.7.2'
 
 namespace :deploy do
+
+  desc 'Restart application'
+  task :restart do
+    on roles(:app), in: :sequence, wait: 5 do
+      # Your restart mechanism here, for example:
+      execute :touch, release_path.join('tmp/restart.txt')
+    end
+  end
 
   after :restart, :clear_cache do
     on roles(:web), in: :groups, limit: 3, wait: 10 do
