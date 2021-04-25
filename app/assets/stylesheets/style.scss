@@ -3,29 +3,47 @@ html, body, ul, li, h1, h2, h3, h4 {
 	padding: 0px;
 	list-style: none;
 }
+
+h1 {
+	position: absolute;
+	top: 36px;
+	left: 13px;
+	font-size:2.1em;
+	color:#3f3c2d;
+	font-variant: small-caps;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
 h2{
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 17px;
 	color: #544e38;
 }
+
 img {
 	border: 0px;
 }
+
 a {
 	text-decoration: underline;
 }
+
 a:hover {
 	text-decoration: underline;
 }
+
 .left {
 	float: left;
 }
+
 .right {
 	float: right;
 }
+
 .more {
 	text-align: right;
 }
+
 .clear {
 	clear: both;
 }
@@ -35,6 +53,7 @@ body {
 	text-align: center;
 	font: 11px verdana, arial, sans-serif;
 }
+
 #wrapper {
 	text-align: left;
 	margin: auto;
@@ -49,21 +68,13 @@ body {
 	width: 100%;
 	background-color: #e5dcb9;
 }
-h1 {
-	position: absolute;
-	top: 36px;
-	left: 13px;
-	font-size:2.1em;
-	color:#3f3c2d;
-	font-variant: small-caps;
-	font-family: Arial, Helvetica, sans-serif;
-}
+
 #nav {
 	position: absolute;
 	top: 43px;
-	left: 670px;
-
+	right: 10px;
 }
+
 #nav  a {
 	background-image: image-url('menu.gif');
 	width:120px;
@@ -79,6 +90,7 @@ h1 {
 	color:#e9e4d0;
 	font-weight:bolder;
 }
+
 #nav  a:hover {
 	color:#544e38;
 }
@@ -86,6 +98,7 @@ h1 {
 #body-bot {
 	padding-top: 12px;
 }
+
 #welcome {
 	float: left;
 	width: 231px;
@@ -95,21 +108,26 @@ h1 {
 	border: 10px solid #8b846a;
 	border-right: 5px solid #8b846a;
 }
+
 #welcome a {
 	color: #F2F7F8;
 }
+
 #welcome a:hover {
 	color: #CFCCBF;
 }
+
 #welcome h2 {
 	text-align: center;
 	margin: 11px;
 	color:#ceb085;
 	font-size:24px;
 }
+
 #welcome p {
 	margin: 0px 19px;
 }
+
 #welcome .more {
 	margin-top: 18px;
 	margin-bottom: 10px;
@@ -128,6 +146,7 @@ h1 {
 	border-left: 5px solid #8b846a;
 	background-color: #f8f5e7;
 }
+
 #content .left {
 	margin-right: 10px;
 }
@@ -135,6 +154,7 @@ h1 {
 #content a {
 	color: #5A5644;
 }
+
 #content a:hover {
 	color: #26241A;
 }
@@ -147,6 +167,7 @@ h1 {
 	height: 115px;
 	margin-left: 10px;
 }
+
 .fineline {
 	border-bottom: 1px solid #D3CAA9;
 	margin-bottom: 12px;
@@ -167,6 +188,7 @@ h1 {
 	padding-left: 6px;
 	background: 0px 4px url(../images/bar_lit.gif) no-repeat;
 }
+
 .bar-drk {
 	padding-left: 6px;
 	background: 0px 4px url(../images/bar_drk.gif) no-repeat;
@@ -206,6 +228,7 @@ h1 {
 	padding-right: 20px;
 	padding-top: 5px;
 }
+
 #stories {
 	float: right;
 	width: 195px;
@@ -224,26 +247,28 @@ h1 {
 	margin-bottom: 4px;
 }
 
-
 #footer {
 	font: 11px arial, sans-serif;
 	color: #4E4A3A;
 	text-align: right;
 	padding-right: 47px;
 }
+
 #footer p {
 	margin-top: 0.5em;
 }
+
 #wisp_description ul {
   list-style-type: disc;
 }
+
 #wisp_description ol {
   list-style-type: decimal;
 }
+
 #change-instructions {
   outline: solid 1px #999999;
   padding: 10px;
   width: 30em;
   margin: 10px 0px;
 }
-
