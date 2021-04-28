@@ -8,8 +8,8 @@ class Field < ApplicationRecord
   after_save :set_fdw_initial_moisture, :do_balances
   before_validation :set_defaults, on: :create
 
-  ET_ENDPOINT = "https://agweather.cals.wisc.edu/ag_weather/evapotranspirations"
-  DD_ENDPOINT = "https://agweather.cals.wisc.edu/ag_weather/degree_days"
+  ET_ENDPOINT = "https://agweather.cals.wisc.edu/sun_water/get_grid"
+  DD_ENDPOINT = "http://agweather.cals.wisc.edu/thermal_models/get_dds"
 
   START_DATE = [4, 1]
   END_DATE = [11, 30]
@@ -268,16 +268,15 @@ class Field < ApplicationRecord
 
   def get_et
     unless pivot.latitude && pivot.longitude
-      logger.info "get_et: no lat/long for pivot"
+      logger.warn("Field :: get_et: no lat/long for pivot")
     end
-    logger.info "Starting get_et"
+    logger.info("Field :: Starting get_et")
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
 
     vals = {}
-    url = ET_ENDPOINT
     begin
-      uri = URI.parse(url)
+      uri = URI.parse(ET_ENDPOINT)
       # Note that we code the nested params with the [] format, since they'll irremediably be
       # formatted to escaped braces if we just use the grid_date => {start_date: } nested hash
       res = response = Net::HTTP.post_form(
@@ -297,7 +296,7 @@ class Field < ApplicationRecord
         end
       end
     rescue Exception => e
-      logger.info "Could not get ETs from the net; connected? (#{e.to_s})"
+      logger.warn("Field :: Could not get ETs from the net; connected? (#{e})")
     end
     field_daily_weather.each do |fdw|
       if fdw.ref_et == nil || fdw.ref_et == 0.0
@@ -307,7 +306,7 @@ class Field < ApplicationRecord
         end
       end
     end
-    logger.info "done with get_et"
+    logger.info("Field :: Done with get_et")
   end
 
   def need_degree_days?
@@ -321,14 +320,12 @@ class Field < ApplicationRecord
     end_date = field_daily_weather[-1].date.to_s
 
     # TODO: Extract method.
-    logger.info "Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}"
+    logger.info("Field :: Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}")
 
     vals = {}
     # To use a test url use "http://agwx.soils.wisc.edu/devel/thermal_models/get_dds" Note: et data not automatically updated on devel.
-    url = DD_ENDPOINT
     begin
-      uri = URI.parse(url)
-      logger.info uri
+      uri = URI.parse(DD_ENDPOINT)
       # Note that we code the nested params with the [] format, since they'll irremediably be
       # formatted to escaped braces if we just use the grid_date => {start_date: } nested hash
       # {"utf8"=>"✓", "authenticity_token"=>"sxzJVoSvOXQSOm8RAr8hUtNrhnhEn0yGp3dkWbuPxMI=",
@@ -336,10 +333,15 @@ class Field < ApplicationRecord
       #   "grid_date"=>{"start_date(1i)"=>"2014", "start_date(2i)"=>"5", "start_date(3i)"=>"1", "end_date(1i)"=>"2014", "end_date(2i)"=>"8", "end_date(3i)"=>"5"},
       #   "base_temp"=>"50", "upper_temp"=>"None", "commit"=>"Get Data Series "}
 
-      res = Net::HTTP.post_form(uri,
-        "latitude"=>pivot.latitude, "longitude"=>pivot.longitude, "method"=>method,
-        "grid_date[start_date]" => start_date, "grid_date[end_date]"=>end_date,
-        "base_temp"=>base_temp, "upper_temp" => upper_temp ? upper_temp : "None",
+      res = Net::HTTP.post_form(
+        uri,
+        "latitude" => pivot.latitude,
+        "longitude" => pivot.longitude,
+        "method" => method,
+        "grid_date[start_date]" => start_date,
+        "grid_date[end_date]"=> end_date,
+        "base_temp" => base_temp,
+        "upper_temp" => upper_temp ? upper_temp : "None",
         "format" => "csv")
 
       vals = {}
@@ -349,7 +351,7 @@ class Field < ApplicationRecord
         end
       end
     rescue Exception => e
-      logger.warn "Could not get DDs from the net; connected? (#{e.to_s})"
+      logger.warn("Field :: Could not get DDs from the agweather; connected? (#{e})")
     end
     field_daily_weather.each do |fdw|
       if fdw.degree_days == nil || fdw.degree_days == 0.0
@@ -361,7 +363,7 @@ class Field < ApplicationRecord
         end
       end
     end
-    logger.info "done with get_dds"
+    logger.info("Field :: Done with get_dds")
   end
 
   def fdw_index(date)
@@ -419,7 +421,7 @@ class Field < ApplicationRecord
     end
   end
 
-  def weather_for(date,end_date=nil)
+  def weather_for(date, end_date = nil)
     if end_date
       field_daily_weather.select { |fdw| fdw.date >= date && fdw.date <= end_date }
     else
@@ -430,7 +432,7 @@ class Field < ApplicationRecord
   # For a given date range, determine if we have an AD below zero, whether in the range
   # or in the projected data. We assume that the projected data follow the range.
   # Return {self => {date => ad}} or nil if no problems.
-  def problem(date=nil,end_date=nil)
+  def problem(date = nil, end_date = nil)
     date ||= Date.today
     existing_wx = weather_for(date)
     projected_wx = weather_for(date+1,date+2)
@@ -463,13 +465,13 @@ class Field < ApplicationRecord
     end
   end
 
-  def within_epsilon(val,other_val)
+  def within_epsilon(val, other_val)
     (val - other_val).abs < EPSILON
   end
 
   # If the incoming attributes have an entry for attrib symbol, and it's the same value (within EPSILON)
   # as the default value for our soil, delete the entry from the attributes.
-  def remove_incoming_if_default(my_soil,incoming_attribs,attrib_symbol)
+  def remove_incoming_if_default(my_soil, incoming_attribs, attrib_symbol)
     if incoming_attribs[attrib_symbol] && within_epsilon(incoming_attribs[attrib_symbol].to_f,my_soil[attrib_symbol])
       incoming_attribs.delete(attrib_symbol)
     end
@@ -499,11 +501,11 @@ class Field < ApplicationRecord
   end
 
   def target_ad_in
-    logger.warn "tadi: tadp nil"; return nil unless (tadp = self[:target_ad_pct])
-    logger.warn "tadi: cc nil"; return nil unless (cc = current_crop)
-    logger.warn "tadi: cmf nil"; return nil unless (crop_mad_frac = cc.max_allowable_depletion_frac)
-    logger.warn "tadi: mrzd nil"; return nil unless (mrzd = cc.max_root_zone_depth)
-    logger.warn "tadi: fc or pwp nil"; return nil unless (fc = field_capacity) && (pwp = perm_wilting_pt)
+    logger.warn "Field :: tadi: tadp nil"; return nil unless (tadp = self[:target_ad_pct])
+    logger.warn "Field :: tadi: cc nil"; return nil unless (cc = current_crop)
+    logger.warn "Field :: tadi: cmf nil"; return nil unless (crop_mad_frac = cc.max_allowable_depletion_frac)
+    logger.warn "Field :: tadi: mrzd nil"; return nil unless (mrzd = cc.max_root_zone_depth)
+    logger.warn "Field :: tadi: fc or pwp nil"; return nil unless (fc = field_capacity) && (pwp = perm_wilting_pt)
     mad_inches = ad_max_inches(crop_mad_frac,taw(fc,pwp,mrzd))
     (tadp / 100.0) * mad_inches
   end
@@ -514,13 +516,13 @@ class Field < ApplicationRecord
     fc = self[:field_capacity] || field_capacity
     first_fdw = field_daily_weather[0]
     unless (first_fdw && fc)
-      logger.warn "set_fdw_initial_moisture called but fc or first fdw was missing"
+      logger.warn "Field :: set_fdw_initial_moisture called but fc or first fdw was missing"
       return
     end
     first_fdw.calculated_pct_moisture = 100*fc
     pwp = self[:perm_wilting_pt] || perm_wilting_pt
     unless pwp
-      logger.warn "set_fdw_initial_moisture: pwp for field was nil, using default soil type"
+      logger.warn "Field :: set_fdw_initial_moisture: pwp for field was nil, using default soil type"
       pwp = SoilType.default_soil_type.perm_wilting_pt
     end
     first_fdw.set_ad_from_calculated_moisture(fc,pwp,current_crop.max_root_zone_depth)
@@ -538,7 +540,7 @@ class Field < ApplicationRecord
     field_daily_weather[fdw_index,max_index].inject(0.0) { |max, fdw| [max,fdw.adj_et].max }
   end
 
-  def do_balances(date=nil)
+  def do_balances(date = nil)
     # logger.info "do_balances called with date #{date}"
     day = date ? fdw_index(date) : 0
     return unless field_daily_weather && field_daily_weather[0]
