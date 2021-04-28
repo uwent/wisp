@@ -67,12 +67,12 @@ class WispController < AuthenticatedController
       wx_stn_id = params[:weather_station_id].to_i
       @weather_station = @weather_stations.detect { |wxs| wxs[:id].to_i == wx_stn_id}
       unless @weather_station
-        logger.info "Could not find station #{wx_stn_id} in #{@weather_stations.collect { |e| e[:id] }.inspect}, using first wx stn in group"
+        logger.info("WispController :: Could not find station #{wx_stn_id} in #{@weather_stations.collect { |e| e[:id] }.inspect}, using first wx stn in group")
         @weather_station = @weather_stations.first
       end
       # logger.info "Found a station, using #{@weather_station[:id]}"
     else
-      logger.info "no wx stn passed, using first wx stn in group"
+      logger.info("WispController :: No wx stn passed, using first wx stn in group")
       @weather_station = @weather_stations.first
     end
     @years = [Time.now.year]
@@ -97,7 +97,7 @@ class WispController < AuthenticatedController
       begin
         end_date = Date.parse(cur_date) - 1
       rescue Exception => e
-        logger.warn "Date reset problem: #{e.to_s}"
+        logger.warn("WispController :: Date reset problem: #{e.to_s}")
         end_date = today_or_latest(@field_id) - 1
       end
     else

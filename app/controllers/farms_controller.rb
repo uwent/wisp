@@ -13,7 +13,7 @@ class FarmsController < AuthenticatedController
     @farms = Farm.where(:group_id => @group_id).order(:name) do
       paginate :page => params[:page], :per_page => params[:rows]
     end
-    logger.warn "No farms for group #{@group_id} found!" unless (@farms && @farms.size > 0)
+    logger.warn("FarmsController :: No farms for group #{@group_id} found!") unless (@farms && @farms.size > 0)
     @farms ||= []
     # FIXME: Remove the cloning of pivots in the controllers.
     # ----------------------------------------
@@ -47,7 +47,7 @@ class FarmsController < AuthenticatedController
           get_current_ids
         end
       else
-        logger.warn "Attempt to destroy farm #{params[:id]}, whose group #{farm.group} is not #{@group}"
+        logger.warn("FarmsController :: Attempt to destroy farm #{params[:id]}, whose group #{farm.group} is not #{@group}")
       end
     else
       attribs = {}

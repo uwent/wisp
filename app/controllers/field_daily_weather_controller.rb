@@ -134,7 +134,7 @@ class FieldDailyWeatherController < AuthenticatedController
       unless moisture_changed?(attribs[:pct_moisture].to_f,fdw.pct_moisture.to_f) # it's not changing
         attribs.delete(:pct_moisture) # so we don't need to update it and trigger sacredness
       else
-        logger.info "new moisture is #{attribs[:pct_moisture].to_f} and old was #{fdw.pct_moisture.to_f}, setting it"
+        logger.info("FDWController :: New moisture is #{attribs[:pct_moisture].to_f} and old was #{fdw.pct_moisture.to_f}, setting it")
       end
     end
     # Pct cover is special for a different reason -- if the user changes it, we have to call the field's interp

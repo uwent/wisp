@@ -30,14 +30,14 @@ class ApplicationController < ActionController::Base
       obj = eval("parent_obj.#{plural}.first")
       id = obj[:id] if obj
     rescue ActiveRecord::RecordNotFound => e
-      logger.error "Parent object find failed for #{klass.to_s} / #{parent_klass.to_s}:#{parent_id}"
+      logger.error("ApplicationController :: Parent object find failed for #{klass.to_s} / #{parent_klass.to_s}:#{parent_id}")
       flash[:notice] = "We're sorry, an internal error has occurred"
       id = obj = nil
     end
     [id,obj]
   end
 
-  def get_and_set(klass,parent_klass,parent_id,preserve_session=nil)
+  def get_and_set(klass, parent_klass, parent_id, preserve_session = nil)
     klassname = klass.to_s.downcase
     sym = (klassname + '_id').to_sym
     id = params[sym] || session[sym]
@@ -54,7 +54,7 @@ class ApplicationController < ActionController::Base
       id,obj = get_by_parent(klass,parent_klass,parent_id)
     end
     unless preserve_session
-      logger.debug "Setting session[#{sym.to_s}] to #{id.to_s}"
+      logger.info("ApplicationController :: Setting session[#{sym.to_s}] to #{id.to_s}")
       session[sym] = id
     end
     [id,obj]

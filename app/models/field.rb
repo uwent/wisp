@@ -501,11 +501,11 @@ class Field < ApplicationRecord
   end
 
   def target_ad_in
-    logger.warn "Field :: tadi: tadp nil"; return nil unless (tadp = self[:target_ad_pct])
-    logger.warn "Field :: tadi: cc nil"; return nil unless (cc = current_crop)
-    logger.warn "Field :: tadi: cmf nil"; return nil unless (crop_mad_frac = cc.max_allowable_depletion_frac)
-    logger.warn "Field :: tadi: mrzd nil"; return nil unless (mrzd = cc.max_root_zone_depth)
-    logger.warn "Field :: tadi: fc or pwp nil"; return nil unless (fc = field_capacity) && (pwp = perm_wilting_pt)
+    logger.warn("Field :: tadi: tadp nil"); return nil unless (tadp = self[:target_ad_pct])
+    logger.warn("Field :: tadi: cc nil"); return nil unless (cc = current_crop)
+    logger.warn("Field :: tadi: cmf nil"); return nil unless (crop_mad_frac = cc.max_allowable_depletion_frac)
+    logger.warn("Field :: tadi: mrzd nil"); return nil unless (mrzd = cc.max_root_zone_depth)
+    logger.warn("Field :: tadi: fc or pwp nil"); return nil unless (fc = field_capacity) && (pwp = perm_wilting_pt)
     mad_inches = ad_max_inches(crop_mad_frac,taw(fc,pwp,mrzd))
     (tadp / 100.0) * mad_inches
   end
