@@ -14,9 +14,8 @@ class PivotsController < AuthenticatedController
       begin
         @pivot_id = params[:pivot_id]
         @pivots = [Pivot.find(@pivot_id)]
-
       rescue
-        logger.warn "Attempt to GET nonexistent pivot #{params[:id]}"
+        Rails.logger.warn("PivotsController :: Attempt to GET nonexistent pivot #{params[:id]}")
       end
     else
       @pivots = Pivot.where(:farm_id => @farm_id).order(:name) do
@@ -30,12 +29,18 @@ class PivotsController < AuthenticatedController
       format.html # index.html.erb
       format.xml  { render :xml => @pivots }
       columns = COLUMN_NAMES
-      format.json { render :json => @pivots.to_a.to_jqgrid_json(columns,params[:page], params[:rows],@pivots.size) }
+      format.json {
+        render :json => @pivots.to_a.to_jqgrid_json(
+          columns,
+          params[:page],
+          params[:rows],
+          @pivots.size)
+        }
     end
   end
 
   def post_data
-    logger.info "pivot post data for farm #{params[:parent_id]}"
+    Rails.logger.info("PivotsController :: Pivot post data for farm #{params[:parent_id]}")
     @farm = Farm.find(params[:parent_id])
     session[:farm_id] = params[:parent_id]
     if params[:oper] == "del"
@@ -47,7 +52,7 @@ class PivotsController < AuthenticatedController
     else
       attribs = {}
       for col_name in COLUMN_NAMES
-        attribs[col_name] = params[col_name] unless col_name == :id || col_name == :act
+        attribs[col_name] = params[col_name] unless col_name == :id || col_name == :act || col_name == :cropping_year
       end
       if params[:oper] && params[:oper] == "add"
         attribs[:name] = "New pivot (farm ID: #{@farm[:id]})"
@@ -56,7 +61,7 @@ class PivotsController < AuthenticatedController
           attribs[:cropping_year] = Date.today.year.to_s
         end
         pivot = Pivot.create(attribs)
-        logger.info "created the new pivot #{pivot.inspect}"
+        Rails.logger.info("PivotsController :: Created the new pivot #{pivot.inspect}")
       else
         attribs.delete(:farm_id) if attribs[:farm_id]
         pivot = Pivot.find(params[:id])
