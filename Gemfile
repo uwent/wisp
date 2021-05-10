@@ -34,7 +34,7 @@ end
 
 group :development, :test do
   gem 'byebug', '~> 11.1'
-  gem 'factory_bot_rails', '~> 6.1'
+  gem 'factory_bot_rails', '~> 6.2'
   gem 'rspec-rails', '~> 5.0'
   gem 'valid_attribute', '~> 2.0'
   gem 'guard-rspec', '~> 4.7'
