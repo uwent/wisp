@@ -263,20 +263,20 @@
       titleTextStyle: {fontSize: 18},
       series: series,
       // Set vertical axis range to run between fudge-factored values to make the annotations show nicely
-      vAxis: {baseline: baseLine(ad_data,prj_data), maxValue:Math.ceil(ad_max + 0.2)},
+      vAxis: {baseline: baseLine(ad_data, prj_data), maxValue:Math.ceil(ad_max + 0.2)},
       annotation: {style: "line"}
     };
 
     // Instantiate and draw our chart, passing in some options.
-    var chart = new google.visualization.AreaChart(document.getElementById('graphBox'));
+    var chart = new google.visualization.AreaChart(document.getElementById("graphBox"));
     chart.draw(data, options);
   }
 
   // Load the Visualization API and the piechart package.
-  google.load('visualization', '1.0', {'packages':['corechart']});
+  google.load("visualization", "1.0", {"packages":["corechart"]});
   google.setOnLoadCallback(plotGraph);
 
-  function curPage(initial_date_str,cur_date_str) {
+  function curPage(initial_date_str, cur_date_str) {
     initial_date_obj = parseDate(initial_date_str);
     // set the global
     cur_date = cur_date_str;
@@ -285,37 +285,34 @@
     return(Math.ceil(days / 7));
   }
   function showSummaryBox(date) {
-    $.ajax(
-      {
-        type: "GET",
-        url: "<%= url_for(:controller => 'wisp', :action => :summary_box,
-                          :field_id => @field, :user_id => @user) %>&cur_date="+date,
-        dataType: 'html',
-        async: false,
-        success: function(newHtml)
-        {
-          // Set the HTML of the summary box to the new stuff
-          $('#projectedADBox').html(newHtml);
-        }
-      });
+    $.ajax({
+      type: "GET",
+      url: "<%= url_for(:controller => 'wisp', :action => :summary_box, :field_id => @field, :user_id => @user) %>&cur_date=" + date,
+      dataType: "html",
+      async: false,
+      success: function(newHtml) {
+        // Set the HTML of the summary box to the new stuff
+        $("#projectedADBox").html(newHtml);
+      }
+    });
   }
   function showTargetAD() {
     // adValue = 0.0;
     adValue = <%= @field.target_ad_pct || "''".html_safe %>;
-    $('#target_ad').val(adValue);
+    $("#target_ad").val(adValue);
   }
 
   function changeDate(newDate) {
     /* Detect if the passed-in object is coming from the calendar's "change" event, or
         passed in explicitly by one of our button handlers */
     if (newDate.type == "change") {
-      cur_date = $('#date_input').val();
+      cur_date = $("#date_input").val();
     } else {
       cur_date = newDate;
-      $('#date_input').val(cur_date);
+      $("#date_input").val(cur_date);
     }
     setLastAndNextWeeks(cur_date);
-    cur_page = curPage(initial_date,cur_date);
+    cur_page = curPage(initial_date, cur_date);
     $("#weather").setGridParam({ page: cur_page }).trigger("reloadGrid");
     plotGraph();
     showSummaryBox(cur_date);
@@ -323,9 +320,9 @@
 
   function hoverColor(id,hover) {
     if (hover)
-      $(id).css({'background-color':'blue','color':'white'});
+      $(id).css({"background-color":"blue","color":"white"});
     else
-      $(id).css({'background-color':'#DDD','color':'black'});
+      $(id).css({"background-color":"#DDD","color":"black"});
     }
 
   jQuery(document).ready(function(){
@@ -337,39 +334,39 @@
 
 </script>
 
-<h2 style="margin-top:0px;padding-top:0px">WISP Field Status</h2>
+<h2 style="margin-top:0px; padding-top:0px;">WISP Field Status</h2>
 <div id="fieldSelectionBox">
-  <table class="center" style="margin-top:10px">
+  <table class="center" style="margin-top: 10px;">
   <tr>
     <td>
       <%= form_tag(url_for :controller => "wisp", :action => :field_status, :pivot_id => "", :field_id => "") do %>
-        <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %>
+        <%= select_tag "farm_id", options_from_group_for_select(@group, @farm), {:onchange => "this.form.submit();"} %>
       <% end %>
     </td>
     <td>
       <%= form_tag(url_for :controller => "wisp", :action => :field_status, :field_id => "") do %>
-        <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot),{ :onchange => "this.form.submit();"} %>
+        <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot), {:onchange => "this.form.submit();"} %>
       <% end %>
     </td>
     <td>
       <%= form_tag(url_for :controller => "wisp", :action => :field_status) do %>
-        <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field),{ :onchange => "this.form.submit();"} %>
+        <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field), {:onchange => "this.form.submit();"} %>
       <% end %>
     </td>
     <td>
       <script>
       $(function() {
         <% if @cur_date %>
-          $( "#date_input" ).datepicker({dateFormat: 'yy-mm-dd', defaultDate:<%= @cur_date %>});
+          $("#date_input").datepicker({dateFormat: "yy-mm-dd", defaultDate:<%= @cur_date %>});
         <% else %>
-          $( "#date_input" ).datepicker({dateFormat: 'yy-mm-dd'});
+          $("#date_input").datepicker({dateFormat: "yy-mm-dd"});
         <% end %>
       });
       </script>
       &nbsp;&nbsp;
-      <span id="backAWeek" class="week-button" onmouseover="hoverColor('#backAWeek',true)" onmouseout="hoverColor('#backAWeek',false)" onclick="changeDate(lastWeek);">&lt;</span>&nbsp;
+      <span id="backAWeek" class="week-button" onmouseover="hoverColor('#backAWeek', true)" onmouseout="hoverColor('#backAWeek', false)" onclick="changeDate(lastWeek);">&lt;</span>&nbsp;
       <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>"></input>&nbsp;
-      <span id="forwardAWeek" class="week-button" onmouseover="hoverColor('#forwardAWeek',true)" onmouseout="hoverColor('#forwardAWeek',false)" onclick="changeDate(nextWeek);">&gt;</span>
+      <span id="forwardAWeek" class="week-button" onmouseover="hoverColor('#forwardAWeek', true)" onmouseout="hoverColor('#forwardAWeek', false)" onclick="changeDate(nextWeek);">&gt;</span>
     </td>
   </tr></table>
 </div>
@@ -381,22 +378,22 @@ Pivot: <%= truncate(@pivot.name, :length => 32) if @pivot %><br/>
 Field/soil: <%= truncate(@field.name, :length => 30) %><br/>
 Crop: <%= truncate((@field.current_crop.name + " " + @field.current_crop.variety), :length => 32) %><br/>
 <hr/>
-Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %> in<br/>
+Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %> in.<br/>
 Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>
 AD at field capacity: <%= sprintf("%0.2f",@field.ad_max) %> in.<br/>
-Initial soil moisture: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture)  if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
-<% target_ad_in_str = @field.target_ad_in ? sprintf('%0.2f in.',@field.target_ad_in) : '--' %>
+Initial soil moisture: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture) if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
+<% target_ad_in_str = @field.target_ad_in ? sprintf("%0.2f in.",@field.target_ad_in) : "--" %>
 <%= form_tag(url_for :controller => "wisp", :action => :field_status, :pivot_id => @pivot, :field_id => @field) do %>
 Target&nbsp;<input name="field[target_ad_pct]" id="target_ad" size="1"/>%&nbsp;(<div style="display:inline" id='target_ad_in'><%= target_ad_in_str %></div>)&nbsp;<input type="submit" value="Update Target"/>
 <% end %>
 </div>
 
-<%= render :partial => 'wisp/partials/field_daily_wx'%>
+<%= render :partial => "wisp/partials/field_daily_wx" %>
 
 <div id="graphBox">
   <canvas id="example" width="420" height="300"></canvas>
 </div>
 
 <div id="projectedADBox">
-<%= render :partial => 'wisp/partials/summary_box'%>
+<%= render :partial => "wisp/partials/summary_box" %>
 </div>
