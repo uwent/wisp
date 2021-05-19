@@ -1,7 +1,17 @@
 class WeatherStationDataController < AuthenticatedController
-  COLUMN_NAMES = [:rain,:irrigation,:entered_pct_moisture,:ref_et,:entered_pct_cover,:notes]
+
+  COLUMN_NAMES = [
+    :rain,
+    :irrigation,
+    :entered_pct_moisture,
+    :ref_et,
+    :entered_pct_cover,
+    :notes
+  ]
   ROWS_PER_PAGE = 14
 
+  # GET /weather_station_data
+  # GET /weather_station_data.xml
   def index
     if params[:weather_station_id]
       weather_station_id = params[:weather_station_id].to_i
@@ -15,7 +25,7 @@ class WeatherStationDataController < AuthenticatedController
     @year = params[:year] ? params[:year].to_i : Time.now.year
     wx_start_date,wx_end_date = date_endpoints(@year)
 
-    @weather_data = WeatherStationData.where(:weather_station_id => weather_station_id,:date => wx_start_date..wx_end_date).order(:date) do
+    @weather_data = WeatherStationData.where(:weather_station_id => weather_station_id, :date => wx_start_date..wx_end_date).order(:date) do
       paginate :page => params[:page], :per_page => ROWS_PER_PAGE
     end
     # puts "getting wx stn data for #{weather_station_id} #{@year}, found #{@weather_data.size} entries"
@@ -34,6 +44,7 @@ class WeatherStationDataController < AuthenticatedController
     end
   end
 
+  # POST
   def post_data
     attribs = {}
     if params[:id]
@@ -121,11 +132,13 @@ class WeatherStationDataController < AuthenticatedController
   end
 
   private
-  def date_endpoints(year=nil)
+
+  def date_endpoints(year = nil)
     year ||= Time.now.year
     # puts "date_endpoints: #{year} / #{START_DATE[0]} / #{START_DATE[1]}"
-    ep1 = Date.civil(year,*Field::START_DATE)
-    ep2 = Date.civil(year,*Field::END_DATE)
-    [ep1,ep2]
+    ep1 = Date.civil(year, *Field::START_DATE)
+    ep2 = Date.civil(year, *Field::END_DATE)
+    [ep1, ep2]
   end
+
 end

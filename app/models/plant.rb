@@ -1,12 +1,13 @@
 class Plant < ApplicationRecord
+  
   include ETCalculator
 
   def self.default_plant
-    where(name: 'Potato').first
+    where(name: "Potato").first
   end
 
   def self.initial_types
-    YAML.load_file(Rails.root.join('db', 'plants.yml')).values.map do |attrs|
+    YAML.load_file(Rails.root.join("db", "plants.yml")).values.map do |attrs|
       attrs.with_indifferent_access
     end
   end

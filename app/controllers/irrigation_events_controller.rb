@@ -1,4 +1,8 @@
 class IrrigationEventsController < AuthenticatedController
+
+  # GET /irrigation_events
+  # GET /irrigation_events.xml
+  # GET /irrigation_events.json
   def index
     pivot_id = session[:pivot_id] || session[:pivot_id] = params[:pivot_id]
     @irrig_events = IrrigationEvent.where(:pivot_id => pivot_id).order(:date) do
@@ -9,7 +13,7 @@ class IrrigationEventsController < AuthenticatedController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @irrig_events }
+      format.xml { render :xml => @irrig_events }
       format.json {
         render :json => @irrig_events.to_a.to_jqgrid_json(
           [:date,:inches_applied,:id],
@@ -68,11 +72,11 @@ class IrrigationEventsController < AuthenticatedController
 
     respond_to do |format|
       if @irrigation_event.save
-        format.html { redirect_to(@irrigation_event, :notice => 'Irrigation event was successfully created.') }
-        format.xml  { render :xml => @irrigation_event, :status => :created, :location => @irrigation_event }
+        format.html { redirect_to(@irrigation_event, :notice => "Irrigation event was successfully created.") }
+        format.xml { render :xml => @irrigation_event, :status => :created, :location => @irrigation_event }
       else
         format.html { render :action => "new" }
-        format.xml  { render :xml => @irrigation_event.errors, :status => :unprocessable_entity }
+        format.xml { render :xml => @irrigation_event.errors, :status => :unprocessable_entity }
       end
     end
   end
@@ -84,7 +88,7 @@ class IrrigationEventsController < AuthenticatedController
 
     respond_to do |format|
       if @irrigation_event.update(params[:irrigation_event])
-        format.html { redirect_to(@irrigation_event, :notice => 'Irrigation event was successfully updated.') }
+        format.html { redirect_to(@irrigation_event, :notice => "Irrigation event was successfully updated.") }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

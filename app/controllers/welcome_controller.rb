@@ -3,7 +3,7 @@ class WelcomeController < ApplicationController
   end
 
   def guide
-    send_file Rails.root.join('public', 'USERS_GUIDE.pdf')
+    send_file Rails.root.join("public", "USERS_GUIDE.pdf")
   end
 
   def weather

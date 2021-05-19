@@ -1,7 +1,7 @@
 class SoilType < ApplicationRecord
   validates :name, uniqueness: true
 
-  DEFAULT_SOIL_TYPE_NAME = 'Sandy Loam'
+  DEFAULT_SOIL_TYPE_NAME = "Sandy Loam"
 
   def self.default_soil_type
     where(name: DEFAULT_SOIL_TYPE_NAME).first!
@@ -14,7 +14,7 @@ class SoilType < ApplicationRecord
   end
 
   def self.initial_types
-    YAML.load_file(Rails.root.join('db', 'soil_types.yml')).map do |attrs|
+    YAML.load_file(Rails.root.join("db", "soil_types.yml")).map do |attrs|
       attrs.with_indifferent_access
     end
   end

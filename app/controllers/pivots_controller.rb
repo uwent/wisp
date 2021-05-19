@@ -1,7 +1,16 @@
 class PivotsController < AuthenticatedController
   COLUMN_NAMES = [
-    :name, :latitude, :longitude, :equipment, :pump_capacity,
-    :some_energy_rate_metric, :cropping_year, :notes, :act, :farm_id, :id
+    :name,
+    :latitude,
+    :longitude,
+    :equipment,
+    :pump_capacity,
+    :some_energy_rate_metric,
+    :cropping_year,
+    :notes,
+    :act,
+    :farm_id,
+    :id
   ]
 
   # GET /pivots
@@ -39,6 +48,7 @@ class PivotsController < AuthenticatedController
     end
   end
 
+  # POST
   def post_data
     Rails.logger.info("PivotsController :: Pivot post data for farm #{params[:parent_id]}")
     @farm = Farm.find(params[:parent_id])
@@ -106,7 +116,7 @@ class PivotsController < AuthenticatedController
 
     respond_to do |format|
       if @pivot.save
-        format.html { redirect_to(@pivot, :notice => 'Pivot was successfully created.') }
+        format.html { redirect_to(@pivot, :notice => "Pivot was successfully created.") }
         format.xml  { render :xml => @pivot, :status => :created, :location => @pivot }
       else
         format.html { render :action => "new" }
@@ -123,7 +133,7 @@ class PivotsController < AuthenticatedController
 
     respond_to do |format|
       if @pivot.update(params[:pivot])
-        format.html { redirect_to(@pivot, :notice => 'Pivot was successfully updated.') }
+        format.html { redirect_to(@pivot, :notice => "Pivot was successfully updated.") }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

@@ -4,54 +4,54 @@
 
 <% content_for :stylesheet do %>
   <style type="text/css">
-    h2 {text-align:center;}
-    #farmDataBox
-    {
-      position:absolute;
-      left:275px;
-      top:150px;
-      width:920px;
-      padding:2px;
-      border:1px solid gray;
-      margin:0px;
+    h2 {
+      text-align: center;
     }
 
-    #farmProblemsBox
-    {
-      position:absolute;
-      left:275px;
-      top:400px;
-      width:920px;
-      padding:2px;
-      border:1px solid gray;
-      margin:0px;
+    #farmDataBox {
+      position: absolute;
+      left: 275px;
+      top: 150px;
+      width: 920px;
+      padding: 2px;
+      border: 1px solid gray;
+      margin: 0px;
+    }
+
+    #farmProblemsBox {
+      position: absolute;
+      left: 275px;
+      top: 400px;
+      width: 920px;
+      padding: 2px;
+      border: 1px solid gray;
+      margin: 0px;
     }
   </style>
 <% end %>
 
-  <script type="text/javascript">
-    function fillProblemsBox(id) {
-      $.ajax(
+<script type="text/javascript">
+  function fillProblemsBox(id) {
+    $.ajax(
+      {
+        type: "GET",
+        // Had farm ID tacked on using & notation
+        url: '<%= url_for(:controller => "farms", :action => :problems, :user_id => @user) %>',
+        dataType: "html",
+        async: false,
+        success: function(newHtml)
         {
-          type: "GET",
-          // Had farm ID tacked on using & notation
-          url: "<%= url_for(:controller => 'farms', :action => :problems,
-                            :user_id => @user) %>",
-          dataType: 'html',
-          async: false,
-          success: function(newHtml)
-          {
-            // Set the HTML of the summary box to the new stuff
-            $('#farmProblemsBox').html(newHtml);
-          }
-        });
-    }
-  </script>
+          // Set the HTML of the summary box to the new stuff
+          $("#farmProblemsBox").html(newHtml);
+        }
+      });
+  }
+</script>
 
 <h2>WISP Farm Data</h2>
 
 <div id="farmDataBox">
-  <%= render :partial => '/wisp/partials/farm_setup_grid'%>
+  <%= render :partial => "/wisp/partials/farm_setup_grid" %>
 </div>
 <div id="farmProblemsBox">
 </div>

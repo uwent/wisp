@@ -1,57 +1,61 @@
 <div id="tableDataBox">
 
-        <script type="text/javascript">
-          var lastsel;
-          jQuery(document).ready(function(){
-          var mygrid = jQuery("#irrig_events_details").jqGrid({
-              url:'<%= url_for :controller => "field_daily_weather", :irrig_only => true, :q => 1 %>',
-              editurl:'<%= url_for :controller => "field_daily_weather", :action  => :post_data %>',
-              datatype: "json",
-              colNames:['Field Name','Irrigation Applied','ID'],
-              colModel:[{name:'field_name', index:'field_name',width:150},
-                              {name:'irrigation', index:'irrigation',width:47,editable:true, align:'right'},
-                             {name:'id', index:'id',width:1}
-                             ],
-              pager: '#weather_pager',
-              rowNum:-1,
-              rowList:[7,<%=h FieldDailyWeather::SEASON_DAYS %>],
-              imgpath: '<%= image_folder_path("jqgrid") %>',
-              sortname: '',
-              viewrecords: true,
-              height: 100,
-              width: 400,
-              sortorder: '',
-              gridview: false,
-              scrollrows: true,
-              autowidth: false,
-              rownumbers: false,
-              multiselect: false,
-              
-              onSelectRow: function(id){ 
-                if(id && id!==lastsel){ 
-                  jQuery('#irrig_events_details').restoreRow(lastsel);
-                  jQuery('#irrig_events_details').editRow(id,true); 
-                  lastsel=id; 
-                } 
-              },             
-              
-              
-              subGrid:false,
-              
-              caption: "Edit Observed Values Below"
-            })
-            .navGrid('#weather_pager',
-              {edit:false,add:false,del:false,search:false,refresh:true},
-              {afterSubmit:function(r,data){return true;(r,data,'edit');}}
-            )
-            .navButtonAdd("#weather_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })
-            
-            
-            mygrid.filterToolbar();mygrid[0].toggleToolbar()
-          });
-        </script>
-
-        <table id="irrig_events_details" class="scroll" cellpadding="0" cellspacing="0"></table>
-        <div id="weather_pager" class="scroll" style="text-align:center;"></div>
+  <script type="text/javascript">
+    var lastsel;
+    jQuery(document).ready(function(){
+      var mygrid = jQuery("#irrig_events_details").jqGrid({
+        url: '<%= url_for :controller => "field_daily_weather", :irrig_only => true, :q => 1 %>',
+        editurl: '<%= url_for :controller => "field_daily_weather", :action => :post_data %>',
+        datatype: "json",
+        colNames: ["Field Name","Irrigation Applied","ID"],
+        colModel: [
+          { name: "field_name", index: "field_name", width: 150 },
+          { name: "irrigation", index: "irrigation", width: 47, editable: true, align: "right" },
+          { name: "id", index: "id", width: 1 },
+        ],
+        pager: "#weather_pager",
+        rowNum: -1,
+        rowList: [7, <%= h FieldDailyWeather::SEASON_DAYS %>],
+        imgpath: '<%= image_folder_path("jqgrid") %>',
+        sortname: "",
+        viewrecords: true,
+        height: 100,
+        width: 400,
+        sortorder: "",
+        gridview: false,
+        scrollrows: true,
+        autowidth: false,
+        rownumbers: false,
+        multiselect: false,
+        
+        onSelectRow: function(id){ 
+          if(id && id !== lastsel){ 
+            jQuery("#irrig_events_details").restoreRow(lastsel);
+            jQuery("#irrig_events_details").editRow(id, true); 
+            lastsel = id; 
+          } 
+        },             
+        
+        subGrid: false,
+        caption: "Edit Observed Values Below",
+      })
+      .navGrid("#weather_pager",
+        { edit: false, add: false, del: false, search: false, refresh: true },
+        { afterSubmit: function(r, data){ return true; (r, data, "edit"); } }
+      )
+      .navButtonAdd("#weather_pager", {
+        caption: "",
+        title: "Toggle Search Toolbar",
+        buttonicon: "ui-icon-search",
+        onClickButton: function(){ mygrid[0].toggleToolbar() }
+      })
       
+      mygrid.filterToolbar();
+      mygrid[0].toggleToolbar();
+    });
+  </script>
+
+  <table id="irrig_events_details" class="scroll" cellpadding="0" cellspacing="0"></table>
+  <div id="weather_pager" class="scroll" style="text-align:center;"></div>
+
 </div>

@@ -31,7 +31,7 @@ class RingBuffer
     non_nil.max
   end
 
-  def mean(ignore_zero=false)
+  def mean(ignore_zero = false)
     values = ignore_zero ? non_zero : non_nil
 
     return if values.none?
@@ -45,7 +45,7 @@ class RingBuffer
     if top_3.empty?
       return 0.0
     else
-      return top_3.sum/top_3.length
+      return top_3.sum / top_3.length
     end
   end
 

@@ -8,11 +8,11 @@ class ApplicationController < ActionController::Base
   # TODO: Remove this.
   # Implicit conversion of nil into string error with stylesheet tags and content_for, per
   # http://stackoverflow.com/questions/16044008/no-implicit-conversion-of-nil-into-string
-  ActionController::Base.config.relative_url_root = ''
+  ActionController::Base.config.relative_url_root = ""
 
   # TODO: Remove this.
   def self.jsonify(hash)
-    hash.inject({}) {|ret,entry| ret.merge({entry[0].to_s => entry[1].to_s})}
+    hash.inject({}) { |ret,entry| ret.merge({entry[0].to_s => entry[1].to_s}) }
   end
 
   protected
@@ -23,9 +23,9 @@ class ApplicationController < ActionController::Base
 
   private
   # TODO: Remove most of this.
-  def get_by_parent(klass,parent_klass,parent_id)
+  def get_by_parent(klass, parent_klass, parent_id)
     begin
-      plural = klass.to_s.downcase + 's'
+      plural = klass.to_s.downcase + "s"
       parent_obj = parent_klass.find(parent_id)
       obj = eval("parent_obj.#{plural}.first")
       id = obj[:id] if obj
@@ -34,30 +34,30 @@ class ApplicationController < ActionController::Base
       flash[:notice] = "We're sorry, an internal error has occurred"
       id = obj = nil
     end
-    [id,obj]
+    [id, obj]
   end
 
   def get_and_set(klass, parent_klass, parent_id, preserve_session = nil)
     klassname = klass.to_s.downcase
-    sym = (klassname + '_id').to_sym
+    sym = (klassname + "_id").to_sym
     id = params[sym] || session[sym]
-    if id && id != '' && id.to_i != 0 # This latter in the case of "We don't know what the ID should be"
+    if id && id != "" && id.to_i != 0 # This latter in the case of "We don't know what the ID should be"
       # puts "get_and_set: found the id (#{id.inspect}) for #{klass.to_s} in either params (#{params[sym]}) or session (#{session[sym]})"
       # puts "get_and_set: what about string key? (#{params.inspect})"
       begin
         obj = klass.find(id)
       rescue ActiveRecord::RecordNotFound => e
         # If the object has just been deleted, the find can fail, so fall back to parent's first child
-        id,obj = get_by_parent(klass,parent_klass,parent_id)
+        id, obj = get_by_parent(klass, parent_klass, parent_id)
       end
     else
-      id,obj = get_by_parent(klass,parent_klass,parent_id)
+      id, obj = get_by_parent(klass, parent_klass, parent_id)
     end
     unless preserve_session
       logger.info("ApplicationController :: Setting session[#{sym.to_s}] to #{id.to_s}")
       session[sym] = id
     end
-    [id,obj]
+    [id, obj]
   end
 
   def current_group
@@ -97,8 +97,8 @@ class ApplicationController < ActionController::Base
 
   def set_parent_id(attribs,params,parent_id_sym,parent_var)
     parent_id = attribs[parent_id_sym]
-    if parent_id == nil || parent_id == '' || parent_id == '_empty'
-      attribs[parent_id_sym] = params[:parent_id] == '' ? parent_var : params[:parent_id]
+    if parent_id == nil || parent_id == "" || parent_id == "_empty"
+      attribs[parent_id_sym] = params[:parent_id] == "" ? parent_var : params[:parent_id]
     end
   end
 

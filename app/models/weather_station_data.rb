@@ -8,7 +8,7 @@ class WeatherStationData < ApplicationRecord
 
   def empty?
     attributes
-      .except('id', 'date', 'weather_station_id', 'updated_at', 'created_at')
+      .except("id", "date", "weather_station_id", "updated_at", "created_at")
       .values
       .none?(&:present?)
   end
@@ -19,7 +19,8 @@ class WeatherStationData < ApplicationRecord
     :entered_pct_moisture,
     :irrigation,
     :rain,
-    :ref_et]
+    :ref_et
+  ]
 
   # don't bother propagating (and triggering cascading balance calcs for) changes smaller than:
   CHANGE_EPSILON = 0.00001
@@ -33,12 +34,12 @@ class WeatherStationData < ApplicationRecord
   # returns [old_value,new_value] or nil
   def extract_changes(col_sym)
     return nil unless (change = changes[col_sym.to_s])
-    [change[0],change[1]]
+    [change[0], change[1]]
   end
 
   def send_changes
     changes_to_send = COLUMNS_TO_PROPAGATE.inject({}) do |hash, col|
-      old_value,new_value = extract_changes(col)
+      old_value, new_value = extract_changes(col)
       if new_value
         if old_value == nil || (old_value.to_f - new_value.to_f) > CHANGE_EPSILON
           hash.merge!({col => new_value.to_f})
