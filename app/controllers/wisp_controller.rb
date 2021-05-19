@@ -2,9 +2,11 @@ class WispController < AuthenticatedController
   def index
   end
 
+  # GET
   def project_status
   end
 
+  # GET / POST
   def pivot_crop
     # these variables are the initial values when the page is loaded. After the user
     # starts clicking, all bets are off!
@@ -27,10 +29,11 @@ class WispController < AuthenticatedController
     # @crops = Crop.where(:field_id => @field_id)
     # FIXME: Need to filter everything below pivot for current year
     if params[:ajax]
-      render :partial => '/wisp/partials/pivot_setup_grid'
+      render :partial => "/wisp/partials/pivot_setup_grid"
     end
   end
 
+  # GET / POST
   def field_setup_grid
     @farm = Farm.find(@farm_id) if @farm_id
     @pivot_id, @pivot = get_and_set(Pivot, Farm, @farm_id)
@@ -43,6 +46,7 @@ class WispController < AuthenticatedController
     render :layout => false
   end
 
+  # GET / POST
   def crop_setup_grid
     @farm = Farm.where(id: @farm_id).first if @farm_id
     @pivot = Pivot.where(id: @pivot_id).first if @pivot_id
@@ -56,6 +60,7 @@ class WispController < AuthenticatedController
     render :layout => false
   end
 
+  # GET / POST
   def weather
     @weather_stations = @group.weather_stations
     if @weather_stations == [] || @weather_stations == nil
@@ -85,6 +90,7 @@ class WispController < AuthenticatedController
     end
   end
 
+  # GET
   def lookup
   end
 
@@ -112,7 +118,7 @@ class WispController < AuthenticatedController
     return [start_date, end_date, cur_date]
   end
 
-  def field_status_data(cur_date=nil)
+  def field_status_data(cur_date = nil)
     @field = Field.find(@field_id) if @field_id
     @pivot = Pivot.find(@pivot_id = @field[:pivot_id])
     @farm = Farm.find(@farm_id = @pivot[:farm_id])
@@ -152,6 +158,7 @@ class WispController < AuthenticatedController
     @dates, @date_str, @date_hash = make_dates(start_date, end_date)
   end
 
+  # GET
   def field_status
     # logger.info "field_status: group #{@group_id} user #{@user_id} farm #{@farm_id} pivot #{@pivot_id} field #{@field_id}"
     @pivot_id, @pivot = get_and_set(Pivot, Farm, @farm_id)
@@ -191,6 +198,7 @@ class WispController < AuthenticatedController
     field_status
   end
 
+  # GET
   def projection_data
     @field_id = params[:field_id]
     @field = Field.find(@field_id)
@@ -217,6 +225,7 @@ class WispController < AuthenticatedController
     ret
   end
 
+  # GET
   def farm_status
     get_current_ids
     if @farm && !@group_id
@@ -235,9 +244,11 @@ class WispController < AuthenticatedController
     render :partial => "wisp/partials/summary_box"
   end
 
+  # GET
   def report_setup
   end
 
+  # POST?
   def set_farm
     # logger.info "SET_FARM: setting the ids to #{params[:farm_id]}"
     session[:farm_id] = @farm_id = params[:farm_id]
@@ -247,10 +258,12 @@ class WispController < AuthenticatedController
     head :ok, content_type: "text/html"
   end
 
+  # POST?
   def set_pivot
     head :ok, content_type: "text/html"
   end
 
+  # POST?
   def set_field
     # logger.info "set field with id #{params[:id]}"
     if params[:field_id]

@@ -1,4 +1,5 @@
 class PlantsController < ApplicationController
+  
   # GET /plants
   # GET /plants.xml
   def index

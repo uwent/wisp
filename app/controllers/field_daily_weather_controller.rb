@@ -10,16 +10,15 @@ class FieldDailyWeatherController < AuthenticatedController
     :entered_pct_cover,
     :ad,
     :notes
-    ]
+  ]
 
-  def moisture_changed?(old,incoming)
+  def moisture_changed?(old, incoming)
     (old - incoming).abs > MOISTURE_EPSILON
   end
 
-  def cover_changed?(old,incoming)
-      (old - incoming).abs > PCT_COVER_EPSILON
-    end
-
+  def cover_changed?(old, incoming)
+    (old - incoming).abs > PCT_COVER_EPSILON
+  end
 
   # GET /field_daily_weather
   # GET /field_daily_weather.xml
@@ -73,33 +72,36 @@ class FieldDailyWeatherController < AuthenticatedController
       if params[:irrig_only]
         format.json {
           render :json => @field_daily_weather.to_a.to_jqgrid_json(
-            [:field_name,:irrigation,:id],
+            [:field_name, :irrigation, :id],
             params[:page] || 1,
             params[:rows] || 7,
-            wx_size)
-          }
+            wx_size
+          )
+        }
       else
-        json = @field_daily_weather.to_a.to_jqgrid_json([
-          :date,:ref_et,:rain,:irrigation,:display_pct_moisture,:pct_cover_for_json,
-          :leaf_area_index, :adj_et_for_json,:ad,:deep_drainage,:id],
-          page, page_size, wx_size)
+        json = @field_daily_weather.to_a.to_jqgrid_json(
+          [:date, :ref_et, :rain, :irrigation, :display_pct_moisture, :pct_cover_for_json, :leaf_area_index, :adj_et_for_json,:ad, :deep_drainage, :id],
+          page,
+          page_size,
+          wx_size
+        )
         # logger.info json.inspect
         format.json { render :json => json }
       end
       format.csv do
         # CSVs always start at start of weather data and go through to the bitter end, per John
         season_year = @field_daily_weather.first ? @field_daily_weather.first.date.year : Date.today.year
-        start_date = Date.new(season_year,Field::START_DATE[0],Field::START_DATE[1])
-        finish_date = Date.new(season_year,Field::END_DATE[0],Field::END_DATE[1])
+        start_date = Date.new(season_year, Field::START_DATE[0], Field::START_DATE[1])
+        finish_date = Date.new(season_year, Field::END_DATE[0], Field::END_DATE[1])
         @soil_type = ""
         @soil_type = @field_daily_weather.first.field.soil_type.name
-        @summary = FieldDailyWeather.summary(field_id,start_date,)
+        @summary = FieldDailyWeather.summary(field_id, start_date)
         render :template => "field_daily_weather/daily_report", :filename => "field_summary", :content_type => "text/csv", :format => :csv
         Rails.logger.info("FDW Controller :: Rendered CSV")
       end
     end
 
-    def calc_page(fdw,date,page_size)
+    def calc_page(fdw, date, page_size)
       days = date - fdw.first.date
       days = 7 if days < 7
       days / page_size
@@ -120,8 +122,9 @@ class FieldDailyWeatherController < AuthenticatedController
     #   ad =~ "%#{params[:ad]}%" if params[:ad].present?
     #   deep_drainage =~ "%#{params[:deep_drainage]}%" if params[:deep_drainage].present?
     # end
-  end # index
+  end
 
+  # POST
   def post_data
     attribs = {}
     for col_name in COLUMN_NAMES
@@ -132,7 +135,7 @@ class FieldDailyWeatherController < AuthenticatedController
     # logger.info "new attribs are #{attribs.inspect}"
     # Percent moisture is special -- if the user entered an updated value, it's sacred
     if attribs[:pct_moisture]
-      unless moisture_changed?(attribs[:pct_moisture].to_f,fdw.pct_moisture.to_f) # it's not changing
+      unless moisture_changed?(attribs[:pct_moisture].to_f, fdw.pct_moisture.to_f) # it's not changing
         attribs.delete(:pct_moisture) # so we don't need to update it and trigger sacredness
       else
         logger.info("FDWController :: New moisture is #{attribs[:pct_moisture].to_f} and old was #{fdw.pct_moisture.to_f}, setting it")

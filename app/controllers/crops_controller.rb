@@ -31,7 +31,9 @@ class CropsController < AuthenticatedController
       format.html # index.html.erb
       format.xml  { render :xml => @crops }
       columns = COLUMN_NAMES; columns << :id; columns << :field_id
-      format.json { render :json => @crops.to_a.to_jqgrid_json(columns,params[:page], params[:rows],@crops.size) }
+      format.json {
+        render :json => @crops.to_a.to_jqgrid_json(columns, params[:page], params[:rows], @crops.size)
+      }
     end
 
   end
@@ -53,7 +55,7 @@ class CropsController < AuthenticatedController
         attribs[col_name] = params[col_name] unless col_name == :id
       end
       if "add" == params[:oper]
-        set_parent_id(attribs,params,:field_id,@field_id)
+        set_parent_id(attribs, params, :field_id, @field_id)
         Crop.create(attribs)
       else
         @crop.update(attribs)
@@ -94,7 +96,7 @@ class CropsController < AuthenticatedController
 
     respond_to do |format|
       if @crop.save
-        format.html { redirect_to(@crop, :notice => 'Crop was successfully created.') }
+        format.html { redirect_to(@crop, :notice => "Crop was successfully created.") }
         format.xml  { render :xml => @crop, :status => :created, :location => @crop }
       else
         format.html { render :action => "new" }
@@ -110,7 +112,7 @@ class CropsController < AuthenticatedController
 
     respond_to do |format|
       if @crop.update(params[:crop])
-        format.html { redirect_to(@crop, :notice => 'Crop was successfully updated.') }
+        format.html { redirect_to(@crop, :notice => "Crop was successfully updated.") }
         format.xml  { head :ok }
       else
         format.html { render :action => "edit" }

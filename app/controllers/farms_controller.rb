@@ -3,6 +3,9 @@ class FarmsController < AuthenticatedController
 
   skip_before_action :verify_authenticity_token, only: :post_data
 
+  # GET /farms
+  # GET /farms.xml
+  # GET /farms.json
   def index
     get_current_ids
     raise "no group!" unless @group_id
@@ -35,6 +38,7 @@ class FarmsController < AuthenticatedController
     end
   end
 
+  # POST /farms/post_data
   def post_data
     @group = current_group
     session[:group_id] = params[:parent_id]
