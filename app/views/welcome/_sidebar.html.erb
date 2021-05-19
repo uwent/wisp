@@ -33,9 +33,8 @@
     <li><%= link_to "Multi-Edit Daily Data", '/wisp/weather' %></li>
     <li><%= link_to "User's Guide", guide_welcome_index_path %>
     <li><%= link_to "Project Status", '/wisp/project_status', {style: "color:yellow"} %></li>
-    <!--
-    <li><%= link_to "Report Setup", :controller => 'wisp', :action => :report_setup %></li>
-    -->
+    <%# Report setup not implemented %>
+    <% if false %><li><%= link_to "Report Setup", '/wisp/report_setup' %> </li><% end %>
     <% if current_user && current_user.admin? %>
       <li><%= link_to "Admin Users", users_path %></li>
     <% end %>
