@@ -21,6 +21,10 @@ class Farm < ApplicationRecord
     (farms.collect { |f| f.pivots }).flatten.select { |p| p.cropping_year == latest_year }
   end
 
+  # TODO: is this supposed to do something? Called from farms/show.html.erb
+  def et_method_id
+  end
+
   def problem
     problems.size > 0
   end
