@@ -49,7 +49,7 @@ class Pivot < ApplicationRecord
     self.irrigation_events = []
     self.cropping_year = Time.now.year
     self.save!
-    self.fields.each { | f | f.new_year }
+    self.fields.each { |f| f.new_year }
   end
 
   private

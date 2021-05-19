@@ -168,8 +168,8 @@ class FieldDailyWeather < ApplicationRecord
 
       ad,dd = daily_ad_and_dd(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
       # coerce AD to be no lower than water in inches at PWP
-      ad = [ad,ad_inches_at_pwp(total_available_water,feeld.current_crop.max_allowable_depletion_frac)].max
-      self[:ad],self[:deep_drainage] = [ad,dd]
+      ad = [ad, ad_inches_at_pwp(total_available_water, feeld.current_crop.max_allowable_depletion_frac)].max
+      self[:ad], self[:deep_drainage] = [ad, dd]
 
       #FIXME: why any at all?
       self[:deep_drainage] = 0.0 if self[:deep_drainage] < 0.01
@@ -218,7 +218,7 @@ class FieldDailyWeather < ApplicationRecord
     # puts "previous AD from field (we're at the emergence date)"
       previous_ad = feeld.initial_ad
     else
-      last_with_ad = FieldDailyWeather.where("field_id = #{field[:id]} and ad is not null").order('date desc').first
+      last_with_ad = FieldDailyWeather.where("field_id = #{field[:id]} and ad is not null").order("date desc").first
       if last_with_ad
       # puts "previous AD some prior record (#{last_with_ad.date})"
         previous_ad = last_with_ad[:ad]
@@ -247,13 +247,13 @@ class FieldDailyWeather < ApplicationRecord
   end
 
 
-  def self.page_for(rows_per_page,start_date,date=nil)
+  def self.page_for(rows_per_page, start_date, date = nil)
     date ||= today_or_latest(1)
     # Numb-nuts JS programmers start arrays at 1...
     ((date - start_date) / rows_per_page).to_i + 1
   end
 
-  def self.summary(field_id,start_date=nil,finish_date=nil)
+  def self.summary(field_id, start_date = nil, finish_date = nil)
     field = Field.find(field_id)
     season_year = field.current_crop.emergence_date.year
     # start at supplied start date, or at emergence
@@ -262,7 +262,7 @@ class FieldDailyWeather < ApplicationRecord
     # If a date was supplied, coerce it to be in the same year as season_year
     if finish_date
       if finish_date.year != season_year
-        finish_date = Date.new(season_year,finish_date.month,finish_date.mday)
+        finish_date = Date.new(season_year, finish_date.month, finish_date.mday)
       end
     else
       # If not supplied, finish_date defaults to:
@@ -271,15 +271,15 @@ class FieldDailyWeather < ApplicationRecord
       # 3) end of data if earlier than today or harvest/kill
       # FIXME: What if today is after the current
       today = Date.today
-      last_data_date = Date.new(season_year,Field::END_DATE[0],Field::END_DATE[1])
+      last_data_date = Date.new(season_year, Field::END_DATE[0], Field::END_DATE[1])
       kill_date ||= last_data_date
       last_data_date.inspect
       if today.year == season_year
         # use today, or kill date or the end of season, whichever is earliest
-        today = [today,kill_date,last_data_date].min
+        today = [today, kill_date, last_data_date].min
         finish_date ||= today
       else
-        finish_date ||= [kill_date,last_data_date].min
+        finish_date ||= [kill_date, last_data_date].min
       end
       #Is the following better than the lines above? pk 6/3/14
       # if today.year != season_year
@@ -295,10 +295,9 @@ class FieldDailyWeather < ApplicationRecord
     find_by_sql(query).first
   end
 
-  def self.fdw_for(field_id,start_date,end_date)
-    where(
-      "field_id=? and date >= ? and date <= ?",field_id,start_date,end_date
-    ).sort {|fdw,fdw2| fdw[:date] <=> fdw2[:date]}
+  def self.fdw_for(field_id, start_date, end_date)
+    where("field_id=? and date >= ? and date <= ?", field_id, start_date, end_date)
+    .sort { |fdw, fdw2| fdw[:date] <=> fdw2[:date] }
   end
 
   def self.debug_on
@@ -315,9 +314,9 @@ class FieldDailyWeather < ApplicationRecord
   def cover_param
     case et_method
     when Field::PCT_COVER_METHOD
-      ['Percent Cover',:pct_cover]
+      ["Percent Cover", :pct_cover]
     when Field::LAI_METHOD
-      ['Leaf Area Index', :leaf_area_index]
+      ["Leaf Area Index", :leaf_area_index]
     end
   end
 
@@ -325,7 +324,17 @@ class FieldDailyWeather < ApplicationRecord
     # cols = attributes.merge(balance_calcs).keys
     # REPORT_COLS_TO_IGNORE.each { |rcti| cols.delete(rcti) }
     # cols
-    [['Date',:date],['Potential ET',:ref_et],['AD',:ad],['Percent Moisture',:pct_moisture],cover_param,['Rainfall',:rain],['Irrigation',:irrigation],['Adjusted ET',:adj_et],['Deep Drainage',:deep_drainage]]
+    [
+      ["Date", :date],
+      ["Potential ET", :ref_et],
+      ["AD", :ad],
+      ["Percent Moisture", :pct_moisture],
+      cover_param,
+      ["Rainfall", :rain],
+      ["Irrigation", :irrigation],
+      ["Adjusted ET", :adj_et],
+      ["Deep Drainage", :deep_drainage]
+    ]
   end
 
   def to_csv
@@ -335,7 +344,7 @@ class FieldDailyWeather < ApplicationRecord
       obj = attributes[key] || self.send(key)
       if obj
         if obj.class == Float
-          ret << sprintf('%0.2f',obj)
+          ret << sprintf("%0.2f",obj)
         elsif obj.class == ActiveSupport::TimeWithZone || obj.class == Date || obj.class == Time
           ret << obj.strftime("%Y-%m-%d")
         elsif obj.kind_of?(Fixnum)

@@ -1,33 +1,35 @@
 module ApplicationHelper
-  def date_selectors(opts={})
-    @yesterday = 1.day.ago
-    opts = opts_with_defaults opts, {:names => %w(startyear startmonth startday), :first_year => 2000, :day => @yesterday.day, :sep_str => " "}
 
-    year_select =  select_tag(opts[:names][0], options_for_select(opts[:first_year]..@yesterday.year, @yesterday.year))
+  def date_selectors(opts = {})
+    @yesterday = 1.day.ago
+    opts = opts_with_defaults opts, { :names => %w(startyear startmonth startday), :first_year => 2000, :day => @yesterday.day, :sep_str => " " }
+
+    year_select = select_tag(opts[:names][0], options_for_select(opts[:first_year]..@yesterday.year, @yesterday.year))
     month_select = my_select_month(@yesterday,opts)
     day_select = select_tag(opts[:names][2], options_for_select(1..31, opts[:day]))
     "#{year_select}#{opts[:sep_str]}#{month_select}#{opts[:sep_str]}#{day_select}".html_safe
   end
 
-  def coord_select_options(start=42.0,finish=50.0,step=0.4)
-    @coords = []; (start).step(finish,step) {|coord| @coords << coord }
+  def coord_select_options(start = 42.0, finish = 50.0, step = 0.4)
+    @coords = []
+    (start).step(finish, step) { |coord| @coords << coord }
     options_for_select @coords
   end
 
-  def opts_with_defaults(opts,defaults)
-    new_opts={}
-    defaults.keys.each {|defkey| new_opts[defkey] = opts[defkey] || defaults[defkey]}
+  def opts_with_defaults(opts, defaults)
+    new_opts = {}
+    defaults.keys.each { |defkey| new_opts[defkey] = opts[defkey] || defaults[defkey] }
     new_opts
   end
 
   private
 
-  def my_select_month(date,opts)
-    fix_month_fieldname(select_month(date,:use_short_month => true),opts)
+  def my_select_month(date, opts)
+    fix_month_fieldname(select_month(date, :use_short_month => true), opts)
   end
 
-  def fix_month_fieldname(str,opts)
-    str.gsub("name=\"date[month]","name=\"#{opts[:names][1]}")
+  def fix_month_fieldname(str, opts)
+    str.gsub("name=\"date[month]", "name=\"#{opts[:names][1]}")
   end
 
   def abr(date)
@@ -62,12 +64,12 @@ module ApplicationHelper
     url_for(args)
   end
 
-  def grid_data_url(what,parent_object)
+  def grid_data_url(what, parent_object)
     url_with_usuals :controller => what.to_s, :q => 1, :parent_id => parent_object, :user_id => @user_id
   end
 
-  def grid_post_data_url(what,parent_object)
-    url_with_usuals :controller => what.to_s, :action  => :post_data, :parent_id => parent_object
+  def grid_post_data_url(what, parent_object)
+    url_with_usuals :controller => what.to_s, :action => :post_data, :parent_id => parent_object
   end
 
   def grid_javascript_settings
@@ -81,8 +83,8 @@ module ApplicationHelper
     ret
   end
 
-  def so_far(str,delimiter=',')
-    if str == ''
+  def so_far(str, delimiter = ",")
+    if str == ""
       str
     else
       str + delimiter
@@ -96,13 +98,13 @@ module ApplicationHelper
 
   def energy_types_for_select
     [
-      'Electric',
-      'Diesel',
-      'Gasoline',
-      'LP Gas',
-      'Natural Gas',
-      'Pub. water system',
-      'Other'
+      "Electric",
+      "Diesel",
+      "Gasoline",
+      "LP Gas",
+      "Natural Gas",
+      "Pub. water system",
+      "Other"
     ]
       .map(&:titleize)
       .map do |value|
@@ -113,20 +115,20 @@ module ApplicationHelper
   def soil_types_for_select
     # 1:Sandy Loam;2:Silt Loam
     soils = SoilType.all
-    soils.inject("") {|str,soil_type| so_far(str,';') + "#{soil_type[:id]}:#{soil_type.name}"}
+    soils.inject("") { |str, soil_type| so_far(str,';') + "#{soil_type[:id]}:#{soil_type.name}" }
   end
 
   def plant_types_for_select
     # 1:Potato;2:Snap Bean
     plants = Plant.all.sort { |a, b| a.name <=> b.name }
-    plants.inject("") {|str,plant| so_far(str,';') + "#{plant[:id]}:#{plant.name}"}
+    plants.inject("") { |str, plant| so_far(str,';') + "#{plant[:id]}:#{plant.name}" }
   end
 
   def soil_characteristics
     SoilType.all.each_with_object({}) do |soil_type, memo|
       memo[soil_type.id.to_s] = {
         field_capacity_pct: number_with_precision(100 * soil_type[:field_capacity], precision: 1).to_s,
-        perm_wilting_pt_pct: number_with_precision(100 * soil_type[:perm_wilting_pt], precision: 1).to_s
+        perm_wilting_pt_pct: number_with_precision(100 * soil_type[:perm_wilting_pt], precision: 1).to_s,
       }
     end.to_json.html_safe
   end
@@ -135,7 +137,7 @@ module ApplicationHelper
   # to fill in default values
   def plant_characteristics
     plants = Plant.all.sort { |a, b| a.name <=> b.name }
-    str = plants.inject("") do |str,plant|
+    str = plants.inject("") do |str, plant|
       so_far(str) +
         plant[:id].to_s + ':' +
         '{default_max_root_zone_depth:' + (plant[:default_max_root_zone_depth]).to_s + '}'
