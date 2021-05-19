@@ -6,9 +6,9 @@
   <tr><th>Name</th><th>Location</th><th>Notes</th><th>Fields</th></tr>
 <% weather_stations.each do |weather_station| %>
   <tr>
-    <td><%=h weather_station.name %></td>
-    <td><%=h weather_station.location %></td>
-    <td><%=h weather_station.notes %></td>
+    <td><%= weather_station.name %></td>
+    <td><%= weather_station.location %></td>
+    <td><%= weather_station.notes %></td>
     <td>
       <% for field in weather_station.fields %>
       <%= field.name %>&nbsp;

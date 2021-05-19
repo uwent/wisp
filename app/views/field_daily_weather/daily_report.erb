@@ -1,5 +1,5 @@
 <% field = @field_daily_weather.first.field %>
-"Daily Report (<%=h @field_daily_weather.first.date.year %> Season)"
+"Daily Report (<%= @field_daily_weather.first.date.year %> Season)"
 "Farm","Pivot","WDNR Hicap Well No.","Field"
 "<%= field.pivot.farm.name %>","<%= field.pivot.name %>", <%= field.pivot.equipment %>
 "Field","Soil Type","Field capacity","Permanent wilt point","Target AD %"
@@ -12,5 +12,5 @@
 <% end %>
 
 "Totals for <%= @field_daily_weather.first.date.year %>",,,,,"Rainfall","Irrigation","Adj. ET","Deep Drainage" 
-,,,,,<%=h @summary[:rain] %>,<%=h @summary[:irrigation] %>,<%=h @summary[:adj_et] %>,<%=h @summary[:deep_drainage] %>
+,,,,,<%= @summary[:rain] %>,<%= @summary[:irrigation] %>,<%= @summary[:adj_et] %>,<%= @summary[:deep_drainage] %>
 
