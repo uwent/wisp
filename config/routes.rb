@@ -31,6 +31,7 @@ Rails.application.routes.draw do
       post 'weather'
       get 'lookup'
       get 'field_status'
+      post 'field_status'
       get 'projection_data'
       get 'farm_status'
       get 'report_setup'

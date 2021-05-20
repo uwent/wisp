@@ -158,7 +158,7 @@ class WispController < AuthenticatedController
     @dates, @date_str, @date_hash = make_dates(start_date, end_date)
   end
 
-  # GET
+  # GET / POST
   def field_status
     # logger.info "field_status: group #{@group_id} user #{@user_id} farm #{@farm_id} pivot #{@pivot_id} field #{@field_id}"
     @pivot_id, @pivot = get_and_set(Pivot, Farm, @farm_id)
