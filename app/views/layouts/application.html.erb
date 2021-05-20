@@ -3,6 +3,8 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title><%= yield :title -%></title>
+  <link rel="icon" type="image/png" href="/favicon.png">
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-JGNGBHQEKD"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -11,8 +13,6 @@
     gtag('config', 'G-JGNGBHQEKD');
   </script>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  <title>
-    <%= yield :title -%></title>
   <%= stylesheet_link_tag "application" -%>
   <% if content_for?(:stylesheet) %>
     <%= yield :stylesheet -%>
