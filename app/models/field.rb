@@ -310,7 +310,7 @@ class Field < ApplicationRecord
   end
 
   def need_degree_days?
-    current_crop.uses_degree_days?(et_method)
+    current_crop.plant.uses_degree_days?(et_method)
   end
 
   def get_degree_days(method = 'Simple', base_temp = 50.0, upper_temp = nil)
