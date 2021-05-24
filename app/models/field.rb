@@ -310,10 +310,10 @@ class Field < ApplicationRecord
   end
 
   def need_degree_days?
-    current_crop.plant.uses_degree_days?(et_method)
+    current_crop.uses_degree_days?(et_method)
   end
 
-  def get_degree_days(method='Simple', base_temp=50.0 ,upper_temp=nil)
+  def get_degree_days(method = 'Simple', base_temp = 50.0, upper_temp = nil)
     return unless pivot.latitude && pivot.longitude
 
     start_date = field_daily_weather[0].date.to_s

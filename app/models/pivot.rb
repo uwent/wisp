@@ -57,6 +57,8 @@ class Pivot < ApplicationRecord
   def set_defaults
     self.name ||= "New pivot (farm ID: #{farm_id})"
     self.cropping_year ||= Time.now.year
+    self.latitude ||= 43.07
+    self.longitude ||= -89.41
   end
 
   def create_dependent_objects
