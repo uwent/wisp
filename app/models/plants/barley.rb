@@ -1,0 +1,2 @@
+class Barley < Plant
+end

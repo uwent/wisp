@@ -1,0 +1,2 @@
+class SnapBean < Plant
+end

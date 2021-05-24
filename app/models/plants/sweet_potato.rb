@@ -1,0 +1,2 @@
+class SweetPotato < Plant
+end

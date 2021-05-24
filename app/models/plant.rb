@@ -56,30 +56,3 @@ class Plant < ApplicationRecord
     adj_et_pct_cover(ref_et, pct_cover)
   end
 end
-
-class Alfalfa < Plant; end
-class Asparagus < Plant; end
-class Barley < Plant; end
-class Beets < Plant; end
-class Broccoli < Plant; end
-class Cabbage < Plant; end
-class Carrot < Plant; end
-class Celery < Plant; end
-class Cucumber < Plant; end
-class FieldCorn < Plant; end
-class LeafyGreens < Plant; end
-class Melon < Plant; end
-class Mint < Plant; end
-class Onion < Plant; end
-class Other < Plant; end
-class Pepper < Plant; end
-class Potato < Plant; end
-class Pumpkin < Plant; end
-class ShellPeas < Plant; end
-class SnapBean < Plant; end
-class Soybean < Plant; end
-class SummerSquash < Plant; end
-class SweetPotato < Plant; end
-class Tomato < Plant; end
-class Wheat < Plant; end
-class WinterSquash < Plant; end

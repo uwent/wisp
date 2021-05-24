@@ -1,0 +1,2 @@
+class Cabbage < Plant
+end

@@ -1,0 +1,2 @@
+class WinterSquash < Plant
+end

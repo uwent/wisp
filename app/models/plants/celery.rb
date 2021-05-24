@@ -1,0 +1,2 @@
+class Celery < Plant
+end

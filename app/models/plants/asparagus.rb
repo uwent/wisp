@@ -1,0 +1,2 @@
+class Asparagus < Plant
+end

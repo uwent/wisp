@@ -1,0 +1,2 @@
+class Tomato < Plant
+end

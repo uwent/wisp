@@ -1,0 +1,2 @@
+class Potato < Plant
+end

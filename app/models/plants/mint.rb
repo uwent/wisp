@@ -1,0 +1,2 @@
+class Mint < Plant
+end

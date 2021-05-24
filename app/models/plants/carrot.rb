@@ -1,0 +1,2 @@
+class Carrot < Plant
+end

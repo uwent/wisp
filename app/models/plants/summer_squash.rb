@@ -1,0 +1,2 @@
+class SummerSquash < Plant
+end

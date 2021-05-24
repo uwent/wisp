@@ -1,0 +1,2 @@
+class ShellPeas < Plant
+end

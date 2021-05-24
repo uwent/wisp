@@ -1,0 +1,2 @@
+class LeafyGreens < Plant
+end

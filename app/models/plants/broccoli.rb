@@ -1,0 +1,2 @@
+class Broccoli < Plant
+end

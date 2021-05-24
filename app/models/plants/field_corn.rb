@@ -1,0 +1,2 @@
+class FieldCorn < Plant
+end

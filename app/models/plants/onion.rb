@@ -1,0 +1,2 @@
+class Onion < Plant
+end

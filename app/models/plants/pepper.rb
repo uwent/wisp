@@ -1,0 +1,2 @@
+class Pepper < Plant
+end

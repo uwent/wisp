@@ -1,0 +1,2 @@
+class Pumpkin < Plant
+end

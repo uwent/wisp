@@ -1,0 +1,2 @@
+class Alfalfa < Plant
+end
