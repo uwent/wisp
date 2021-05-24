@@ -1,24 +1,8 @@
-<% content_for :title do %>
-  WISP: Wisconsin Irrigation Scheduler 2012
-<% end %>
-
 <p id="notice"><%= notice %></p>
 
-<p>
-  <b>Name:</b>
-  <%= @weather_station.name %>
-</p>
-
-<p>
-  <b>Location:</b>
-  <%= @weather_station.location %>
-</p>
-
-<p>
-  <b>Notes:</b>
-  <%= @weather_station.notes %>
-</p>
-
+<p><b>Name:</b><%= @weather_station.name %></p>
+<p><b>Location:</b><%= @weather_station.location %></p>
+<p><b>Notes:</b><%= @weather_station.notes %></p>
 <p>
   <b>Fields:</b><br/>
   <% for field in @weather_station.fields %>

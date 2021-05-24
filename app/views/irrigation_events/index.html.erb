@@ -1,14 +1,9 @@
-<% content_for :title do %>
-  WISP: Wisconsin Irrigation Scheduler 2012
-<% end %>
-
 <table>
   <tr>
     <th></th>
     <th></th>
     <th></th>
   </tr>
-
 <% @irrigation_events.each do |irrigation_event| %>
   <tr>
     <td><%= link_to 'Show', irrigation_event %></td>

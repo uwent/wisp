@@ -21,35 +21,36 @@
 <h2>WISP: Wisconsin Irrigation Scheduling Program 2012 Version 2.1.0</h2>
 <br/>
 <br/>
-  <ul>
+  <ul style="font-size:small;">
     <li><%= link_to "WISP Home", root_path %></li>
-  </ul>
-  <ul>
+    <li>&nbsp;</li>
     <li><%= link_to "Farm Status", "/wisp/farm_status" %></li>
-    
     <li><%= link_to "Pivots, Fields, and Crops", "/wisp/pivot_crop" %></li>
     <li><%= link_to "Field Status", '/wisp/field_status' %></li>
     <li><%= link_to "Field Groups", '/weather_stations' %></li>
     <li><%= link_to "Multi-Edit Daily Data", '/wisp/weather' %></li>
-    <li><%= link_to "User's Guide", guide_welcome_index_path %>
-    <li><%= link_to "Project Status", '/wisp/project_status', {style: "color:yellow"} %></li>
-    <%# Report setup not implemented %>
+    <li>&nbsp;</li>
+    <li><%= link_to "Project Status", '/wisp/project_status' %></li>
+    <li><%= link_to "Download User's Guide", guide_welcome_index_path, {style: "color:yellow"} %>
+
+    <%# Report setup not implemented so this hides the link %>
     <% if false %><li><%= link_to "Report Setup", '/wisp/report_setup' %> </li><% end %>
+
     <% if current_user && current_user.admin? %>
       <li><%= link_to "Admin Users", users_path %></li>
     <% end %>
   </ul>
-<% (0..4).each do %>
 <br/>
-<% end %>
+<br/>
+<br/>
 <% if user_signed_in? %>
   Signed in as <%= current_user.email %>.
   <br/>
   <br/>
-  <%=  button_to "Manage Account", edit_user_registration_path, method: :get %>
+  <%= button_to "Manage Account", edit_user_registration_path, method: :get %>
   <br/>
   <br/>
-  <div style="float: left; width: auto; margin-top: 0.3em">Not you?</div>
+  <div style="float: left; width: auto; margin-top: 0.3em; margin-right:0.5em;">Not you?</div>
   <%= button_to "Sign out", destroy_user_session_path, method: :delete %>
 <% else %>
   <%= link_to "Sign up", new_user_registration_path %>

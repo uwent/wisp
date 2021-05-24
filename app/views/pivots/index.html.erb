@@ -1,7 +1,3 @@
-<% content_for :title do %>
-  WISP: Wisconsin Irrigation Scheduler 2012
-<% end %>
-
 <h3>Farm: <%= @farm.name %></h3>
 <table>
   <%= render :partial => 'wisp/partials/scaffold_table_headers', :locals => {:obj_class => Pivot} %>

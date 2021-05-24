@@ -85,6 +85,7 @@ Rails.application.routes.draw do
     end
   end
  
+  # this is actually called 'Field Groups' on the sidebar
   resources :weather_stations
 
   # TODO: Remove this eventually. Dynamic routing is deprecated.

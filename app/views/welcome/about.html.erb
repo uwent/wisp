@@ -1,7 +1,3 @@
-<% content_for :title do %>
-  UW Soil Science Weather/Modeling: About Us
-<% end %>
-
 <% content_for :welcome do %>
   <%= image_tag "pic_1.jpg", {:width => "231", :height=>"301", :alt=>"Soil Science/King Hall"}  %>
   <h2>About Our Group</h2>
@@ -40,5 +36,8 @@
     Department of Entomology<br>
     Email: <a href="mailto:bbradford@wisc.edu">bbradford@wisc.edu</a>
   </p>
+  <br>
+  <br>
+  <%= render :template => 'wisp/project_status' %>
   <div class="clear"></div>
 </div>

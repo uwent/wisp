@@ -13,6 +13,7 @@
     plant_id=parseInt($(event.target).val(),10);
     set_crop_characteristics(rowID,plant_id);
   }
+
   function set_crop_characteristics(curFieldID,plant_id) {
     // This Ruby helper enumerates all plants (just default MRZD at this point), same order as the select box
     var plants = <%= plant_characteristics %>;
@@ -21,74 +22,119 @@
    }
  
   jQuery(document).ready(function(){
-  var mygrid = jQuery("#crop_setup").jqGrid({
+    var mygrid = jQuery("#crop_setup").jqGrid({
       url:'<%= grid_data_url "crops", @field %>',
       editurl: '<%= grid_post_data_url "crops", @field %>',
       datatype: "json",
-      colNames:['Name','Plant','Variety','Emergence','Harvest/Kill','Root zone depth','AD Frac.','Notes',' ',' '],
-      colModel:[  {
-                   name:'name',
-                   index:'name',
-                   width:20,
-                   editable:true
-                  },
-                  { // Plant
-                   name:'plant_id',
-                   index:'plant_id',
-                   width:40,   
-                   editable:true,
-                   sortable:true,
-                   edittype:'select',
-                   formatter:'select',
-                   editoptions:   // working example for Crop is '1:Potato;2:Snap Bean'
-                   {
-                    value:"<%= plant_types_for_select %>",
-                    dataEvents: [{  type: 'change',fn: set_crop_characteristics_from_event}]
-                   },
-                   editrules:{required:true}
-                  },
-                 {name:'variety', index:'variety',width:40,editable:true, align:'right'},
-                 {
-                   name:'emergence_date', index:'emergence_date',width:35,editable:true, align:'right',
-                   editrules:{date:true},
-                   editoptions: { 
-                     dataInit: function(el) { 
-                       setTimeout(function() {
-                         $(el).datepicker({
-                           dateFormat: "yy-mm-dd",
-                           onClose: function(selectedDate) {
-                             $("#" + $.jgrid.jqID(lastsel) + "_emergence_date").focus();
-                           }
-                         });
-                       }, 200);
-                     }
-                   }
-                 },
-                 {
-                   name:'harvest_or_kill_date', index:'harvest_or_kill_date',width:35,editable:true, align:'right',
-                  editrules:{required:false,date:true},
-                  editoptions: {
-                    dataInit: function(el) {
-                      setTimeout(function() {
-                         $(el).datepicker({
-                            dateFormat: "yy-mm-dd",
-                            onClose: function(selectedDate) {
-                              $("#" + $.jgrid.jqID(lastsel) + "_harvest_or_kill_date").focus();
-                            }
-                         }); 
-                      }, 200); 
-                    }
+      colNames: ['Name', 'Plant', 'Variety', 'Emergence', 'Harvest/Kill', 'Root zone depth', 'AD Frac.', 'Notes', ' ', ' '],
+      colModel: [
+        {
+          name: 'name',
+          index: 'name',
+          width: 20,
+          editable: true,
+        },
+        {
+          name: 'plant_id',
+          index: 'plant_id',
+          width: 40, 
+          editable: true,
+          sortable: true,
+          edittype: 'select',
+          formatter: 'select',
+          editoptions: {
+            value: "<%= plant_types_for_select %>",
+            dataEvents: [{ type: 'change', fn: set_crop_characteristics_from_event }]
+          },
+          editrules: { required: true },
+        },
+        {
+          name: 'variety',
+          index: 'variety',
+          width: 40,
+          editable: true,
+          align: 'right',
+        },
+        {
+          name: 'emergence_date',
+          index: 'emergence_date',
+          width: 35,
+          editable: true,
+          align: 'right',
+          editrules:{date:true},
+          editoptions: { 
+            dataInit: function(el) { 
+              setTimeout(function() {
+                $(el).datepicker({
+                  dateFormat: "yy-mm-dd",
+                  onClose: function(selectedDate) {
+                    $("#" + $.jgrid.jqID(lastsel) + "_emergence_date").focus();
                   }
-                 },
-                 {name:'max_root_zone_depth', index:'max_root_zone_depth',width:35,editable:true, align:'right',editrules:{number:true,minValue:0,maxValue:60}},
-                 {name:'max_allowable_depletion_frac', index:'max_allowable_depletion_frac',width:20,editable:true, align:'right',editrules:{number:true,minValue:0.0,maxValue:1.0}},
-                 {name:'notes', index:'notes',width:65,editable:true, align:'right'},
-                 {name:'id', index:'id',width:1,hidden:true},
-                 {name:'field_id',index:'field_id',width:1,hidden:true,editable:true}
-                ],
+                });
+              }, 200);
+            }
+          }
+        },
+        {
+          name: 'harvest_or_kill_date',
+          index: 'harvest_or_kill_date',
+          width: 35,
+          editable: true,
+          align:'right',
+          editrules: { required: false, date: true },
+          editoptions: {
+            dataInit: function(el) {
+              setTimeout(function() {
+                  $(el).datepicker({
+                    dateFormat: "yy-mm-dd",
+                    onClose: function(selectedDate) {
+                      $("#" + $.jgrid.jqID(lastsel) + "_harvest_or_kill_date").focus();
+                    }
+                  }); 
+              }, 200);
+            }
+          }
+        },
+        {
+          name: 'max_root_zone_depth',
+          index: 'max_root_zone_depth',
+          width: 35,
+          editable: true,
+          align: 'right',
+          editrules: { number: true, minValue: 0, maxValue: 60 }
+        },
+        {
+          name: 'max_allowable_depletion_frac',
+          index: 'max_allowable_depletion_frac',
+          width: 20,
+          editable: true,
+          align: 'right',
+          editrules: { number: true, minValue: 0.0, maxValue: 1.0 }
+        },
+        {
+          name: 'notes',
+          index: 'notes',
+          width: 65,
+          editable: true,
+          align: 'right'
+        },
+        {
+          name: 'id',
+          index: 'id',
+          width: 1,
+          hidden: true
+        },
+        {
+          name: 'field_id',
+          index: 'field_id',
+          width: 1,
+          hidden: true,
+          editable: true
+        }
+      ],
       pager: '#crop_setup_pager',
-      rowNum:180,
-      rowList:[180],
+      rowNum: 180,
+      rowList: [180],
       imgpath: '<%= image_folder_path("jqgrid") %>',
       sortname: '',
       viewrecords: true,
@@ -106,23 +152,22 @@
           if (id!==lastsel){
             jQuery('#crop_setup').restoreRow(lastsel);
           }
-          jQuery('#crop_setup').editRow(id,true); 
-          lastsel=id; 
-        } 
-      },             
-      
-      
-      subGrid:false,
-      
+          jQuery('#crop_setup').editRow(id,true);
+          lastsel=id;
+        }
+      },
+
+      subGrid: false,
       caption: "Crop <%= @field ? " for #{@field.name}" : '(select field above)' %>"
     })
     .navGrid('#crop_setup_pager',
-      {edit:false,add:false,del:false,search:false,refresh:true}, // Restore add and del someday! For now, we're one crop per year.
-      {afterSubmit:function(r,data){return true;(r,data,'edit');}},
-      {afterSubmit:function(r,data){return true;(r,data,'add');}},
-      {afterSubmit:function(r,data){return true;(r,data,'delete');}}
+      { edit: false, add: false, del: false, search: false, refresh: true }, // Restore add and del someday! For now, we're one crop per year.
+      { afterSubmit:function(r,data){return true;(r,data,'edit');} },
+      { afterSubmit:function(r,data){return true;(r,data,'add');} },
+      { afterSubmit:function(r,data){return true;(r,data,'delete');} }
     )
-    mygrid.filterToolbar();mygrid[0].toggleToolbar()
+    mygrid.filterToolbar();
+    mygrid[0].toggleToolbar();
   });
 </script>
 

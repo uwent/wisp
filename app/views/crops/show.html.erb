@@ -1,61 +1,16 @@
-<% content_for :title do %>
-  WISP: Wisconsin Irrigation Scheduler 2012
-<% end %>
-
 <%= render 'form' %>
 
 <p id="notice"><%= notice %></p>
-
-<p>
-  <b>Field:</b>
-  <%= @crop.field_id %>
-</p>
-
-<p>
-  <b>End date:</b>
-  <%= @crop.end_date %>
-</p>
-
-<p>
-  <b>Crop:</b>
-  <%= @crop.name %>
-</p>
-
-<p>
-  <b>Variety:</b>
-  <%= @crop.variety %>
-</p>
-
-<p>
-  <b>Emergence date:</b>
-  <%= @crop.emergence_date %>
-</p>
-
-<p>
-  <b>Harvest or kill date:</b>
-  <%= @crop.harvest_or_kill_date %>
-</p>
-
-<p>
-  <b>Max root zone depth:</b>
-  <%= @crop.max_root_zone_depth %>
-</p>
-
-<p>
-  <b>Max allowable depletion frac:</b>
-  <%= @crop.max_allowable_depletion_frac %>
-</p>
-
-<p>
-  <b>Max allowable depletion inches:</b>
-  <%= @crop.max_allowable_depletion_inches %>
-</p>
-
-<p>
-  <b>Notes:</b>
-  <%= @crop.notes %>
-</p>
-
+<p><b>Field:</b><%= @crop.field_id %></p>
+<p><b>End date:</b><%= @crop.end_date %></p>
+<p><b>Crop:</b><%= @crop.name %></p>
+<p><b>Variety:</b><%= @crop.variety %></p>
+<p><b>Emergence date:</b><%= @crop.emergence_date %></p>
+<p><b>Harvest or kill date:</b><%= @crop.harvest_or_kill_date %></p>
+<p><b>Max root zone depth:</b><%= @crop.max_root_zone_depth %></p>
+<p><b>Max allowable depletion frac:</b><%= @crop.max_allowable_depletion_frac %></p>
+<p><b>Max allowable depletion inches:</b><%= @crop.max_allowable_depletion_inches %></p>
+<p><b>Notes:</b><%= @crop.notes %></p>
 
 <%= link_to 'Edit', edit_crop_path(@crop) %> |
 <%= link_to 'Back', crops_path %>

@@ -1,9 +1,16 @@
 <% content_for :title do %>
-  WISP: Wisconsin Irrigation Scheduler 2012
+  WISP: Field Groups
 <% end %>
 
+<h2>Field Groups</h2>
+
 <table>
-  <tr><th>Name</th><th>Location</th><th>Notes</th><th>Fields</th></tr>
+  <tr>
+    <th>Name</th>
+    <th>Location</th>
+    <th>Notes</th>
+    <th>Fields</th>
+  </tr>
 <% weather_stations.each do |weather_station| %>
   <tr>
     <td><%= weather_station.name %></td>

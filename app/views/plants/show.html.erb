@@ -1,20 +1,8 @@
 <p id="notice"><%= notice %></p>
 
-<p>
-  <b>Name:</b>
-  <%= @plant.name %>
-</p>
-
-<p>
-  <b>Type:</b>
-  <%= @plant.type %>
-</p>
-
-<p>
-  <b>Default max root zone depth:</b>
-  <%= @plant.default_max_root_zone_depth %>
-</p>
-
+<p><b>Name:</b><%= @plant.name %></p>
+<p><b>Type:</b><%= @plant.type %></p>
+<p><b>Default max root zone depth:</b><%= @plant.default_max_root_zone_depth %></p>
 
 <%= link_to 'Edit', edit_plant_path(@plant) %> |
 <%= link_to 'Back', plants_path %>

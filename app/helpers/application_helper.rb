@@ -140,7 +140,8 @@ module ApplicationHelper
     str = plants.inject("") do |str, plant|
       so_far(str) +
         plant[:id].to_s + ':' +
-        '{default_max_root_zone_depth:' + (plant[:default_max_root_zone_depth]).to_s + '}'
+        '{default_max_root_zone_depth:' +
+        (plant[:default_max_root_zone_depth]).to_s + '}'
     end
     "{#{str}}"
   end

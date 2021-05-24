@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  var lastFieldSel,curFieldID;
+  var lastFieldSel, curFieldID;
 
   var PCT_COVER_METHOD = <%= Field::PCT_COVER_METHOD %>;
   var LAI_METHOD = <%= Field::LAI_METHOD %>;
@@ -9,6 +9,7 @@
       {field_id:field_id,user_id:user_id, farm_id:farm_id});
     crop_id = $("#crop_setup").getDataIDs()[0];
   }
+
   function rowSelect(id) {
     if(id) {
       if (!lastFieldSel || id !== lastFieldSel) {
@@ -20,6 +21,7 @@
       }
     }
   }
+
   function useFirstFieldRow(throwaway1,throwaway2) {
     field_id = $("#field_setup").getDataIDs()[0];
     lastFieldSel=field_id;
@@ -27,10 +29,12 @@
     // loadCropGrid(field_id);
     return [true,'',field_id]; // This was a total shot in the dark, Googling 'jqgrid afterSubmit' gave hints
   }
+
   function deleteField(id) {
     jQuery('#field_setup').delGridRow(id,{afterSubmit:useFirstFieldRow,msg:'Delete selected record(s)? \nThis will delete all crop data \nassociated with this field. \nProceed with delete?'});
 //    jQuery('#field_setup').delGridRow(id,{afterSubmit:useFirstFieldRow,msg:'Permanently delete field, its crop & daily data?'});
   }
+
   function addFieldDeleteButtons() {
     var fieldIDs = jQuery("#field_setup").getDataIDs();
     var msg = "Field IDs";
@@ -60,7 +64,7 @@
 
   // Make a call to the server to create a new field; will return new row as JSON
   function createNewField(method) {
-    var pvt={};
+    var pvt = {};
     $.ajax(
       {
         type: "POST",
@@ -69,13 +73,12 @@
         dataType: "json",
         contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
         async: false,
-        success: function(json) {
-          field = json;
-        }
+        success: function(json) { field = json; }
       }
     );
     return field;
   }
+
   // Propagate changes from select-clicked event onwards
   function set_soil_characteristics_from_event(event) {
     // From stackoverflow.com/questions/5247138/jqgrid-change-cell-value-and-stay-in-edit-mode
@@ -83,6 +86,7 @@
     soil_id=parseInt($(event.target).val(),10);
     set_soil_characteristics(rowID,soil_id);
   }
+
   // Ensure that default FC and PWP values are entered, whether from a new row being created
   // or from the select box being clicked. Overwrite existing values in either case.
   function set_soil_characteristics(curFieldID,soil_id) {
@@ -150,43 +154,139 @@
     // $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:<%=@field_id%>,user_id:<%=@user_id%>});
     loadCropGrid(field_id);
     var mygrid = jQuery("#field_setup").jqGrid({
-      url:'<%= grid_data_url "fields", @pivot_id %>',
-      editurl:'<%= grid_post_data_url "fields", @pivot %>',
+      url: '<%= grid_data_url "fields", @pivot_id %>',
+      editurl: '<%= grid_post_data_url "fields", @pivot %>',
       datatype: "json",
-      colNames:['Name','ET Method','Area','Soil Type','Field Capacity','Perm. Wilt Pt','Target AD','ET Stn','Rain Stn','Soil Moist. Stn','Notes','Delete','Pivot','ID'],
-      colModel:[{name:'name', index:'name',width:83,editable:true},
-                {name:'et_method',index:'et_method',editable:false,formatter:etMethodFormat,width:25},
-                {name:'area', index:'area',width:20,editable:true,formatter:'number',formatoptions:{decimalPlaces:1},align:'right',editrules:{number:true,minValue:0.0}},
-                {
-                   name:'soil_type_id',index:'soil_type_id', width:40,resizable:true,
-                   align:"left",
-                   sorttype:"text",
-                   editable:true,
-                   edittype:"select",
-                   formatter:'select',
-                   editoptions:   // working example for ET methods is '1:Percent Cover;2:Leaf Area Index'
-                   {
-                    value:"<%= soil_types_for_select %>",
-                    dataEvents: [{  type: 'change',fn: set_soil_characteristics_from_event}]
-                   },
-                   editrules:{required:true}
-                },
-                {name:'field_capacity_pct', index:'field_capacity_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:0},editrules:{number:true,minValue:0,maxValue:100}},
-                {name:'perm_wilting_pt_pct', index:'perm_wilting_pt_pct',width:35,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:0},editrules:{number:true,minValue:0,maxValue:100}},
-                {name:'target_ad_pct',index:'target_ad_pct',width:25,editable:true, align:'right',formatter:pctFormat,unformat:pctUnformat,formatoptions:{decimalPlaces:1},editrules:{number:true,minValue:0,maxValue:100}},
-                // These three are hidden until we get these features running
-                {name:'ref_et_station_id', index:'ref_et_station_id',width:25,editable:true, align:'right',hidden:true},
-                {name:'rain_station_id', index:'rain_station_id',width:30,editable:true, align:'right',hidden:true},
-                {name:'soil_moisture_station_id', index:'soil_moisture_station_id',width:50,editable:true, align:'right',hidden:true},
-
-                {name:'notes', index:'notes',width:60,editable:true, align:'right'},
-                {name:'act', index:'act', width:20},
-                {name:'pivot_id',index:'pivot_id',width:10,hidden:true,editable:true},
-                {name:'id', index:'id',hidden:true,width:10}
-              ],
+      colNames:["Name","ET Method","Area","Soil Type","Field Capacity","Perm. Wilt Pt","Target AD","ET Stn","Rain Stn","Soil Moist. Stn","Notes","Delete","Pivot","ID"],
+      colModel:[
+        {
+          name: "name",
+          index: "name",
+          width: 83,
+          editable: true,
+        },
+        {
+          name: "et_method",
+          index: "et_method",
+          width: 25,
+          editable: false,
+          formatter: etMethodFormat,
+        },
+        {
+          name: "area",
+          index: "area",
+          width: 20,
+          editable: true,
+          align: "right",
+          formatter: "number",
+          formatoptions: { decimalPlaces: 1 },
+          editrules: { number: true, minValue: 0.0 },
+        },
+        {
+          name: "soil_type_id",
+          index: "soil_type_id",
+          width: 40,
+          resizable: true,
+          align: "left",
+          sorttype: "text",
+          editable: true,
+          edittype: "select",
+          formatter: "select",
+          // working example for ET methods is "1:Percent Cover;2:Leaf Area Index"
+          editoptions: { 
+            value:"<%= soil_types_for_select %>",
+            dataEvents: [{ type: "change", fn: set_soil_characteristics_from_event }]
+          },
+          editrules: { required: true },
+        },
+        {
+          name: 'field_capacity_pct',
+          index: 'field_capacity_pct',
+          width: 35,
+          editable: true,
+          align: 'right',
+          formatter: pctFormat,
+          unformat: pctUnformat,
+          formatoptions: { decimalPlaces: 0 },
+          editrules: { number: true, minValue: 0, maxValue: 100 },
+        },
+        {
+          name: 'perm_wilting_pt_pct',
+          index: 'perm_wilting_pt_pct',
+          width: 35,
+          editable: true,
+          align: 'right',
+          formatter: pctFormat,
+          unformat: pctUnformat,
+          formatoptions: { decimalPlaces: 0 },
+          editrules: { number: true, minValue: 0, maxValue: 100 },
+        },
+        {
+          name: 'target_ad_pct',
+          index: 'target_ad_pct',
+          width: 25,
+          editable: true,
+          align: 'right',
+          formatter: pctFormat,
+          unformat: pctUnformat,
+          formatoptions: { decimalPlaces: 1 },
+          editrules: { number: true, minValue: 0, maxValue: 100 },
+        },
+        // These three are hidden until we get these features running
+        {
+          name: 'ref_et_station_id',
+          index: 'ref_et_station_id',
+          width: 25,
+          editable: true,
+          align: 'right',
+          hidden: true,
+        },
+        {
+          name: 'rain_station_id',
+          index: 'rain_station_id',
+          width: 30,
+          editable: true,
+          align: 'right',
+          hidden: true,
+        },
+        {
+          name: 'soil_moisture_station_id',
+          index: 'soil_moisture_station_id',
+          width: 50,
+          editable: true,
+          align: 'right',
+          hidden: true,
+        },
+        // end hidden columns
+        {
+          name: 'notes',
+          index: 'notes',
+          width: 60,
+          editable: true,
+          align: 'right',
+        },
+        {
+          name: 'act',
+          index: 'act',
+          width: 20,
+        },
+        {
+          name: 'pivot_id',
+          index: 'pivot_id',
+          width: 10,
+          hidden: true,
+          editable: true,
+        },
+        {
+          name: 'id',
+          index: 'id',
+          hidden: true,
+          width: 10,
+        }
+      ],
       pager: '#field_setup_pager',
-      rowNum:180,
-      rowList:[180],
+      rowNum: 180,
+      rowList: [180],
       imgpath: '<%= image_folder_path("jqgrid") %>',
       sortname: '',
       viewrecords: true,
@@ -207,16 +307,14 @@
         loadCropGrid(fieldIDs[0]);
       },
 
-
-      subGrid:false,
-
+      subGrid: false,
       caption: "Fields <%= @pivot ? "for #{@pivot.name}" : '(select pivot above)' %>"
     })
     .navGrid('#field_setup_pager',
-      {edit:false,add:false,del:true,search:false,refresh:true},
-      {afterSubmit:function(r,data){return true;(r,data,'edit');}},
-      {afterSubmit:function(r,data){return true;(r,data,'add');}},
-      {afterSubmit:function(r,data){return true;(r,data,'delete');}}
+      { edit:false, add:false, del:true, search:false, refresh:true },
+      { afterSubmit:function(r,data){return true;(r,data,'edit');} },
+      { afterSubmit:function(r,data){return true;(r,data,'add');} },
+      { afterSubmit:function(r,data){return true;(r,data,'delete');} }
     )
     mygrid.filterToolbar();mygrid[0].toggleToolbar();
     $("#field_setup").hideCol('id');
