@@ -21,7 +21,6 @@ role :app, %w{deploy@dev.agweather.cals.wisc.edu:216}
 role :web, %w{deploy@dev.agweather.cals.wisc.edu:216}
 role :db,  %w{deploy@dev.agweather.cals.wisc.edu:216}
 
-
 # Configuration
 # =============
 # You can set any configuration variable like in config/deploy.rb

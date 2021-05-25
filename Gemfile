@@ -37,9 +37,8 @@ group :development, :test do
   gem 'factory_bot_rails', '~> 6.2'
   gem 'rspec-rails', '~> 5.0'
   gem 'valid_attribute', '~> 2.0'
-  gem 'guard-rspec', '~> 4.7'
-end
-
-group :test do
-  gem 'simplecov', '~> 0.21', require: false
+  gem 'guard-rspec', '~> 4.7', require: false
+  gem 'spring', '~> 2.1'
+  gem 'spring-commands-rspec', '~> 1.0'
+  gem 'simplecov', '~> 0.21'
 end

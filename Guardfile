@@ -30,7 +30,7 @@
 # zeus_plan: server                    # custom plan in zeus, only works with `zeus: true`.
 # zeus: false                          # enables zeus gem.
 # CLI: 'rails server'                  # customizes runner command. Omits all options except `pid_file`!
-guard :rspec, cmd: 'rspec -f doc' do
+guard :rspec, cmd: 'spring rspec -f doc' do
   watch('spec/spec_helper.rb')                        { "spec" }
   watch('config/routes.rb')                           { "spec/routing" }
   watch('app/controllers/application_controller.rb')  { "spec/controllers" }

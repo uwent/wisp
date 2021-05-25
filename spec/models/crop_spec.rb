@@ -91,8 +91,7 @@ describe Crop do
     it 'sets emergence date to default' do
       crop.new_year
       crop.reload
-      expect(crop.emergence_date).to eq Date.civil(Time.now.year,
-                                                   *Field::EMERGENCE_DATE)
+      expect(crop.emergence_date).to eq Date.civil(Time.now.year, *Field::EMERGENCE_DATE)
     end
 
     it 'should empty kill/harvest date' do
