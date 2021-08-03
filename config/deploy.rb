@@ -37,7 +37,7 @@ set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets}
 
 # rbenv
 set :rbenv_type, :user
-set :rbenv_ruby, '2.7.3'
+set :rbenv_ruby, '3.0.1'
 
 namespace :deploy do
 

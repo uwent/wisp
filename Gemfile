@@ -21,6 +21,7 @@ gem 'whenever', '~> 1.0.0'
 gem 'asigbiophys', path: 'vendor/asigbiophys'
 
 group :development do
+  gem 'puma', '~> 5.4'
   gem 'capistrano', '~> 3.16'
   gem 'capistrano-bundler', '~> 2.0'
   gem 'capistrano-rails', '~> 1.6'
