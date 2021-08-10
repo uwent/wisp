@@ -10,7 +10,7 @@ WISP uses the checkbook method to track soil moisture on a daily basis given a u
 
 ## Dependencies
 
-Ruby version `2.7.x`
+Ruby version `3.0.x`
 
 Rails version `6.1.x`
 
