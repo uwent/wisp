@@ -1,4 +1,4 @@
-branch = ENV['WISP_BRANCH'] || 'main'
+branch = ENV['BRANCH'] || 'main'
 
 set :application, 'wisp'
 set :repo_url, 'git@wisp.github.com:uwent/wisp.git'
