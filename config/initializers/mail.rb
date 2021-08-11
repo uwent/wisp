@@ -1,4 +1,4 @@
-ActionMailer::Base.default from: 'cals-it-admin@cals.wisc.edu'
+ActionMailer::Base.default from: 'agweather@cals.wisc.edu'
 
 if ActionMailer::Base.delivery_method == :smtp
   if Rails.env.staging?
