@@ -11,5 +11,6 @@
 /log/*
 !/log/.keep
 /tmp
-*.sqlite3
-coverage
+/coverage
+
+.DS_Store

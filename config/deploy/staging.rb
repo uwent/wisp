@@ -29,7 +29,7 @@ role :db,  %w{deploy@dev.agweather.cals.wisc.edu:216}
 # http://capistranorb.com/documentation/getting-started/configuration/
 # Feel free to add new variables to customise your setup.
 
-set :rails_env, 'production'
+set :rails_env, 'staging'
 
 # Custom SSH Options
 # ==================
