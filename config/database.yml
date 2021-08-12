@@ -12,14 +12,11 @@ test:
   database: wisp_test
   url: <%= ENV['DATABASE_URL'] %>
 
-staging:
-  <<: *default
-  database: wisp_staging
-  username: wispdb
-  password: <%= ENV['WISP_DATABASE_PASSWORD'] %>
-
 production:
   <<: *default
   database: wisp_production
   username: wispdb
   password: <%= ENV['WISP_DATABASE_PASSWORD'] %>
+
+staging:
+  <<: *production
