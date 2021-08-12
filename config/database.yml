@@ -12,7 +12,7 @@ test:
   database: wisp_test
   url: <%= ENV['DATABASE_URL'] %>
 
-production:
+production: &production
   <<: *default
   database: wisp_production
   username: wispdb
