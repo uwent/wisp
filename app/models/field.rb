@@ -288,7 +288,6 @@ class Field < ApplicationRecord
       }
       response = HTTParty.get(ET_ENDPOINT, query: query, timeout: 10)
       json = JSON.parse(response.body, symbolize_names: true)
-      puts json
       vals = {}
       json[:data].each do |day|
         vals[day[:date]] = day[:value]
@@ -331,7 +330,6 @@ class Field < ApplicationRecord
       }
       response = HTTParty.get(DD_ENDPOINT, query: query, timeout: 10)
       json = JSON.parse(response.body, symbolize_names: true)
-      puts json
       vals = {}
       json[:data].each do |day|
         vals[day[:date]] = day[:value]
