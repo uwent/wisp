@@ -282,7 +282,7 @@ class Field < ApplicationRecord
     begin
       query = {
         lat: pivot.latitude.round(1),
-        long: pivot.longitude.round(1) * -1, # TODO: invert longitude in the future
+        long: pivot.longitude.round(1),
         start_date: start_date,
         end_dat: end_date
       }
@@ -323,7 +323,7 @@ class Field < ApplicationRecord
     begin
       query = {
         lat: pivot.latitude.round(1),
-        long: pivot.longitude.round(1) * -1, # TODO: invert longitude in the future
+        long: pivot.longitude.round(1),
         start_date: start_date,
         end_dat: end_date,
         base: base_temp,
