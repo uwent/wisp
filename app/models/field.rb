@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 # TODO: Use HTTParty
-require 'net/http'
-require 'uri'
+# require 'net/http'
+# require 'uri'
 
 class Field < ApplicationRecord
   after_create :create_dependent_objects
   after_save :set_fdw_initial_moisture, :do_balances
   before_validation :set_defaults, on: :create
 
-  ET_ENDPOINT = "https://agweather.cals.wisc.edu/sun_water/get_grid"
-  DD_ENDPOINT = "http://agweather.cals.wisc.edu/thermal_models/get_dds"
+  include HTTParty
+
+  BASE_ENDPOINT = ENV['AG_WEATHER_BASE_URL']
+
+  ET_ENDPOINT = "#{BASE_ENDPOINT}/evapotranspirations"
+  DD_ENDPOINT = "#{BASE_ENDPOINT}/degree_days"
 
   START_DATE = [4, 1]
   END_DATE = [11, 30]
@@ -276,24 +280,18 @@ class Field < ApplicationRecord
 
     vals = {}
     begin
-      uri = URI.parse(ET_ENDPOINT)
-      # Note that we code the nested params with the [] format, since they'll irremediably be
-      # formatted to escaped braces if we just use the grid_date => {start_date: } nested hash
-      res = response = Net::HTTP.post_form(
-        uri,
-        "latitude" => pivot.latitude.round(1),
-        "longitude" => pivot.longitude.round(1),
-        "param" => "ET",
-        "grid_date[start_date]" => start_date,
-        "grid_date[end_date]" => end_date,
-        "format" => "csv"
-      )
-
+      query = {
+        lat: pivot.latitude.round(1),
+        long: pivot.longitude.round(1),
+        start_date: start_date,
+        end_dat: end_date
+      }
+      response = HTTParty.get(ET_ENDPOINT, query: query, timeout: 10)
+      json = JSON.parse(response.body, symbolize_names: true)
+      puts json
       vals = {}
-      res.body.split("\n").each do |line|
-        if line =~ /([\d]{4}-[\d]{2}-[\d]{2}),([\d].[\d]+)$/
-          vals[$1] = $2.to_f
-        end
+      json[:data].each do |day|
+        vals[day[:date]] = day[:value]
       end
     rescue Exception => e
       logger.warn("Field :: Could not get ETs from the net; connected? (#{e})")
@@ -322,33 +320,21 @@ class Field < ApplicationRecord
     # TODO: Extract method.
     logger.info("Field :: Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}")
 
-    vals = {}
-    # To use a test url use "http://agwx.soils.wisc.edu/devel/thermal_models/get_dds" Note: et data not automatically updated on devel.
     begin
-      uri = URI.parse(DD_ENDPOINT)
-      # Note that we code the nested params with the [] format, since they'll irremediably be
-      # formatted to escaped braces if we just use the grid_date => {start_date: } nested hash
-      # {"utf8"=>"✓", "authenticity_token"=>"sxzJVoSvOXQSOm8RAr8hUtNrhnhEn0yGp3dkWbuPxMI=",
-      #   "latitude"=>"42.0", "longitude"=>"-98.0", "method"=>"Simple",
-      #   "grid_date"=>{"start_date(1i)"=>"2014", "start_date(2i)"=>"5", "start_date(3i)"=>"1", "end_date(1i)"=>"2014", "end_date(2i)"=>"8", "end_date(3i)"=>"5"},
-      #   "base_temp"=>"50", "upper_temp"=>"None", "commit"=>"Get Data Series "}
-
-      res = Net::HTTP.post_form(
-        uri,
-        "latitude" => pivot.latitude,
-        "longitude" => pivot.longitude,
-        "method" => method,
-        "grid_date[start_date]" => start_date,
-        "grid_date[end_date]"=> end_date,
-        "base_temp" => base_temp,
-        "upper_temp" => upper_temp ? upper_temp : "None",
-        "format" => "csv")
-
+      query = {
+        lat: pivot.latitude.round(1),
+        long: pivot.longitude.round(1),
+        start_date: start_date,
+        end_dat: end_date,
+        base: base_temp,
+        upper: upper_temp ? upper_temp : 150
+      }
+      response = HTTParty.get(DD_ENDPOINT, query: query, timeout: 10)
+      json = JSON.parse(response.body, symbolize_names: true)
+      puts json
       vals = {}
-      res.body.split("\n").each do |line|
-        if line =~ /([\d]{4}-[\d]{2}-[\d]{2}),([\d.]+)$/
-          vals[$1] = $2.to_i
-        end
+      json[:data].each do |day|
+        vals[day[:date]] = day[:value]
       end
     rescue Exception => e
       logger.warn("Field :: Could not get DDs from the agweather; connected? (#{e})")
