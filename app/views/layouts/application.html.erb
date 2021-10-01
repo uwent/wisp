@@ -3,13 +3,14 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JGNGBHQEKD"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-JGNGBHQEKD');
-  </script>
+  <link rel="icon" type="image/png" href="/favicon.png">
+    <title>
+    <% if content_for?(:title) %>
+      <%= yield :title -%>
+    <% else %>
+      WISP: Wisconsin Irrigation Scheduling Program
+    <% end %>
+  </title>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <%= stylesheet_link_tag "application" -%>
   <% if content_for?(:stylesheet) %>
@@ -19,14 +20,15 @@
   <!-- This is part of the protect_from_forgery fix from http://henrik.nyh.se/2008/05/rails-authenticity-token-with-jquery -->
   <%= javascript_tag "var AUTH_TOKEN = #{form_authenticity_token.inspect};" if protect_against_forgery? %>
   <%= javascript_include_tag 'application' %> <!-- Don't want everything in defaults, just the XSS stuff I put in -->
-  <link rel="icon" type="image/png" href="/favicon.png">
-  <title>
-    <% if content_for?(:title) %>
-      <%= yield :title -%>
-    <% else %>
-      WISP: Wisconsin Irrigation Scheduling Program
-    <% end %>
-  </title>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JGNGBHQEKD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-112403097-5');
+    gtag('config', 'G-JGNGBHQEKD');
+  </script>
 </head>
 
 <body>
@@ -57,7 +59,7 @@
     </div>
     <div id="footer">
       <%= yield :footer %>
-      <p>Copyright ©2021 University of Wisconsin. All rights reserved</p>
+      <p>Copyright ©<%= Date.current.year %> University of Wisconsin. All rights reserved.</p>
     </div>
   </div>
 </body>
