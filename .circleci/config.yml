@@ -7,13 +7,10 @@ jobs:
     docker:
       - image: circleci/ruby:3.0.2-node
         environment:
-          PG_HOST: localhost
-          PG_USER: postgres
           RAILS_ENV: test
-          RACK_ENV: test
       - image: circleci/postgres:12.8
         environment:
-          POSTGRES_USER: postgres
+          POSTGRES_USER: wisp
           POSTGRES_DB: wisp_test
           POSTGRES_PASSWORD: "password"
     executor: ruby/default
