@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  ruby: circleci/ruby@1.1.2
+  ruby: circleci/ruby@1.2.0
 
 jobs:
   build:
@@ -8,40 +8,37 @@ jobs:
       - image: circleci/ruby:3.0.2-node
         environment:
           PG_HOST: localhost
-          PG_USER: wisp
+          PG_USER: postgres
           RAILS_ENV: test
           RACK_ENV: test
-      - image: postgres:9.6
+      - image: circleci/postgres:12.8
         environment:
-          POSTGRES_USER: wisp
+          POSTGRES_USER: postgres
           POSTGRES_DB: wisp_test
           POSTGRES_PASSWORD: "password"
+    executor: ruby/default
     steps:
       - checkout
       - run:
-          name: Update Bundler
+          name: Get Bundler
           command: gem install bundler
       - run:
-          name: Which bundler?
-          command: bundle -v
+          name: Configure Bundler
+          command: bundle config set --local path './vendor/bundle'
       - restore_cache:
           keys:
-            - wisp-bundle-{{ checksum "Gemfile.lock" }}
+            - wisp-bundle-{{ checksum ".ruby-version" }}-{{ checksum "Gemfile.lock" }}
             - wisp-bundle
       - run:
           name: Bundle Install
-          command: bundle check --path ./vendor/bundle || bundle install
+          command: bundle check || bundle install
       - save_cache:
-         key: wisp-bundle-{{ checksum "Gemfile.lock" }}
+         key: wisp-bundle-{{ checksum ".ruby-version" }}-{{ checksum "Gemfile.lock" }}
          paths:
            - ./vendor/bundle
       - run:
-          name: Set up DB
+          name: Set up database
           command: bin/rails db:setup
-          environment:
-            DATABASE_URL: postgres://wisp@localhost:5432/wisp_test
       - run:
-          name: Run Specs
+          name: Rspec
           command: bundle exec rspec
-          environment:
-            DATABASE_URL: postgres://wisp@localhost:5432/wisp_test
