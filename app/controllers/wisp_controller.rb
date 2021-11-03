@@ -176,6 +176,7 @@ class WispController < AuthenticatedController
     @ad_recs.each do |adr|
       if adr.ref_et == nil || adr.ref_et == 0.0
         @field.get_et
+        @field.get_precip
         break
       end
     end

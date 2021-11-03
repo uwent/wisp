@@ -14,6 +14,7 @@ class Field < ApplicationRecord
 
   ET_ENDPOINT = "#{BASE_ENDPOINT}/evapotranspirations"
   DD_ENDPOINT = "#{BASE_ENDPOINT}/degree_days"
+  PRECIP_ENDPOINT = "#{BASE_ENDPOINT}/precips"
 
   START_DATE = [4, 1]
   END_DATE = [11, 30]
@@ -293,7 +294,7 @@ class Field < ApplicationRecord
         vals[day[:date]] = day[:value]
       end
     rescue Exception => e
-      logger.warn("Field :: Could not get ETs from the net; connected? (#{e})")
+      logger.warn("Field :: Could not get ETs from endpoint: #{e.message}")
     end
     field_daily_weather.each do |fdw|
       if fdw.ref_et == nil || fdw.ref_et == 0.0
@@ -304,6 +305,42 @@ class Field < ApplicationRecord
       end
     end
     logger.info("Field :: Done with get_et")
+  end
+
+  def get_precip
+    unless pivot.latitude && pivot.longitude
+      logger.warn("Field :: get_precip: no lat/long for pivot")
+    end
+    logger.info("Field :: Starting get_precip")
+    start_date = field_daily_weather[0].date.to_s
+    end_date = field_daily_weather[-1].date.to_s
+
+    vals = {}
+    begin
+      query = {
+        lat: pivot.latitude.round(1),
+        long: pivot.longitude.round(1),
+        start_date: start_date,
+        end_dat: end_date
+      }
+      response = HTTParty.get(PRECIP_ENDPOINT, query: query, timeout: 10)
+      json = JSON.parse(response.body, symbolize_names: true)
+      vals = {}
+      json[:data].each do |day|
+        vals[day[:date]] = day[:value] / 25.4 # convert mm to in
+      end
+    rescue Exception => e
+      logger.warn("Field :: Could not get precips from endpoint: #{e.message}")
+    end
+    field_daily_weather.each do |fdw|
+      if fdw.rain == nil || fdw.rain == 0.0
+        if vals[fdw.date.to_s]
+          fdw.rain = vals[fdw.date.to_s]
+          fdw.save!
+        end
+      end
+    end
+    logger.info("Field :: Done with precip")
   end
 
   def need_degree_days?

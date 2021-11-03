@@ -18,7 +18,7 @@
     }
   };
 </script>
-<h2>WISP: Wisconsin Irrigation Scheduling Program 2012 Version 2.1.0</h2>
+<h2>WISP:<br>Wisconsin Irrigation Scheduling Program</h2>
 <br/>
 <br/>
   <ul style="font-size:small;">
@@ -31,7 +31,8 @@
     <li><%= link_to "Multi-Edit Daily Data", '/wisp/weather' %></li>
     <li>&nbsp;</li>
     <li><%= link_to "Project Status", '/wisp/project_status' %></li>
-    <li><%= link_to "Download User's Guide", guide_welcome_index_path, {style: "color:yellow"} %>
+    <li><%= link_to "Download User's Guide", guide_welcome_index_path %></li>
+    <li><%= mail_to "agweather@cals.wisc.edu", "Contact us" %></li>
 
     <%# Report setup not implemented so this hides the link %>
     <% if false %><li><%= link_to "Report Setup", '/wisp/report_setup' %> </li><% end %>

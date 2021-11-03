@@ -1,7 +1,21 @@
 <% content_for :stylesheet do %>
   <style type="text/css">
-    h2.pagehead {text-align:center;}
-    #pivotDataBox
+    .pagehead {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pagehead div {
+      margin-left: 0.5em;
+    }
+
+    .note {
+      margin: 1em;
+      font-style: italic;
+      text-align: center;
+    }
+    /* #pivotDataBox
     {
       position:absolute;
       left:275px;
@@ -36,7 +50,7 @@
     {
       margin-left:auto;
       margin-right:auto;
-    }
+    } */
 
    </style>
 <% end %>
@@ -45,31 +59,38 @@
   WISP: Pivots, Fields, and Crops
 <% end %>
 
-<table class="center"><tr>
-  <td><h2 class="pagehead">WISP Pivot, Field and Crops Data for</h2>
-  </td>
-  <td>
+<div class="pagehead">
+  <div>
+    <h2>WISP Pivot, Field and Crops Data for</h2>
+  </div>
+  <div>
     <%= form_tag(url_for(:controller => "wisp", :action => :pivot_crop, :pivot_id => "", :field_id => ""), :method => 'GET') do %>
       <input type="hidden" name="pivot_id" value=""></input>
       <input type="hidden" name="field_id" value=""></input>
       <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %>
     <% end %>
-  </td>
-  <td>
+  </div>
+  <div>
     <%= form_tag(url_for :controller => "wisp", :action => :pivot_crop, :field_id => "") do %>
       <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot),{ :onchange => "this.form.submit();"} %>
     <% end %>
-  </td>
-</tr></table>
+  </div>
+</div>
+
+<div class="note">Note: WISP can automatically pull ET and precip data for pivots between latitudes 38 to 50 and longitudes -98 to -82</div>
 
 <div id="pivotDataBox">
   <%= render :partial => '/wisp/partials/pivot_setup_grid' %>
-
 </div>
+
+<br>
 
 <div id="fieldDataBox">
   <div id="fieldDataGrid"></div>
 </div>
+
+<br>
+
 <div id="cropsDataBox">
   <div id="cropDataGrid"></div>
 </div>

@@ -289,7 +289,7 @@ class FieldDailyWeather < ApplicationRecord
       # finish_date ||= today
     end
     query = <<-END
-    select '#{finish_date}' as date, sum(rain) as rain, sum(irrigation) as irrigation, sum(deep_drainage) as deep_drainage, sum(adj_et) as adj_et
+    select '#{finish_date}' as date, sum(rain) as rain, sum(irrigation) as irrigation, sum(deep_drainage) as deep_drainage, sum(ref_et) as ref_et, sum(adj_et) as adj_et
     from field_daily_weather where field_id=#{field_id} and date >= '#{start_date}' and date <= '#{finish_date}'
     END
     find_by_sql(query).first

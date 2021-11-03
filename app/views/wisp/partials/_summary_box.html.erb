@@ -9,6 +9,10 @@
 
 <table border="0">
   <tr>
+    <th>Pot. ET:</th>
+    <td> <%= sprintf("%0.2f", @summary_data[:ref_et] || 0.0) %> in.</td>
+  </tr>
+  <tr>
     <th>Rainfall:</th>
     <td><%= sprintf("%0.2f", @summary_data[:rain] || 0.0) %> in.</td>
   </tr>
@@ -17,7 +21,7 @@
     <td><%= sprintf("%0.2f", @summary_data[:irrigation] || 0.0) %> in.</td>
   </tr>
   <tr>
-    <th>ET:</th>
+    <th>Adj. ET:</th>
     <td> <%= sprintf("%0.2f", @summary_data[:adj_et] || 0.0) %> in.</td>
   </tr>
   <tr>
@@ -26,7 +30,7 @@
   </tr>
 </table>
 <% if first_projected_idx = @projected_ad_data.index { |padd| padd } %>
-  <h2 style="padding-top:35px; padding-bottom:5px;">Projected Allowable Depletion</h2>
+  <h2 style="padding-top:1em; padding-bottom:5px;">Projected Allowable Depletion</h2>
   <p>Two days hence, based on the max adjusted ET in the past week (i.e., worst case).</p>
   <table border="0">
     <tr>
