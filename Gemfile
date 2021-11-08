@@ -28,18 +28,16 @@ group :development do
   gem 'capistrano-bundler', '~> 2.0'
   gem 'capistrano-rails', '~> 1.6'
   gem 'capistrano-rbenv', '~> 2.2'
+  gem 'letter_opener', '~> 1.7'
+  gem 'letter_opener_web', '~> 2.0'
   gem 'web-console', '~> 4.1'
-end
-
-group :development, :staging do
-  gem 'mail_safe', '~> 0.3'
 end
 
 group :development, :test do
   gem 'byebug', '~> 11.1'
   gem 'dotenv-rails', '~> 2.7'
   gem 'factory_bot_rails', '~> 6.2'
-  gem 'guard-rspec', '~> 4.7', require: false
+  gem 'guard-rspec', '~> 4.7'
   gem 'rspec-rails', '~> 5.0'
   gem 'simplecov', '~> 0.21'
   gem 'spring', '~> 3.0'
