@@ -1,5 +1,5 @@
 class FarmsController < AuthenticatedController
-  COLUMN_NAMES = [:name,:notes]
+  COLUMN_NAMES = [:name, :notes]
 
   skip_before_action :verify_authenticity_token, only: :post_data
 
@@ -11,12 +11,12 @@ class FarmsController < AuthenticatedController
     raise "no group!" unless @group_id
     # if @group then group_id = @group[:id] else group_id = 1 end
     # Now set the current farm
-    get_and_set(Farm,Group,@group_id)
+    get_and_set(Farm, Group, @group_id)
     # FIXME: Don't forget to insert year here!
-    @farms = Farm.where(:group_id => @group_id).order(:name) do
-      paginate :page => params[:page], :per_page => params[:rows]
+    @farms = Farm.where(group_id: @group_id).order(:name) do
+      paginate page: params[:page], per_page: params[:rows]
     end
-    logger.warn("FarmsController :: No farms for group #{@group_id} found!") unless (@farms && @farms.size > 0)
+    logger.warn("FarmsController :: No farms for group #{@group_id} found!") unless @farms && @farms.size > 0
     @farms ||= []
     # FIXME: Remove the cloning of pivots in the controllers.
     # ----------------------------------------
@@ -26,14 +26,15 @@ class FarmsController < AuthenticatedController
     # end
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @farms }
+      format.xml { render xml: @farms }
       format.json do
         json = @farms.to_a.to_jqgrid_json(
           [:name, :notes, :problem, :act, :group_id, :id],
           params[:page],
           params[:rows],
-          @farms.size)
-        render :json => json
+          @farms.size
+        )
+        render json: json
       end
     end
   end
@@ -55,9 +56,9 @@ class FarmsController < AuthenticatedController
       end
     else
       attribs = {}
-      for col_name in COLUMN_NAMES
+      COLUMN_NAMES.each do |col_name|
         case col_name
-        when :id
+        # when :id
         when :problem
           attribs[col_name] = params[col_name] if params[col_name]
         else
@@ -70,7 +71,7 @@ class FarmsController < AuthenticatedController
           attribs[:year] = Time.now.year
         end
         # unless @group
-          set_parent_id(attribs,params,:group_id,params[:parent_id])
+        set_parent_id(attribs, params, :group_id, params[:parent_id])
         # end
         farm = current_group.farms.create(attribs)
       else
@@ -83,18 +84,18 @@ class FarmsController < AuthenticatedController
         farm.update(attribs)
       end
     end
-    render :json => ApplicationController.jsonify(farm.attributes)
+    render json: ApplicationController.jsonify(farm.attributes)
   end
 
   def problems
-    if params[:farm_id]
-      @farms = [Farm.where(:id => params[:farm_id].to_i)]
+    @farms = if params[:farm_id]
+      [Farm.where(id: params[:farm_id].to_i)]
     else
-      @farms = @user.groups.collect { |g| g.farms }.flatten
+      @user.groups.collect { |g| g.farms }.flatten
     end
     # Add farm name to problems structure
     @problems = @farms.collect { |f| f.problems }.flatten
-    render :partial => '/wisp/partials/farm_problems'
+    render partial: "/wisp/partials/farm_problems"
   end
 
   # GET /farms/1
@@ -103,7 +104,7 @@ class FarmsController < AuthenticatedController
     @farm = Farm.find(params[:id])
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @farm }
+      format.xml { render xml: @farm }
     end
   end
 
@@ -113,7 +114,7 @@ class FarmsController < AuthenticatedController
     @farm = Farm.new
     respond_to do |format|
       format.html # new.html.erb
-      format.xml  { render :xml => @farm }
+      format.xml { render xml: @farm }
     end
   end
 
@@ -130,11 +131,11 @@ class FarmsController < AuthenticatedController
 
     respond_to do |format|
       if @farm.save
-        format.html { redirect_to(@farm, :notice => 'Farm was successfully created.') }
-        format.xml  { render :xml => @farm, :status => :created, :location => @farm }
+        format.html { redirect_to(@farm, notice: "Farm was successfully created.") }
+        format.xml { render xml: @farm, status: :created, location: @farm }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @farm.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml { render xml: @farm.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -147,11 +148,11 @@ class FarmsController < AuthenticatedController
 
     respond_to do |format|
       if @farm.update(params[:farm])
-        format.html { redirect_to(@farm, :notice => 'Farm was successfully updated.') }
-        format.xml  { head :ok }
+        format.html { redirect_to(@farm, notice: "Farm was successfully updated.") }
+        format.xml { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @farm.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml { render xml: @farm.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -164,7 +165,7 @@ class FarmsController < AuthenticatedController
 
     respond_to do |format|
       format.html { redirect_to(farms_url) }
-      format.xml  { head :ok }
+      format.xml { head :ok }
     end
   end
 

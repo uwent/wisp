@@ -16,8 +16,8 @@
 # end
 
 ActiveSupport::Inflector.inflections(:en) do |inflect|
-  inflect.uncountable 'FieldDailyWeather'
-  inflect.uncountable 'field_daily_weather'
-  inflect.uncountable 'WeatherStationData'
-  inflect.uncountable 'weather_station_data'
+  inflect.uncountable "FieldDailyWeather"
+  inflect.uncountable "field_daily_weather"
+  inflect.uncountable "WeatherStationData"
+  inflect.uncountable "weather_station_data"
 end

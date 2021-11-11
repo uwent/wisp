@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # TODO: Use HTTParty
 # require 'net/http'
 # require 'uri'
@@ -10,7 +9,7 @@ class Field < ApplicationRecord
 
   include HTTParty
 
-  BASE_ENDPOINT = ENV['AG_WEATHER_BASE_URL']
+  BASE_ENDPOINT = ENV["AG_WEATHER_BASE_URL"]
 
   ET_ENDPOINT = "#{BASE_ENDPOINT}/evapotranspirations"
   DD_ENDPOINT = "#{BASE_ENDPOINT}/degree_days"
@@ -68,13 +67,14 @@ class Field < ApplicationRecord
 
   def et_method_name
     {
-      PCT_COVER_METHOD => 'Pct Cover',
-      LAI_METHOD => 'LAI'
+      PCT_COVER_METHOD => "Pct Cover",
+      LAI_METHOD => "LAI"
     }[et_method]
   end
 
   def adj_et(fdw)
-    return unless current_crop && current_crop.plant && fdw.ref_et
+    # return unless current_crop && current_crop.plant && fdw.ref_et
+    return unless current_crop&.plant && fdw.ref_et
 
     if et_method == PCT_COVER_METHOD
       return unless fdw.pct_cover
@@ -87,7 +87,7 @@ class Field < ApplicationRecord
     end
   end
 
-  #FIXME: this is just a placeholder hack for now, returning the one w/the
+  # FIXME: this is just a placeholder hack for now, returning the one w/the
   # latest emergence date
 
   # pseduocode for the "real" algorithm
@@ -104,7 +104,7 @@ class Field < ApplicationRecord
   end
 
   def field_capacity
-    if (val = read_attribute(:field_capacity)) && val != 0.0
+    if (val = read_attribute(:field_capacity)) && !val.zero?
       val
     elsif soil_type
       soil_type.field_capacity
@@ -127,7 +127,7 @@ class Field < ApplicationRecord
   end
 
   def perm_wilting_pt
-    if (val = read_attribute(:perm_wilting_pt)) && val != 0.0
+    if (val = read_attribute(:perm_wilting_pt)) && !val.zero?
       val
     elsif soil_type
       soil_type.perm_wilting_pt
@@ -137,11 +137,11 @@ class Field < ApplicationRecord
   end
 
   def perm_wilting_pt_pct=(val)
-    write_attribute(:perm_wilting_pt,val.to_f / 100.0)
+    write_attribute(:perm_wilting_pt, val.to_f / 100.0)
   end
 
   def perm_wilting_pt=(val)
-    write_attribute(:perm_wilting_pt,val.to_f)
+    write_attribute(:perm_wilting_pt, val.to_f)
   end
 
   def perm_wilting_pt_pct
@@ -158,7 +158,8 @@ class Field < ApplicationRecord
     crops.create!(
       emergence_date: default_emergence_date,
       max_allowable_depletion_frac: 0.5,
-      initial_soil_moisture: 100 * field_capacity)
+      initial_soil_moisture: 100 * field_capacity
+    )
   end
 
   def create_field_daily_weather
@@ -182,7 +183,8 @@ class Field < ApplicationRecord
         ad: 0.0,
         adj_et: 0.0,
         leaf_area_index: lai,
-        calculated_pct_cover: pct_cover)
+        calculated_pct_cover: pct_cover
+      )
     end
     set_fdw_initial_moisture
   end
@@ -203,20 +205,17 @@ class Field < ApplicationRecord
   end
 
   def can_calculate_initial_ad?
-    current_crop &&
-      current_crop.max_root_zone_depth &&
+    current_crop&.max_root_zone_depth&.max_allowable_depletion_frac&.initial_soil_moisture &&
       field_capacity &&
-      perm_wilting_pt &&
-      current_crop.max_allowable_depletion_frac &&
-      current_crop.initial_soil_moisture
+      perm_wilting_pt
   end
 
   def new_year
-    crops.each { |c|  c.new_year }
+    crops.each { |c| c.new_year }
     field_daily_weather.each do |daily_weather|
       daily_weather.destroy! if daily_weather.date.year < Time.now.year
     end
-    self.reload
+    reload
     create_field_daily_weather
     set_fdw_initial_moisture
     do_balances
@@ -249,7 +248,7 @@ class Field < ApplicationRecord
       days_since_emergence = 0
       field_daily_weather.each do |fdw|
         next unless fdw.date >= emergence_date
-        fdw.leaf_area_index = current_crop.plant.lai_for(days_since_emergence,fdw)
+        fdw.leaf_area_index = current_crop.plant.lai_for(days_since_emergence, fdw)
         fdw.save!
         days_since_emergence += 1
       end
@@ -265,7 +264,7 @@ class Field < ApplicationRecord
       end
       FieldDailyWeather.undefer_balances
       # Now that we've gone through and saved everything, we can trigger once through for AD balances
-      field_daily_weather.first.save! if field_daily_weather.first
+      field_daily_weather&.first&.save!
     else
       raise "Unknown ET Method for this field: #{et_method}"
     end
@@ -293,11 +292,11 @@ class Field < ApplicationRecord
       json[:data].each do |day|
         vals[day[:date]] = day[:value]
       end
-    rescue Exception => e
+    rescue => e
       logger.warn("Field :: Could not get ETs from endpoint: #{e.message}")
     end
     field_daily_weather.each do |fdw|
-      if fdw.ref_et == nil || fdw.ref_et == 0.0
+      if fdw.ref_et.nil? || fdw.ref_et.zero?
         if vals[fdw.date.to_s]
           fdw.ref_et = vals[fdw.date.to_s]
           fdw.save!
@@ -329,11 +328,11 @@ class Field < ApplicationRecord
       json[:data].each do |day|
         vals[day[:date]] = day[:value] / 25.4 # convert mm to in
       end
-    rescue Exception => e
+    rescue => e
       logger.warn("Field :: Could not get precips from endpoint: #{e.message}")
     end
     field_daily_weather.each do |fdw|
-      if fdw.rain == nil || fdw.rain == 0.0
+      if fdw.rain.nil? || fdw.rain.zero?
         if vals[fdw.date.to_s]
           fdw.rain = vals[fdw.date.to_s]
           fdw.save!
@@ -347,7 +346,7 @@ class Field < ApplicationRecord
     current_crop.plant.uses_degree_days?(et_method)
   end
 
-  def get_degree_days(method = 'Simple', base_temp = 50.0, upper_temp = nil)
+  def get_degree_days(method = "Simple", base_temp = 50.0, upper_temp = nil)
     return unless pivot.latitude && pivot.longitude
 
     start_date = field_daily_weather[0].date.to_s
@@ -361,9 +360,9 @@ class Field < ApplicationRecord
         lat: pivot.latitude.round(1),
         long: pivot.longitude.round(1),
         start_date: start_date,
-        end_dat: end_date,
+        end_date: end_date,
         base: base_temp,
-        upper: upper_temp ? upper_temp : 150
+        upper: upper_temp || 150
       }
       response = HTTParty.get(DD_ENDPOINT, query: query, timeout: 10)
       json = JSON.parse(response.body, symbolize_names: true)
@@ -371,11 +370,11 @@ class Field < ApplicationRecord
       json[:data].each do |day|
         vals[day[:date]] = day[:value]
       end
-    rescue Exception => e
+    rescue => e
       logger.warn("Field :: Could not get DDs from the agweather; connected? (#{e})")
     end
     field_daily_weather.each do |fdw|
-      if fdw.degree_days == nil || fdw.degree_days == 0.0
+      if fdw.degree_days.nil? || fdw.degree_days.zero?
         if vals[fdw.date.to_s]
           fdw.degree_days = vals[fdw.date.to_s]
           # TODO: Determine if this is really the appropriate place to trigger this
@@ -410,13 +409,13 @@ class Field < ApplicationRecord
   def ad_max
     taw = taw(field_capacity, perm_wilting_pt, current_crop.max_root_zone_depth)
     mad_frac = current_crop.max_allowable_depletion_frac
-    ad_max_inches(mad_frac,taw)
+    ad_max_inches(mad_frac, taw)
   end
 
   def ad_at_pwp
     taw = taw(field_capacity, perm_wilting_pt, current_crop.max_root_zone_depth)
     # Call method from ADCalculator
-    ad_inches_at_pwp(taw,current_crop.max_allowable_depletion_frac)
+    ad_inches_at_pwp(taw, current_crop.max_allowable_depletion_frac)
   end
 
   def pct_cover_changed_by_date(date)
@@ -426,17 +425,17 @@ class Field < ApplicationRecord
   def pct_cover_changed(fdw)
     # could re-interpolate everything, but let's just do the ones around the new point
     midpoint_pct_cover = fdw.pct_cover
-    fdw_index = field_daily_weather.index {|an_fdw| an_fdw[:date] == fdw[:date]}
-    first_fdw_index,last_fdw_index = surrounding(field_daily_weather,fdw_index,:entered_pct_cover)
+    fdw_index = field_daily_weather.index { |an_fdw| an_fdw[:date] == fdw[:date] }
+    first_fdw_index, last_fdw_index = surrounding(field_daily_weather, fdw_index, :entered_pct_cover)
     if field_daily_weather[first_fdw_index].date < current_crop.emergence_date
       first_fdw_index = field_daily_weather.index { |fdw| fdw.date == current_crop.emergence_date }
     end
-    linear_interpolation(field_daily_weather,first_fdw_index,fdw_index,:entered_pct_cover,:calculated_pct_cover)
+    linear_interpolation(field_daily_weather, first_fdw_index, fdw_index, :entered_pct_cover, :calculated_pct_cover)
     if field_daily_weather[last_fdw_index][:entered_pct_cover]
-      linear_interpolation(field_daily_weather,fdw_index,last_fdw_index,:entered_pct_cover,:calculated_pct_cover)
+      linear_interpolation(field_daily_weather, fdw_index, last_fdw_index, :entered_pct_cover, :calculated_pct_cover)
     else
       # go one week from last-entered value
-      field_daily_weather[fdw_index+1..fdw_index+6].each do |extrapolated_fdw|
+      field_daily_weather[fdw_index + 1..fdw_index + 6].each do |extrapolated_fdw|
         extrapolated_fdw[:calculated_pct_cover] = midpoint_pct_cover
       end
     end
@@ -456,33 +455,29 @@ class Field < ApplicationRecord
   def problem(date = nil, end_date = nil)
     date ||= Date.today
     existing_wx = weather_for(date)
-    projected_wx = weather_for(date+1,date+2)
+    projected_wx = weather_for(date + 1, date + 2)
     ad_problem_threshold = 0.0
 
     existing_problem = nil
     # Is start date AD below zero?
-    if existing_wx && (existing_wx.size > 0) &&  existing_wx.last.ad < ad_problem_threshold
-      existing_problem = [existing_wx.last.date,existing_wx.last.ad]
+    if existing_wx && (existing_wx.size > 0) && existing_wx.last.ad < ad_problem_threshold
+      existing_problem = [existing_wx.last.date, existing_wx.last.ad]
     else
-      #Start date AD is above zero so check projected two days ahead for problem.
+      # Start date AD is above zero so check projected two days ahead for problem.
       projected_problem = nil
-      if projected_wx
-        projected_wx.each do |prj_wx|
-          if prj_wx && prj_wx.ad && prj_wx.ad < ad_problem_threshold
-            projected_problem = [prj_wx.date,prj_wx.ad]
-            break
-          end
+      projected_wx&.each do |prj_wx|
+        if prj_wx&.ad && prj_wx.ad < ad_problem_threshold
+          projected_problem = [prj_wx.date, prj_wx.ad]
+          break
         end
       end
     end
 
     if existing_problem
-      #{self => [existing_problems.first.date,existing_problems.first.ad]}
+      # {self => [existing_problems.first.date,existing_problems.first.ad]}
       {self => existing_problem}
     elsif projected_problem
       {self => projected_problem}
-    else
-      nil
     end
   end
 
@@ -493,14 +488,14 @@ class Field < ApplicationRecord
   # If the incoming attributes have an entry for attrib symbol, and it's the same value (within EPSILON)
   # as the default value for our soil, delete the entry from the attributes.
   def remove_incoming_if_default(my_soil, incoming_attribs, attrib_symbol)
-    if incoming_attribs[attrib_symbol] && within_epsilon(incoming_attribs[attrib_symbol].to_f,my_soil[attrib_symbol])
+    if incoming_attribs[attrib_symbol] && within_epsilon(incoming_attribs[attrib_symbol].to_f, my_soil[attrib_symbol])
       incoming_attribs.delete(attrib_symbol)
     end
     incoming_attribs
   end
 
   def groom_for_defaults(incoming_attribs)
-    incoming_attribs.delete(:et_method) if incoming_attribs[:et_method] == nil
+    incoming_attribs.delete(:et_method) if incoming_attribs[:et_method].nil?
     my_soil = soil_type
     if incoming_attribs[:soil_type_id].to_i == soil_type_id
       # why set it if it hasn't changed? Just biff it
@@ -513,21 +508,26 @@ class Field < ApplicationRecord
       self[:perm_wilting_pt] = nil
       # Get rid of FC and PWP if they correspond to the old soil's default values.
       # The two remove_incoming lines that get called after this will get rid of ones == to NEW default values.
-      remove_incoming_if_default(my_soil,incoming_attribs,:field_capacity)
-      remove_incoming_if_default(my_soil,incoming_attribs,:perm_wilting_pt)
+      remove_incoming_if_default(my_soil, incoming_attribs, :field_capacity)
+      remove_incoming_if_default(my_soil, incoming_attribs, :perm_wilting_pt)
       my_soil = SoilType.find(incoming_attribs[:soil_type_id].to_i)
     end
-    remove_incoming_if_default(my_soil,incoming_attribs,:field_capacity)
-    remove_incoming_if_default(my_soil,incoming_attribs,:perm_wilting_pt)
+    remove_incoming_if_default(my_soil, incoming_attribs, :field_capacity)
+    remove_incoming_if_default(my_soil, incoming_attribs, :perm_wilting_pt)
   end
 
   def target_ad_in
-    logger.warn("Field :: tadi: tadp nil"); return nil unless (tadp = self[:target_ad_pct])
-    logger.warn("Field :: tadi: cc nil"); return nil unless (cc = current_crop)
-    logger.warn("Field :: tadi: cmf nil"); return nil unless (crop_mad_frac = cc.max_allowable_depletion_frac)
-    logger.warn("Field :: tadi: mrzd nil"); return nil unless (mrzd = cc.max_root_zone_depth)
-    logger.warn("Field :: tadi: fc or pwp nil"); return nil unless (fc = field_capacity) && (pwp = perm_wilting_pt)
-    mad_inches = ad_max_inches(crop_mad_frac,taw(fc,pwp,mrzd))
+    logger.warn("Field :: tadi: tadp nil")
+    return nil unless (tadp = self[:target_ad_pct])
+    logger.warn("Field :: tadi: cc nil")
+    return nil unless (cc = current_crop)
+    logger.warn("Field :: tadi: cmf nil")
+    return nil unless (crop_mad_frac = cc.max_allowable_depletion_frac)
+    logger.warn("Field :: tadi: mrzd nil")
+    return nil unless (mrzd = cc.max_root_zone_depth)
+    logger.warn("Field :: tadi: fc or pwp nil")
+    return nil unless (fc = field_capacity) && (pwp = perm_wilting_pt)
+    mad_inches = ad_max_inches(crop_mad_frac, taw(fc, pwp, mrzd))
     (tadp / 100.0) * mad_inches
   end
 
@@ -536,17 +536,17 @@ class Field < ApplicationRecord
   def set_fdw_initial_moisture
     fc = self[:field_capacity] || field_capacity
     first_fdw = field_daily_weather[0]
-    unless (first_fdw && fc)
+    unless first_fdw && fc
       logger.warn "Field :: set_fdw_initial_moisture called but fc or first fdw was missing"
       return
     end
-    first_fdw.calculated_pct_moisture = 100*fc
+    first_fdw.calculated_pct_moisture = 100 * fc
     pwp = self[:perm_wilting_pt] || perm_wilting_pt
     unless pwp
       logger.warn "Field :: set_fdw_initial_moisture: pwp for field was nil, using default soil type"
       pwp = SoilType.default_soil_type.perm_wilting_pt
     end
-    first_fdw.set_ad_from_calculated_moisture(fc,pwp,current_crop.max_root_zone_depth)
+    first_fdw.set_ad_from_calculated_moisture(fc, pwp, current_crop.max_root_zone_depth)
     first_fdw.save!
     # puts "set_fdw_initial: set the AD for the first FDW, it's now:"
     # puts first_fdw.inspect
@@ -555,10 +555,10 @@ class Field < ApplicationRecord
 
   def max_adj_et_in_past_week(fdw_index)
     max_index = fdw_index
-    max_index = field_daily_weather.size -1 if max_index >= field_daily_weather.size
+    max_index = field_daily_weather.size(-1) if max_index >= field_daily_weather.size
     fdw_index -= 6
     fdw_index = 0 if fdw_index < 0
-    field_daily_weather[fdw_index,max_index].inject(0.0) { |max, fdw| [max,fdw.adj_et].max }
+    field_daily_weather[fdw_index, max_index].inject(0.0) { |max, fdw| [max, fdw.adj_et].max }
   end
 
   def do_balances(date = nil)
@@ -566,19 +566,19 @@ class Field < ApplicationRecord
     day = date ? fdw_index(date) : 0
     return unless field_daily_weather && field_daily_weather[0]
     # Get yesterday's index to initialize prev_ad, but don't go below 0!
-    prev_ad = field_daily_weather[[0,day - 1].max].ad
+    prev_ad = field_daily_weather[[0, day - 1].max].ad
     # puts "do_balances going from #{day} onward (date was #{date}), prev_ad #{prev_ad} and starting FDW is"
     # puts field_daily_weather[day].inspect
     # Track previous adjusted ADs as we go, and use the max value from the past week to replace if necessary
     rb = RingBuffer.new(7)
-    field_daily_weather[day..-1].each do |fdw|
+    field_daily_weather[day..].each do |fdw|
       # Remember the max adjusted ET within the last week. If there wasn't a nonzero one, use the last available one.
-      #last_adj_et = rb.max || rb.last_nonzero
+      # last_adj_et = rb.max || rb.last_nonzero
       # ARB: changed 8/23/19 to take average of top 3 in last 7 days
       last_adj_et = rb.mean_top_3
 
       # logger.info "do_balances on #{fdw.date}: prev_ad is #{prev_ad} and last_adj_et is #{last_adj_et}"
-      fdw.old_update_balances(prev_ad,last_adj_et)
+      fdw.old_update_balances(prev_ad, last_adj_et)
       # puts "after update_balances, ad now #{fdw.ad}" if day < 5
       prev_ad = fdw.ad
       rb.add(fdw.adj_et) # Add this one's adj_et value to the running list

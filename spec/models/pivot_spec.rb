@@ -1,25 +1,25 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe Pivot do
   before do
     allow_any_instance_of(Field)
       .to receive(:date_endpoints)
       .and_return([Date.yesterday, Date.today])
-    @group = Group.create()
+    @group = Group.create
   end
 
   let(:pivot) { create :pivot }
 
-  describe '#after_create' do
+  describe "#after_create" do
     let(:pivot) { build :pivot }
-    it 'creates a field' do
+    it "creates a field" do
       expect { pivot.save }.to change { pivot.fields.count }.by(1)
     end
   end
 
-  describe '#act' do
-    it 'is an empty string' do
-      expect(pivot.act).to eq('')
+  describe "#act" do
+    it "is an empty string" do
+      expect(pivot.act).to eq("")
     end
   end
 
@@ -59,20 +59,20 @@ describe Pivot do
   #   end
   # end
 
-  describe '#new_year' do
+  describe "#new_year" do
     before do
       pivot.cropping_year = 2015
       pivot.save!
     end
 
-    it 'removes irrigaion events' do
+    it "removes irrigaion events" do
       pivot.irrigation_events << IrrigationEvent.create
       expect(pivot.irrigation_events.length).to be 1
       expect { pivot.new_year }.to change { IrrigationEvent.count }
       expect(pivot.irrigation_events.length).to be 0
     end
 
-    it 'sets the croping year' do
+    it "sets the croping year" do
       pivot.cropping_year = Date.today.year - 1
       pivot.save!
       pivot.reload
@@ -80,7 +80,7 @@ describe Pivot do
       expect(pivot.cropping_year).to be Date.today.year
     end
 
-    it 'calls a new year for each field' do
+    it "calls a new year for each field" do
       pivot.fields << Field.new
       # pivot.fields.each { |f| f.should_receive(:new_year).once }
       pivot.fields.each { |f| expect(f).to receive(:new_year).once }
@@ -88,13 +88,13 @@ describe Pivot do
     end
   end
 
-  describe '#destroy' do
-    it 'removes associated fields' do
+  describe "#destroy" do
+    it "removes associated fields" do
       pivot.reload
       expect { pivot.destroy! }.to change { Field.count }
     end
 
-    it 'removes associated irrigation events' do
+    it "removes associated irrigation events" do
       pivot.reload
       pivot.irrigation_events << IrrigationEvent.create
       expect { pivot.destroy! }.to change { IrrigationEvent.count }

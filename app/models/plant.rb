@@ -1,5 +1,4 @@
 class Plant < ApplicationRecord
-  
   include ETCalculator
 
   def self.default_plant

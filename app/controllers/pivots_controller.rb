@@ -27,24 +27,25 @@ class PivotsController < AuthenticatedController
         Rails.logger.warn("PivotsController :: Attempt to GET nonexistent pivot #{params[:id]}")
       end
     else
-      @pivots = Pivot.where(:farm_id => @farm_id).order(:name) do
-        paginate :page => params[:page], :per_page => params[:rows]
+      @pivots = Pivot.where(farm_id: @farm_id).order(:name) do
+        paginate page: params[:page], per_page: params[:rows]
       end
     end
 
-  # puts "getting pivots for pivot #{@pivot_id}, found #{@pivots.size} entries"
+    # puts "getting pivots for pivot #{@pivot_id}, found #{@pivots.size} entries"
     @pivots ||= []
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @pivots }
+      format.xml { render xml: @pivots }
       columns = COLUMN_NAMES
       format.json {
-        render :json => @pivots.to_a.to_jqgrid_json(
+        render json: @pivots.to_a.to_jqgrid_json(
           columns,
           params[:page],
           params[:rows],
-          @pivots.size)
-        }
+          @pivots.size
+        )
+      }
     end
   end
 
@@ -61,7 +62,7 @@ class PivotsController < AuthenticatedController
       end
     else
       attribs = {}
-      for col_name in COLUMN_NAMES
+      COLUMN_NAMES.each do |col_name|
         attribs[col_name] = params[col_name] unless col_name == :id || col_name == :act || col_name == :cropping_year
       end
       if params[:oper] && params[:oper] == "add"
@@ -78,7 +79,7 @@ class PivotsController < AuthenticatedController
         pivot.update(attribs)
       end
     end
-    render :json => ApplicationController.jsonify(pivot.attributes)
+    render json: ApplicationController.jsonify(pivot.attributes)
   end
 
   # GET /pivots/1
@@ -88,7 +89,7 @@ class PivotsController < AuthenticatedController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @pivot }
+      format.xml { render xml: @pivot }
     end
   end
 
@@ -99,7 +100,7 @@ class PivotsController < AuthenticatedController
 
     respond_to do |format|
       format.html # new.html.erb
-      format.xml  { render :xml => @pivot }
+      format.xml { render xml: @pivot }
     end
   end
 
@@ -116,11 +117,11 @@ class PivotsController < AuthenticatedController
 
     respond_to do |format|
       if @pivot.save
-        format.html { redirect_to(@pivot, :notice => "Pivot was successfully created.") }
-        format.xml  { render :xml => @pivot, :status => :created, :location => @pivot }
+        format.html { redirect_to(@pivot, notice: "Pivot was successfully created.") }
+        format.xml { render xml: @pivot, status: :created, location: @pivot }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @pivot.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml { render xml: @pivot.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -133,11 +134,11 @@ class PivotsController < AuthenticatedController
 
     respond_to do |format|
       if @pivot.update(params[:pivot])
-        format.html { redirect_to(@pivot, :notice => "Pivot was successfully updated.") }
-        format.xml  { head :ok }
+        format.html { redirect_to(@pivot, notice: "Pivot was successfully updated.") }
+        format.xml { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @pivot.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml { render xml: @pivot.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -150,7 +151,7 @@ class PivotsController < AuthenticatedController
 
     respond_to do |format|
       format.html { redirect_to(pivots_url) }
-      format.xml  { head :ok }
+      format.xml { head :ok }
     end
   end
 end

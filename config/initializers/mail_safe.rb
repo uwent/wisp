@@ -14,6 +14,6 @@ if defined?(MailSafe::Config)
   MailSafe::Config.replacement_address = lambda do |address|
     return `git config user.email`.chomp if Rails.env.development? || Rails.env.test?
 
-    'mark@mceahern.com'
+    "mark@mceahern.com"
   end
 end

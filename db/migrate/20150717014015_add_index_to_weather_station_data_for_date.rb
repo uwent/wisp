@@ -12,19 +12,19 @@ class AddIndexToWeatherStationDataForDate < ActiveRecord::Migration[4.2]
     duplicates = WeatherStationData
       .select([:weather_station_id, :date])
       .group(:weather_station_id, :date)
-      .having('count(*) > 1')
+      .having("count(*) > 1")
 
-    Rails.logger.info("Number of duplicates: #{duplicates.to_a.count}")
+    Rails.logger.info("Number of duplicates: #{duplicates.to_a.size}")
 
     duplicates.each do |weather_station_data_key|
-      weather_station_data_key_attributes = weather_station_data_key.attributes.except('id')
+      weather_station_data_key_attributes = weather_station_data_key.attributes.except("id")
 
       uniques = WeatherStationData
         .where(weather_station_data_key_attributes)
         .map do |weather_station_data|
         weather_station_data
           .attributes
-          .except('id', 'created_at', 'updated_at')
+          .except("id", "created_at", "updated_at")
       end
         .uniq
 
@@ -35,7 +35,7 @@ class AddIndexToWeatherStationDataForDate < ActiveRecord::Migration[4.2]
 
       others = WeatherStationData
         .where(weather_station_data_key_attributes)
-        .where('id <> ?', newest.id)
+        .where("id <> ?", newest.id)
 
       if uniques.count == 1
         others.delete_all

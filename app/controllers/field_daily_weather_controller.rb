@@ -42,12 +42,12 @@ class FieldDailyWeatherController < AuthenticatedController
     else
       field_id = session[:field_id] || session[:field_id] = params[:field_id]
       # FIXME: Shouldn't the date be in here too? I mean, 3 years from now will we be returning 500 records?
-      @field_daily_weather = FieldDailyWeather.where(:field_id => field_id).order(:date)
+      @field_daily_weather = FieldDailyWeather.where(field_id: field_id).order(:date)
       wx_size = @field_daily_weather.size
       if params[:rows]
         if params[:rows].to_i == 20 # Stupid default value passed, means first refresh
           page_size = 7
-          page = FieldDailyWeather.page_for(page_size,@field_daily_weather.first.date)
+          page = FieldDailyWeather.page_for(page_size, @field_daily_weather.first.date)
         else
           page_size = params[:rows].to_i
           page = params[:page] || "-1"
@@ -63,15 +63,15 @@ class FieldDailyWeatherController < AuthenticatedController
       end
       # logger.info "\n****\nfdw#index full; for field_id #{field_id}, page is #{page}, page_size is #{page_size}, #{wx_size} records"; $stdout.flush
       page = 0 if page < 0
-      @field_daily_weather = @field_daily_weather.paginate(:page => page, :per_page => page_size)
+      @field_daily_weather = @field_daily_weather.paginate(page: page, per_page: page_size)
     end
     @field_daily_weather ||= []
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @field_daily_weather }
+      format.xml { render xml: @field_daily_weather }
       if params[:irrig_only]
         format.json {
-          render :json => @field_daily_weather.to_a.to_jqgrid_json(
+          render json: @field_daily_weather.to_a.to_jqgrid_json(
             [:field_name, :irrigation, :id],
             params[:page] || 1,
             params[:rows] || 7,
@@ -80,13 +80,13 @@ class FieldDailyWeatherController < AuthenticatedController
         }
       else
         json = @field_daily_weather.to_a.to_jqgrid_json(
-          [:date, :ref_et, :rain, :irrigation, :display_pct_moisture, :pct_cover_for_json, :leaf_area_index, :adj_et_for_json,:ad, :deep_drainage, :id],
+          [:date, :ref_et, :rain, :irrigation, :display_pct_moisture, :pct_cover_for_json, :leaf_area_index, :adj_et_for_json, :ad, :deep_drainage, :id],
           page,
           page_size,
           wx_size
         )
         # logger.info json.inspect
-        format.json { render :json => json }
+        format.json { render json: json }
       end
       format.csv do
         # CSVs always start at start of weather data and go through to the bitter end, per John
@@ -96,7 +96,7 @@ class FieldDailyWeatherController < AuthenticatedController
         @soil_type = ""
         @soil_type = @field_daily_weather.first.field.soil_type.name
         @summary = FieldDailyWeather.summary(field_id, start_date)
-        render :template => "field_daily_weather/daily_report", :filename => "field_summary", :content_type => "text/csv", :format => :csv
+        render template: "field_daily_weather/daily_report", filename: "field_summary", content_type: "text/csv", format: :csv
         Rails.logger.info("FDW Controller :: Rendered CSV")
       end
     end
@@ -127,7 +127,7 @@ class FieldDailyWeatherController < AuthenticatedController
   # POST
   def post_data
     attribs = {}
-    for col_name in COLUMN_NAMES
+    COLUMN_NAMES.each do |col_name|
       attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem
     end
     fdw = FieldDailyWeather.find(params[:id])
@@ -135,22 +135,22 @@ class FieldDailyWeatherController < AuthenticatedController
     # logger.info "new attribs are #{attribs.inspect}"
     # Percent moisture is special -- if the user entered an updated value, it's sacred
     if attribs[:pct_moisture]
-      unless moisture_changed?(attribs[:pct_moisture].to_f, fdw.pct_moisture.to_f) # it's not changing
-        attribs.delete(:pct_moisture) # so we don't need to update it and trigger sacredness
-      else
+      if moisture_changed?(attribs[:pct_moisture].to_f, fdw.pct_moisture.to_f)
         logger.info("FDWController :: New moisture is #{attribs[:pct_moisture].to_f} and old was #{fdw.pct_moisture.to_f}, setting it")
+      else # it's not changing
+        attribs.delete(:pct_moisture) # so we don't need to update it and trigger sacredness
       end
     end
     # Pct cover is special for a different reason -- if the user changes it, we have to call the field's interp
     # routine. Don't bother, though, if it's the same
     do_pct_cover = false
     if attribs[:entered_pct_cover]
-      unless cover_changed?(attribs[:entered_pct_cover].to_f,fdw.pct_cover.to_f) # it's not changing
-        # logger.info "Cover value supplied is the same as old one, so don't bother"
-        attribs.delete(:entered_pct_cover) # so we don't need to update it and trigger sacredness
-      else
+      if cover_changed?(attribs[:entered_pct_cover].to_f, fdw.pct_cover.to_f)
         # logger.info "new cover is #{attribs[:entered_pct_cover].to_f} and old was #{fdw.pct_cover.to_f}, setting it"
         do_pct_cover = true
+      else # it's not changing
+        # logger.info "Cover value supplied is the same as old one, so don't bother"
+        attribs.delete(:entered_pct_cover) # so we don't need to update it and trigger sacredness
       end
     end
 
@@ -176,7 +176,7 @@ class FieldDailyWeatherController < AuthenticatedController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @field_daily_weather }
+      format.xml { render xml: @field_daily_weather }
     end
   end
 
@@ -187,7 +187,7 @@ class FieldDailyWeatherController < AuthenticatedController
 
     respond_to do |format|
       format.html # new.html.erb
-      format.xml  { render :xml => @field_daily_weather }
+      format.xml { render xml: @field_daily_weather }
     end
   end
 
@@ -204,11 +204,11 @@ class FieldDailyWeatherController < AuthenticatedController
     respond_to do |format|
       if @field_daily_weather.save
         # format.html { redirect_to(@field_daily_weather, :notice => 'Field daily weather was successfully created.') }
-        format.html { redirect_to :controller => 'wisp', :action => 'field_status'}
-        format.xml  { render :xml => @field_daily_weather, :status => :created, :location => @field_daily_weather }
+        format.html { redirect_to controller: "wisp", action: "field_status" }
+        format.xml { render xml: @field_daily_weather, status: :created, location: @field_daily_weather }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @field_daily_weather.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml { render xml: @field_daily_weather.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -220,11 +220,11 @@ class FieldDailyWeatherController < AuthenticatedController
 
     respond_to do |format|
       if @field_daily_weather.update(params[:field_daily_weather])
-        format.html { redirect_to(@field_daily_weather, :notice => 'Field daily weather was successfully updated.') }
-        format.xml  { head :ok }
+        format.html { redirect_to(@field_daily_weather, notice: "Field daily weather was successfully updated.") }
+        format.xml { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @field_daily_weather.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml { render xml: @field_daily_weather.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -237,7 +237,7 @@ class FieldDailyWeatherController < AuthenticatedController
 
     respond_to do |format|
       format.html { redirect_to(field_daily_weather_index_url) }
-      format.xml  { head :ok }
+      format.xml { head :ok }
     end
   end
 end

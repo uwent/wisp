@@ -11,6 +11,6 @@ class Group < ApplicationRecord
   private
 
   def create_dependent_objects
-    farms.create!(name: 'Farm 1', year: Time.now.year)
+    farms.create!(name: "Farm 1", year: Time.now.year)
   end
 end

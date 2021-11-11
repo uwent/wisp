@@ -6,7 +6,7 @@ class UsersController < AuthenticatedController
 
     respond_to do |format|
       format.html
-      format.csv { send_data User.to_csv, filename: "wisp-users-#{Date.today}.csv"}
+      format.csv { send_data User.to_csv, filename: "wisp-users-#{Date.today}.csv" }
     end
   end
 

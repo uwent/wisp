@@ -11,7 +11,7 @@ class RingBuffer
     value && (0.0 - value).abs > EPSILON
   end
 
-  def initialize(size=SIZE)
+  def initialize(size = SIZE)
     @array = Array.new(size)
     @last_index = -1
     @last_nonzero = nil
@@ -43,9 +43,9 @@ class RingBuffer
     top_3 = non_nil.sort.reverse[0...3]
 
     if top_3.empty?
-      return 0.0
+      0.0
     else
-      return top_3.sum / top_3.length
+      top_3.sum / top_3.length
     end
   end
 

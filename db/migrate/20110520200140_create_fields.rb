@@ -1,7 +1,7 @@
 class CreateFields < ActiveRecord::Migration[4.2]
   def self.up
     create_table :fields do |t|
-	  t.string :name
+      t.string :name
       t.integer :soil_type
       t.float :area
       t.float :field_capacity

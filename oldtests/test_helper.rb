@@ -1,20 +1,20 @@
-require 'simplecov'
+require "simplecov"
 
-if ENV['CIRCLE_ARTIFACTS']
-  dir = File.join(ENV['CIRCLE_ARTIFACTS'], "coverage")
+if ENV["CIRCLE_ARTIFACTS"]
+  dir = File.join(ENV["CIRCLE_ARTIFACTS"], "coverage")
   SimpleCov.coverage_dir(dir)
 end
 
-SimpleCov.start 'rails' do
-  add_filter 'vendor'
+SimpleCov.start "rails" do
+  add_filter "vendor"
 
   # TODO: Enable this eventually
   # minimum_coverage 100
 end
 
 ENV["RAILS_ENV"] = "test"
-require File.expand_path('../../config/environment', __FILE__)
-require 'rails/test_help'
+require File.expand_path("../../config/environment", __FILE__)
+require "rails/test_help"
 
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.(yml|csv) for all tests in alphabetical order.
@@ -23,14 +23,11 @@ class ActiveSupport::TestCase
   # -- they do not yet inherit this setting
   fixtures :all
 
-  
-  def wx_for(things,date)
+  def wx_for(things, date)
     things.select { |thing| thing.date.to_s == date }.first
   end
 
-  
   def emergence_index(field)
-    field.field_daily_weather.index {|fdw| fdw.date == field.current_crop.emergence_date}
+    field.field_daily_weather.index { |fdw| fdw.date == field.current_crop.emergence_date }
   end
-  
 end

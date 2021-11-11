@@ -45,11 +45,11 @@ class Pivot < ApplicationRecord
   # end
 
   def new_year
-    return if self.cropping_year == Time.now.year
+    return if cropping_year == Time.now.year
     self.irrigation_events = []
     self.cropping_year = Time.now.year
-    self.save!
-    self.fields.each { |f| f.new_year }
+    save!
+    fields.each { |f| f.new_year }
   end
 
   private
