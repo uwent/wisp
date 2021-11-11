@@ -214,7 +214,7 @@ class FieldDailyWeather < ApplicationRecord
     if pred&.ad
       # puts "previous AD from preceding fdw"
       previous_ad = pred.ad
-    elsif feeld.current_crop&.current_crop&.emergence_date && date == feeld.current_crop.emergence_date
+    elsif feeld&.current_crop&.emergence_date == date
       # puts "previous AD from field (we're at the emergence date)"
       previous_ad = feeld.initial_ad
     else

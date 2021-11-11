@@ -205,7 +205,9 @@ class Field < ApplicationRecord
   end
 
   def can_calculate_initial_ad?
-    current_crop&.max_root_zone_depth&.max_allowable_depletion_frac&.initial_soil_moisture &&
+    current_crop&.max_root_zone_depth &&
+      current_crop&.max_allowable_depletion_frac &&
+      current_crop&.initial_soil_moisture &&
       field_capacity &&
       perm_wilting_pt
   end
