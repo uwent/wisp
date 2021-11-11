@@ -1,27 +1,25 @@
 class UpdateUsersTable < ActiveRecord::Migration[4.2]
   def change
     execute(
-    <<-sql
+      <<-SQL
       update users
       set email = orig_email,
       orig_email = null
       where orig_email is not null
       and orig_email <> ''
       and (email is null or email = '')
-    sql
+      SQL
     )
 
     User
       .group(:email)
       .select(:email)
-      .having('count(*) > 1')
+      .having("count(*) > 1")
       .each do |user|
-
       User
         .where(email: user.email)
         .order(:updated_at)
         .each_with_index do |user, index|
-
         user.email = "#{user.email} ##{index + 1}"
         user.save!(validate: false)
       end

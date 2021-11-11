@@ -1,83 +1,84 @@
 module Jqgrid
+  @@jrails_present = false
+  mattr_accessor :jrails_present
 
-    @@jrails_present = false
-    mattr_accessor :jrails_present
+  def jqgrid_stylesheets
+    css = stylesheet_link_tag("jqgrid/jquery-ui-1.7.1.custom.css") + "\n"
+    css << stylesheet_link_tag("jqgrid/ui.jqgrid.css") + "\n"
+  end
 
-    def jqgrid_stylesheets
-      css  = stylesheet_link_tag('jqgrid/jquery-ui-1.7.1.custom.css') + "\n"
-      css << stylesheet_link_tag('jqgrid/ui.jqgrid.css') + "\n"
+  def jqgrid_javascripts
+    locale = begin
+      I18n.locale
+    rescue
+      :en
+    end
+    js = ""
+    js << javascript_include_tag("jqgrid/jquery-1.7.2.min.js") + "\n" unless Jqgrid.jrails_present
+    js << javascript_include_tag("jqgrid/jquery-ui-1.8.22.custom.min.js") + "\n"
+    # js << javascript_include_tag('jqgrid/jquery.layout.js') + "\n"
+    js << javascript_include_tag("jqgrid/i18n/grid.locale-#{locale}.js") + "\n"
+    js << javascript_include_tag("jqgrid/jquery.jqGrid.min.js") + "\n"
+    # js << javascript_include_tag('jqgrid/jquery.tablednd.js') + "\n"
+    # js << javascript_include_tag('jqgrid/jquery.contextmenu.js') + "\n"
+  end
+
+  def jqgrid(title, id, action, columns = [], options = {})
+    # Default options
+    options =
+      {
+        rows_per_page: "10",
+        sort_column: "",
+        sort_order: "",
+        height: "150",
+        gridview: "false",
+        error_handler: "null",
+        inline_edit_handler: "null",
+        add: "false",
+        delete: "false",
+        search: "true",
+        edit: "false",
+        inline_edit: "false",
+        autowidth: "false",
+        rownumbers: "false"
+      }.merge(options)
+
+    # Stringify options values
+    options.each_with_object({}) do |(key, value), options|
+      options[key] = key != :subgrid ? value.to_s : value
     end
 
-    def jqgrid_javascripts
-      locale = I18n.locale rescue :en
-      js =  ''
-      js << javascript_include_tag('jqgrid/jquery-1.7.2.min.js') + "\n" unless Jqgrid.jrails_present
-      js << javascript_include_tag('jqgrid/jquery-ui-1.8.22.custom.min.js') + "\n"
-      # js << javascript_include_tag('jqgrid/jquery.layout.js') + "\n"
-      js << javascript_include_tag("jqgrid/i18n/grid.locale-#{locale}.js") + "\n"
-      js << javascript_include_tag('jqgrid/jquery.jqGrid.min.js') + "\n"
-      # js << javascript_include_tag('jqgrid/jquery.tablednd.js') + "\n"
-      # js << javascript_include_tag('jqgrid/jquery.contextmenu.js') + "\n"
+    options[:error_handler_return_value] = options[:error_handler] == "null" ? "true;" : options[:error_handler]
+    edit_button = (options[:edit] == "true" && options[:inline_edit] == "false").to_s
+
+    # Generate columns data
+    col_names, col_model = gen_columns(columns)
+
+    # Enable filtering (by default)
+    search = ""
+    filter_toolbar = ""
+    if options[:search] == "true"
+      search = %/.navButtonAdd("##{id}_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })/
+      filter_toolbar = "mygrid.filterToolbar();"
+      filter_toolbar << "mygrid[0].toggleToolbar()"
     end
 
-    def jqgrid(title, id, action, columns = [], options = {})
-
-      # Default options
-      options =
-        {
-          :rows_per_page       => '10',
-          :sort_column         => '',
-          :sort_order          => '',
-          :height              => '150',
-          :gridview            => 'false',
-          :error_handler       => 'null',
-          :inline_edit_handler => 'null',
-          :add                 => 'false',
-          :delete              => 'false',
-          :search              => 'true',
-          :edit                => 'false',
-          :inline_edit         => 'false',
-          :autowidth           => 'false',
-          :rownumbers          => 'false'
-        }.merge(options)
-
-      # Stringify options values
-      options.inject({}) do |options, (key, value)|
-        options[key] = (key != :subgrid) ? value.to_s : value
-        options
-      end
-
-      options[:error_handler_return_value] = (options[:error_handler] == 'null') ? 'true;' : options[:error_handler]
-      edit_button = (options[:edit] == 'true' && options[:inline_edit] == 'false').to_s
-
-      # Generate columns data
-      col_names, col_model = gen_columns(columns)
-
-      # Enable filtering (by default)
-      search = ""
-      filter_toolbar = ""
-      if options[:search] == 'true'
-        search = %Q/.navButtonAdd("##{id}_pager",{caption:"",title:"Toggle Search Toolbar", buttonicon :'ui-icon-search', onClickButton:function(){ mygrid[0].toggleToolbar() } })/
-        filter_toolbar = "mygrid.filterToolbar();"
-        filter_toolbar << "mygrid[0].toggleToolbar()"
-      end
-
-      # Enable multi-selection (checkboxes)
-      multiselect = "multiselect: false,"
-      if options[:multi_selection]
-        multiselect = "multiselect: true,"
-        multihandler = %Q/
+    # Enable multi-selection (checkboxes)
+    multiselect = "multiselect: false,"
+    if options[:multi_selection]
+      multiselect = "multiselect: true,"
+      multihandler = %/
           jQuery("##{id}_select_button").click( function() {
             var s; s = jQuery("##{id}").getGridParam('selarrrow');
             #{options[:selection_handler]}(s);
             return false;
           });/
-      end
+    end
 
-      # Enable master-details
-      masterdetails = ""
-      if options[:master_details]
-        masterdetails = %Q/
+    # Enable master-details
+    masterdetails = ""
+    if options[:master_details]
+      masterdetails = %/
           onSelectRow: function(ids) {
             if(ids == null) {
               ids=0;
@@ -95,13 +96,13 @@ module Jqgrid
               .trigger('reloadGrid');
             }
           },/
-      end
+    end
 
-      # Enable selection link, button
-      # The javascript function created by the user (options[:selection_handler]) will be called with the selected row id as a parameter
-      selection_link = ""
-      if options[:direct_selection].blank? && options[:selection_handler].present? && options[:multi_selection].blank?
-        selection_link = %Q/
+    # Enable selection link, button
+    # The javascript function created by the user (options[:selection_handler]) will be called with the selected row id as a parameter
+    selection_link = ""
+    if options[:direct_selection].blank? && options[:selection_handler].present? && options[:multi_selection].blank?
+      selection_link = %/
         jQuery("##{id}_select_button").click( function(){
           var id = jQuery("##{id}").getGridParam('selrow');
           if (id) {
@@ -111,36 +112,36 @@ module Jqgrid
           }
           return false;
         });/
-      end
+    end
 
-      # Enable direct selection (when a row in the table is clicked)
-      # The javascript function created by the user (options[:selection_handler]) will be called with the selected row id as a parameter
-      direct_link = ""
-      if options[:direct_selection] && options[:selection_handler].present? && options[:multi_selection].blank?
-        direct_link = %Q/
+    # Enable direct selection (when a row in the table is clicked)
+    # The javascript function created by the user (options[:selection_handler]) will be called with the selected row id as a parameter
+    direct_link = ""
+    if options[:direct_selection] && options[:selection_handler].present? && options[:multi_selection].blank?
+      direct_link = %/
         onSelectRow: function(id){
           if(id){
             #{options[:selection_handler]}(id);
           }
         },/
-      end
+    end
 
-      # Enable grid_loaded callback
-      # When data are loaded into the grid, call the Javascript function options[:grid_loaded] (defined by the user)
-      grid_loaded = ""
-      if options[:grid_loaded].present?
-        grid_loaded = %Q/
+    # Enable grid_loaded callback
+    # When data are loaded into the grid, call the Javascript function options[:grid_loaded] (defined by the user)
+    grid_loaded = ""
+    if options[:grid_loaded].present?
+      grid_loaded = %/
         loadComplete: function(){
           #{options[:grid_loaded]}();
         },
         /
-      end
+    end
 
-      # Enable inline editing
-      # When a row is selected, all fields are transformed to input types
-      editable = ""
-      if options[:edit] && options[:inline_edit] == 'true'
-        editable = %Q/
+    # Enable inline editing
+    # When a row is selected, all fields are transformed to input types
+    editable = ""
+    if options[:edit] && options[:inline_edit] == "true"
+      editable = %/
         onSelectRow: function(id){
           if(id && id!==lastsel){
             jQuery('##{id}').restoreRow(lastsel);
@@ -148,37 +149,36 @@ module Jqgrid
             lastsel=id;
           }
         },/
+    end
+
+    # Enable subgrids
+    subgrid = ""
+    subgrid_enabled = "subGrid:false,"
+
+    if options[:subgrid].present?
+
+      subgrid_enabled = "subGrid:true,"
+
+      options[:subgrid] =
+        {
+          rows_per_page: "10",
+          sort_column: "id",
+          sort_order: "asc",
+          add: "false",
+          edit: "false",
+          delete: "false",
+          search: "false"
+        }.merge(options[:subgrid])
+
+      # Stringify options values
+      options[:subgrid].each_with_object({}) do |(key, value), suboptions|
+        suboptions[key] = value.to_s
       end
 
-      # Enable subgrids
-      subgrid = ""
-      subgrid_enabled = "subGrid:false,"
-
-      if options[:subgrid].present?
-
-        subgrid_enabled = "subGrid:true,"
-
-        options[:subgrid] =
-          {
-            :rows_per_page => '10',
-            :sort_column   => 'id',
-            :sort_order    => 'asc',
-            :add           => 'false',
-            :edit          => 'false',
-            :delete        => 'false',
-            :search        => 'false'
-          }.merge(options[:subgrid])
-
-        # Stringify options values
-        options[:subgrid].inject({}) do |suboptions, (key, value)|
-          suboptions[key] = value.to_s
-          suboptions
-        end
-
-        subgrid_inline_edit = ""
-        if options[:subgrid][:inline_edit] == true
-          options[:subgrid][:edit] = 'false'
-          subgrid_inline_edit = %Q/
+      subgrid_inline_edit = ""
+      if options[:subgrid][:inline_edit] == true
+        options[:subgrid][:edit] = "false"
+        subgrid_inline_edit = %/
           onSelectRow: function(id){
             if(id && id!==lastsel){
               jQuery('#'+subgrid_table_id).restoreRow(lastsel);
@@ -187,21 +187,21 @@ module Jqgrid
             }
           },
           /
-        end
+      end
 
-        if options[:subgrid][:direct_selection] && options[:subgrid][:selection_handler].present?
-          subgrid_direct_link = %Q/
+      if options[:subgrid][:direct_selection] && options[:subgrid][:selection_handler].present?
+        subgrid_direct_link = %/
           onSelectRow: function(id){
             if(id){
               #{options[:subgrid][:selection_handler]}(id);
             }
           },
           /
-        end
+      end
 
-        sub_col_names, sub_col_model = gen_columns(options[:subgrid][:columns])
+      sub_col_names, sub_col_model = gen_columns(options[:subgrid][:columns])
 
-        subgrid = %Q(
+      subgrid = %(
         subGridRowExpanded: function(subgrid_id, row_id) {
         		var subgrid_table_id, pager_id;
         		subgrid_table_id = subgrid_id+"_t";
@@ -239,13 +239,13 @@ module Jqgrid
         	subGridRowColapsed: function(subgrid_id, row_id) {
         	},
         )
-      end
+    end
 
-      # Generate required Javascript & html to create the jqgrid
-      %Q(
+    # Generate required Javascript & html to create the jqgrid
+    %(
         <script type="text/javascript">
           var lastsel;
-          #{'jQuery(document).ready(function(){' unless options[:omit_ready]=='true'}
+          #{"jQuery(document).ready(function(){" unless options[:omit_ready] == "true"}
           var mygrid = jQuery("##{id}").jqGrid({
               url:'#{action}?q=1',
               editurl:'#{options[:edit_url]}',
@@ -283,95 +283,92 @@ module Jqgrid
             #{multihandler}
             #{selection_link}
             #{filter_toolbar}
-          #{'})' unless options[:omit_ready]=='true'};
+          #{"})" unless options[:omit_ready] == "true"};
         </script>
         <table id="#{id}" class="scroll" cellpadding="0" cellspacing="0"></table>
         <div id="#{id}_pager" class="scroll" style="text-align:center;"></div>
       )
+  end
+
+  private
+
+  def gen_columns(columns)
+    # Generate columns data
+    col_names = "[" # Labels
+    col_model = "[" # Options
+    columns.each do |c|
+      col_names << "'#{c[:label]}',"
+      col_model << "{name:'#{c[:field]}', index:'#{c[:field]}'#{get_attributes(c)}},"
     end
+    col_names.chop! << "]"
+    col_model.chop! << "]"
+    [col_names, col_model]
+  end
 
-    private
-
-    def gen_columns(columns)
-      # Generate columns data
-      col_names = "[" # Labels
-      col_model = "[" # Options
-      columns.each do |c|
-        col_names << "'#{c[:label]}',"
-        col_model << "{name:'#{c[:field]}', index:'#{c[:field]}'#{get_attributes(c)}},"
+  # Generate a list of attributes for related column (align:'right', sortable:true, resizable:false, ...)
+  def get_attributes(column)
+    options = ","
+    column.except(:field, :label).each do |couple|
+      options << if couple[0] == :editoptions
+        "editoptions:#{get_sub_options(couple[1])},"
+      elsif couple[0] == :formoptions
+        "formoptions:#{get_sub_options(couple[1])},"
+      elsif couple[0] == :searchoptions
+        "searchoptions:#{get_sub_options(couple[1])},"
+      elsif couple[0] == :editrules
+        "editrules:#{get_sub_options(couple[1])},"
+      elsif couple[1].instance_of?(String)
+        "#{couple[0]}:'#{couple[1]}',"
+      else
+        "#{couple[0]}:#{couple[1]},"
       end
-      col_names.chop! << "]"
-      col_model.chop! << "]"
-      [col_names, col_model]
     end
+    options.chop!
+  end
 
-    # Generate a list of attributes for related column (align:'right', sortable:true, resizable:false, ...)
-    def get_attributes(column)
-      options = ","
-      column.except(:field, :label).each do |couple|
-        if couple[0] == :editoptions
-          options << "editoptions:#{get_sub_options(couple[1])},"
-        elsif couple[0] == :formoptions
-          options << "formoptions:#{get_sub_options(couple[1])},"
-        elsif couple[0] == :searchoptions
-          options << "searchoptions:#{get_sub_options(couple[1])},"
-        elsif couple[0] == :editrules
-          options << "editrules:#{get_sub_options(couple[1])},"
+  # Generate options for editable fields (value, data, width, maxvalue, cols, rows, ...)
+  def get_sub_options(editoptions)
+    options = "{"
+    editoptions.each do |couple|
+      if couple[0] == :value # :value => [[1, "Rails"], [2, "Ruby"], [3, "jQuery"]]
+        options << %(value:")
+        couple[1].each do |v|
+          options << "#{v[0]}:#{v[1]};"
+        end
+        options.chop! << %(",)
+      elsif couple[0] == :data # :data => [Category.all, :id, :title])
+        options << %(value:")
+        couple[1].first.each do |obj|
+          options << "%s:%s;" % [obj.send(couple[1].second), obj.send(couple[1].third)]
+        end
+        options.chop! << %(",)
+      else # :size => 30, :rows => 5, :maxlength => 20, ...
+        options << if couple[1].instance_of?(Integer) || couple[1] == "true" || couple[1] == "false" || couple[1] == true || couple[1] == false
+          %(#{couple[0]}:#{couple[1]},)
         else
-          if couple[1].class == String
-            options << "#{couple[0]}:'#{couple[1]}',"
-          else
-            options << "#{couple[0]}:#{couple[1]},"
-          end
+          %(#{couple[0]}:"#{couple[1]}",)
         end
       end
-      options.chop!
     end
-
-    # Generate options for editable fields (value, data, width, maxvalue, cols, rows, ...)
-    def get_sub_options(editoptions)
-      options = "{"
-      editoptions.each do |couple|
-        if couple[0] == :value # :value => [[1, "Rails"], [2, "Ruby"], [3, "jQuery"]]
-          options << %Q/value:"/
-          couple[1].each do |v|
-            options << "#{v[0]}:#{v[1]};"
-          end
-          options.chop! << %Q/",/
-        elsif couple[0] == :data # :data => [Category.all, :id, :title])
-          options << %Q/value:"/
-          couple[1].first.each do |obj|
-            options << "%s:%s;" % [obj.send(couple[1].second), obj.send(couple[1].third)]
-          end
-          options.chop! << %Q/",/
-        else # :size => 30, :rows => 5, :maxlength => 20, ...
-          if couple[1].instance_of?(Fixnum) || couple[1] == 'true' || couple[1] == 'false' || couple[1] == true || couple[1] == false
-            options << %Q/#{couple[0]}:#{couple[1]},/
-          else
-            options << %Q/#{couple[0]}:"#{couple[1]}",/
-          end
-        end
-      end
-      options.chop! << "}"
-    end
+    options.chop! << "}"
+  end
 end
-
 
 module JqgridJson
   include ActionView::Helpers::JavaScriptHelper
 
   def to_jqgrid_json(attributes, current_page, per_page, total)
-    json = %Q({"page":"#{current_page}","total":#{total/per_page.to_i+1},"records":"#{total}")
+    json = %({"page":"#{current_page}","total":#{total / per_page.to_i + 1},"records":"#{total}")
     if total > 0
-      json << %Q(,"rows":[)
+      json << %(,"rows":[)
       each do |elem|
         elem.id ||= index(elem)
-        json << %Q({"id":"#{elem.id}","cell":[)
+        json << %({"id":"#{elem.id}","cell":[)
         couples = elem.attributes.symbolize_keys
         attributes.each do |atr|
           value = get_atr_value(elem, atr, couples)
           value = escape_javascript(value) if value and value.is_a? String
-          json << %Q("#{value}",)
+          json << %("#{value}",)
         end
         json.chop! << "]},"
       end
@@ -384,8 +381,8 @@ module JqgridJson
   private
 
   def get_atr_value(elem, atr, couples)
-    if atr.to_s.include?('.')
-      value = get_nested_atr_value(elem, atr.to_s.split('.').reverse)
+    if atr.to_s.include?(".")
+      value = get_nested_atr_value(elem, atr.to_s.split(".").reverse)
     else
       value = couples[atr]
       value = elem.send(atr.to_sym) if value.blank? && elem.respond_to?(atr) # Required for virtual attributes

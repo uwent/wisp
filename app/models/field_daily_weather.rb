@@ -25,15 +25,15 @@ class FieldDailyWeather < ApplicationRecord
 
   include ADCalculator
   # from the ActsAsAdjacent plugin, which (with this) we don't need
-  scope :previous, lambda { |i| {:limit => 1, :conditions => ["#{self.table_name}.date < ? and #{self.table_name}.field_id = ?", i.date,i.field_id], :order => "#{self.table_name}.date DESC"} }
-  scope :next, lambda { |i| {:limit => 1, :conditions => ["#{self.table_name}.date > ? and #{self.table_name}.field_id = ?", i.date,i.field_id], :order => "#{self.table_name}.date ASC"}}
+  scope :previous, lambda { |i| {limit: 1, conditions: ["#{table_name}.date < ? and #{table_name}.field_id = ?", i.date, i.field_id], order: "#{table_name}.date DESC"} }
+  scope :next, lambda { |i| {limit: 1, conditions: ["#{table_name}.date > ? and #{table_name}.field_id = ?", i.date, i.field_id], order: "#{table_name}.date ASC"} }
 
   def pct_moisture
     entered_pct_moisture || calculated_pct_moisture
   end
 
   def display_pct_moisture
-    entered_pct_moisture ? entered_pct_moisture.to_s + 'E' : calculated_pct_moisture
+    entered_pct_moisture ? entered_pct_moisture.to_s + "E" : calculated_pct_moisture
   end
 
   def pct_moisture=(moisture)
@@ -43,7 +43,7 @@ class FieldDailyWeather < ApplicationRecord
 
   def adj_et_for_json
     if entered_pct_moisture
-      'n/a'
+      "n/a"
     else
       self[:adj_et]
     end
@@ -55,7 +55,7 @@ class FieldDailyWeather < ApplicationRecord
 
   def pct_cover_for_json
     if entered_pct_cover
-      entered_pct_cover.to_s + 'E'
+      entered_pct_cover.to_s + "E"
     else
       calculated_pct_cover
     end
@@ -68,7 +68,7 @@ class FieldDailyWeather < ApplicationRecord
       return unless (new_value.to_f - read_attribute(:entered_pct_cover).to_f).abs > 0.00001
     end
     @need_pct_cover_update = true
-    write_attribute(:entered_pct_cover,new_value)
+    write_attribute(:entered_pct_cover, new_value)
   end
 
   # This gets called after we're updated (i.e., the field's array of FDW objects has our new entered_pct_cover value, if any)
@@ -93,26 +93,26 @@ class FieldDailyWeather < ApplicationRecord
   # fc: field capacity, as a fraction
   # ad: current allowable depletion, in inches
   # mrzd: max root zone depth, in inches
-  def moisture(mad_frac,taw,pwp,fc,ad,mrzd)
+  def moisture(mad_frac, taw, pwp, fc, ad, mrzd)
     ad_max = ad_max_inches(mad_frac, taw)
-    pct_moisture_from_ad(pwp,fc,ad_max,ad,mrzd)
+    pct_moisture_from_ad(pwp, fc, ad_max, ad, mrzd)
   end
 
-  def ad_from_moisture(taw,fc=field.field_capacity)
+  def ad_from_moisture(taw, fc = field.field_capacity)
     raise "need field capacity for #{self[:id]}; field is #{field.inspect}" unless fc
     mrzd = field.current_crop.max_root_zone_depth
     mad_frac = field.current_crop.max_allowable_depletion_frac
-    mad_in = ad_max_inches(mad_frac,taw)
+    mad_in = ad_max_inches(mad_frac, taw)
     # daily_ad_from_moisture(mad_frac,taw,mrzd,pct_moisture_at_ad_min,entered_pct_moisture)
     # puts "ad_from_moisture (#{date}): fc #{fc}, ad_max_inches #{mad_in}, mrzd #{mrzd}, pct_moisture #{pct_moisture}, pct_moisture at min ad #{pct_moisture_at_ad_min(fc, mad_in, mrzd)}"
-    mrzd * (pct_moisture - pct_moisture_at_ad_min(fc, mad_in, mrzd))/100
+    mrzd * (pct_moisture - pct_moisture_at_ad_min(fc, mad_in, mrzd)) / 100
   end
 
-  def set_ad_from_calculated_moisture(fc,pwp,mrzd)
+  def set_ad_from_calculated_moisture(fc, pwp, mrzd)
     total_available_water = taw(fc, pwp, mrzd)
-    self[:ad] = [ad_from_moisture(total_available_water,fc),total_available_water].min
+    self[:ad] = [ad_from_moisture(total_available_water, fc), total_available_water].min
     # puts "set ad from calculated moisture: fc #{fc}, pwp #{pwp}, mrzd #{mrzd}, mad_frac #{field.current_crop.max_allowable_depletion_frac}, new ad #{self[:ad]}"
-    self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
+    self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad] - total_available_water : 0.0)
   end
 
   # if we have the wherewithal and the adj_et is 0.0 or nil, calculate it
@@ -124,14 +124,14 @@ class FieldDailyWeather < ApplicationRecord
   end
 
   # TODO: Why does this work, while the one using balance_calcs doesn't? FIXME
-  def old_update_balances(previous_ad=nil,previous_max_adj_et=nil)
+  def old_update_balances(previous_ad = nil, previous_max_adj_et = nil)
     return unless @@do_balances
-    feeld = self.field
+    feeld = field
     total_available_water = taw(feeld.field_capacity, feeld.perm_wilting_pt, feeld.current_crop.max_root_zone_depth)
     if entered_pct_moisture
       self[:calculated_pct_moisture] = entered_pct_moisture
-      self[:ad] = [ad_from_moisture(total_available_water),total_available_water].min
-      self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad]  - total_available_water : 0.0)
+      self[:ad] = [ad_from_moisture(total_available_water), total_available_water].min
+      self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad] - total_available_water : 0.0)
       # logger.info "#{self[:date]}: Deep drainage #{self[:deep_drainage]} from entered moisture of #{entered_pct_moisture}" if self[:deep_drainage] > 0.0
     else
       return unless ref_et || previous_max_adj_et
@@ -147,10 +147,10 @@ class FieldDailyWeather < ApplicationRecord
         # logger.info "#{date}: used previous_max_adj_et: #{self[:adj_et]},"; $stdout.flush
       end
 
-      #logger.info "fdw#update_balances: date #{date} ref_et #{ref_et} adj_et #{adj_et}"
+      # logger.info "fdw#update_balances: date #{date} ref_et #{ref_et} adj_et #{adj_et}"
       previous_ad ||= find_previous_ad
       # puts "Got previous AD of #{previous_ad}"
-      requirements = [ "ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
+      requirements = ["ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
       errors = []
       requirements.each do |cond|
         unless eval(cond)
@@ -158,7 +158,7 @@ class FieldDailyWeather < ApplicationRecord
         end
       end
       if errors.size > 0
-        logger.info("FieldDailyWeather :: #{self[:date]} could not update balances.\n  #{self.inspect}\n  #{self.field.inspect}\n  #{self.field.current_crop.inspect}")
+        logger.info("FieldDailyWeather :: #{self[:date]} could not update balances.\n  #{inspect}\n  #{field.inspect}\n  #{field.current_crop.inspect}")
         logger.info("   Reasons: " + errors.join(", "))
         return
       end
@@ -166,12 +166,12 @@ class FieldDailyWeather < ApplicationRecord
       delta_storage = change_in_daily_storage(self[:rain], self[:irrigation], self[:adj_et])
       # puts "adj_et: #{adj_et} delta_storage: #{delta_storage}"
 
-      ad,dd = daily_ad_and_dd(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
+      ad, dd = daily_ad_and_dd(previous_ad, delta_storage, feeld.current_crop.max_allowable_depletion_frac, total_available_water)
       # coerce AD to be no lower than water in inches at PWP
       ad = [ad, ad_inches_at_pwp(total_available_water, feeld.current_crop.max_allowable_depletion_frac)].max
       self[:ad], self[:deep_drainage] = [ad, dd]
 
-      #FIXME: why any at all?
+      # FIXME: why any at all?
       self[:deep_drainage] = 0.0 if self[:deep_drainage] < 0.01
       dbg = <<-END
       #{self[:date]}: Deep drainage of #{self[:deep_drainage]} from prev ad #{previous_ad}, delta #{delta_storage}, taw #{total_available_water}
@@ -190,7 +190,7 @@ class FieldDailyWeather < ApplicationRecord
 
   def update_next_days_balances
     if self[:ad] && @@do_balances
-      self.succ.save! if self.succ # triggers the update_balances method
+      succ&.save! # triggers the update_balances method
     end
     false
   end
@@ -210,25 +210,20 @@ class FieldDailyWeather < ApplicationRecord
   end
 
   def find_previous_ad
-    feeld = self.field
-    if (self.pred && self.pred.ad)
-    # puts "previous AD from preceding fdw"
-      previous_ad = self.pred.ad
-    elsif feeld.current_crop && feeld.current_crop.emergence_date && self.date == feeld.current_crop.emergence_date
-    # puts "previous AD from field (we're at the emergence date)"
+    feeld = field
+    if pred&.ad
+      # puts "previous AD from preceding fdw"
+      previous_ad = pred.ad
+    elsif feeld&.current_crop&.emergence_date == date
+      # puts "previous AD from field (we're at the emergence date)"
       previous_ad = feeld.initial_ad
     else
       last_with_ad = FieldDailyWeather.where("field_id = #{field[:id]} and ad is not null").order("date desc").first
-      if last_with_ad
-      # puts "previous AD some prior record (#{last_with_ad.date})"
-        previous_ad = last_with_ad[:ad]
-      else
-      # puts "previous AD from field (could not find a prior fdw)"
-        previous_ad = feeld.initial_ad
-      end
+      previous_ad = last_with_ad ? last_with_ad[:ad] : feeld.initial_ad
     end
-
+    previous_ad
   end
+
   # CLASS METHODS
   def self.today_or_latest(field_id)
     query = <<-END
@@ -240,12 +235,11 @@ class FieldDailyWeather < ApplicationRecord
       return today
     end
     if today > latest
-      return latest
+      latest
     else
-      return today
+      today
     end
   end
-
 
   def self.page_for(rows_per_page, start_date, date = nil)
     date ||= today_or_latest(1)
@@ -281,9 +275,9 @@ class FieldDailyWeather < ApplicationRecord
       else
         finish_date ||= [kill_date, last_data_date].min
       end
-      #Is the following better than the lines above? pk 6/3/14
+      # Is the following better than the lines above? pk 6/3/14
       # if today.year != season_year
-        # today.year = season_year
+      # today.year = season_year
       # end
       # today = [today,kill_date,last_data_date].min
       # finish_date ||= today
@@ -297,7 +291,7 @@ class FieldDailyWeather < ApplicationRecord
 
   def self.fdw_for(field_id, start_date, end_date)
     where("field_id=? and date >= ? and date <= ?", field_id, start_date, end_date)
-    .sort { |fdw, fdw2| fdw[:date] <=> fdw2[:date] }
+      .sort_by { |a| a[:date] }
   end
 
   def self.debug_on
@@ -341,19 +335,19 @@ class FieldDailyWeather < ApplicationRecord
     keys = csv_cols.collect { |arr| arr[1].to_s }
     ret = []
     keys.each do |key|
-      obj = attributes[key] || self.send(key)
-      if obj
-        if obj.class == Float
-          ret << sprintf("%0.2f",obj)
-        elsif obj.class == ActiveSupport::TimeWithZone || obj.class == Date || obj.class == Time
-          ret << obj.strftime("%Y-%m-%d")
-        elsif obj.kind_of?(Fixnum)
-          ret << obj.to_s
+      obj = attributes[key] || send(key)
+      ret << if obj
+        if obj.instance_of?(Float)
+          sprintf("%0.2f", obj)
+        elsif obj.instance_of?(ActiveSupport::TimeWithZone) || obj.instance_of?(Date) || obj.instance_of?(Time)
+          obj.strftime("%Y-%m-%d")
+        elsif obj.is_a?(Integer)
+          obj.to_s
         else
-          ret << "'#{obj.to_s}'"
+          "'#{obj}'"
         end
       else
-        ret << ""
+        ""
       end
     end
     ret.join(",")

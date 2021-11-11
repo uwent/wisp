@@ -1,8 +1,8 @@
-require '2dc_jqgrid'
+require "2dc_jqgrid"
 
 begin
   Jqgrid.jrails_present = true
-  require 'jrails'
+  require "jrails"
 rescue Exception
   Jqgrid.jrails_present = false
 end

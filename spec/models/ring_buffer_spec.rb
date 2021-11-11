@@ -1,10 +1,10 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe RingBuffer do
   let(:ring_buffer) { RingBuffer.new }
-  let(:delta) { 2 ** -20 }
+  let(:delta) { 2**-20 }
 
-  describe '#last_nonzero' do
+  describe "#last_nonzero" do
     let(:ring_buffer) { RingBuffer.new }
     let(:values) { [] }
 
@@ -14,22 +14,22 @@ describe RingBuffer do
       end
     end
 
-    context 'when the buffer is empty' do
-      it 'is nil' do
+    context "when the buffer is empty" do
+      it "is nil" do
         expect(ring_buffer.last_nonzero).to be_nil
       end
     end
 
-    context 'when the buffer only has zeroes' do
+    context "when the buffer only has zeroes" do
       let(:values) { [RingBuffer::EPSILON, 0, 0] }
 
-      it 'is nil' do
+      it "is nil" do
         expect(ring_buffer.last_nonzero).to be_nil
       end
     end
 
-    context 'when the buffer has non-zero values in it' do
-      it 'is the last value added' do
+    context "when the buffer has non-zero values in it" do
+      it "is the last value added" do
         (1..10).to_a.shuffle.each do |value|
           ring_buffer.add(value.to_f)
 
@@ -43,7 +43,7 @@ describe RingBuffer do
     end
   end
 
-  describe '#mean' do
+  describe "#mean" do
     [
       {
         size: 12,
@@ -80,7 +80,7 @@ describe RingBuffer do
         end
 
         if scenario[:expected].nil?
-          it 'is nil' do
+          it "is nil" do
             expect(ring_buffer.mean(scenario[:ignore_zero])).to be_nil
           end
         else
@@ -91,66 +91,65 @@ describe RingBuffer do
       end
     end
 
-
-    context 'when zero is not ignored' do
-      context 'when no values are added' do
-        it 'is nil' do
+    context "when zero is not ignored" do
+      context "when no values are added" do
+        it "is nil" do
           expect(ring_buffer.mean).to be_nil
         end
       end
 
-      context 'when -1.0 is added' do
+      context "when -1.0 is added" do
         before { ring_buffer.add(-1.0) }
 
-        it 'is -1.0' do
+        it "is -1.0" do
           expect(ring_buffer.mean).to be_within(delta).of(-1.0)
         end
       end
 
-      context 'when -1.0 and 1.0 are added' do
+      context "when -1.0 and 1.0 are added" do
         before do
           ring_buffer.add(-1.0)
           ring_buffer.add(1.0)
         end
 
-        it 'is 0.0' do
+        it "is 0.0" do
           expect(ring_buffer.mean).to be_within(delta).of(0.0)
         end
       end
 
-      context 'when it is filled' do
+      context "when it is filled" do
         before do
           (0..9).map(&:to_f).each do |value|
             ring_buffer.add(value)
           end
         end
 
-        it 'is 4.5' do
+        it "is 4.5" do
           expect(ring_buffer.mean).to be_within(delta).of(4.5)
         end
 
-        context 'and another value is added' do
+        context "and another value is added" do
           before { ring_buffer.add(11.0) }
 
-          it 'is 5.6' do
+          it "is 5.6" do
             expect(ring_buffer.mean).to be_within(delta).of(5.6)
           end
         end
       end
 
-      context 'when the size is specified' do
+      context "when the size is specified" do
         let(:ring_buffer) { RingBuffer.new(5) }
 
         before { (0..5).map(&:to_f).each { |value| ring_buffer.add(value) } }
 
-        it 'is the mean of the last 5' do
+        it "is the mean of the last 5" do
           expect(ring_buffer.mean).to be_within(delta).of(3.0)
         end
       end
     end
   end
 
-  describe '#max' do
+  describe "#max" do
     [
       {
         size: 3,
@@ -177,7 +176,7 @@ describe RingBuffer do
     end
   end
 
-  describe '#mean_top_3' do
+  describe "#mean_top_3" do
     let(:ring_buffer) { RingBuffer.new(10) }
 
     context "ring empty" do
@@ -187,7 +186,7 @@ describe RingBuffer do
     end
 
     context "ring size less than 3" do
-      it 'is the average of the 2 in the ring' do
+      it "is the average of the 2 in the ring" do
         ring_buffer.add(4.0)
         ring_buffer.add(6.0)
 
@@ -196,47 +195,47 @@ describe RingBuffer do
     end
 
     context "ring size more than 3" do
-      it 'is the average of the top 3 in the ring' do
+      it "is the average of the top 3 in the ring" do
         ring_buffer.add(22.0)
         ring_buffer.add(1.0)
         ring_buffer.add(20.0)
         ring_buffer.add(24.0)
 
-       expect(ring_buffer.mean_top_3).to be_within(delta).of 22.0
+        expect(ring_buffer.mean_top_3).to be_within(delta).of 22.0
       end
     end
-end
+  end
 
-  describe '#big_enough' do
+  describe "#big_enough" do
     (0..7).each do |exponent|
-      positive_value = (10 ** -exponent).to_f
-      negative_value = -(10 ** -exponent).to_f
+      positive_value = (10**-exponent).to_f
+      negative_value = -(10**-exponent).to_f
 
       context "when the value is #{positive_value}" do
-        it 'is true' do
+        it "is true" do
           expect(RingBuffer.big_enough(positive_value)).to be_truthy
         end
       end
 
       context "when the value is #{negative_value}" do
-        it 'is true' do
+        it "is true" do
           expect(RingBuffer.big_enough(negative_value)).to be_truthy
         end
       end
     end
 
     (8..10).each do |exponent|
-      positive_value = (10 ** -exponent).to_f
-      negative_value = -(10 ** -exponent).to_f
+      positive_value = (10**-exponent).to_f
+      negative_value = -(10**-exponent).to_f
 
       context "when the value is #{positive_value}" do
-        it 'is false' do
+        it "is false" do
           expect(RingBuffer.big_enough(positive_value)).to be_falsey
         end
       end
 
       context "when the value is #{negative_value}" do
-        it 'is false' do
+        it "is false" do
           expect(RingBuffer.big_enough(negative_value)).to be_falsey
         end
       end

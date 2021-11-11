@@ -23,17 +23,17 @@ class FieldsController < AuthenticatedController
   def index
     get_current_ids
     @pivot_id = params[:parent_id]
-    @fields = Field.where(:pivot_id => @pivot_id).order(:name) do
-      paginate :page => params[:page], :per_page => params[:rows]
+    @fields = Field.where(pivot_id: @pivot_id).order(:name) do
+      paginate page: params[:page], per_page: params[:rows]
     end
     @fields ||= []
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @fields }
+      format.xml { render xml: @fields }
       columns = COLUMN_NAMES
       format.json do
         json = @fields.to_a.to_jqgrid_json(columns, params[:page], params[:rows], @fields.size)
-        render :json => json
+        render json: json
       end
     end
   end
@@ -56,7 +56,7 @@ class FieldsController < AuthenticatedController
       end
     else
       attribs = {}
-      for col_name in COLUMN_NAMES
+      COLUMN_NAMES.each do |col_name|
         attribs[col_name] = params[col_name] unless col_name == :id || col_name == :act
       end
       if attribs[:soil_type_id]
@@ -66,7 +66,7 @@ class FieldsController < AuthenticatedController
       if params[:oper] && params[:oper] == "add"
         attribs[:soil_type_id] = SoilType.default_soil_type[:id] unless attribs[:soil_type_id]
         # Should do a method for this, perhaps with a block for the tests
-        attribs[:name] = "New field (pivot #{params[:pivot_id]})" unless (attribs[:name] && attribs[:name] != "")
+        attribs[:name] = "New field (pivot #{params[:pivot_id]})" unless attribs[:name] && attribs[:name] != ""
         attribs[:field_capacity] = SoilType.default_soil_type[:field_capacity] unless attribs[:field_capacity]
         attribs[:perm_wilting_pt] = SoilType.default_soil_type[:perm_wilting_pt] unless attribs[:perm_wilting_pt]
         field = Field.create(attribs)
@@ -84,24 +84,24 @@ class FieldsController < AuthenticatedController
       end
     end
     attrs = field.attributes.symbolize_keys.merge({
-      :field_capacity_pct => field.field_capacity_pct,
-      :perm_wilting_pt_pct => field.perm_wilting_pt_pct
+      field_capacity_pct: field.field_capacity_pct,
+      perm_wilting_pt_pct: field.perm_wilting_pt_pct
     })
     # puts attrs.inspect
     attrs = ApplicationController.jsonify(attrs)
-    render :json => attrs
+    render json: attrs
   end
 
   def update_target_ad_pct
     field = Field.find(params[:id])
-    attribs = { :target_ad_pct => params[:target_ad_pct] }
+    attribs = {target_ad_pct: params[:target_ad_pct]}
     field.update(attribs)
-    if field.target_ad_in
-      tadin_str = sprintf('%0.2f"',field.target_ad_in)
+    tadin_str = if field.target_ad_in
+      sprintf('%0.2f"', field.target_ad_in)
     else
-      tadin_str = "none"
+      "none"
     end
-    render :json => { :target_ad_pct => params[:target_ad_pct], :target_ad_in => tadin_str }
+    render json: {target_ad_pct: params[:target_ad_pct], target_ad_in: tadin_str}
   end
 
   # GET /fields/1
@@ -111,7 +111,7 @@ class FieldsController < AuthenticatedController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @field }
+      format.xml { render xml: @field }
     end
   end
 
@@ -122,7 +122,7 @@ class FieldsController < AuthenticatedController
 
     respond_to do |format|
       format.html # new.html.erb
-      format.xml  { render :xml => @field }
+      format.xml { render xml: @field }
     end
   end
 
@@ -139,11 +139,11 @@ class FieldsController < AuthenticatedController
 
     respond_to do |format|
       if @field.save
-        format.html { redirect_to(@field, :notice => 'Field was successfully created.') }
-        format.xml  { render :xml => @field, :status => :created, :location => @field }
+        format.html { redirect_to(@field, notice: "Field was successfully created.") }
+        format.xml { render xml: @field, status: :created, location: @field }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @field.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml { render xml: @field.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -160,10 +160,10 @@ class FieldsController < AuthenticatedController
           head :ok, content_type: "text/html"
           # redirect_to(@field, :notice => 'Field was successfully updated.')
         end
-        format.xml  { head :ok }
+        format.xml { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @field.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml { render xml: @field.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -176,9 +176,7 @@ class FieldsController < AuthenticatedController
 
     respond_to do |format|
       format.html { redirect_to(fields_url) }
-      format.xml  { head :ok }
+      format.xml { head :ok }
     end
   end
-
-
 end

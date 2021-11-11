@@ -37,7 +37,7 @@ class WeatherStation < ApplicationRecord
 
       # if user entered a % cover number,
       # send that to all the % cover FDWs affected
-      if (attributes[:entered_pct_cover].present?)
+      if attributes[:entered_pct_cover].present?
         if field.et_method == Field::PCT_COVER_METHOD
           fdw.field.pct_cover_changed(fdw)
         end

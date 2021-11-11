@@ -1,5 +1,4 @@
 class PlantsController < ApplicationController
-  
   # GET /plants
   # GET /plants.xml
   def index
@@ -7,7 +6,7 @@ class PlantsController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @plants }
+      format.xml { render xml: @plants }
     end
   end
 
@@ -18,7 +17,7 @@ class PlantsController < ApplicationController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @plant }
+      format.xml { render xml: @plant }
     end
   end
 
@@ -29,7 +28,7 @@ class PlantsController < ApplicationController
 
     respond_to do |format|
       format.html # new.html.erb
-      format.xml  { render :xml => @plant }
+      format.xml { render xml: @plant }
     end
   end
 
@@ -45,11 +44,11 @@ class PlantsController < ApplicationController
 
     respond_to do |format|
       if @plant.save
-        format.html { redirect_to(@plant, :notice => 'Plant was successfully created.') }
-        format.xml  { render :xml => @plant, :status => :created, :location => @plant }
+        format.html { redirect_to(@plant, notice: "Plant was successfully created.") }
+        format.xml { render xml: @plant, status: :created, location: @plant }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @plant.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml { render xml: @plant.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -61,11 +60,11 @@ class PlantsController < ApplicationController
 
     respond_to do |format|
       if @plant.update(params[:plant])
-        format.html { redirect_to(@plant, :notice => 'Plant was successfully updated.') }
-        format.xml  { head :ok }
+        format.html { redirect_to(@plant, notice: "Plant was successfully updated.") }
+        format.xml { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @plant.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml { render xml: @plant.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -78,7 +77,7 @@ class PlantsController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to(plants_url) }
-      format.xml  { head :ok }
+      format.xml { head :ok }
     end
   end
 end

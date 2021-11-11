@@ -38,17 +38,17 @@ class WeatherStationData < ApplicationRecord
   end
 
   def send_changes
-    changes_to_send = COLUMNS_TO_PROPAGATE.inject({}) do |hash, col|
+    changes_to_send = COLUMNS_TO_PROPAGATE.each_with_object({}) do |col, hash|
       old_value, new_value = extract_changes(col)
       if new_value
-        if old_value == nil || (old_value.to_f - new_value.to_f) > CHANGE_EPSILON
+        if old_value.nil? || (old_value.to_f - new_value.to_f) > CHANGE_EPSILON
           hash.merge!({col => new_value.to_f})
         end
       end
-      hash
     end
-    weather_station.wx_record_saved(changes_to_send.merge({:date => date})) unless (changes_to_send == {})
+    weather_station.wx_record_saved(changes_to_send.merge({date: date})) unless changes_to_send == {}
   end
+
   # Set our (non-persisted) attribute @multi_edit_changes to list all the cols that have significant updates,
   # because we only want to propagate changes to the field daily weather. For example, if someone
   # edits the rainfall for a given date, then later comes back and edits the irrigation, we don't
@@ -60,9 +60,9 @@ class WeatherStationData < ApplicationRecord
     COLUMNS_TO_PROPAGATE.each do |col|
       val = attribs[col]
       # We don't use multi-edit to nil out values; skip if new value for col is nil
-      if (val != nil)
+      if !val.nil?
         # Real value overwriting nil, yep that's a change
-        if self[col] == nil
+        if self[col].nil?
           @multi_edit_changes << col
         elsif (self[col] - val).abs > CHANGE_EPSILON
           @multi_edit_changes << col

@@ -21,18 +21,18 @@ class Crop < ApplicationRecord
   def new_year
     self.emergence_date = Date.civil(Time.now.year, *Field::EMERGENCE_DATE)
     self.harvest_or_kill_date = nil
-    self.save!
+    save!
   end
 
   private
 
   def attributes_that_trigger_field_update
-    %w(
+    %w[
       emergence_date
       initial_soil_moisture
       max_allowable_depletion_frac
       max_root_zone_depth
-    )
+    ]
   end
 
   def attributes_that_trigger_field_update_changed?
@@ -56,6 +56,6 @@ class Crop < ApplicationRecord
 
     self.max_root_zone_depth ||= plant.default_max_root_zone_depth
     self.name ||= "New crop (field ID: #{field.id})" if field
-    self.variety ||= 'A variety'
+    self.variety ||= "A variety"
   end
 end

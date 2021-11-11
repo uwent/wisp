@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class FarmsControllerTest < ActionController::TestCase
   setup do
@@ -10,17 +10,16 @@ class FarmsControllerTest < ActionController::TestCase
     @prev_years = @farm.pivots.collect { |p| p.cropping_year }
     @prev_years.each { |y| assert(y < Time.now.year) }
   end
-  
+
   test "check_year_for_cloning gets called" do
     get :index
     assert(assigns(:pivots_need_cloning), "Should always set @pivots_need_cloning")
   end
-  
+
   test "nonzero number of pivots should need cloning" do
     get :index
     pnc = assigns(:pivots_need_cloning)
     assert_equal(Array, pnc.class)
     assert(pnc.size > 0, "Should have been pivots needed to clone!")
   end
-  
 end

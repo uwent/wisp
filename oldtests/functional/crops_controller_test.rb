@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 # Turn off OpenID auth for functional tests
 module AuthenticationHelper
@@ -10,5 +10,4 @@ class CropsControllerTest < ActionController::TestCase
     @crop = crops(:one)
     session[:user_id] = users(:rick)
   end
-
 end

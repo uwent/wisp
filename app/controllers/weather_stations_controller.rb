@@ -40,11 +40,11 @@ class WeatherStationsController < AuthenticatedController
 
     respond_to do |format|
       if @weather_station.save
-        format.html { redirect_to(@weather_station, :notice => 'Field group was successfully created.') }
-        format.xml  { render :xml => @weather_station, :status => :created, :location => @weather_station }
+        format.html { redirect_to(@weather_station, notice: "Field group was successfully created.") }
+        format.xml { render xml: @weather_station, status: :created, location: @weather_station }
       else
-        format.html { render :action => "new" }
-        format.xml  { render :xml => @weather_station.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml { render xml: @weather_station.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -58,11 +58,11 @@ class WeatherStationsController < AuthenticatedController
 
     respond_to do |format|
       if @weather_station.save
-        format.html { redirect_to(action: :index, :notice => 'Field group was successfully updated.') }
-        format.xml  { head :ok }
+        format.html { redirect_to(action: :index, notice: "Field group was successfully updated.") }
+        format.xml { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @weather_station.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml { render xml: @weather_station.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -73,7 +73,7 @@ class WeatherStationsController < AuthenticatedController
 
     respond_to do |format|
       format.html { redirect_to(weather_stations_url) }
-      format.xml  { head :ok }
+      format.xml { head :ok }
     end
   end
 

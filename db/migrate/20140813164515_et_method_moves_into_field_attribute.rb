@@ -1,5 +1,5 @@
 class EtMethodMovesIntoFieldAttribute < ActiveRecord::Migration[4.2]
-  def self.up    
+  def self.up
     # Propagate existing farms' ET methods to all of their fields
     # TODO: After this migration is accomplished, fix cloning code to
     # also clone the Plants!
@@ -15,7 +15,7 @@ class EtMethodMovesIntoFieldAttribute < ActiveRecord::Migration[4.2]
         field.save!
       end
     end
-    
+
     remove_column :farms, :et_method_id
     drop_table :et_methods
   end

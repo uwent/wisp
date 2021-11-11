@@ -4,7 +4,7 @@ class Farm < ApplicationRecord
   has_many :fields, through: :pivots
 
   validates :year, presence: true
-  validates :name, uniqueness: { scope: :group_id }
+  validates :name, uniqueness: {scope: :group_id}
 
   # before_save :set_defaults, on: :create
   before_save :set_defaults
@@ -35,8 +35,7 @@ class Farm < ApplicationRecord
     # Collect all fields on the farm
     all_fields = pivots.select { |p| p.cropping_year == date.year }.collect { |p| p.fields }.flatten
     # Is AD negative today or two days ahead?
-    problems = all_fields.collect { |f| f.problem(date, date + 2) }.compact
-    problems
+    all_fields.collect { |f| f.problem(date, date + 2) }.compact
   end
 
   def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
@@ -47,7 +46,7 @@ class Farm < ApplicationRecord
     pivots.create!
   end
 
-  # FIX ME: REMOVE THIS 
+  # FIX ME: REMOVE THIS
   # def clone_pivots_for(year=Time.now.year)
   #   pivots.each do |piv|
   #     if (cloned = piv.clone_for(year))

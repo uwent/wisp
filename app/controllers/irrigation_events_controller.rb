@@ -1,27 +1,27 @@
 class IrrigationEventsController < AuthenticatedController
-
   # GET /irrigation_events
   # GET /irrigation_events.xml
   # GET /irrigation_events.json
   def index
     pivot_id = session[:pivot_id] || session[:pivot_id] = params[:pivot_id]
-    @irrig_events = IrrigationEvent.where(:pivot_id => pivot_id).order(:date) do
-      paginate :page => params[:page], :per_page => params[:rows]
+    @irrig_events = IrrigationEvent.where(pivot_id: pivot_id).order(:date) do
+      paginate page: params[:page], per_page: params[:rows]
     end
-  # puts "getting irrig events field #{pivot_id}, found #{@irrig_events.size} entries"
+    # puts "getting irrig events field #{pivot_id}, found #{@irrig_events.size} entries"
     @irrig_events ||= []
 
     respond_to do |format|
       format.html # index.html.erb
-      format.xml { render :xml => @irrig_events }
+      format.xml { render xml: @irrig_events }
       format.json {
-        render :json => @irrig_events.to_a.to_jqgrid_json(
-          [:date,:inches_applied,:id],
+        render json: @irrig_events.to_a.to_jqgrid_json(
+          [:date, :inches_applied, :id],
           params[:page], params[:rows],
-          @irrig_events.size)
-        }
+          @irrig_events.size
+        )
+      }
     end
-   end
+  end
 
   def post_data
     raise "Not implemented!"
@@ -34,7 +34,7 @@ class IrrigationEventsController < AuthenticatedController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @irrigation_events }
+      format.xml { render xml: @irrigation_events }
     end
   end
 
@@ -45,7 +45,7 @@ class IrrigationEventsController < AuthenticatedController
 
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @irrigation_event }
+      format.xml { render xml: @irrigation_event }
     end
   end
 
@@ -56,7 +56,7 @@ class IrrigationEventsController < AuthenticatedController
 
     respond_to do |format|
       format.html # new.html.erb
-      format.xml  { render :xml => @irrigation_event }
+      format.xml { render xml: @irrigation_event }
     end
   end
 
@@ -72,11 +72,11 @@ class IrrigationEventsController < AuthenticatedController
 
     respond_to do |format|
       if @irrigation_event.save
-        format.html { redirect_to(@irrigation_event, :notice => "Irrigation event was successfully created.") }
-        format.xml { render :xml => @irrigation_event, :status => :created, :location => @irrigation_event }
+        format.html { redirect_to(@irrigation_event, notice: "Irrigation event was successfully created.") }
+        format.xml { render xml: @irrigation_event, status: :created, location: @irrigation_event }
       else
-        format.html { render :action => "new" }
-        format.xml { render :xml => @irrigation_event.errors, :status => :unprocessable_entity }
+        format.html { render action: "new" }
+        format.xml { render xml: @irrigation_event.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -88,11 +88,11 @@ class IrrigationEventsController < AuthenticatedController
 
     respond_to do |format|
       if @irrigation_event.update(params[:irrigation_event])
-        format.html { redirect_to(@irrigation_event, :notice => "Irrigation event was successfully updated.") }
-        format.xml  { head :ok }
+        format.html { redirect_to(@irrigation_event, notice: "Irrigation event was successfully updated.") }
+        format.xml { head :ok }
       else
-        format.html { render :action => "edit" }
-        format.xml  { render :xml => @irrigation_event.errors, :status => :unprocessable_entity }
+        format.html { render action: "edit" }
+        format.xml { render xml: @irrigation_event.errors, status: :unprocessable_entity }
       end
     end
   end
@@ -105,7 +105,7 @@ class IrrigationEventsController < AuthenticatedController
 
     respond_to do |format|
       format.html { redirect_to(irrigation_events_url) }
-      format.xml  { head :ok }
+      format.xml { head :ok }
     end
   end
 end

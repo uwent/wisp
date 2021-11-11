@@ -12,7 +12,7 @@ class ApplicationController < ActionController::Base
 
   # TODO: Remove this.
   def self.jsonify(hash)
-    hash.inject({}) { |ret,entry| ret.merge({entry[0].to_s => entry[1].to_s}) }
+    hash.inject({}) { |ret, entry| ret.merge({entry[0].to_s => entry[1].to_s}) }
   end
 
   protected
@@ -22,15 +22,17 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
   # TODO: Remove most of this.
   def get_by_parent(klass, parent_klass, parent_id)
     begin
-      plural = klass.to_s.downcase + "s"
+      # plural = klass.to_s.downcase + "s"
       parent_obj = parent_klass.find(parent_id)
-      obj = eval("parent_obj.#{plural}.first")
+      # obj = eval("parent_obj.#{plural}.first")
+      obj = parent_obj.first
       id = obj[:id] if obj
-    rescue ActiveRecord::RecordNotFound => e
-      logger.error("ApplicationController :: Parent object find failed for #{klass.to_s} / #{parent_klass.to_s}:#{parent_id}")
+    rescue ActiveRecord::RecordNotFound
+      logger.error("ApplicationController :: Parent object find failed for #{klass} / #{parent_klass}:#{parent_id}")
       flash[:notice] = "We're sorry, an internal error has occurred"
       id = obj = nil
     end
@@ -46,7 +48,7 @@ class ApplicationController < ActionController::Base
       # puts "get_and_set: what about string key? (#{params.inspect})"
       begin
         obj = klass.find(id)
-      rescue ActiveRecord::RecordNotFound => e
+      rescue ActiveRecord::RecordNotFound
         # If the object has just been deleted, the find can fail, so fall back to parent's first child
         id, obj = get_by_parent(klass, parent_klass, parent_id)
       end
@@ -54,7 +56,7 @@ class ApplicationController < ActionController::Base
       id, obj = get_by_parent(klass, parent_klass, parent_id)
     end
     unless preserve_session
-      logger.info("ApplicationController :: Setting session[#{sym.to_s}] to #{id.to_s}")
+      logger.info("ApplicationController :: Setting session[#{sym}] to #{id}")
       session[sym] = id
     end
     [id, obj]
@@ -86,23 +88,21 @@ class ApplicationController < ActionController::Base
   def today_or_latest(field_id)
     field = Field.find(field_id)
     earliest = field.current_crop.emergence_date
-    query = <<-END
-      select max(date) as date from field_daily_weather where field_id=#{field_id}
-    END
+    query = "select max(date) as date from field_daily_weather where field_id=#{field_id}"
     latest = FieldDailyWeather.find_by_sql(query).first.date
     day = Date.today
     day = earliest if day < earliest
     day
   end
 
-  def set_parent_id(attribs,params,parent_id_sym,parent_var)
+  def set_parent_id(attribs, params, parent_id_sym, parent_var)
     parent_id = attribs[parent_id_sym]
-    if parent_id == nil || parent_id == "" || parent_id == "_empty"
+    if parent_id.nil? || parent_id == "" || parent_id == "_empty"
       attribs[parent_id_sym] = params[:parent_id] == "" ? parent_var : params[:parent_id]
     end
   end
 
-  # FIXME: Remove the cloning 
+  # FIXME: Remove the cloning
   # -------------------------
   # Check to see if any of our pivots need to be cloned.
   # def check_pivots_for_cloning(clone_to = nil)
