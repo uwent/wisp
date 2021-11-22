@@ -30,7 +30,7 @@ group :development do
   gem "capistrano-rbenv", "~> 2.2"
   gem "letter_opener", "~> 1.7"
   gem "letter_opener_web", "~> 2.0"
-  gem "web-console", "~> 4.1"
+  gem "web-console", "~> 4.2"
   gem "standard"
 end
 
