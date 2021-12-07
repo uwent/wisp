@@ -5,7 +5,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: circleci/ruby:3.0.2-node
+      - image: circleci/ruby:3.0.3-node
         environment:
           PG_HOST: localhost
           PG_USER: postgres
