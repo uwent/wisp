@@ -23,25 +23,29 @@ gem "whenever", "~> 1.0"
 gem "will_paginate", "~> 3.3"
 
 group :development do
-  gem "puma", "~> 5.5"
-  gem "capistrano", "~> 3.16"
-  gem "capistrano-bundler", "~> 2.0"
-  gem "capistrano-rails", "~> 1.6"
-  gem "capistrano-rbenv", "~> 2.2"
-  gem "letter_opener", "~> 1.7"
-  gem "letter_opener_web", "~> 2.0"
-  gem "web-console", "~> 4.2"
+  gem "puma"
+  gem "capistrano"
+  gem "capistrano-bundler"
+  gem "capistrano-rails"
+  gem "capistrano-rbenv"
+  gem "letter_opener"
+  gem "letter_opener_web"
+  gem "web-console"
   gem "standard"
 end
 
 group :development, :test do
-  gem "byebug", "~> 11.1"
-  gem "dotenv-rails", "~> 2.7"
-  gem "factory_bot_rails", "~> 6.2"
-  gem "guard-rspec", "~> 4.7"
-  gem "rspec-rails", "~> 5.0"
-  gem "simplecov", "~> 0.21"
-  gem "spring", "~> 4.0"
-  gem "spring-commands-rspec", "~> 1.0"
-  gem "valid_attribute", "~> 2.0"
+  gem "byebug"
+  gem "dotenv-rails"
+  gem "factory_bot_rails"
+  gem "guard-rspec"
+  gem "rspec-rails"
+  gem "spring"
+  gem "spring-commands-rspec"
+  gem "valid_attribute"
+end
+
+group :test do
+  gem "simplecov"
+  gem "webmock"
 end
