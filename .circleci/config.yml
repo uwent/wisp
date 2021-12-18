@@ -19,28 +19,10 @@ jobs:
     executor: ruby/default
     steps:
       - checkout
-      - run:
-          name: Get Bundler
-          command: gem install bundler
-      - run:
-          name: Configure Bundler
-          command: bundle config set --local path './vendor/bundle'
-      - restore_cache:
-          name: Restore Gem Cache
-          keys:
-            - bundle-{{ checksum ".ruby-version" }}-{{ checksum "Gemfile.lock" }}
-            - bundle-{{ checksum ".ruby-version" }}
-      - run:
-          name: Bundle Install
-          command: bundle check || bundle install
-      - save_cache:
-          name: Save Gem Cache
-          key: bundle-{{ checksum ".ruby-version" }}-{{ checksum "Gemfile.lock" }}
-          paths:
-            - ./vendor/bundle
+      - ruby/install-deps
       - run:
           name: Set up database
-          command: bin/rails db:setup
+          command: bundle exec rails db:setup
       - run:
           name: Rspec
           command: bundle exec rspec
