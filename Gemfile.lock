@@ -149,7 +149,7 @@ GEM
       multi_xml (>= 0.5.2)
     i18n (1.8.11)
       concurrent-ruby (~> 1.0)
-    jbuilder (2.11.3)
+    jbuilder (2.11.4)
       activesupport (>= 5.0.0)
     jqgrid-jquery-rails (4.6.1)
       jquery-rails
