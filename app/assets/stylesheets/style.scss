@@ -54,7 +54,8 @@ a:hover {
 }
 
 body {
-	background: image-url('background.png');
+	// background: image-url('background.png');
+	background: #f7f5ee;
 	text-align: center;
 	font: 11px verdana, arial, sans-serif;
 }
@@ -111,7 +112,7 @@ body {
 	padding-left: 5px;
 	background-color: #5a5644;
 	border: 10px solid #8b846a;
-	border-right: 5px solid #8b846a;
+	border-right: 6px solid #8b846a;
 }
 
 #welcome a {
