@@ -126,7 +126,7 @@ class WispController < AuthenticatedController
     @field_weather_data = @field.field_daily_weather
     @initial_date = @field_weather_data.first.date
     start_date, end_date, @cur_date = date_strs(@initial_date, cur_date)
-    # logger.info "field_status_data: cur_date passed in was #{cur_date}, #{start_date} to #{end_date} at #{@cur_date} for #{@field_id}"
+    logger.debug ">> WispController :: field_status_data: cur_date passed in was #{cur_date}, #{start_date} to #{end_date} at #{@cur_date} for #{@field_id}"
     @ad_recs = FieldDailyWeather.fdw_for(@field_id, start_date, end_date)
     @ad_data = @ad_recs.collect { |fdw| fdw.ad }
     # sets @graph_data, @projected_ad_data,@dates,@date_str,and @date_hash

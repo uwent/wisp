@@ -173,10 +173,8 @@ class FieldDailyWeather < ApplicationRecord
 
       # FIXME: why any at all?
       self[:deep_drainage] = 0.0 if self[:deep_drainage] < 0.01
-      dbg = <<-END
-      #{self[:date]}: Deep drainage of #{self[:deep_drainage]} from prev ad #{previous_ad}, delta #{delta_storage}, taw #{total_available_water}
-      END
-      logger.info("FieldDailyWeather :: " + dbg) if self[:deep_drainage] > 0
+      # dbg = "#{self[:date]}: Deep drainage of #{self[:deep_drainage]} from prev ad #{previous_ad}, delta #{delta_storage}, taw #{total_available_water}"
+      # logger.info("FieldDailyWeather :: " + dbg) if self[:deep_drainage] > 0
       self[:calculated_pct_moisture] = moisture(
         feeld.current_crop.max_allowable_depletion_frac,
         total_available_water,

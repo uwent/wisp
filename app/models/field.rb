@@ -274,11 +274,13 @@ class Field < ApplicationRecord
 
   def get_et
     unless pivot.latitude && pivot.longitude
-      logger.warn("Field :: get_et: no lat/long for pivot")
+      logger.warn "Field #{self.id} >> Failed to get ET data: no lat/long for pivot"
+      return
     end
-    logger.info("Field :: Starting get_et")
+
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
+    logger.info "Field #{self.id} >> Starting get_et at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
 
     vals = {}
     begin
@@ -295,26 +297,33 @@ class Field < ApplicationRecord
         vals[day[:date]] = day[:value]
       end
     rescue => e
-      logger.warn("Field :: Could not get ETs from endpoint: #{e.message}")
+      logger.warn "Field #{self.id} >> Could not get ETs from endpoint: #{e.message}"
     end
+
     field_daily_weather.each do |fdw|
-      if fdw.ref_et.nil? || fdw.ref_et.zero?
-        if vals[fdw.date.to_s]
-          fdw.ref_et = vals[fdw.date.to_s]
-          fdw.save!
-        end
+      date = fdw.date.to_s
+      cur_et = fdw.ref_et
+      new_et = vals[date]
+      next if new_et.nil?
+      if (cur_et.nil? || cur_et.zero?) && (cur_et != new_et)
+        # logger.debug "Get ET: #{date} (#{cur_et}) ==> (#{new_et})"
+        fdw.ref_et = new_et
+        fdw.save!
+      else
+        # logger.debug "Get ET: #{date} (#{cur_et}) ==> OK"
       end
     end
-    logger.info("Field :: Done with get_et")
+    logger.info "Field #{self.id} >> Done with get_et"
   end
 
   def get_precip
     unless pivot.latitude && pivot.longitude
-      logger.warn("Field :: get_precip: no lat/long for pivot")
+      logger.warn "Field #{self.id} >> Failed to get precip data: no lat/long for pivot"
+      return
     end
-    logger.info("Field :: Starting get_precip")
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
+    logger.info "Field #{self.id} >> Starting get_precip at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
 
     vals = {}
     begin
@@ -331,17 +340,22 @@ class Field < ApplicationRecord
         vals[day[:date]] = day[:value] / 25.4 # convert mm to in
       end
     rescue => e
-      logger.warn("Field :: Could not get precips from endpoint: #{e.message}")
+      logger.warn "Field #{self.id} >> Could not get precips from endpoint: #{e.message}"
     end
     field_daily_weather.each do |fdw|
-      if fdw.rain.nil? || fdw.rain.zero?
-        if vals[fdw.date.to_s]
-          fdw.rain = vals[fdw.date.to_s]
-          fdw.save!
-        end
+      date = fdw.date.to_s
+      cur_precip = fdw.rain
+      new_precip = vals[date]
+      next if new_precip.nil?
+      if (cur_precip.nil? || cur_precip.zero?) && (cur_precip != new_precip)
+        # logger.debug "Get precip: #{date} (#{cur_precip}) ==> (#{new_precip})"
+        fdw.rain = new_precip
+        fdw.save!
+      else
+        # logger.debug "Get precip: #{date} (#{cur_precip}) ==> OK"
       end
     end
-    logger.info("Field :: Done with precip")
+    logger.info "Field #{self.id} >> Done with precip"
   end
 
   def need_degree_days?
@@ -355,7 +369,7 @@ class Field < ApplicationRecord
     end_date = field_daily_weather[-1].date.to_s
 
     # TODO: Extract method.
-    logger.info("Field :: Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}")
+    logger.info("Field #{self.id} >> Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}")
 
     begin
       query = {
