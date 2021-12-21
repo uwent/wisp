@@ -26,10 +26,9 @@ class ApplicationController < ActionController::Base
   # TODO: Remove most of this.
   def get_by_parent(klass, parent_klass, parent_id)
     begin
-      # plural = klass.to_s.downcase + "s"
+      plural = klass.to_s.downcase + "s"
       parent_obj = parent_klass.find(parent_id)
-      # obj = eval("parent_obj.#{plural}.first")
-      obj = parent_obj.first
+      obj = eval("parent_obj.#{plural}.first")
       id = obj[:id] if obj
     rescue ActiveRecord::RecordNotFound
       logger.error("ApplicationController :: Parent object find failed for #{klass} / #{parent_klass}:#{parent_id}")
