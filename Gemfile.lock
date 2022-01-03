@@ -202,7 +202,7 @@ GEM
       shellany (~> 0.0)
     orm_adapter (0.5.0)
     parallel (1.21.0)
-    parser (3.0.3.2)
+    parser (3.1.0.0)
       ast (~> 2.4.1)
     pg (1.2.3)
     pry (0.14.1)
@@ -345,7 +345,7 @@ GEM
     whenever (1.0.0)
       chronic (>= 0.6.3)
     will_paginate (3.3.1)
-    zeitwerk (2.5.2)
+    zeitwerk (2.5.3)
 
 PLATFORMS
   ruby
