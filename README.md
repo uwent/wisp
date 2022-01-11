@@ -27,7 +27,7 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 git -C "$(rbenv root)"/plugins/ruby-build pull
 
 # install ruby with rbenv
-rbenv install 3.0.3 # or latest version
+rbenv install 3.1.0 # or latest version
 
 # update bundler to latest
 gem install bundler

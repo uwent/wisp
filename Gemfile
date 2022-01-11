@@ -21,6 +21,7 @@ gem "sassc-rails", "~> 2.1"
 gem "uglifier", "~> 4.2"
 gem "whenever", "~> 1.0"
 gem "will_paginate", "~> 3.3"
+gem "net-smtp", "~> 0.3" # not a default gem anymore?
 
 group :development do
   gem "puma"
