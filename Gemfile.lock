@@ -342,13 +342,13 @@ GEM
       rubocop (= 1.24.1)
       rubocop-performance (= 1.13.1)
     strscan (3.0.1)
+    terser (1.1.8)
+      execjs (>= 0.3.0, < 3)
     thor (1.2.1)
     tilt (2.0.10)
     timeout (0.2.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
-    uglifier (4.2.0)
-      execjs (>= 0.3.0, < 3)
     unicode-display_width (2.1.0)
     valid_attribute (2.0.0)
     warden (1.2.9)
@@ -396,7 +396,6 @@ DEPENDENCIES
   letter_opener
   letter_opener_web
   net-smtp (~> 0.3)
-  nokogiri (>= 1.12.5)
   pg (~> 1.2)
   puma
   rails (~> 7.0)
@@ -408,7 +407,7 @@ DEPENDENCIES
   spring
   spring-commands-rspec
   standard
-  uglifier (~> 4.2)
+  terser (~> 1.1)
   valid_attribute
   web-console
   webmock

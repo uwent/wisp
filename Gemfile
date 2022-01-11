@@ -4,7 +4,6 @@ gem "rails", "~> 7.0"
 gem "railties", "~> 7.0"
 gem "activesupport", "~> 7.0"
 gem "pg", "~> 1.2"
-gem "asigbiophys", path: "vendor/asigbiophys"
 # gem 'calendar_date_select', '~> 2.1.0'
 gem "chamber", "~> 2.14"
 gem "coffee-rails", "~> 5.0"
@@ -15,13 +14,13 @@ gem "jbuilder", "~> 2.11"
 gem "jqgrid-jquery-rails", "~> 4.6"
 gem "jquery-rails", "~> 4.4"
 gem "jquery-ui-rails", "~> 6.0"
-gem "nokogiri", ">= 1.12.5" # per security vulnerability
 gem "rails-ujs", "~> 0.1"
 gem "sassc-rails", "~> 2.1"
-gem "uglifier", "~> 4.2"
 gem "whenever", "~> 1.0"
 gem "will_paginate", "~> 3.3"
-gem "net-smtp", "~> 0.3" # not a default gem anymore?
+gem "net-smtp", "~> 0.3" # required as of ruby 3.1
+gem "terser", "~> 1.1" # for JS compression
+gem "asigbiophys", path: "vendor/asigbiophys"
 
 group :development do
   gem "puma"
