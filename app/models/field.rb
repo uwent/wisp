@@ -274,13 +274,13 @@ class Field < ApplicationRecord
 
   def get_et
     unless pivot.latitude && pivot.longitude
-      logger.warn "Field #{self.id} >> Failed to get ET data: no lat/long for pivot"
+      Rails.logger.warn "Field #{self.id} >> Failed to get ET data: no lat/long for pivot"
       return
     end
 
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
-    logger.info "Field #{self.id} >> Starting get_et at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
+    Rails.logger.info "Field #{self.id} >> Starting get_et at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
 
     vals = {}
     begin
@@ -297,7 +297,7 @@ class Field < ApplicationRecord
         vals[day[:date]] = day[:value]
       end
     rescue => e
-      logger.warn "Field #{self.id} >> Could not get ETs from endpoint: #{e.message}"
+      Rails.logger.warn "Field #{self.id} >> Could not get ETs from endpoint: #{e.message}"
     end
 
     field_daily_weather.each do |fdw|
@@ -306,11 +306,11 @@ class Field < ApplicationRecord
       new_et = vals[date]
       next if new_et.nil?
       if (cur_et.nil? || cur_et.zero?) && (cur_et != new_et)
-        # logger.debug "Get ET: #{date} (#{cur_et}) ==> (#{new_et})"
+        # Rails.logger.debug "Get ET: #{date} (#{cur_et}) ==> (#{new_et})"
         fdw.ref_et = new_et
         fdw.save!
       else
-        # logger.debug "Get ET: #{date} (#{cur_et}) ==> OK"
+        # Rails.logger.debug "Get ET: #{date} (#{cur_et}) ==> OK"
       end
     end
     logger.info "Field #{self.id} >> Done with get_et"
@@ -318,12 +318,12 @@ class Field < ApplicationRecord
 
   def get_precip
     unless pivot.latitude && pivot.longitude
-      logger.warn "Field #{self.id} >> Failed to get precip data: no lat/long for pivot"
+      Rails.logger.warn "Field #{self.id} >> Failed to get precip data: no lat/long for pivot"
       return
     end
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
-    logger.info "Field #{self.id} >> Starting get_precip at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
+    Rails.logger.info "Field #{self.id} >> Starting get_precip at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
 
     vals = {}
     begin
@@ -340,7 +340,7 @@ class Field < ApplicationRecord
         vals[day[:date]] = day[:value] / 25.4 # convert mm to in
       end
     rescue => e
-      logger.warn "Field #{self.id} >> Could not get precips from endpoint: #{e.message}"
+      Rails.logger.warn "Field #{self.id} >> Could not get precips from endpoint: #{e.message}"
     end
     field_daily_weather.each do |fdw|
       date = fdw.date.to_s
@@ -355,7 +355,7 @@ class Field < ApplicationRecord
         # logger.debug "Get precip: #{date} (#{cur_precip}) ==> OK"
       end
     end
-    logger.info "Field #{self.id} >> Done with precip"
+    Rails.logger.info "Field #{self.id} >> Done with precip"
   end
 
   def need_degree_days?
@@ -369,7 +369,7 @@ class Field < ApplicationRecord
     end_date = field_daily_weather[-1].date.to_s
 
     # TODO: Extract method.
-    logger.info("Field #{self.id} >> Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}")
+    Rails.logger.info("Field #{self.id} >> Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}")
 
     begin
       query = {
@@ -387,7 +387,7 @@ class Field < ApplicationRecord
         vals[day[:date]] = day[:value]
       end
     rescue => e
-      logger.warn("Field :: Could not get DDs from the agweather; connected? (#{e})")
+      Rails.logger.warn "Field :: Could not get DDs from the agweather; connected? (#{e})"
     end
     field_daily_weather.each do |fdw|
       if fdw.degree_days.nil? || fdw.degree_days.zero?
@@ -399,7 +399,7 @@ class Field < ApplicationRecord
         end
       end
     end
-    logger.info("Field :: Done with get_dds")
+    Rails.logger.info "Field :: Done with get_dds"
   end
 
   def fdw_index(date)
@@ -533,15 +533,15 @@ class Field < ApplicationRecord
   end
 
   def target_ad_in
-    logger.warn("Field :: tadi: tadp nil")
+    # Rails.logger.warn "Field :: tadi: tadp nil"
     return nil unless (tadp = self[:target_ad_pct])
-    logger.warn("Field :: tadi: cc nil")
+    # Rails.logger.warn "Field :: tadi: cc nil"
     return nil unless (cc = current_crop)
-    logger.warn("Field :: tadi: cmf nil")
+    # Rails.logger.warn "Field :: tadi: cmf nil"
     return nil unless (crop_mad_frac = cc.max_allowable_depletion_frac)
-    logger.warn("Field :: tadi: mrzd nil")
+    # Rails.logger.warn "Field :: tadi: mrzd nil"
     return nil unless (mrzd = cc.max_root_zone_depth)
-    logger.warn("Field :: tadi: fc or pwp nil")
+    # Rails.logger.warn "Field :: tadi: fc or pwp nil"
     return nil unless (fc = field_capacity) && (pwp = perm_wilting_pt)
     mad_inches = ad_max_inches(crop_mad_frac, taw(fc, pwp, mrzd))
     (tadp / 100.0) * mad_inches
@@ -553,13 +553,13 @@ class Field < ApplicationRecord
     fc = self[:field_capacity] || field_capacity
     first_fdw = field_daily_weather[0]
     unless first_fdw && fc
-      logger.warn "Field :: set_fdw_initial_moisture called but fc or first fdw was missing"
+      Rails.logger.warn "Field :: set_fdw_initial_moisture called but fc or first fdw was missing"
       return
     end
     first_fdw.calculated_pct_moisture = 100 * fc
     pwp = self[:perm_wilting_pt] || perm_wilting_pt
     unless pwp
-      logger.warn "Field :: set_fdw_initial_moisture: pwp for field was nil, using default soil type"
+      Rails.logger.warn "Field :: set_fdw_initial_moisture: pwp for field was nil, using default soil type"
       pwp = SoilType.default_soil_type.perm_wilting_pt
     end
     first_fdw.set_ad_from_calculated_moisture(fc, pwp, current_crop.max_root_zone_depth)
@@ -578,7 +578,7 @@ class Field < ApplicationRecord
   end
 
   def do_balances(date = nil)
-    # logger.info "do_balances called with date #{date}"
+    # Rails.logger.info "do_balances called with date #{date}"
     day = date ? fdw_index(date) : 0
     return unless field_daily_weather && field_daily_weather[0]
     # Get yesterday's index to initialize prev_ad, but don't go below 0!
@@ -593,7 +593,7 @@ class Field < ApplicationRecord
       # ARB: changed 8/23/19 to take average of top 3 in last 7 days
       last_adj_et = rb.mean_top_3
 
-      # logger.info "do_balances on #{fdw.date}: prev_ad is #{prev_ad} and last_adj_et is #{last_adj_et}"
+      # Rails.logger.info "do_balances on #{fdw.date}: prev_ad is #{prev_ad} and last_adj_et is #{last_adj_et}"
       fdw.old_update_balances(prev_ad, last_adj_et)
       # puts "after update_balances, ad now #{fdw.ad}" if day < 5
       prev_ad = fdw.ad

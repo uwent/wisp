@@ -54,9 +54,9 @@ class WeatherStationDataController < AuthenticatedController
       end
       wx_rec.update(attribs)
     else
-      logger.warn("WeatherStationDataController :: wx stn data post_data attempted without id")
+      Rails.logger.warn "WeatherStationDataController :: wx stn data post_data attempted without id"
     end
-    logger.info("WeatherStationDataController :: posted data successfully")
+    Rails.logger.info "WeatherStationDataController :: posted data successfully"
     head :ok, content_type: "text/html"
   end
 

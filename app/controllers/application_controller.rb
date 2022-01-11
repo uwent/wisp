@@ -31,7 +31,7 @@ class ApplicationController < ActionController::Base
       obj = eval("parent_obj.#{plural}.first")
       id = obj[:id] if obj
     rescue ActiveRecord::RecordNotFound
-      logger.error("ApplicationController :: Parent object find failed for #{klass} / #{parent_klass}:#{parent_id}")
+      Rails.logger.error "ApplicationController :: Parent object find failed for #{klass} / #{parent_klass}:#{parent_id}"
       flash[:notice] = "We're sorry, an internal error has occurred"
       id = obj = nil
     end
@@ -55,7 +55,7 @@ class ApplicationController < ActionController::Base
       id, obj = get_by_parent(klass, parent_klass, parent_id)
     end
     unless preserve_session
-      logger.info("ApplicationController :: Setting session[#{sym}] to #{id}")
+      Rails.logger.info "ApplicationController :: Setting session[#{sym}] to #{id}"
       session[sym] = id
     end
     [id, obj]

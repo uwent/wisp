@@ -72,12 +72,12 @@ class WispController < AuthenticatedController
       wx_stn_id = params[:weather_station_id].to_i
       @weather_station = @weather_stations.detect { |wxs| wxs[:id].to_i == wx_stn_id }
       unless @weather_station
-        logger.info("WispController :: Could not find station #{wx_stn_id} in #{@weather_stations.collect { |e| e[:id] }.inspect}, using first wx stn in group")
+        Rails.logger.info "WispController :: Could not find station #{wx_stn_id} in #{@weather_stations.collect { |e| e[:id] }.inspect}, using first wx stn in group"
         @weather_station = @weather_stations.first
       end
       # logger.info "Found a station, using #{@weather_station[:id]}"
     else
-      logger.info("WispController :: No wx stn passed, using first wx stn in group")
+      Rails.logger.info "WispController :: No wx stn passed, using first wx stn in group"
       @weather_station = @weather_stations.first
     end
     @years = [Time.now.year]
@@ -103,7 +103,7 @@ class WispController < AuthenticatedController
       begin
         end_date = Date.parse(cur_date) - 1
       rescue => e
-        logger.warn("WispController :: Date reset problem: #{e}")
+        Rails.logger.warn "WispController :: Date reset problem: #{e}"
         end_date = today_or_latest(@field_id) - 1
       end
     else
@@ -126,14 +126,14 @@ class WispController < AuthenticatedController
     @field_weather_data = @field.field_daily_weather
     @initial_date = @field_weather_data.first.date
     start_date, end_date, @cur_date = date_strs(@initial_date, cur_date)
-    logger.debug ">> WispController :: field_status_data: cur_date passed in was #{cur_date}, #{start_date} to #{end_date} at #{@cur_date} for #{@field_id}"
+    Rails.logger.debug ">> WispController :: field_status_data: cur_date passed in was #{cur_date}, #{start_date} to #{end_date} at #{@cur_date} for #{@field_id}"
     @ad_recs = FieldDailyWeather.fdw_for(@field_id, start_date, end_date)
     @ad_data = @ad_recs.collect { |fdw| fdw.ad }
     # sets @graph_data, @projected_ad_data,@dates,@date_str,and @date_hash
     graph_data(@field_weather_data, start_date, end_date)
-    # logger.info "field_status_data: cur_date #{@cur_date}, start_date #{start_date.to_s}, end_date #{end_date.to_s}, dates #{@dates.inspect}"
-    # logger.info "field_status_data: fdw is \n#{@ad_recs.collect { |e| [e.date,e.field_id,e.ref_et].join(",") }.join("\n")}"
-    # logger.info "field_status_data: @graph_data is #{@graph_data.inspect}, @projected is #{@projected_ad_data.inspect}, over #{@date_hash.inspect}"
+    # Rails.logger.info "field_status_data: cur_date #{@cur_date}, start_date #{start_date.to_s}, end_date #{end_date.to_s}, dates #{@dates.inspect}"
+    # Rails.logger.info "field_status_data: fdw is \n#{@ad_recs.collect { |e| [e.date,e.field_id,e.ref_et].join(",") }.join("\n")}"
+    # Rails.logger.info "field_status_data: @graph_data is #{@graph_data.inspect}, @projected is #{@projected_ad_data.inspect}, over #{@date_hash.inspect}"
     @summary_data = FieldDailyWeather.summary(@field.id)
     @target_ad_data = target_ad_data(@field, @ad_data)
   end
@@ -143,7 +143,7 @@ class WispController < AuthenticatedController
   def graph_data(fdw, start_date, end_date, start_projecting = Date.today)
     ad_recs = @ad_recs # just so it's something if we don't reset them
     # reposition the window, if necessary, so that it ends NLT the end of AD data
-    # logger.info "graph_data: start_date is #{start_date.inspect}, end_date is #{end_date.inspect}, #{fdw.size} records"
+    # Rails.logger.info "graph_data: start_date is #{start_date.inspect}, end_date is #{end_date.inspect}, #{fdw.size} records"
     first_ad_idx = fdw.index { |rec| rec.ad.nil? } || fdw.index { |rec| rec.date == start_date } || 0
     first_ad_idx = 0 if first_ad_idx < 0
     last_ad_idx = first_ad_idx + 8
@@ -160,7 +160,7 @@ class WispController < AuthenticatedController
 
   # GET / POST
   def field_status
-    # logger.info "field_status: group #{@group_id} user #{@user_id} farm #{@farm_id} pivot #{@pivot_id} field #{@field_id}"
+    # Rails.logger.info "field_status: group #{@group_id} user #{@user_id} farm #{@farm_id} pivot #{@pivot_id} field #{@field_id}"
     @pivot_id, @pivot = get_and_set(Pivot, Farm, @farm_id)
     @field_id, @field = get_and_set(Field, Pivot, @pivot_id)
     if params[:field] && params[:field][:target_ad_pct]
@@ -191,7 +191,7 @@ class WispController < AuthenticatedController
     end
     # for some reason, IE makes a request for format JSON, which kinda whacks things. So we explicitly
     # specify the template, which works for everybody.
-    render "field_status.html.erb"
+    # render "field_status.html.erb"
   end
 
   def field_status_from_javascript
@@ -252,7 +252,7 @@ class WispController < AuthenticatedController
 
   # POST?
   def set_farm
-    # logger.info "SET_FARM: setting the ids to #{params[:farm_id]}"
+    # Rails.logger.info "SET_FARM: setting the ids to #{params[:farm_id]}"
     session[:farm_id] = @farm_id = params[:farm_id]
     if @farm_id
       @farm = Farm.find(@farm_id)
@@ -267,7 +267,7 @@ class WispController < AuthenticatedController
 
   # POST?
   def set_field
-    # logger.info "set field with id #{params[:id]}"
+    # Rails.logger.info "set field with id #{params[:id]}"
     if params[:field_id]
       @field_id = params[:field_id]
       @field = Field.find(@field_id)

@@ -1,8 +1,8 @@
 source "https://rubygems.org"
 
-gem "rails", "~> 6.1.4"
-gem "railties", "~> 6.1.4"
-gem "activesupport", "~> 6.1.4"
+gem "rails", "~> 7.0"
+gem "railties", "~> 7.0"
+gem "activesupport", "~> 7.0"
 gem "pg", "~> 1.2"
 gem "asigbiophys", path: "vendor/asigbiophys"
 # gem 'calendar_date_select', '~> 2.1.0'

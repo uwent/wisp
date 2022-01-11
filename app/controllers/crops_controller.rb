@@ -136,7 +136,7 @@ class CropsController < AuthenticatedController
   private
 
   # def get_current_ids
-  #   logger.info "crops_controller#get_current_ids: session is #{session.inspect}"
+  #   Rails.logger.info "crops_controller#get_current_ids: session is #{session.inspect}"
   #   group = @user.groups.first
   #   @farm_id = params[:farm_id] || session[:farm_id] || Farm.my_farms(group[:id]).first # what to do if no farms yet?
   #   @pivot_id = params[:pivot_id] || session[:pivot_id]

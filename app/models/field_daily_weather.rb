@@ -38,7 +38,7 @@ class FieldDailyWeather < ApplicationRecord
 
   def pct_moisture=(moisture)
     self[:entered_pct_moisture] = moisture
-    logger.info("FieldDailyWeather :: I now have an entered pct moisture: #{moisture}")
+    Rails.logger.info "FieldDailyWeather :: I now have an entered pct moisture: #{moisture}"
   end
 
   def adj_et_for_json
@@ -136,7 +136,7 @@ class FieldDailyWeather < ApplicationRecord
     else
       return unless ref_et || previous_max_adj_et
       unless (self[:adj_et] = feeld.adj_et(self))
-        logger.warn("FieldDailyWeather :: #{date}: couldn't calculate adj_et out of ref_et #{ref_et} pct c #{pct_cover} lai #{leaf_area_index}")
+        Rails.logger.warn "FieldDailyWeather :: #{date}: couldn't calculate adj_et out of ref_et #{ref_et} pct c #{pct_cover} lai #{leaf_area_index}"
         # FIXME: Why was this "return" here? Shouldn't it fall through to code just below?
         # return
       end
@@ -158,8 +158,8 @@ class FieldDailyWeather < ApplicationRecord
         end
       end
       if errors.size > 0
-        logger.info("FieldDailyWeather :: #{self[:date]} could not update balances.\n  #{inspect}\n  #{field.inspect}\n  #{field.current_crop.inspect}")
-        logger.info("   Reasons: " + errors.join(", "))
+        Rails.logger.info "FieldDailyWeather :: #{self[:date]} could not update balances.\n  #{inspect}\n  #{field.inspect}\n  #{field.current_crop.inspect}"
+        Rails.logger.info "   Reasons: " + errors.join(", ")
         return
       end
       # puts "update_balances: #{self[:date]} rain #{self[:rain]}, irrigation #{self[:irrigation]}, adj_et #{self[:adj_et]}"

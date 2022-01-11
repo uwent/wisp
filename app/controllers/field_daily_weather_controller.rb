@@ -136,7 +136,7 @@ class FieldDailyWeatherController < AuthenticatedController
     # Percent moisture is special -- if the user entered an updated value, it's sacred
     if attribs[:pct_moisture]
       if moisture_changed?(attribs[:pct_moisture].to_f, fdw.pct_moisture.to_f)
-        logger.info("FDWController :: New moisture is #{attribs[:pct_moisture].to_f} and old was #{fdw.pct_moisture.to_f}, setting it")
+        Rails.logger.info "FDWController :: New moisture is #{attribs[:pct_moisture].to_f} and old was #{fdw.pct_moisture.to_f}, setting it"
       else # it's not changing
         attribs.delete(:pct_moisture) # so we don't need to update it and trigger sacredness
       end
