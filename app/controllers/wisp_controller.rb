@@ -75,7 +75,7 @@ class WispController < AuthenticatedController
         Rails.logger.info "WispController :: Could not find station #{wx_stn_id} in #{@weather_stations.collect { |e| e[:id] }.inspect}, using first wx stn in group"
         @weather_station = @weather_stations.first
       end
-      # logger.info "Found a station, using #{@weather_station[:id]}"
+      # Rails.logger.info "Found a station, using #{@weather_station[:id]}"
     else
       Rails.logger.info "WispController :: No wx stn passed, using first wx stn in group"
       @weather_station = @weather_stations.first

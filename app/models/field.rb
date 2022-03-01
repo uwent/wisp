@@ -313,7 +313,7 @@ class Field < ApplicationRecord
         # Rails.logger.debug "Get ET: #{date} (#{cur_et}) ==> OK"
       end
     end
-    logger.info "Field #{self.id} >> Done with get_et"
+    Rails.logger.info "Field #{self.id} >> Done with get_et"
   end
 
   def get_precip
@@ -348,11 +348,11 @@ class Field < ApplicationRecord
       new_precip = vals[date]
       next if new_precip.nil?
       if (cur_precip.nil? || cur_precip.zero?) && (cur_precip != new_precip)
-        # logger.debug "Get precip: #{date} (#{cur_precip}) ==> (#{new_precip})"
+        # Rails.logger.debug "Get precip: #{date} (#{cur_precip}) ==> (#{new_precip})"
         fdw.rain = new_precip
         fdw.save!
       else
-        # logger.debug "Get precip: #{date} (#{cur_precip}) ==> OK"
+        # Rails.logger.debug "Get precip: #{date} (#{cur_precip}) ==> OK"
       end
     end
     Rails.logger.info "Field #{self.id} >> Done with precip"
@@ -369,7 +369,7 @@ class Field < ApplicationRecord
     end_date = field_daily_weather[-1].date.to_s
 
     # TODO: Extract method.
-    Rails.logger.info("Field #{self.id} >> Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}")
+    Rails.logger.info "Field #{self.id} >> Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}"
 
     begin
       query = {

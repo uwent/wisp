@@ -118,7 +118,7 @@ class FieldDailyWeather < ApplicationRecord
   # if we have the wherewithal and the adj_et is 0.0 or nil, calculate it
   def set_adj_et
     unless adj_et && adj_et > 0.0
-      # logger.warn "setting adj_et for #{date} to #{field.adj_et(self)}, was #{adj_et}"
+      # Rails.logger.warn "setting adj_et for #{date} to #{field.adj_et(self)}, was #{adj_et}"
       self[:adj_et] = field.adj_et(self)
     end
   end
@@ -132,7 +132,7 @@ class FieldDailyWeather < ApplicationRecord
       self[:calculated_pct_moisture] = entered_pct_moisture
       self[:ad] = [ad_from_moisture(total_available_water), total_available_water].min
       self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad] - total_available_water : 0.0)
-      # logger.info "#{self[:date]}: Deep drainage #{self[:deep_drainage]} from entered moisture of #{entered_pct_moisture}" if self[:deep_drainage] > 0.0
+      # Rails.logger.info "#{self[:date]}: Deep drainage #{self[:deep_drainage]} from entered moisture of #{entered_pct_moisture}" if self[:deep_drainage] > 0.0
     else
       return unless ref_et || previous_max_adj_et
       unless (self[:adj_et] = feeld.adj_et(self))
@@ -144,10 +144,10 @@ class FieldDailyWeather < ApplicationRecord
       # This should work for both gaps in the reference ET record and for extrapolations.
       if (self[:ref_et] < REF_ET_EPSILON) && previous_max_adj_et
         self[:adj_et] = previous_max_adj_et
-        # logger.info "#{date}: used previous_max_adj_et: #{self[:adj_et]},"; $stdout.flush
+        # Rails.logger.info "#{date}: used previous_max_adj_et: #{self[:adj_et]},"; $stdout.flush
       end
 
-      # logger.info "fdw#update_balances: date #{date} ref_et #{ref_et} adj_et #{adj_et}"
+      # Rails.logger.info "fdw#update_balances: date #{date} ref_et #{ref_et} adj_et #{adj_et}"
       previous_ad ||= find_previous_ad
       # puts "Got previous AD of #{previous_ad}"
       requirements = ["ref_et", "previous_ad", "feeld", "feeld.field_capacity", "feeld.perm_wilting_pt", "feeld.current_crop", "feeld.current_crop.max_root_zone_depth"]
@@ -174,7 +174,7 @@ class FieldDailyWeather < ApplicationRecord
       # FIXME: why any at all?
       self[:deep_drainage] = 0.0 if self[:deep_drainage] < 0.01
       # dbg = "#{self[:date]}: Deep drainage of #{self[:deep_drainage]} from prev ad #{previous_ad}, delta #{delta_storage}, taw #{total_available_water}"
-      # logger.info("FieldDailyWeather :: " + dbg) if self[:deep_drainage] > 0
+      # Rails.logger.info("FieldDailyWeather :: " + dbg) if self[:deep_drainage] > 0
       self[:calculated_pct_moisture] = moisture(
         feeld.current_crop.max_allowable_depletion_frac,
         total_available_water,
