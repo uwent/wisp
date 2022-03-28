@@ -12,12 +12,12 @@ test:
 
 staging:
   url_options:
-    host: 'wisp-staging.herokuapp.com'
+    host: 'dev.wisp.cals.wisc.edu'
     port:
     protocol: 'http'
 
 production:
   url_options:
-    host: 'wisp2.cals.wisc.edu'
+    host: 'wisp.cals.wisc.edu'
     port:
     protocol: 'http'
