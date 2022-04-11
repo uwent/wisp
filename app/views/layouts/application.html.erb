@@ -21,13 +21,14 @@
   <%= javascript_tag "var AUTH_TOKEN = #{form_authenticity_token.inspect};" if protect_against_forgery? %>
   <%= javascript_include_tag 'application' %> <!-- Don't want everything in defaults, just the XSS stuff I put in -->
   <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-JGNGBHQEKD"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QM6KX9H5ZS"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'UA-112403097-5');
-    gtag('config', 'G-JGNGBHQEKD');
+    gtag('config', 'UA-112403097-5'); // Groves Lab UA
+    gtag('config', 'G-JGNGBHQEKD'); // Groves Lab GA4
+    gtag('config', 'G-QM6KX9H5ZS'); // AgWeather GA4
   </script>
 </head>
 
