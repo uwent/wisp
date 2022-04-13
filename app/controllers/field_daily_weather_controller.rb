@@ -128,11 +128,14 @@ class FieldDailyWeatherController < AuthenticatedController
   def post_data
     attribs = {}
     COLUMN_NAMES.each do |col_name|
-      attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem
+      # the .empty? catches if a cell was left blank and then submitted
+      attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem || params[col_name]&.empty?
     end
+    attribs.compact!
     fdw = FieldDailyWeather.find(params[:id])
     # logger.info "fdw was #{fdw.inspect}"
     # logger.info "new attribs are #{attribs.inspect}"
+
     # Percent moisture is special -- if the user entered an updated value, it's sacred
     if attribs[:pct_moisture]
       if moisture_changed?(attribs[:pct_moisture].to_f, fdw.pct_moisture.to_f)
@@ -141,6 +144,7 @@ class FieldDailyWeatherController < AuthenticatedController
         attribs.delete(:pct_moisture) # so we don't need to update it and trigger sacredness
       end
     end
+
     # Pct cover is special for a different reason -- if the user changes it, we have to call the field's interp
     # routine. Don't bother, though, if it's the same
     do_pct_cover = false

@@ -103,7 +103,7 @@ class WispController < AuthenticatedController
       begin
         end_date = Date.parse(cur_date) - 1
       rescue => e
-        Rails.logger.warn "WispController :: Date reset problem: #{e}"
+        Rails.logger.warn "WispController :: Date reset problem: #{e}. Initial date: #{initial_date}, cur_date: #{cur_date}"
         end_date = today_or_latest(@field_id) - 1
       end
     else
@@ -168,7 +168,13 @@ class WispController < AuthenticatedController
     else
       @field.do_balances
     end
-    @cur_date = params[:cur_date]
+
+    # initial date values for the view
+    @min_date = FieldDailyWeather.minimum(:date).to_s
+    @max_date = FieldDailyWeather.maximum(:date).to_s
+    @today = Date.today.to_s
+    @cur_date = params[:cur_date] || @today
+
     @ad_at_pwp = @field.ad_at_pwp
     session[:today] = @cur_date
     field_status_data(@cur_date) # @cur_date may be nil, but will be set if so
@@ -219,11 +225,12 @@ class WispController < AuthenticatedController
   end
 
   # Make a line for the Target AD value for this field
-  # We just use the length of projected_ad_data
+  # We just use the length of projected_ad_data EDIT: Didn't work when date was less than a week out from initial date
   def target_ad_data(field, ad_data)
     return nil unless field.target_ad_pct
+    days = 9 # x axis length for plot
     ret = []
-    (ad_data.length + 2).times { ret << (field.target_ad_pct / 100.0) * field.ad_max }
+    days.times { ret << (field.target_ad_pct / 100.0) * field.ad_max }
     ret
   end
 

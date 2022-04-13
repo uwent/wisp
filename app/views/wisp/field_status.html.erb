@@ -76,14 +76,14 @@
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
-<script type="text/javascript">
+<script>
   function parseDate(input) {
     var parts = input.match(/(\d+)/g);
     return new Date(parts[0], parts[1]-1, parts[2]);
   }
 
   function dateToS(date) {
-    return date.getFullYear() + '-' + (1+date.getMonth()) + '-' + date.getDate();
+    return date.getFullYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate();
   }
 
   function setLastAndNextWeeks(date) {
@@ -274,12 +274,14 @@
 
   function curPage(initial_date_str, cur_date_str) {
     initial_date_obj = parseDate(initial_date_str);
-    // set the global
+    initial_date_obj.setTime(initial_date_obj.getTime() - 1) // subtract an hour to prevent initial and current being the same
     cur_date = cur_date_str;
     cur_date_obj = parseDate(cur_date_str);
     days = (cur_date_obj.getTime() - initial_date_obj.getTime()) / (86400 * 1000);
-    return(Math.ceil(days / 7));
+    page = Math.ceil(days / 7);
+    return(page);
   }
+
   function showSummaryBox(date) {
     $.ajax({
       type: "GET",
@@ -292,21 +294,39 @@
       }
     });
   }
+
   function showTargetAD() {
     // adValue = 0.0;
     adValue = <%= @field.target_ad_pct || "''".html_safe %>;
     $("#target_ad").val(adValue);
   }
 
+  function checkDate(newDate) {
+    minDate = new Date('<%= @min_date %>');
+    maxDate = new Date('<%= @max_date %>');
+    date = new Date(newDate);
+    prevWeek = new Date(newDate);
+    prevWeek.setDate(date.getDate() - 7);
+    nextWeek = new Date(newDate);
+    nextWeek.setDate(date.getDate() + 7);
+
+    prevWkBtnDisabled = (prevWeek < minDate);
+    nextWkBtnDisabled = (nextWeek > maxDate);
+
+    $("#backAWeek").prop("disabled", prevWkBtnDisabled);
+    $("#forwardAWeek").prop("disabled", nextWkBtnDisabled);
+  }
+
   function changeDate(newDate) {
-    /* Detect if the passed-in object is coming from the calendar's "change" event, or
-        passed in explicitly by one of our button handlers */
+    // Detect if the passed-in object is coming from the calendar's "change" event, or
+    // passed in explicitly by one of our button handlers
     if (newDate.type == "change") {
       cur_date = $("#date_input").val();
     } else {
       cur_date = newDate;
       $("#date_input").val(cur_date);
     }
+    checkDate(cur_date);
     setLastAndNextWeeks(cur_date);
     cur_page = curPage(initial_date, cur_date);
     $("#weather").setGridParam({ page: cur_page }).trigger("reloadGrid");
@@ -356,17 +376,25 @@
     <td>
       <script>
       $(function() {
-        <% if @cur_date %>
-          $("#date_input").datepicker({dateFormat: "yy-mm-dd", defaultDate:<%= @cur_date %>});
-        <% else %>
-          $("#date_input").datepicker({dateFormat: "yy-mm-dd"});
-        <% end %>
+        opts = {
+            dateFormat: "yy-mm-dd",
+            minDate: "<%= @min_date %>",
+            maxDate: "<%= @max_date %>"
+          };
+        if ("<%= @cur_date %>") {
+          opts = {...opts, defaultDate: "<%= @cur_date %>"}
+        };
+        $("#date_input").datepicker(opts);
       });
       </script>
       &nbsp;&nbsp;
-      <span id="backAWeek" class="week-button" onmouseover="hoverColor('#backAWeek', true)" onmouseout="hoverColor('#backAWeek', false)" onclick="changeDate(lastWeek);">&lt;</span>&nbsp;
-      <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>"></input>&nbsp;
-      <span id="forwardAWeek" class="week-button" onmouseover="hoverColor('#forwardAWeek', true)" onmouseout="hoverColor('#forwardAWeek', false)" onclick="changeDate(nextWeek);">&gt;</span>
+      <button id="backAWeek" title="Previous week" onclick="changeDate(lastWeek);">&lt;</button>
+      &nbsp;
+      <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>">
+      &nbsp;
+      <button id="forwardAWeek" title="Next week" onclick="changeDate(nextWeek);">&gt;</button>
+      &nbsp;
+      <button id="curDate" class="week-button" onclick="changeDate('<%= @today %>');">Today</button>
     </td>
   </tr></table>
 </div>

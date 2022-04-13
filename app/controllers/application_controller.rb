@@ -84,13 +84,14 @@ class ApplicationController < ActionController::Base
     session[:today] || today_or_latest(1)
   end
 
+  # this creates unexpected behavior where the initial date can be in the future and doesn't match what is shown in the data table or the plot (ie before crop emergence)
   def today_or_latest(field_id)
-    field = Field.find(field_id)
-    earliest = field.current_crop.emergence_date
-    query = "select max(date) as date from field_daily_weather where field_id=#{field_id}"
-    latest = FieldDailyWeather.find_by_sql(query).first.date
+    # field = Field.find(field_id)
+    # earliest = field.current_crop.emergence_date
+    # query = "select max(date) as date from field_daily_weather where field_id=#{field_id}"
+    # latest = FieldDailyWeather.find_by_sql(query).first.date
     day = Date.today
-    day = earliest if day < earliest
+    # day = earliest if day < earliest
     day
   end
 
