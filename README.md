@@ -26,8 +26,12 @@ git clone https://github.com/rbenv/ruby-build.git "$(rbenv root)"/plugins/ruby-b
 # or update ruby-build if already installed
 git -C "$(rbenv root)"/plugins/ruby-build pull
 
+# may need to force git to use https
+# per https://stackoverflow.com/questions/70663523/the-unauthenticated-git-protocol-on-port-9418-is-no-longer-supported
+git config --global url."https://github.com/".insteadOf git://github.com/
+
 # install ruby with rbenv
-rbenv install 3.1.1 # or latest version
+rbenv install 3.1.2 # or latest version
 
 # update bundler to latest
 gem install bundler

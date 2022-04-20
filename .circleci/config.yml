@@ -5,7 +5,7 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/ruby:3.1.1-node
+      - image: cimg/ruby:3.1.2-node
         environment:
           PG_HOST: localhost
           PG_USER: postgres
