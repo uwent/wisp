@@ -11,7 +11,7 @@ jobs:
           PG_USER: postgres
           RAILS_ENV: test
           RACK_ENV: test
-      - image: cimg/postgres:12.8
+      - image: cimg/postgres:12.10
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: wisp_test
