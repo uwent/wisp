@@ -288,7 +288,8 @@ class Field < ApplicationRecord
         lat: pivot.latitude.round(1),
         long: pivot.longitude.round(1),
         start_date: start_date,
-        end_dat: end_date
+        end_dat: end_date,
+        method: "adjusted" # per new ET equations
       }
       response = HTTParty.get(ET_ENDPOINT, query: query, timeout: 10)
       json = JSON.parse(response.body, symbolize_names: true)
