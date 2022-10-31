@@ -88,11 +88,12 @@ Rails.application.routes.draw do
   # this is actually called 'Field Groups' on the sidebar
   resources :weather_stations
 
-  # TODO: Remove this eventually. Dynamic routing is deprecated.
-  # match ':controller(/:action(/:id(.:format)))', via: [:get, :post]
-
   root to: "welcome#index"
 
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
+
   # redirect all wayward routes to home
-  get "*path", to: redirect("/")
+  unless Rails.env.development?
+    get "*path", to: redirect("/")
+  end
 end
