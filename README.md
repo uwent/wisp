@@ -14,7 +14,7 @@ WISP uses the checkbook method to track soil moisture on a daily basis given a u
 
 ## Dependencies
 
-`Ruby 3.0.x`
+`Ruby`
 ```bash
 # install rbenv
 sudo apt -y install rbenv
@@ -31,16 +31,16 @@ git -C "$(rbenv root)"/plugins/ruby-build pull
 git config --global url."https://github.com/".insteadOf git://github.com/
 
 # install ruby with rbenv
-rbenv install 3.1.2 # or latest version
+rbenv install 3.1.3 # or latest version
 
 # update bundler to latest
 gem install bundler
 ```
 
-`Postgres 12` and `gem pg`
+`Postgres` and `gem pg`
 ```bash
 # install postgres
-sudo apt -y install postgresql-12 postgresql-client-12 libpq-dev
+sudo apt -y install postgresql-14 postgresql-client-14 libpq-dev
 sudo service postgresql start
 
 # install gem pg
