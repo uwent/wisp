@@ -330,7 +330,7 @@ GEM
     standard (1.18.1)
       rubocop (= 1.39.0)
       rubocop-performance (= 1.15.1)
-    terser (1.1.12)
+    terser (1.1.13)
       execjs (>= 0.3.0, < 3)
     thor (1.2.1)
     tilt (2.0.11)
