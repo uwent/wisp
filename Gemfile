@@ -7,7 +7,7 @@ gem "pg", "~> 1.3"
 # gem 'calendar_date_select', '~> 2.1.0'
 gem "coffee-rails", "~> 5.0"
 gem "decent_exposure", "~> 3.0"
-gem "devise", "~> 4.8"
+gem "devise", "~> 4.9"
 gem "httparty", "~> 0.20"
 gem "jbuilder", "~> 2.11"
 gem "jqgrid-jquery-rails", "~> 4.6"
