@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gem "rails", "~> 7.0"
 gem "railties", "~> 7.0"
 gem "activesupport", "~> 7.0"
-gem "pg", "~> 1.3"
+gem "pg", "~> 1.4"
 # gem 'calendar_date_select', '~> 2.1.0'
 gem "coffee-rails", "~> 5.0"
 gem "decent_exposure", "~> 3.0"
