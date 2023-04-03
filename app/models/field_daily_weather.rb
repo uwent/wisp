@@ -336,7 +336,7 @@ class FieldDailyWeather < ApplicationRecord
       obj = attributes[key] || send(key)
       ret << if obj
         if obj.instance_of?(Float)
-          sprintf("%0.2f", obj)
+          sprintf("%0.4f", obj)
         elsif obj.instance_of?(ActiveSupport::TimeWithZone) || obj.instance_of?(Date) || obj.instance_of?(Time)
           obj.strftime("%Y-%m-%d")
         elsif obj.is_a?(Integer)
