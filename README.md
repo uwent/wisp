@@ -1,6 +1,6 @@
 # Wisconsin Irrigation Scheduling Program (WISP)
 
-[![Circle CI](https://circleci.com/gh/uwent/wisp.svg?style=svg&circle-token=ac949534b314e7ad331b2373135f52a52fba512b)](https://circleci.com/gh/uwent/wisp)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/uwent/wisp/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/uwent/wisp/tree/main)
 
 ## Description
 
@@ -31,7 +31,7 @@ git -C "$(rbenv root)"/plugins/ruby-build pull
 git config --global url."https://github.com/".insteadOf git://github.com/
 
 # install ruby with rbenv
-rbenv install 3.2.1 # or latest version
+rbenv install 3.2.2 # or latest version
 
 # update bundler to latest
 gem install bundler
