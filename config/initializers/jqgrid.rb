@@ -1,4 +1,4 @@
-require "2dc_jqgrid"
+require "jqgrid"
 
 begin
   Jqgrid.jrails_present = true
