@@ -19,6 +19,7 @@ gem "will_paginate", "~> 4.0"
 gem "net-smtp", "~> 0.4" # required as of ruby 3.1
 gem "terser", "~> 1.1" # for JS compression
 gem "asigbiophys", path: "vendor/asigbiophys"
+gem "csv" # no longer part of the standard libary as of Ruby 3.4
 
 group :development do
   gem "puma"
