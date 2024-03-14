@@ -3,21 +3,21 @@ source "https://rubygems.org"
 gem "rails", "~> 7.1"
 gem "railties", "~> 7.1"
 gem "activesupport", "~> 7.1"
-gem "pg", "~> 1.5"
-gem "devise", "~> 4.9"
-gem "whenever", "~> 1.0"
-gem "httparty", "~> 0.21"
-gem "jbuilder", "~> 2.11"
-gem "jqgrid-jquery-rails", "~> 4.6"
-gem "jquery-rails", "~> 4.6"
+gem "pg" # postgres
+gem "devise" # logins
+gem "whenever" # cron
+gem "httparty"
+gem "jbuilder"
+gem "jqgrid-jquery-rails"
+gem "jquery-rails"
 gem "jquery-ui-rails", github: "jquery-ui-rails/jquery-ui-rails"
-gem "rails-ujs", "~> 0.1"
-gem "sassc-rails", "~> 2.1"
-gem "coffee-rails", "~> 5.0"
-gem "decent_exposure", "~> 3.0"
-gem "will_paginate", "~> 4.0"
-gem "net-smtp", "~> 0.4" # required as of ruby 3.1
-gem "terser", "~> 1.1" # for JS compression
+gem "rails-ujs"
+gem "sassc-rails"
+gem "coffee-rails"
+gem "decent_exposure"
+gem "will_paginate"
+gem "net-smtp" # required as of ruby 3.1
+gem "terser" # for JS compression
 gem "asigbiophys", path: "vendor/asigbiophys"
 gem "csv" # no longer part of the standard libary as of Ruby 3.4
 
