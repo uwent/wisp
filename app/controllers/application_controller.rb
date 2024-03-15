@@ -25,14 +25,14 @@ class ApplicationController < ActionController::Base
 
   def set_nav_tabs
     @nav_tabs = [
-      {title: "Home", path: "/home", controller: :home, action: :index},
+      {title: "Home", path: "/home", controller: :home},
       {title: "Farm Status", path: "/wisp/farm_status", controller: :wisp, action: :farm_status},
       {title: "Pivots/Fields", path: "/wisp/pivot_crop", controller: :wisp, action: :pivot_crop},
       {title: "Field Status", path: "/wisp/field_status", controller: :wisp, action: :field_status},
-      {title: "Field Groups", path: "/weather_stations", controller: :weather_stations, action: :index},
+      {title: "Field Groups", path: "/weather_stations", controller: :weather_stations},
       {title: "Edit Daily Data", path: "/wisp/weather", controller: :wisp, action: :weather},
     ].collect do |tab|
-      selected = (tab[:controller] == params[:controller]&.to_sym) && (tab[:action] == params[:action]&.to_sym)
+      selected = (tab[:controller] == params[:controller]&.to_sym) && (tab[:action].blank? || tab[:action] == params[:action]&.to_sym)
       tab[:selected] = selected
       tab
     end
@@ -48,7 +48,7 @@ class ApplicationController < ActionController::Base
       id = obj[:id] if obj
     rescue ActiveRecord::RecordNotFound
       Rails.logger.error "ApplicationController :: Parent object find failed for #{klass} / #{parent_klass}:#{parent_id}"
-      flash[:notice] = "We're sorry, an internal error has occurred"
+      flash[:error] = "We're sorry, an internal error has occurred"
       id = obj = nil
     end
     [id, obj]

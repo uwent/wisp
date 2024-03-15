@@ -1,33 +1,34 @@
-<% content_for :title do %>
-  WISP: Field Groups
-<% end %>
+<%= render "header" %>
 
-<%= render partial: 'header' %>
+<h3>Current field groups</h3>
+<div class="content-box">
+  <% if weather_stations.size > 0 %>
+    <table>
+      <tr>
+        <th>Name</th>
+        <th>Location</th>
+        <th>Notes</th>
+        <th>Fields</th>
+      </tr>
+    <% weather_stations.each do |weather_station| %>
+      <tr>
+        <td><%= weather_station.name %></td>
+        <td><%= weather_station.location %></td>
+        <td><%= weather_station.notes %></td>
+        <td>
+          <% for field in weather_station.fields %>
+          <%= field.name %>&nbsp;
+          <% end %>
+        </td>
+        <td><%= link_to 'Show', weather_station %></td>
+        <td><%= link_to 'Edit', edit_weather_station_path(weather_station) %></td>
+        <td><%= button_to 'Delete', weather_station, :confirm => 'Are you sure?', :method => :delete %></td>
+      </tr>
+    <% end %>
+    </table>
+  <% else %>
+    <p>You don't have any field groups set up. Click the button below to add one.</p>
+  <% end %>
+</div>
 
-<table>
-  <tr>
-    <th>Name</th>
-    <th>Location</th>
-    <th>Notes</th>
-    <th>Fields</th>
-  </tr>
-<% weather_stations.each do |weather_station| %>
-  <tr>
-    <td><%= weather_station.name %></td>
-    <td><%= weather_station.location %></td>
-    <td><%= weather_station.notes %></td>
-    <td>
-      <% for field in weather_station.fields %>
-      <%= field.name %>&nbsp;
-      <% end %>
-    </td>
-    <td><%= link_to 'Show', weather_station %></td>
-    <td><%= link_to 'Edit', edit_weather_station_path(weather_station) %></td>
-    <td><%= button_to 'Delete', weather_station, :confirm => 'Are you sure?', :method => :delete %></td>
-  </tr>
-<% end %>
-</table>
-
-<br />
-
-<%= link_to 'Add New Field Group', new_weather_station_path %>
+<%= link_to 'Add New Field Group', new_weather_station_path, class: "btn btn-light" %>
