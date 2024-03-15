@@ -2,8 +2,8 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
-
   skip_before_action :verify_authenticity_token, if: :json_request?
+  before_action :set_nav_tabs
 
   # TODO: Remove this.
   # Implicit conversion of nil into string error with stylesheet tags and content_for, per
@@ -22,6 +22,22 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def set_nav_tabs
+    @nav_tabs = [
+      {title: "Home", path: "/home", controller: :home, action: :index},
+      {title: "Farm Status", path: "/wisp/farm_status", controller: :wisp, action: :farm_status},
+      {title: "Pivots/Fields", path: "/wisp/pivot_crop", controller: :wisp, action: :pivot_crop},
+      {title: "Field Status", path: "/wisp/field_status", controller: :wisp, action: :field_status},
+      {title: "Field Groups", path: "/weather_stations", controller: :weather_stations, action: :index},
+      {title: "Edit Daily Data", path: "/wisp/weather", controller: :wisp, action: :weather},
+    ].collect do |tab|
+      selected = (tab[:controller] == params[:controller]&.to_sym) && (tab[:action] == params[:action]&.to_sym)
+      tab[:selected] = selected
+      tab
+    end
+  end
+
 
   # TODO: Remove most of this.
   def get_by_parent(klass, parent_klass, parent_id)

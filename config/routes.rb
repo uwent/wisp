@@ -6,11 +6,11 @@ Rails.application.routes.draw do
     end
   end
 
-  get "/wisp" => "welcome#index"
-  get "/userguide" => "welcome#guide"
+  get "/wisp" => "home#index"
+  get "/userguide" => "home#guide"
   get "fdw/irrig_only/:id" => "field_daily_weather#irrig_only"
 
-  resources :welcome, only: [:index] do
+  resources :home, only: [:index] do
     collection do
       get "about"
       get "guide"
@@ -88,7 +88,7 @@ Rails.application.routes.draw do
   # this is actually called 'Field Groups' on the sidebar
   resources :weather_stations
 
-  root to: "welcome#index"
+  root to: "home#index"
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 

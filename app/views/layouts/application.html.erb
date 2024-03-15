@@ -3,23 +3,13 @@
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="icon" type="image/png" href="/favicon.png">
-    <title>
-    <% if content_for?(:title) %>
-      <%= yield :title -%>
-    <% else %>
-      WISP - Wisconsin Irrigation Scheduling Program
-    <% end %>
-  </title>
-  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-  <%= stylesheet_link_tag "application" -%>
-  <% if content_for?(:stylesheet) %>
-    <%= yield :stylesheet -%>
-  <% end %>
+  <%= stylesheet_link_tag "application" %>
   <%= csrf_meta_tags %>
-  <!-- This is part of the protect_from_forgery fix from http://henrik.nyh.se/2008/05/rails-authenticity-token-with-jquery -->
-  <%= javascript_tag "var AUTH_TOKEN = #{form_authenticity_token.inspect};" if protect_against_forgery? %>
-  <%= javascript_include_tag 'application' %> <!-- Don't want everything in defaults, just the XSS stuff I put in -->
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <%= javascript_include_tag 'application' %>
+  <%= yield :scripts %>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ENV["WISP_GTAG"] %>"></script>
   <script>
@@ -28,38 +18,42 @@
     gtag('js', new Date());
     gtag('config', '<%= ENV["WISP_GTAG"] %>');
   </script>
+  <title><%= @title ? "#{@title} - WISP" : "WISP - Wisconsin Irrigation Scheduling Program" %></title>
 </head>
 
 <body>
-  
-  <div id="wrapper">
-    <h1><%= link_to "UW Extension Ag Weather", "https://agweather.cals.wisc.edu/" %></h1>
-    <div id="nav">
-      <%= link_to "Home", root_path %>
-      <%= link_to "Farm Status", "/wisp/farm_status" %>
-      <%= link_to "Pivots/Fields", "/wisp/pivot_crop" %>
-      <%= link_to "Field Status", "/wisp/field_status" %>
-      <%= link_to "Field Groups", "/weather_stations" %>
-      <%= link_to "Edit Daily Data", "/wisp/weather" %>
-      <%= link_to "About Us", about_welcome_index_path %>
-    </div>
-    <div id="main_body">
-      <div id="welcome">
-        <% if content_for?(:welcome) %>
-          <%= yield :welcome -%>
-        <% else %>
-          <%= render partial: 'welcome/sidebar' %>
+  <div class="wrapper">
+    <div class="nav-bar">
+      <div class="nav-title">
+        <h1><%= link_to "Wisconsin Irrigation Scheduling Program", "/home/index", title: "WISP Home" %></h1>
+      </div>
+      <div class="nav-btns">
+        <% @nav_tabs.each do |tab| %>
+          <%= link_to tab[:path] do %>
+            <div class="nav-btn<%= tab[:selected] ? ' selected' : ''%>" title="<%= tab[:title]%>"><%= tab[:title] %></div>
+          <% end %>
         <% end %>
       </div>
-      <div id="content">
-        <%= yield -%>
-      </div>
-      <div class="clear"></div>
     </div>
-    <div id="footer">
-      <%= yield :footer %>
+    <div class="main-wrapper">
+      <div class="main">
+        <div class="sidebar-wrapper">
+          <div class="sidebar-image">
+            <%= link_to image_tag("pivot.jpg", title: "WISP Home"), "/home" %>
+          </div>
+          <div class="sidebar">
+            <%= render partial: "home/sidebar" %>
+          </div>
+        </div>
+        <div class="content">
+          <%= yield %>
+        </div>
+      </div>
+    </div>
+    <div class="copyright">
       <p>Copyright ©<%= Date.current.year %> University of Wisconsin. All rights reserved.</p>
     </div>
   </div>
 </body>
+
 </html>

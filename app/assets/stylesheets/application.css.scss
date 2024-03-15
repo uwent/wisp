@@ -1,0 +1,270 @@
+// *= require_self
+// *= require_tree .
+
+@import "./breakpoints.scss";
+
+
+//-- Color definitions --//
+
+$page-bg-color: #f7f5ee;
+$frame-bg-color: #8b846a;
+// $map-frame-bg-color: #d3caa9;
+$map-form-bg-color: #ddd6bf;
+$sidebar-bg-color: #544e38;
+$sidebar-title-color: #ceb085;
+$sidebar-text-color: #f2f7f8;
+$sidebar-link-color: #f2f7f8;
+$heading-text-color: #363325;
+$nav-bg-color: #aea686;
+$nav-title-color: #3f3c2d;
+$nav-text-color: #58543d;
+$table-row-highlight-color: #d4ceb9;
+$table-row-underline-color: #8b846a;
+$form-border-color: #8b846a;
+$form-bg-color: #efefef;
+$hr-color: #d3caa9;
+$content-bg-color: #e9e4d0;
+// $content-text-color: #4f4c39;
+$content-text-color: #000000;
+$content-link-color: #26241a;
+$content-link-hover-color: #383425;
+$copyright-text-color: #4e4a3a;
+
+
+//-- AgWeather theme --//
+
+html,
+body,
+h1,
+h2 {
+  margin: 0px;
+  padding: 0px;
+}
+
+body {
+  background: $page-bg-color;
+  font-size: 15px;
+  font-family: 'Lato', sans-serif;
+}
+
+// testing
+div {
+  border: 1px dotted grey;
+}
+
+
+// --- LAYOUT --- //
+
+.wrapper {
+  max-width: 1200px;
+  min-height: calc(100vh - 20px);
+  text-align: left;
+  margin: auto;
+  margin-top: 20px;
+}
+
+.nav-bar {
+  display: inline-flex;
+  width: 100%;
+
+  @media #{$medium-down} {
+    flex-direction: column;
+  }
+}
+
+.nav-title {
+  max-width: 30em;
+  color: $nav-title-color;
+  font-variant: small-caps;
+
+  a {
+    text-decoration: none;
+    color: inherit
+  }
+
+  @media #{$medium-down} {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+}
+
+.nav-btns {
+  margin-left: auto;
+  margin-top: auto;
+  display: inline-flex;
+  white-space: nowrap;
+  justify-content: flex-end;
+  gap: 1px;
+
+  @media #{$small-only} {
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin-left: inherit;
+    width: 100%;
+  }
+
+  a {
+    flex-grow: 1;
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+.nav-btn {
+  background-color: $nav-bg-color;
+  color: $nav-title-color;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  height: 1.5em;
+  padding: 5px 10px 0 10px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1rem;
+
+  @media #{$small-only} {
+    margin: 5px;
+    border-radius: 5px;
+    flex-wrap: wrap;
+  }
+}
+
+.nav-btn:hover,
+.nav-btn.selected {
+  background-color: $frame-bg-color;
+  color: $content-bg-color;
+}
+
+.main-wrapper,
+.sidebar-wrapper,
+.content-wrapper {
+  border-radius: 5px;
+}
+
+.main-wrapper {
+  background-color: $frame-bg-color;
+  padding: 10px;
+}
+
+.main {
+  display: flex;
+  gap: 0 10px;
+  width: inherit;
+  min-height: 750px;
+}
+
+.sidebar-wrapper {
+  background-color: $sidebar-bg-color;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-image img {
+  border-radius: 5px;
+  width: 100%;
+}
+
+.sidebar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  color: $sidebar-text-color;
+  margin-top: .5rem;
+  padding: 5px;
+
+  a,
+  a:hover,
+  a:visited {
+    color: $sidebar-link-color
+  }
+
+  h4 {
+    margin-top: 0px;
+    margin-bottom: 10px;
+  }
+}
+
+.notice {
+  border: 1px solid $frame-bg-color;
+  border-radius: 5px;
+  color: $content-text-color;
+  padding: .5rem;
+  transition: opacity 1s ease-out;
+  font-weight: bold;
+  background: hsl(120, 100%, 90%);
+  border: hsl(120, 100%, 25%);
+  color: hsl(120, 100%, 25%);
+}
+
+.notice .error {
+  background: hsl(350, 100%, 90%);
+  border: hsl(350, 100%, 25%);
+  color: hsl(350, 100%, 25%);
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.sidebar-links {
+  ul {
+    margin-top: 5px;
+    padding-inline-start: 25px;
+  }
+
+  li {
+    margin-bottom: .75em;
+  }
+}
+
+.content {
+  background: $content-bg-color;
+  flex: 1;
+  padding: 10px;
+
+  h2 {
+    padding-bottom: 5px;
+    border-bottom: 1px solid $hr-color;
+  }
+
+  h3 {
+    margin-block-start: 1.5em;
+    margin-block-end: .5em;
+  }
+}
+
+.uw-logo {
+  padding: 5px;
+  margin-top: auto;
+}
+
+.copyright {
+  font: 13px arial, sans-serif;
+  color: $copyright-text-color;
+  text-align: right;
+  margin-right: 10px;
+
+  p {
+    margin-top: 10px;
+  }
+}
+
+
+//-- DEVISE --//
+
+.field {
+  margin: .5rem 0;
+}
+
+.devise-links {
+  h4 {
+    margin: 1rem 0 .5rem 0;
+  }
+  ul {
+    margin: .5rem 0;
+  }
+  li {
+    line-height: 2rem;
+  }
+}
