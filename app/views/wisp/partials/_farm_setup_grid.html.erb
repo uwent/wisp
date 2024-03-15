@@ -1,170 +1,147 @@
-<div id="farmSetupGrid">
-  <script type="text/javascript">
-    var lastsel;
+<script>
+  let lastsel;
 
-    // Display "Yes" or "No" for boolean
-    function yesNoBoolFormat(cellvalue, options, rowObject) {
-      if (cellvalue === undefined) {
-        return("");
+  // Display "Yes" or "No" for boolean
+  function yesNoBoolFormat(cellvalue, options, rowObject) {
+    if (cellvalue === undefined) {
+      return("");
+    } else {
+      if (cellvalue == true || cellvalue == 'true') {
+        return("Yes");
       } else {
-        if (cellvalue == true || cellvalue == 'true') {
-          return("Yes");
-        } else {
-          return("No");
-        }
+        return("No");
       }
     }
+  }
 
-    // And (sigh!) translate back
-    function yesNoBoolUnformat(cellvalue, options, rowObject) {
-      if (cellvalue === undefined) {
-        return("");
-      } else if (cellvalue == "Yes") {
-        return("true");
-      } else {
-        return("false");
+  // And (sigh!) translate back
+  function yesNoBoolUnformat(cellvalue, options, rowObject) {
+    if (cellvalue === undefined) {
+      return("");
+    } else if (cellvalue == "Yes") {
+      return("true");
+    } else {
+      return("false");
+    }
+  }
+
+  function addDeleteButton(cl) {
+    let ids = $("#farm_setup").getDataIDs();
+    nRows = ids.length;
+    if (nRows == 1) {
+      be = "<input style='height:22px; width:35px;' type='button' value='Del' disabled='true' title='Cannot delete last farm'/>";
+      $("#farm_setup").setRowData(cl, {act:be});
+    } else {
+      for (let i=0; i<nRows; i++) {
+        let id = ids[i];
+        be = `<input style='height:22px; width:35px;' type='button' value='Del' onclick='removeRow(${cl})'></ids>`;
+        $("#farm_setup").setRowData(cl, {act:be});
       }
     }
+  }
 
-    function addDeleteButton(cl) {
-      var ids = jQuery("#farm_setup").getDataIDs();
-      nRows = ids.length;
-      //alert('nRows: '+nRows);
-      if (nRows == 1)
-        {
-          be = "<input style='height:22px; width:35px;' type='button' value='Del' disabled='true' title='Cannot delete last farm'/>";
-          jQuery("#farm_setup").setRowData(cl, {act:be})
-        }
-      else
+  function addNewFarmRow() {
+    let grid = $("#farm_setup");
+    newFarm = createNewFarm();
+    curID = newFarm["id"];
+    grid.addRowData(curID, newFarm); // add a new row with the new field's data
+    addDeleteButton(curID);
+    grid.editRow(curID, true); // put new row into inline-edit mode
+    $("#farm_setup").trigger("reloadGrid");
+  }
+
+  function createNewFarm() {
+    let frm = {};
+    // Why in heaven's name do I have to add the authenticity_token in here manually, when the other
+    // forms seem to add it in just fine via application.js?
+    $.ajax(
       {
-        for(var i=0; i<nRows; i++){
-          var id = ids[i];
-          be = "<input style='height:22px; width:35px;' type='button' value='Del' onclick=removeRow("+cl+"); ></ids>";
-          jQuery("#farm_setup").setRowData(cl, {act:be})
+        type: "POST",
+        url: '<%= url_for(controller: :farms, action: :post_data) %>',
+        data: {oper: "add", id: "_empty"},
+        dataType: "json",
+        contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
+        async: false,
+        success: function(json) {
+          frm = json;
         }
       }
-    }
+    );
+    return frm;
+  }
 
-    function addNewFarmRow() {
-      var grid = $("#farm_setup");
-      newFarm = createNewFarm();
-      curID = newFarm["id"];
-      grid.addRowData(curID, newFarm); // add a new row with the new field's data
-      addDeleteButton(curID);
-      grid.editRow(curID, true); // put new row into inline-edit mode
-      $("#farm_setup").trigger("reloadGrid");
-    }
+  function removeRow(rowID) {
+    $("#farm_setup").delGridRow(rowID);
+    $("#farm_setup").trigger("reloadGrid");
+  }
 
-    function createNewFarm() {
-      var frm = {};
-      // Why in heaven's name do I have to add the authenticity_token in here manually, when the other
-      // forms seem to add it in just fine via application.js?
-      $.ajax(
-        {
-          type: "POST",
-          url: '<%= url_for :controller => "farms", :action => :post_data %>',
-          data: {oper: "add", id: "_empty"},
-          dataType: "json",
-          contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
-          async: false,
-          success: function(json) {
-            frm = json;
-          }
+  // From example http://stackoverflow.com/questions/5092571/how-to-make-cell-editable-dynamically-in-jqgrid
+  function fillProblemsBox(id) {
+    $.ajax(
+      {
+        type: "GET",
+        // Had farm ID tacked on using & notation
+        url: '<%= url_for(controller: :farms, action: :problems, user_id: @user) %>',
+        dataType: "html",
+        async: false,
+        success: function(newHtml) {
+          $("#farmProblemsBox").html(newHtml);
         }
-      );
-      return frm;
-    }
+      }
+    );
+  }
 
-    function removeRow(rowID) {
-      jQuery("#farm_setup").delGridRow(rowID);
-      $("#farm_setup").trigger("reloadGrid");
-    }
-
-          // From example http://stackoverflow.com/questions/5092571/how-to-make-cell-editable-dynamically-in-jqgrid
-
-    function fillProblemsBox(id) {
-      $.ajax(
-        {
-          type: "GET",
-          // Had farm ID tacked on using & notation
-          url: '<%= url_for(:controller => "farms", :action => :problems, :user_id => @user) %>',
-          dataType: "html",
-          async: false,
-          success: function(newHtml)
-          {
-            // Set the HTML of the summary box to the new stuff
-            $("#farmProblemsBox").html(newHtml);
-          }
+  $(document).ready(function() {
+    var mygrid = $("#farm_setup").jqGrid({
+      url: '<%= url_for controller: :farms, action: :index, q: 1 %>',
+      editurl: '<%= grid_post_data_url "farms", @group_id %>',
+      datatype: "json",
+      colNames: ["Name", "Notes", "AD < 0?", "Delete", "Group ID", "ID"],
+      colModel: [
+        { name: "name", index: "name", width: 83, editable: true },
+        { name: "notes", index: "notes", width: 87, editable: true, align: "right" },
+        { name: "problem", index: "problem", formatter: yesNoBoolFormat, unformat: yesNoBoolUnformat, width: 20, align: "right" },
+        { name: "act", index: "act", width: 20 },
+        { name: "group_id", index: "group_id", width: 10, hidden: true, editable: true },
+        { name: "id", index: "id", width: 10, hidden: true, editable: false }
+      ],
+      pager: "#farm_setup_pager",
+      rowNum: 180,
+      rowList: [180],
+      imgpath: '<%= image_folder_path("jqgrid") %>',
+      sortname: "",
+      viewrecords: true,
+      height: 140,
+      width: 918,
+      sortorder: "",
+      gridview: false,
+      scrollrows: true,
+      autowidth: false,
+      rownumbers: false,
+      multiselect: false,
+      onSelectRow: function(id) {
+        if (id && id!==lastsel) {
+          $("#farm_setup").restoreRow(lastsel);
+          $("#farm_setup").editRow(id, true);
+          lastsel = id;
+          fillProblemsBox(id);
         }
-      );
-    }
+      },
+      loadComplete: function() {
+        let ids = $("#farm_setup").getDataIDs();
+        fillProblemsBox(ids[0]);
+        for(var i = 0; i < ids.length; i++) {
+          let cl = ids[i];
+          addDeleteButton(cl);
+        }
+      },
+      subGrid: false,
+      caption: "Farms"
+    })
+    mygrid.filterToolbar();
+    mygrid[0].toggleToolbar();
+  });
+</script>
 
-    jQuery(document).ready(function(){
-      var mygrid = jQuery("#farm_setup").jqGrid({
-        url: '<%= url_for :controller => "farms", :action => :index, :q => 1 %>',
-        // '/farms?q=1',
-        // editurl:'<%= url_for :controller => "farms", :action => :post_data, :parent_id => @group %>',
-        editurl: '<%= grid_post_data_url "farms", @group_id %>',
-        datatype: "json",
-        colNames: ["Name", "Notes", "AD < 0?", "Delete", "Group ID", "ID"],
-        colModel: [
-          { name: "name", index: "name", width: 83, editable: true },
-          { name: "notes", index: "notes", width: 87, editable: true, align: "right" },
-          { name: "problem", index: "problem", formatter: yesNoBoolFormat, unformat: yesNoBoolUnformat, width: 20, align: "right" },
-          { name: "act", index: "act", width: 20 },
-          { name: "group_id", index: "group_id", width: 10, hidden: true, editable: true },
-          { name: "id", index: "id", width: 10, hidden: true, editable: false }
-        ],
-        pager: "#farm_setup_pager",
-        rowNum: 180,
-        rowList: [180],
-        imgpath: '<%= image_folder_path("jqgrid") %>',
-        sortname: "",
-        viewrecords: true,
-        height: 140,
-        width: 918,
-        sortorder: "",
-        gridview: false,
-        scrollrows: true,
-        autowidth: false,
-        rownumbers: false,
-        multiselect: false,
-
-        onSelectRow: function(id){
-          if(id && id!==lastsel){
-            jQuery("#farm_setup").restoreRow(lastsel);
-            jQuery("#farm_setup").editRow(id,true);
-            lastsel=id;
-            fillProblemsBox(id);
-          }
-        },
-
-        loadComplete: function(){
-            var ids = jQuery("#farm_setup").getDataIDs();
-            fillProblemsBox(ids[0]);
-            for(var i = 0; i < ids.length; i++) {
-              var cl = ids[i];
-              addDeleteButton(cl);
-            }
-        },
-
-        subGrid: false,
-        caption: "Farms"
-      })
-      // .navGrid('#farm_setup_pager',
-      //   {edit:false,add:true,del:true,search:false,refresh:true},
-      //   {afterSubmit:function(r,data){return true;(r,data,'edit');}},
-      //   {afterSubmit:function(r,data){return true;(r,data,'add');}},
-      //   {afterSubmit:function(r,data){return true;(r,data,'delete');}}
-      // )
-
-      mygrid.filterToolbar();
-      mygrid[0].toggleToolbar();
-    });
-  </script>
-
-  <table id="farm_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
-  <button type="button" onclick="addNewFarmRow();">Add New Farm</button>
-
-  <!-- <div id="farm_setup_pager" class="scroll" style="text-align:center;"></div> -->
-</div>
+<table id="farm_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
+<button type="button" class="btn btn-light" onclick="addNewFarmRow();">Add New Farm</button>

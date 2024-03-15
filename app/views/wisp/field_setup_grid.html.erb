@@ -1,75 +1,79 @@
-<script type="text/javascript">
-  var lastFieldSel, curFieldID;
-
+<script>
   var PCT_COVER_METHOD = <%= Field::PCT_COVER_METHOD %>;
   var LAI_METHOD = <%= Field::LAI_METHOD %>;
+  let lastFieldSel;
+  let curFieldID;
+  let crop_id;
 
   function loadCropGrid(field_id) {
-    $('#cropDataGrid').load('<%= url_for :controller => "wisp", :action => :crop_setup_grid %>',
-      {field_id:field_id,user_id:user_id, farm_id:farm_id});
+    $('#cropDataGrid').load(
+      '<%= url_for(controller: :wisp, action: :crop_setup_grid) %>',
+      { field_id: field_id, user_id: user_id, farm_id: farm_id }
+    );
     crop_id = $("#crop_setup").getDataIDs()[0];
   }
 
   function rowSelect(id) {
-    if(id) {
-      if (!lastFieldSel || id !== lastFieldSel) {
-        jQuery('#field_setup').restoreRow(lastFieldSel);
-        jQuery('#field_setup').editRow(id,true);
-        lastFieldSel=id;
-        field_id=id;
-        loadCropGrid(field_id);
-      }
+    if (!id) return;
+    if (!lastFieldSel || id !== lastFieldSel) {
+      $('#field_setup').restoreRow(lastFieldSel);
+      $('#field_setup').editRow(id, true);
+      lastFieldSel = id;
+      field_id = id;
+      loadCropGrid(field_id);
     }
   }
 
-  function useFirstFieldRow(throwaway1,throwaway2) {
+  function useFirstFieldRow() {
     field_id = $("#field_setup").getDataIDs()[0];
-    lastFieldSel=field_id;
+    lastFieldSel = field_id;
     crop_id = 1; // Wrong, but that's OK
     // loadCropGrid(field_id);
-    return [true,'',field_id]; // This was a total shot in the dark, Googling 'jqgrid afterSubmit' gave hints
+    return [true, '', field_id]; // This was a total shot in the dark, Googling 'jqgrid afterSubmit' gave hints
   }
 
   function deleteField(id) {
-    jQuery('#field_setup').delGridRow(id,{afterSubmit:useFirstFieldRow,msg:'Delete selected record(s)? \nThis will delete all crop data \nassociated with this field. \nProceed with delete?'});
-//    jQuery('#field_setup').delGridRow(id,{afterSubmit:useFirstFieldRow,msg:'Permanently delete field, its crop & daily data?'});
+    $('#field_setup').delGridRow(id, {
+      afterSubmit: useFirstFieldRow,
+      msg: 'Delete selected record(s)?\nThis will delete all crop data\nassociated with this field.\nProceed with delete?'
+    });
   }
 
   function addFieldDeleteButtons() {
-    var fieldIDs = jQuery("#field_setup").getDataIDs();
-    var msg = "Field IDs";
-    nRows = fieldIDs.length;
-    for(var ii=0;ii<nRows;ii++){
-      var id = fieldIDs[ii];
+    let fieldIDs = $("#field_setup").getDataIDs();
+    let msg = "Field IDs";
+    let nRows = fieldIDs.length;
+    for (let i=0; i<nRows; i++) {
+      let id = fieldIDs[i];
       if (nRows == 1) {
-        be = "<input style='height:22px;width:35px;' type='button' value='Del' disabled='true' title='Cannot delete only field'/>";
+        be = "<input style='height:22px; width:35px;' type='button' value='Del' disabled='true' title='Cannot delete only field'/>";
       } else {
-        be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick='deleteField("+id+");' ></ids>";
+        be = `<input style='height:22px; width:35px;' type='button' value='Del' onclick='deleteField(${id});' ></ids>`;
       }
-      jQuery("#field_setup").setRowData(id,{act:be});
+      $("#field_setup").setRowData(id, { act: be } );
     }
   }
 
   // Add new field based on et mthod selection (currently controlled by separate buttons).
   function addNewFieldRow(method) {
-    var grid = $('#field_setup');
-    newField = createNewField(method);
-    field_id = newField['id'];
-    set_soil_characteristics(field_id,newField['soil_type_id']);
+    let grid = $('#field_setup');
+    let newField = createNewField(method);
+    let field_id = newField['id'];
+    set_soil_characteristics(field_id, newField['soil_type_id']);
     grid.addRowData(field_id, newField); // add a new row with the new field's data
     addFieldDeleteButtons();
-    grid.editRow(field_id,true); // put new row into inline-edit mode
+    grid.editRow(field_id, true); // put new row into inline-edit mode
     loadCropGrid(field_id);
   }
 
   // Make a call to the server to create a new field; will return new row as JSON
   function createNewField(method) {
-    var pvt = {};
+    let pvt = {};
     $.ajax(
       {
         type: "POST",
-        url: '<%= url_for :controller => 'fields', :action => :post_data %>',
-        data: {pivot_id:pivot_id,parent_id:pivot_id,oper:'add',id:'_empty',et_method:method},
+        url: '<%= url_for(controller: :fields, action: :post_data) %>',
+        data: { pivot_id: pivot_id, parent_id: pivot_id, oper: 'add', id: '_empty', et_method: method },
         dataType: "json",
         contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
         async: false,
@@ -80,84 +84,70 @@
   }
 
   // Propagate changes from select-clicked event onwards
+  // From stackoverflow.com/questions/5247138/jqgrid-change-cell-value-and-stay-in-edit-mode
   function set_soil_characteristics_from_event(event) {
-    // From stackoverflow.com/questions/5247138/jqgrid-change-cell-value-and-stay-in-edit-mode
-    var rowID = $(event.target).closest('tr.jqgrow').attr('id');
-    soil_id=parseInt($(event.target).val(),10);
-    set_soil_characteristics(rowID,soil_id);
+    let rowID = $(event.target).closest('tr.jqgrow').attr('id');
+    soil_id = parseInt($(event.target).val(), 10);
+    set_soil_characteristics(rowID, soil_id);
   }
 
   // Ensure that default FC and PWP values are entered, whether from a new row being created
   // or from the select box being clicked. Overwrite existing values in either case.
-  function set_soil_characteristics(curFieldID,soil_id) {
+  function set_soil_characteristics(curFieldID, soil_id) {
     // This Ruby helper enumerates all the soil_type data, same order as the select box
-    var soils = <%= soil_characteristics %>; // {1:{field_capacity_pct:15.0,perm_wilting_pt_pct:5.0},2:{...}}
-    fc = soils[soil_id]['field_capacity_pct'];
-    pwp = soils[soil_id]['perm_wilting_pt_pct'];
-    $("#"+curFieldID+"_field_capacity_pct").val(fc);
-    $("#"+curFieldID+"_perm_wilting_pt_pct").val(pwp);
+    let soils = <%= soil_characteristics %>; // {1:{field_capacity_pct:15.0,perm_wilting_pt_pct:5.0},2:{...}}
+    let fc = soils[soil_id]['field_capacity_pct'];
+    let pwp = soils[soil_id]['perm_wilting_pt_pct'];
+    $(`#${curFieldID}_field_capacity_pct`).val(fc);
+    $(`#${curFieldID}_perm_wilting_pt_pct`).val(pwp);
   }
 
-  function etMethodFormat(cellvalue,options,rowObject) {
-    if (cellvalue === undefined) {
-      return("");
-    } else {
-      if (cellvalue == '1') {
-        return 'Pct Cover';
-      } else {
-        return 'LAI';
-      }
-    }
+  function etMethodFormat(cellvalue, options, rowObject) {
+    if (cellvalue === undefined) return '';
+    return cellvalue == '1' ? 'Pct Cover' : 'LAI';
   }
 
-  function etMethodUnformat(cellvalue,options,cell) {
+  function etMethodUnformat(cellvalue, options, cell) {
     return cellvalue;
   }
 
   // Tag on percent sign for display
-  function pctFormat(cellvalue,options,rowObject) {
-    if (cellvalue === undefined) {
-      return("");
-    } else {
-      return(pctUnformat(cellvalue,options)+'%');
-    }
+  function pctFormat(cellvalue, options, rowObject) {
+    if (cellvalue === undefined) return '';
+    return pctUnformat(cellvalue, options) + '%';
   }
 
   // Remove percent sign from displayed value
   function pctUnformat(cellvalue,options,cell) {
-    if (cellvalue === undefined) {
-      return("");
-    } else {
-      // Remove the percent sign
-      num = cellvalue.replace("%","");
-      // Do we have decimalPlaces in our format options?
-      if (!(options.colModel.formatoptions.decimalPlaces === undefined)) {
-        // Try parsing the number as a float (could be blank or null)
-        aFloat = parseFloat(num);
-        // Success?
-        if (!isNaN(aFloat)) {
-          // Reformat it to a string with the appropriate number of decimal places
-          num = aFloat.toFixed(options.colModel.formatoptions.decimalPlaces);
-        }
+    if (cellvalue === undefined) return '';
+    // Remove the percent sign
+    let num = cellvalue.replace("%","");
+    // Do we have decimalPlaces in our format options?
+    if (!(options.colModel.formatoptions.decimalPlaces === undefined)) {
+      // Try parsing the number as a float (could be blank or null)
+      let aFloat = parseFloat(num);
+      // Success?
+      if (!isNaN(aFloat)) {
+        // Reformat it to a string with the appropriate number of decimal places
+        num = aFloat.toFixed(options.colModel.formatoptions.decimalPlaces);
       }
-      return num;
     }
+    return num;
   }
 
   function addFieldDeleteButton(cl) {
-    be = "<input style='height:22px;width:35px;' type='button' value='Del' onclick=jQuery('#field_setup').delGridRow("+cl+");$('#field_setup').trigger('reloadGrid'); ></ids>";
-    jQuery("#field_setup").setRowData(cl,{act:be})
+    be = `<input style='height:22px;width:35px;' type='button' value='Del' onclick="$('#field_setup').delGridRow(${cl}); $('#field_setup').trigger('reloadGrid');" ></ids>`;
+    $("#field_setup").setRowData(cl, {act: be } )
   }
 
-  jQuery(document).ready(function(){
+  $(document).ready(function() {
     <%= grid_javascript_settings %>
-    // $('#cropDataGrid').load('<%= url_for :controller => 'wisp', :action => :crop_setup_grid %>',{field_id:<%=@field_id%>,user_id:<%=@user_id%>});
     loadCropGrid(field_id);
-    var mygrid = jQuery("#field_setup").jqGrid({
+    let mygrid = $("#field_setup").jqGrid({
       url: '<%= grid_data_url "fields", @pivot_id %>',
       editurl: '<%= grid_post_data_url "fields", @pivot %>',
       datatype: "json",
-      colNames:["Name","ET Method","Area","Soil Type","Field Capacity","Perm. Wilt Pt","Target AD","ET Stn","Rain Stn","Soil Moist. Stn","Notes","Delete","Pivot","ID"],
+      colNames: ["Name", "ET Method", "Area", "Soil Type", "Field Capacity", "Perm. Wilt Pt", "Target AD", "ET Stn", "Rain Stn", "Soil Moist. Stn", "Notes", "Delete", "Pivot", "ID"],
       colModel:[
         {
           name: "name",
@@ -194,7 +184,7 @@
           formatter: "select",
           // working example for ET methods is "1:Percent Cover;2:Leaf Area Index"
           editoptions: { 
-            value:"<%= soil_types_for_select %>",
+            value: "<%= soil_types_for_select %>",
             dataEvents: [{ type: "change", fn: set_soil_characteristics_from_event }]
           },
           editrules: { required: true },
@@ -298,31 +288,27 @@
       autowidth: false,
       rownumbers: false,
       multiselect: false,
-
       onSelectRow: rowSelect,
-
-      loadComplete: function(){
+      loadComplete: function() {
         addFieldDeleteButtons();
-        fieldIDs = jQuery("#field_setup").getDataIDs();
+        let fieldIDs = $("#field_setup").getDataIDs();
         loadCropGrid(fieldIDs[0]);
       },
-
       subGrid: false,
       caption: "Fields <%= @pivot ? "for #{@pivot.name}" : '(select pivot above)' %>"
-    })
-    .navGrid('#field_setup_pager',
-      { edit:false, add:false, del:true, search:false, refresh:true },
+    }).navGrid(
+      '#field_setup_pager',
+      { edit: false, add: false, del: true, search: false, refresh: true },
       { afterSubmit:function(r,data){return true;(r,data,'edit');} },
       { afterSubmit:function(r,data){return true;(r,data,'add');} },
       { afterSubmit:function(r,data){return true;(r,data,'delete');} }
     )
-    mygrid.filterToolbar();mygrid[0].toggleToolbar();
+    mygrid.filterToolbar();
+    mygrid[0].toggleToolbar();
     $("#field_setup").hideCol('id');
   });
 </script>
 
 <table id="field_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
-<!-- <div id="field_setup_pager" class="scroll" style="text-align:center;"></div> -->
-<button type="button" onclick="addNewFieldRow(PCT_COVER_METHOD);">Add New Field (% Cover)</button>
-<button type="button" onclick="addNewFieldRow(LAI_METHOD);">Add New Field (Leaf Area Index)</button>
-<!-- $("#grid").addRowData(rowid,data, position, srcrowid); -->
+<button type="button" class="btn btn-light" onclick="addNewFieldRow(PCT_COVER_METHOD);">Add New Field (% Cover)</button>
+<button type="button" class="btn btn-light" onclick="addNewFieldRow(LAI_METHOD);">Add New Field (Leaf Area Index)</button>

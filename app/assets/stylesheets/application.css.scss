@@ -1,3 +1,5 @@
+// *= require jquery-ui
+// *= require jqgrid-jquery-rails
 // *= require_self
 // *= require_tree .
 
@@ -33,10 +35,7 @@ $copyright-text-color: #4e4a3a;
 
 //-- AgWeather theme --//
 
-html,
-body,
-h1,
-h2 {
+html, body, h1, h2 {
   margin: 0px;
   padding: 0px;
 }
@@ -56,7 +55,7 @@ div {
 // --- LAYOUT --- //
 
 .wrapper {
-  max-width: 1200px;
+  max-width: 1245px;
   min-height: calc(100vh - 20px);
   text-align: left;
   margin: auto;
@@ -91,6 +90,7 @@ div {
 .nav-btns {
   margin-left: auto;
   margin-top: auto;
+  margin-right: 10px;
   display: inline-flex;
   white-space: nowrap;
   justify-content: flex-end;
@@ -150,13 +150,19 @@ div {
   gap: 0 10px;
   width: inherit;
   min-height: 750px;
+  @media #{$small-only} {
+    flex-direction: column-reverse;
+  }
 }
 
 .sidebar-wrapper {
   background-color: $sidebar-bg-color;
-  width: 250px;
   display: flex;
   flex-direction: column;
+  min-width: 200px;
+  @media #{$medium-up} {
+    width: 250px;
+  }
 }
 
 .sidebar-image img {
@@ -185,6 +191,17 @@ div {
   }
 }
 
+.sidebar-links {
+  ul {
+    margin-top: 5px;
+    padding-inline-start: 25px;
+  }
+
+  li {
+    margin-bottom: .75em;
+  }
+}
+
 .notice {
   border: 1px solid $frame-bg-color;
   border-radius: 5px;
@@ -207,31 +224,42 @@ div {
   opacity: 0;
 }
 
-.sidebar-links {
-  ul {
-    margin-top: 5px;
-    padding-inline-start: 25px;
-  }
-
-  li {
-    margin-bottom: .75em;
-  }
+.content-wrapper {
+  background: $content-bg-color;
+  padding: 10px;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .content {
-  background: $content-bg-color;
-  flex: 1;
-  padding: 10px;
-
   h2 {
     padding-bottom: 5px;
     border-bottom: 1px solid $hr-color;
+    margin-bottom: .5em;
   }
 
   h3 {
-    margin-block-start: 1.5em;
+    margin-block-start: 1em;
     margin-block-end: .5em;
   }
+
+  .btn {
+    margin: 5px;
+  }
+}
+
+.content-box {
+  background: $page-bg-color;
+  border-radius: 5px;
+  border: 1px solid $frame-bg-color;
+  padding: 5px;
+  overflow: auto;
+}
+
+.inline-flex {
+  display: inline-flex;
+  align-items: center;
+  gap: 1em;
 }
 
 .uw-logo {
@@ -268,3 +296,8 @@ div {
     line-height: 2rem;
   }
 }
+
+
+// -- TEMP -- //
+
+

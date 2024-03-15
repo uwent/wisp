@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <link rel="icon" type="image/png" href="/favicon.png">
   <%= stylesheet_link_tag "application" %>
+  <%= yield :styles %>
   <%= csrf_meta_tags %>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <%= javascript_include_tag 'application' %>
@@ -45,8 +46,10 @@
             <%= render partial: "home/sidebar" %>
           </div>
         </div>
-        <div class="content">
-          <%= yield %>
+        <div class="content-wrapper">
+          <div class="content">
+            <%= yield %>
+          </div>
         </div>
       </div>
     </div>
