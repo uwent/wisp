@@ -62,7 +62,7 @@ class FieldDailyWeatherController < AuthenticatedController
         page = days / page_size
       end
       # logger.info "\n****\nfdw#index full; for field_id #{field_id}, page is #{page}, page_size is #{page_size}, #{wx_size} records"; $stdout.flush
-      page = 0 if page < 0
+      page = 1 if page < 1
       @field_daily_weather = @field_daily_weather.paginate(page: page, per_page: page_size)
     end
     @field_daily_weather ||= []

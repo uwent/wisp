@@ -55,7 +55,7 @@ div {
 // --- LAYOUT --- //
 
 .wrapper {
-  max-width: 1245px;
+  max-width: 1250px;
   min-height: calc(100vh - 20px);
   text-align: left;
   margin: auto;
@@ -254,12 +254,39 @@ div {
   border: 1px solid $frame-bg-color;
   padding: 5px;
   overflow: auto;
+  flex: 1;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .inline-flex {
   display: inline-flex;
   align-items: center;
   gap: 1em;
+}
+
+#fieldStatusGrid {
+  display: grid;
+  grid-template-columns: 25% calc(75% - 10px);
+  gap: 10px;
+  min-height: 600px;
+  h3:first-child {
+    margin: 0;
+  }
+}
+
+.flex-across {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex-down {
+  display: flex;
+  flex-direction: column;
 }
 
 .uw-logo {

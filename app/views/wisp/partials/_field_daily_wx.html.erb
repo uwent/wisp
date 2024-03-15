@@ -1,162 +1,205 @@
 
-<div id="tableDataBox">
+<script>
+  const isLai = <%= @field.et_method_name == "LAI" ? "true" : "false" %>;
+  const max_moisture = <%= @field.field_capacity * 100.0 %>;
+  const ad_at_pwp = <%= @ad_at_pwp %>;
+  let lastsel;
+  let laiFormatter, pctCoverFormatter;
+  let laiIsEditable, pctCoverIsEditable;
+  if (isLai) {
+    // Someday we want to turn this back on, but there's no way to adapt the growth curves
+    // to user input yet. So LAI is never editable.
+    laiIsEditable = false;
+    pctCoverIsEditable = false;
+  } else {
+    laiIsEditable = false;
+    pctCoverIsEditable = true;
+  }
+  
+  function editedFormatter(cellvalue, options, obj) {
+    if (cellvalue === undefined) return '';
+    // Is there an "E" for "entered"?
+    if (cellvalue.indexOf("E") == -1) {
+      return parseFloat(cellvalue).toFixed(2).toString();
+    }
+    return cellvalue.replace("E","");
+  }
+  
+  function posRedFormatter(cellvalue, options, obj) {
+    let cellFloat = parseFloat(cellvalue).toFixed(2);
+    if (cellFloat > 0.0) {
+      let cellstr = cellFloat.toString();
+      return `<span style="color:red; font-size:1.5em; font-weight:bold">${cellstr}</span>`;
+    }
+    return "";
+  }
+  
+  function naFormatter(cellvalue, options, obj) {
+    if (cellvalue == "n/a") return cellvalue;
+    if (cellvalue == "") return "0.0";
+    return parseFloat(cellvalue).toFixed(2).toString();
+  }
+  
+  // Example of how to set the pager to a given page in JS
+  // function page5() {
+  //   mygrid.setGridParam({page:5}).trigger('reloadGrid');
+  // }
+  function displayCalcValues(rowid, response) {
+    $("#weather").trigger("reloadGrid");
+    plotGraph();
+    showSummaryBox(cur_date);
+    return true;
+  }
 
-  <script type="text/javascript">
-    var lastsel;
-    var isLai = <%= @field.et_method_name == "LAI" ? "true" : "false" %>;
-    var max_moisture = <%= @field.field_capacity * 100.0 %>;
-    var ad_at_pwp = <%= @ad_at_pwp %>;
-    var laiFormatter, pctCoverFormatter;
-    var laiIsEditable, pctCoverIsEditable;
-    if (isLai) {
-      // Someday we want to turn this back on, but there's no way to adapt the growth curves
-      // to user input yet. So LAI is never editable.
-      laiIsEditable = false;
-      pctCoverIsEditable = false;
-    } else {
-      laiIsEditable = false;
-      pctCoverIsEditable = true;
-    }
-    
-    function editedFormatter(cellvalue,options,obj) {
-      if (cellvalue === undefined) {
-        return("");
-      } else {
-        // Is there an "E" for "entered"?
-        if (cellvalue.indexOf("E") == -1) {
-          return parseFloat(cellvalue).toFixed(2).toString();
-        } else {
-          num = cellvalue.replace("E","");
-          return num;
-        }
-      }
-    }
-    
-    function posRedFormatter(cellvalue, options, obj) {
-      cellFloat = parseFloat(cellvalue).toFixed(2);
-      if (cellFloat > 0.0) {
-        cellstr = cellFloat.toString();
-        return('<span style="color:red;font-size:1.5em;font-weight:bold">' + cellstr + '</span>');
-      }
-      else
-        return("");
-    }
-    
-    function naFormatter(cellvalue,options,obj) {
-      if (cellvalue == "n/a") {
-        return cellvalue;
-      } else if (cellvalue == "") {
-        return "0.0";
-      } else {
-        return parseFloat(cellvalue).toFixed(2).toString();
-      }
-    }
-    
-    // Example of how to set the pager to a given page in JS
-    // function page5() {
-    //   mygrid.setGridParam({page:5}).trigger('reloadGrid');
-    // }
-    function displayCalcValues(rowid, response) {
-      $("#weather").trigger("reloadGrid");
-      plotGraph();
-      showSummaryBox(cur_date);
-      return true;
-    }
-
-    var mygrid;
-    jQuery(document).ready(function(){
-      mygrid = jQuery("#weather").jqGrid({
-        page: curPage(initial_date, cur_date),
-        url: '<%= url_for(:controller => "field_daily_weather", :q => 1, :parent_id => @pivot, :field_id => @field, :user_id => @user) %>',
-        editurl: '<%= url_for(:controller => "field_daily_weather", :action => :post_data, :parent_id => @pivot, :field_id => @field, :user_id => @user) %>',
-        datatype: "json",
-        colNames: ["Date", "Poten. ET", "Rainfall", "Irrigation", "% Moisture", 
-          "% Cover", "LAI", "Adj. ET", "AD", "Deep Drainage", "ID"],
-        colModel: [
-          {
-            name: "date", index: "date", width: 75
-          },
-          {
-            name: "ref_et", index: "ref_et", width: 64, editable: true, align: "right", formatter: "number",
-            formatoptions: {decimalPlaces: 2}, editrules: {number: true, minValue: 0.0, maxValue: 0.6},
-          },
-          {
-            name: "rain", index: "rain", width: 67, editable: true, align: "right", formatter: "number",
-            formatoptions: {decimalPlaces: 2}, editrules: {number: true, minValue: 0.0, maxValue: 10.0},
-          },
-          {
-            name: "irrigation", index: "irrigation", width: 67, editable: true, align: "right", formatter: "number",
-            formatoptions: {decimalPlaces: 2}, editrules: {number: true, minValue: 0.0, maxValue: 10.0},
-          },
-          {
-            name: "pct_moisture", index: "pct_moisture", width: 72, editable: true, align: "right", formatter: editedFormatter, formatoptions: {decimalPlaces: 2}, editrules: {number: true, minValue: 0.0, maxValue: max_moisture},
-            cellattr: function(rowId, tv, rawObject, cm, rdata) {
-              if (rawObject[4].indexOf("E") == -1) { return ""; } else { return('style="color:#00A050; font-size:larger"'); }
-            },
-          },
-          {
-            name: "entered_pct_cover", index: "entered_pct_cover", width: 63, editable: pctCoverIsEditable, align: "right", hidden: isLai, formatter: editedFormatter, formatoptions: {decimalPlaces: 0}, editrules: {number: true, minValue: 0.0, maxValue: 100.0},
-            cellattr: function(rowId, tv, rawObject, cm, rdata) {
-              if (rawObject[5].indexOf('E') == -1) { return ""; } else { return('style="color:#00A050; font-size:larger"'); }
-            },
-          },
-          {
-            // Since we don't have any way to rejigger curves, laiIsEditable == false
-            name: "leaf_area_index", index: "leaf_area_index", width: 63, editable: laiIsEditable, align: "right", hidden:!(isLai), formatter: "number", formatoptions: {decimalPlaces: 2}, editrules:{number:true,minValue:0.0,maxValue:10.0}
-          },
-          {
-            name: "adj_et", index: "adj_et", width: 61, align: "right", formatter: naFormatter, formatoptions: {decimalPlaces:2}
-          },
-          {
-            name: "ad", index: "ad", width: 44, align: "right", formatter: "number", formatoptions: {decimalPlaces: 2},
-            cellattr: function(rowId, tv, rawObject, cm, rdata) {
-              ad = parseFloat(rawObject[8]);
-              if (ad > ad_at_pwp) { return ""; } else { return('style="background-color:#FF0000;font-size:larger"'); }
-            },
-          },
-          {
-            name: "deep_drainage", index: "deep_drainage", width: 92, align: "right", formatter: posRedFormatter, formatoptions: {decimalPlaces: 2}
-          },
-          {
-            name: "id", index: "id", width: 1, editable: true, hidden: true
-          }           
-        ], 
-        pager: "#weather_pager",
-        rowNum: 7,
-        rowList: [7,<%= FieldDailyWeather::SEASON_DAYS %>],
-        imgpath: '<%= image_folder_path("jqgrid") %>',
-        sortname: "",
-        viewrecords: true,
-        height: 161,
-        sortorder: "",
-        gridview: false,
-        scrollrows: true,
-        autowidth: false,
-        width: "100%",
-        scrollOffset: 0, /* per stackoverflow.com/questions/3736778/jqgrid-do-not-display-scrollbars */
-        rownumbers: false,
-        multiselect: false,
-        onSelectRow: function(id){
-          if(id){
-            if (id !== lastsel){ jQuery('#weather').restoreRow(lastsel); }
-            jQuery("#weather").editRow(id, true, "", "", "", "", displayCalcValues); 
-            lastsel = id; 
-          }
+  let mygrid;
+  $(document).ready(function() {
+    mygrid = $("#weather").jqGrid({
+      page: curPage(initial_date, cur_date),
+      url: '<%= url_for(controller: "field_daily_weather", q: 1, parent_id: @pivot, field_id: @field, user_id: @user) %>',
+      editurl: '<%= url_for(controller: "field_daily_weather", action: "post_data", parent_id: @pivot, field_id: @field, user_id: @user) %>',
+      datatype: "json",
+      colNames: ["Date", "Poten. ET", "Rainfall", "Irrigation", "% Moisture", "% Cover", "LAI", "Adj. ET", "AD", "Deep Drainage", "ID"],
+      colModel: [
+        {
+          name: "date",
+          index: "date",
+          width: 75,
         },
-        subGrid: false,
-        caption: "Edit Observed Values Below",
-      })
-      // .navGrid('#weather_pager',
-      //   {edit:false,add:false,del:false,search:false,refresh:true},
-      //   {afterSubmit:function(r,data){return true;(r,data,'edit');}}
-      // )
-      mygrid.filterToolbar();
-      mygrid[0].toggleToolbar();
-      // alert('jqGrid load');
-    });
-    
-  </script>
+        {
+          name: "ref_et",
+          index: "ref_et",
+          width: 64,
+          editable: true,
+          align: "right",
+          formatter: "number",
+          formatoptions: { decimalPlaces: 2 },
+          editrules: { number: true, minValue: 0.0, maxValue: 0.6 },
+        },
+        {
+          name: "rain",
+          index: "rain",
+          width: 67,
+          editable: true,
+          align: "right",
+          formatter: "number",
+          formatoptions: { decimalPlaces: 2 },
+          editrules: { number: true, minValue: 0.0, maxValue: 10.0 }
+        },
+        {
+          name: "irrigation",
+          index: "irrigation",
+          width: 67,
+          editable: true,
+          align: "right",
+          formatter: "number",
+          formatoptions: { decimalPlaces: 2 },
+          editrules: { number: true, minValue: 0.0, maxValue: 10.0 }
+        },
+        {
+          name: "pct_moisture",
+          index: "pct_moisture",
+          width: 72,
+          editable: true,
+          align: "right",
+          formatter: editedFormatter,
+          formatoptions: { decimalPlaces: 2 },
+          editrules: { number: true, minValue: 0.0, maxValue: max_moisture },
+          cellattr: function (rowId, tv, rawObject, cm, rdata) {
+            if (rawObject[4].indexOf("E") == -1) return "";
+            return ('style="color:#00A050; font-size:larger"');
+          },
+        },
+        {
+          name: "entered_pct_cover",
+          index: "entered_pct_cover",
+          width: 63,
+          editable: pctCoverIsEditable,
+          align: "right",
+          hidden: isLai,
+          formatter: editedFormatter,
+          formatoptions: { decimalPlaces: 0 },
+          editrules: { number: true, minValue: 0.0, maxValue: 100.0 },
+          cellattr: function (rowId, tv, rawObject, cm, rdata) {
+            if (rawObject[5].indexOf('E') == -1) return "";
+            return ('style="color:#00A050; font-size:larger"');
+          },
+        },
+        {
+          // Since we don't have any way to rejigger curves, laiIsEditable == false
+          name: "leaf_area_index",
+          index: "leaf_area_index",
+          width: 63,
+          editable: laiIsEditable,
+          align: "right",
+          hidden: !(isLai),
+          formatter: "number",
+          formatoptions: { decimalPlaces: 2 },
+          editrules: { number: true, minValue: 0.0, maxValue: 10.0 }
+        },
+        {
+          name: "adj_et",
+          index: "adj_et",
+          width: 61,
+          align: "right",
+          formatter: naFormatter,
+          formatoptions: { decimalPlaces: 2 }
+        },
+        {
+          name: "ad",
+          index: "ad",
+          width: 44,
+          align: "right",
+          formatter: "number",
+          formatoptions: { decimalPlaces: 2 },
+          cellattr: function (rowId, tv, rawObject, cm, rdata) {
+            let ad = parseFloat(rawObject[8]);
+            if (ad > ad_at_pwp) return "";
+            return ('style="background-color:#FF0000;font-size:larger"');
+          },
+        },
+        {
+          name: "deep_drainage",
+          index: "deep_drainage",
+          width: 92,
+          align: "right",
+          formatter: posRedFormatter,
+          formatoptions: { decimalPlaces: 2 }
+        },
+        {
+          name: "id",
+          index: "id",
+          width: 1,
+          editable: true,
+          hidden: true
+        }
+      ], 
+      pager: "#weather_pager",
+      rowNum: 7,
+      rowList: [7, <%= FieldDailyWeather::SEASON_DAYS %>],
+      imgpath: '<%= image_folder_path("jqgrid") %>',
+      sortname: "",
+      viewrecords: true,
+      sortorder: "",
+      gridview: false,
+      scrollrows: true,
+      autowidth: true,
+      scrollOffset: 20,
+      rownumbers: false,
+      multiselect: false,
+      onSelectRow: function(id) {
+        if (!id) return;
+        if (id !== lastsel) $('#weather').restoreRow(lastsel);
+        $("#weather").editRow(id, true, "", "", "", "", displayCalcValues); 
+        lastsel = id;
+      },
+      subGrid: false,
+      caption: "Edit Observed Values Below",
+    })
+    mygrid.filterToolbar();
+    mygrid[0].toggleToolbar();
+  });
+</script>
 
+<div id="tableDataBox">
   <table id="weather" class="scroll" cellpadding="0" cellspacing="0"></table>
-
 </div>

@@ -1,82 +1,14 @@
-<% content_for :stylesheet do %>
-  <style type="text/css">
-    h2 {
-      text-align: center;
-    }
-
-    #fieldSelectionBox {
-      text-align: center;
-    }
-
-    #fieldDataBox {
-      position: absolute;
-      left: 275px;
-      top: 173px;
-      width: 246px;
-      height: 204px;
-      padding: 2px;
-      border: 1px solid gray;
-      margin: 0px;
-    }
-
-    #tableDataBox {
-      position: absolute;
-      left: 544px;
-      top: 171px;
-      width: 691px;
-      padding: 2px;
-      margin: 0px;
-    }
-
-    #tableDataBox table tr td.editable {
-      background: white;
-    }
-
-    #projectedADBox {
-      position: absolute;
-      left: 275px;
-      top: 400px;
-      width: 246px;
-      height: 318px;
-      padding: 2px;
-      border: 1px solid gray;
-      margin: 0px;
-    }
-
-    #graphBox {
-      position: absolute;
-      left: 545px;
-      top: 400px;
-      width: 648px;
-      height: 318px;
-      padding: 2px;
-      border: 1px solid gray;
-      margin: 0px;
-    }
-
-    #imageADBox {
-      position: absolute;
-      left: 875px;
-      top: 375px;
-      width: 300px;
-    }
-
-    table.center {
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    span.week-button {
-      background: #DDD;
-      border: 1px solid;
-      border-radius: 3px
-    }
-  </style>
-<% end %>
 
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
 <script>
+  <%= grid_javascript_settings %>
+  var cur_date = "<%= @cur_date %>";
+  var lastWeek;
+  var nextWeek;
+  setLastAndNextWeeks(cur_date);
+  var initial_date = "<%= @initial_date %>";
+
   function parseDate(input) {
     var parts = input.match(/(\d+)/g);
     return new Date(parts[0], parts[1]-1, parts[2]);
@@ -94,13 +26,6 @@
     nextWeek.setDate(nextWeek.getDate() + 7);
     nextWeek = dateToS(nextWeek);
   }
-
-  <%= grid_javascript_settings %>
-  var cur_date = "<%= @cur_date %>";
-  var lastWeek;
-  var nextWeek;
-  setLastAndNextWeeks(cur_date);
-  var initial_date = "<%= @initial_date %>";
 
   // We don't know why the Google Vis API suddenly started having a cow over
   // our numbers. But this will reformat to fix it.
@@ -144,12 +69,12 @@
     if (!(google.visualization && google.visualization.DataTable)) {
       return;
     }
-    var ad_data = null;
-    var prj_data = null;
-    var targ_data = null;
-    var labels = null;
+    let ad_data = null;
+    let prj_data = null;
+    let targ_data = null;
+    let labels = null;
 
-    url = "<%= url_for(:action => :projection_data, :field_id => @field_id, :user_id => @user) %>&cur_date=" + cur_date;
+    url = "<%= url_for(action: :projection_data, field_id: @field_id, user_id: @user) %>&cur_date=" + cur_date;
     ad_max = td(<%= @field.ad_max %>);
     ad_min = 0.0;
     $.ajax({
@@ -167,7 +92,7 @@
 
     // Create the data table.
     // Field Capacity, AD, [Target], [Projected], 0.0 AD
-    var data = new google.visualization.DataTable();
+    const data = new google.visualization.DataTable();
     data.addColumn("string", "Date");
     data.addColumn("number", "Field capacity");
     data.addColumn({type: "string", role: "annotation"});
@@ -180,15 +105,15 @@
       data.addColumn("number", "Target");
       data.addColumn({type: "string", role: "annotation"});
     }
-    var colors = ["#555555", "#0000FF", "#FF0000", "#00AA00"]; // FC gray, AD blue, AD==0 line red [, target green]
-    ad_len = ad_data.length;
-    wsc_anno = [];
-    targ_anno = [];
-    depl_anno = [];
-    for (var ii = 0; ii < ad_len; ii++) {
-      wsc_anno[ii] = "";
-      targ_anno[ii] = "";
-      depl_anno[ii] = "";
+    const colors = ["#555555", "#0000FF", "#FF0000", "#00AA00"]; // FC gray, AD blue, AD==0 line red [, target green]
+    let ad_len = ad_data.length;
+    let wsc_anno = [];
+    let targ_anno = [];
+    let depl_anno = [];
+    for (let i = 0; i < ad_len; i++) {
+      wsc_anno[i] = "";
+      targ_anno[i] = "";
+      depl_anno[i] = "";
     };
     wsc_anno[0] = "Field capacity";
     targ_anno[ad_len-2] = "Target AD";
@@ -196,12 +121,13 @@
     // first_projected is set to be false for the second and subsequent points of any series of
     // projected data. So only the first one gets labeled "Projected", but if there's another series of
     // them (as weird as that would be for actual data), the first one there gets labeled too.
-    for (var ii = 0, first_projected = true; ii < ad_len; ii++) {
-      label = labels[ii];
+    let first_projected = true;
+    for (let i = 0; i < ad_len; i++) {
+      label = labels[i];
       row = [];
       // Projected? prj_data is an array 1-for-1 w/ad_data -- true if projected, false if "real"
       projected_anno = "";
-      if (prj_data[ii]) {
+      if (prj_data[i]) {
         is_solid_ad_line = false;
         if (first_projected) {
           projected_anno = "Projected"; // label this one
@@ -214,16 +140,16 @@
       row = [
         label,
         ad_max,
-        wsc_anno[ii],
-        td(ad_data[ii]),
+        wsc_anno[i],
+        td(ad_data[i]),
         is_solid_ad_line,
         projected_anno,
         ad_min,
-        depl_anno[ii]
+        depl_anno[i]
       ];
       if (targ_data) {
-        row[row.length] = td(targ_data[ii]); // Tack on target if it's present
-        row[row.length] = targ_anno[ii];
+        row[row.length] = td(targ_data[i]); // Tack on target if it's present
+        row[row.length] = targ_anno[i];
       }
       data.addRow(row);
     }
@@ -244,60 +170,56 @@
       };
     }
     // Set chart options
-    if (projected_anno == "Projected") {
-      title = "Calculated / Projected Allowable Depletion (inches)";
-    } else {
-      title = "Calculated Allowable Depletion (inches)";
-    }
-    var options = {
+    const title = `Calculated${projected_anno == "Projected" ? " / Projected" : ""} Allowable Depletion (inches)`
+    const options = {
       title: title,
-      width: 646,
+      width: "100%",
       height: 290,
       colors: colors,
       fontSize: 12,
       pointSize: 0,
-      titleTextStyle: {fontSize: 18},
+      titleTextStyle: { fontSize: 18 },
       series: series,
       // Set vertical axis range to run between fudge-factored values to make the annotations show nicely
-      vAxis: {baseline: baseLine(ad_data, prj_data), maxValue:Math.ceil(ad_max + 0.2)},
-      annotation: {style: "line"}
+      vAxis: { baseline: baseLine(ad_data, prj_data), maxValue: Math.ceil(ad_max + 0.2) },
+      annotation: { style: "line" },
     };
 
     // Instantiate and draw our chart, passing in some options.
-    var chart = new google.visualization.AreaChart(document.getElementById("graphBox"));
+    const chart = new google.visualization.AreaChart(document.getElementById("graphBox"));
     chart.draw(data, options);
   }
 
   // Load the Visualization API and the piechart package.
-  google.load("visualization", "1.0", {"packages":["corechart"]});
+  google.load("visualization", "1.0", { "packages": ["corechart"] } );
   google.setOnLoadCallback(plotGraph);
 
   function curPage(initial_date_str, cur_date_str) {
-    initial_date_obj = parseDate(initial_date_str);
+    let initial_date_obj = parseDate(initial_date_str);
     initial_date_obj.setTime(initial_date_obj.getTime() - 1) // subtract an hour to prevent initial and current being the same
-    cur_date = cur_date_str;
-    cur_date_obj = parseDate(cur_date_str);
-    days = (cur_date_obj.getTime() - initial_date_obj.getTime()) / (86400 * 1000);
-    page = Math.ceil(days / 7);
+    let cur_date = cur_date_str;
+    let cur_date_obj = parseDate(cur_date_str);
+    let days = (cur_date_obj.getTime() - initial_date_obj.getTime()) / (86400 * 1000);
+    let page = Math.ceil(days / 7);
     return(page);
   }
 
   function showSummaryBox(date) {
     $.ajax({
       type: "GET",
-      url: "<%= url_for(:controller => 'wisp', :action => :summary_box, :field_id => @field, :user_id => @user) %>&cur_date=" + date,
+      url: "<%= url_for(controller: :wisp, action: :summary_box, field_id: @field, user_id: @user) %>&cur_date=" + date,
       dataType: "html",
       async: false,
       success: function(newHtml) {
         // Set the HTML of the summary box to the new stuff
-        $("#projectedADBox").html(newHtml);
+        $("#summaryBox").html(newHtml);
       }
     });
   }
 
   function showTargetAD() {
     // adValue = 0.0;
-    adValue = <%= @field.target_ad_pct || "''".html_safe %>;
+    let adValue = <%= @field.target_ad_pct || "''".html_safe %>;
     $("#target_ad").val(adValue);
   }
 
@@ -341,87 +263,107 @@
       $(id).css({"background-color":"#DDD","color":"black"});
     }
 
-  jQuery(document).ready(function(){
+  $(document).ready(function(){
     plotGraph();
     showSummaryBox(cur_date);
     showTargetAD();
     $("#date_input").change(changeDate);
   });
 
+  // datepicker
+  $(function() {
+    opts = {
+        dateFormat: "yy-mm-dd",
+        minDate: "<%= @min_date %>",
+        maxDate: "<%= @max_date %>"
+      };
+    if ("<%= @cur_date %>") {
+      opts = {...opts, defaultDate: "<%= @cur_date %>"}
+    };
+    $("#date_input").datepicker(opts);
+  });
 </script>
 
-<% content_for :title do %>
-  WISP: Field Status
-<% end %>
+<% @title = "Field Status" %>
+<h2>Field Status</h2>
 
-<h2 style="margin-top:0px; padding-top:0px;">WISP Field Status</h2>
-<div id="fieldSelectionBox">
-  <table class="center" style="margin-top: 10px;">
-  <tr>
-    <td>
-      <%= form_tag(url_for :controller => "wisp", :action => :field_status, :pivot_id => "", :field_id => "") do %>
-        <%= select_tag "farm_id", options_from_group_for_select(@group, @farm), {:onchange => "this.form.submit();"} %>
+<div class="inline-flex">
+  <b>Select a field:</b>
+  <%= form_tag(url_for(controller: "wisp", action: "field_status", pivot_id: "", field_id: "")) do %>
+    <%= select_tag "farm_id", options_from_group_for_select(@group, @farm), { onchange: "this.form.submit();" } %>
+  <% end %>
+  <%= form_tag(url_for(controller: "wisp", action: "field_status", field_id: "")) do %>
+    <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot), { onchange: "this.form.submit();" } %>
+  <% end %>
+  <%= form_tag(url_for(controller: "wisp", action: "field_status")) do %>
+    <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field), { onchange: "this.form.submit();" } %>
+  <% end %>
+</div>
+<br><br>
+<div id="fieldStatusGrid">
+  <div id="fieldDataBox" class="flex-down">
+    <h3>Field data</h3>
+    <div class="content-box">
+      <b>Farm:</b> <%= truncate(@farm.name, :length => 32) if @farm %><br>
+      <b>Pivot:</b> <%= truncate(@pivot.name, :length => 32) if @pivot %><br>
+      <b>Field/soil:</b> <%= truncate(@field.name, :length => 30) %><br>
+      <b>Crop:</b> <%= truncate((@field.current_crop.name + " " + @field.current_crop.variety), :length => 32) %><br>
+      <hr>
+      <b>Root zone depth:</b> <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %> in.<br>
+      <b>Emergence Date:</b> <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br>
+      <b>AD at field capacity:</b> <%= sprintf("%0.2f",@field.ad_max) %> in.<br>
+      <b>Initial soil moisture:</b> <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture) if @field_weather_data && @field_weather_data.size > 0 %> %<br>
+      <% target_ad_in_str = @field.target_ad_in ? sprintf("%0.2f in.",@field.target_ad_in) : "--" %>
+      <%= form_tag(url_for :controller => "wisp", :action => :field_status, :pivot_id => @pivot, :field_id => @field) do %>
+        <b>Target:</b> <input name="field[target_ad_pct]" id="target_ad" size="1"/>% (<div style="display:inline" id='target_ad_in'><%= target_ad_in_str %></div>) <input type="submit" class="btn btn-light" value="Update Target"/>
       <% end %>
-    </td>
-    <td>
-      <%= form_tag(url_for :controller => "wisp", :action => :field_status, :field_id => "") do %>
-        <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot), {:onchange => "this.form.submit();"} %>
+    </div>
+  </div>
+  <div id="fieldDailyWeather" class="flex-down">
+    <h3>Field daily weather</h3>
+    <div class="content-box">
+      <div class="flex-center">
+        <div class="inline-flex">
+          <button id="backAWeek" title="Previous week" onclick="changeDate(lastWeek);">&lt;</button>
+          <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>">
+          <button id="forwardAWeek" title="Next week" onclick="changeDate(nextWeek);">&gt;</button>
+          <button id="curDate" class="week-button" onclick="changeDate('<%= @today %>');">Today</button>
+        </div>
+      </div>
+      <%= render "wisp/partials/field_daily_wx" %>
+    </div>
+  </div>
+  <div class="flex-down">
+    <h3>Season totals</h3>
+    <div id="summaryBox" class="content-box"></div>
+  </div>
+  <div class="flex-down">
+    <h3>Field water balance</h3>
+    <div id="graphBox" class="content-box"></div>
+  </div>
+</div>
+
+<h3>Projected allowable depletion</h3>
+<div class="content-box">
+  <% if first_projected_idx = @projected_ad_data.index { |padd| padd } %>
+    <p>Two days hence, based on the max adjusted ET in the past week (i.e., worst case).</p>
+    <table border="0">
+      <tr>
+        <th><%= @dates[first_projected_idx].strftime("%b %d")%>:</th>
+        <td id="proj_ad_1"><%= sprintf("%0.2f",@graph_data[first_projected_idx] || 0.0) %> in.</td>
+      </tr>
+      <% if first_projected_idx < @ad_data.size %>
+        <tr>
+          <th><%= @dates[first_projected_idx + 1].strftime('%b %d')%>:</th>
+          <td id="proj_ad_2"><%= sprintf("%0.2f",@graph_data[first_projected_idx + 1]) %> in.</td>
+        </tr>
       <% end %>
-    </td>
-    <td>
-      <%= form_tag(url_for :controller => "wisp", :action => :field_status) do %>
-        <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field), {:onchange => "this.form.submit();"} %>
-      <% end %>
-    </td>
-    <td>
-      <script>
-      $(function() {
-        opts = {
-            dateFormat: "yy-mm-dd",
-            minDate: "<%= @min_date %>",
-            maxDate: "<%= @max_date %>"
-          };
-        if ("<%= @cur_date %>") {
-          opts = {...opts, defaultDate: "<%= @cur_date %>"}
-        };
-        $("#date_input").datepicker(opts);
-      });
-      </script>
-      &nbsp;&nbsp;
-      <button id="backAWeek" title="Previous week" onclick="changeDate(lastWeek);">&lt;</button>
-      &nbsp;
-      <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>">
-      &nbsp;
-      <button id="forwardAWeek" title="Next week" onclick="changeDate(nextWeek);">&gt;</button>
-      &nbsp;
-      <button id="curDate" class="week-button" onclick="changeDate('<%= @today %>');">Today</button>
-    </td>
-  </tr></table>
+    </table>
+  <% end %>
 </div>
 
-<div id="fieldDataBox">
-<h2 style="padding:5px">Field Data</h2>
-Farm: <%= truncate(@farm.name, :length => 32) if @farm %><br/>
-Pivot: <%= truncate(@pivot.name, :length => 32) if @pivot %><br/>
-Field/soil: <%= truncate(@field.name, :length => 30) %><br/>
-Crop: <%= truncate((@field.current_crop.name + " " + @field.current_crop.variety), :length => 32) %><br/>
-<hr/>
-Root zone depth: <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %> in.<br/>
-Emergence Date: <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br/>
-AD at field capacity: <%= sprintf("%0.2f",@field.ad_max) %> in.<br/>
-Initial soil moisture: <%= sprintf("%0.0f",@field_weather_data.first.pct_moisture) if @field_weather_data && @field_weather_data.size > 0 %> %<br/>
-<% target_ad_in_str = @field.target_ad_in ? sprintf("%0.2f in.",@field.target_ad_in) : "--" %>
-<%= form_tag(url_for :controller => "wisp", :action => :field_status, :pivot_id => @pivot, :field_id => @field) do %>
-Target&nbsp;<input name="field[target_ad_pct]" id="target_ad" size="1"/>%&nbsp;(<div style="display:inline" id='target_ad_in'><%= target_ad_in_str %></div>)&nbsp;<input type="submit" value="Update Target"/>
-<% end %>
-</div>
 
-<%= render :partial => "wisp/partials/field_daily_wx" %>
 
-<div id="graphBox">
-  <canvas id="example" width="420" height="300"></canvas>
-</div>
 
-<div id="projectedADBox">
-<%= render :partial => "wisp/partials/summary_box" %>
-</div>
+
+
