@@ -19,26 +19,22 @@ class FieldsController < AuthenticatedController
   ]
 
   # GET /fields
-  # GET /fields.xml
   def index
+    return redirect_to "/wisp/pivot_crop", notice: "You were redirected to the Pivots, Fields, and Crops page" if request.format.html?
+
     get_current_ids
     @pivot_id = params[:parent_id]
     @fields = Field.where(pivot_id: @pivot_id).order(:name) do
       paginate page: params[:page], per_page: params[:rows]
     end
     @fields ||= []
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml { render xml: @fields }
-      columns = COLUMN_NAMES
-      format.json do
-        json = @fields.to_a.to_jqgrid_json(columns, params[:page], params[:rows], @fields.size)
-        render json: json
-      end
-    end
+
+    render json: @fields.to_a.to_jqgrid_json(COLUMN_NAMES, params[:page], params[:rows], @fields.size)
+  rescue => e
+    Rails.logger.error "FieldsController :: Index >> #{e.message}"
   end
 
-  # POST
+  # POST /fields/post_data
   def post_data
     @pivot = Pivot.find(params[:pivot_id] || params[:parent_id])
     session[:pivot_id] = params[:pivot_id] || params[:parent_id]
@@ -92,91 +88,12 @@ class FieldsController < AuthenticatedController
     render json: attrs
   end
 
-  def update_target_ad_pct
-    field = Field.find(params[:id])
-    attribs = {target_ad_pct: params[:target_ad_pct]}
-    field.update(attribs)
-    tadin_str = if field.target_ad_in
-      sprintf('%0.2f"', field.target_ad_in)
-    else
-      "none"
-    end
-    render json: {target_ad_pct: params[:target_ad_pct], target_ad_in: tadin_str}
-  end
-
-  # GET /fields/1
-  # GET /fields/1.xml
-  def show
-    @field = Field.find(params[:id])
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml { render xml: @field }
-    end
-  end
-
-  # GET /fields/new
-  # GET /fields/new.xml
-  def new
-    @field = Field.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml { render xml: @field }
-    end
-  end
-
-  # GET /fields/1/edit
-  def edit
-    @field = Field.find(params[:id])
-  end
-
-  # POST /fields
-  # POST /fields.xml
-  def create
-    @field = Field.new(params[:field])
-    @field.pivot_id = @pivot_id
-
-    respond_to do |format|
-      if @field.save
-        format.html { redirect_to(@field, notice: "Field was successfully created.") }
-        format.xml { render xml: @field, status: :created, location: @field }
-      else
-        format.html { render action: "new" }
-        format.xml { render xml: @field.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PUT /fields/1
-  # PUT /fields/1.xml
-  def update
-    @field = Field.find(params[:id])
-    @field.pivot_id = @pivot_id
-
-    respond_to do |format|
-      if @field.update(params[:field])
-        format.html do
-          head :ok, content_type: "text/html"
-          # redirect_to(@field, :notice => 'Field was successfully updated.')
-        end
-        format.xml { head :ok }
-      else
-        format.html { render action: "edit" }
-        format.xml { render xml: @field.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /fields/1
-  # DELETE /fields/1.xml
-  def destroy
-    @field = Field.find(params[:id])
-    @field.destroy
-
-    respond_to do |format|
-      format.html { redirect_to(fields_url) }
-      format.xml { head :ok }
-    end
-  end
+  # this wasn't referenced anywhere in the app
+  # def update_target_ad_pct
+  #   field = Field.find(params[:id])
+  #   attribs = {target_ad_pct: params[:target_ad_pct]}
+  #   field.update(attribs)
+  #   tadin_str = field.target_ad_in ? sprintf('%0.2f"', field.target_ad_in) : "none"
+  #   render json: {target_ad_pct: params[:target_ad_pct], target_ad_in: tadin_str}
+  # end
 end

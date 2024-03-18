@@ -12,17 +12,11 @@ class FieldDailyWeatherController < AuthenticatedController
     :notes
   ]
 
-  def moisture_changed?(old, incoming)
-    (old - incoming).abs > MOISTURE_EPSILON
-  end
-
-  def cover_changed?(old, incoming)
-    (old - incoming).abs > PCT_COVER_EPSILON
-  end
-
   # GET /field_daily_weather
-  # GET /field_daily_weather.xml
   def index
+    # only json/csv formats allowed
+    return redirect_to "/wisp/field_status", notice: "You were redirected to the Field Status page" if request.format.html?
+
     page = -1
     page_size = -1
     wx_size = -1
@@ -66,27 +60,25 @@ class FieldDailyWeatherController < AuthenticatedController
       @field_daily_weather = @field_daily_weather.paginate(page: page, per_page: page_size)
     end
     @field_daily_weather ||= []
+
     respond_to do |format|
-      format.html # index.html.erb
-      format.xml { render xml: @field_daily_weather }
-      if params[:irrig_only]
-        format.json {
-          render json: @field_daily_weather.to_a.to_jqgrid_json(
+      format.json do
+        json = if params[:irrig_only]
+          @field_daily_weather.to_a.to_jqgrid_json(
             [:field_name, :irrigation, :id],
             params[:page] || 1,
             params[:rows] || 7,
             wx_size
           )
-        }
-      else
-        json = @field_daily_weather.to_a.to_jqgrid_json(
-          [:date, :ref_et, :rain, :irrigation, :display_pct_moisture, :pct_cover_for_json, :leaf_area_index, :adj_et_for_json, :ad, :deep_drainage, :id],
-          page,
-          page_size,
-          wx_size
-        )
-        # logger.info json.inspect
-        format.json { render json: json }
+        else
+          @field_daily_weather.to_a.to_jqgrid_json(
+            [:date, :ref_et, :rain, :irrigation, :display_pct_moisture, :pct_cover_for_json, :leaf_area_index, :adj_et_for_json, :ad, :deep_drainage, :id],
+            page,
+            page_size,
+            wx_size
+          )
+        end
+        render json: json
       end
       format.csv do
         # CSVs always start at start of weather data and go through to the bitter end, per John
@@ -99,12 +91,8 @@ class FieldDailyWeatherController < AuthenticatedController
         render template: "field_daily_weather/daily_report", filename: "field_summary", content_type: "text/csv", format: :csv
         Rails.logger.info("FDW Controller :: Rendered CSV")
       end
-    end
-
-    def calc_page(fdw, date, page_size)
-      days = date - fdw.first.date
-      days = 7 if days < 7
-      days / page_size
+    rescue => e
+      Rails.logger.error "FieldDailyWeatherController :: index >> #{e.message}"
     end
 
     # in the example, this goes in the block on the query
@@ -124,7 +112,7 @@ class FieldDailyWeatherController < AuthenticatedController
     # end
   end
 
-  # POST
+  # POST /field_daily_weather/post_data
   def post_data
     attribs = {}
     COLUMN_NAMES.each do |col_name|
@@ -173,75 +161,19 @@ class FieldDailyWeatherController < AuthenticatedController
     head :ok, content_type: "text/html"
   end
 
-  # GET /field_daily_weather/1
-  # GET /field_daily_weather/1.xml
-  def show
-    @field_daily_weather = FieldDailyWeather.find(params[:id])
+  private
 
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml { render xml: @field_daily_weather }
-    end
+  def calc_page(fdw, date, page_size)
+    days = date - fdw.first.date
+    days = 7 if days < 7
+    days / page_size
   end
 
-  # GET /field_daily_weather/new
-  # GET /field_daily_weather/new.xml
-  def new
-    @field_daily_weather = FieldDailyWeather.new
-
-    respond_to do |format|
-      format.html # new.html.erb
-      format.xml { render xml: @field_daily_weather }
-    end
+  def moisture_changed?(old, incoming)
+    (old - incoming).abs > MOISTURE_EPSILON
   end
 
-  # GET /field_daily_weather/1/edit
-  def edit
-    @field_daily_weather = FieldDailyWeather.find(params[:id])
-  end
-
-  # POST /field_daily_weather
-  # POST /field_daily_weather.xml
-  def create
-    @field_daily_weather = FieldDailyWeather.new(params[:field_daily_weather])
-
-    respond_to do |format|
-      if @field_daily_weather.save
-        # format.html { redirect_to(@field_daily_weather, :notice => 'Field daily weather was successfully created.') }
-        format.html { redirect_to controller: "wisp", action: "field_status" }
-        format.xml { render xml: @field_daily_weather, status: :created, location: @field_daily_weather }
-      else
-        format.html { render action: "new" }
-        format.xml { render xml: @field_daily_weather.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # PUT /field_daily_weather/1
-  # PUT /field_daily_weather/1.xml
-  def update
-    @field_daily_weather = FieldDailyWeather.find(params[:id])
-
-    respond_to do |format|
-      if @field_daily_weather.update(params[:field_daily_weather])
-        format.html { redirect_to(@field_daily_weather, notice: "Field daily weather was successfully updated.") }
-        format.xml { head :ok }
-      else
-        format.html { render action: "edit" }
-        format.xml { render xml: @field_daily_weather.errors, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # DELETE /field_daily_weather/1
-  # DELETE /field_daily_weather/1.xml
-  def destroy
-    @field_daily_weather = FieldDailyWeather.find(params[:id])
-    @field_daily_weather.destroy
-
-    respond_to do |format|
-      format.html { redirect_to(field_daily_weather_index_url) }
-      format.xml { head :ok }
-    end
+  def cover_changed?(old, incoming)
+    (old - incoming).abs > PCT_COVER_EPSILON
   end
 end

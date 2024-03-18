@@ -11,11 +11,6 @@ Rails.application.routes.draw do
   get "fdw/irrig_only/:id" => "field_daily_weather#irrig_only"
 
   resources :home, only: [:index] do
-    collection do
-      get "about"
-      get "guide"
-      get "weather"
-    end
   end
 
   resources :wisp, only: [] do
@@ -42,26 +37,26 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :crops do
+  resources :crops, only: :index do
     collection do
       post "post_data"
     end
   end
 
-  resources :farms do
+  resources :farms, only: :index do
     collection do
       get "problems"
       post "post_data"
     end
   end
 
-  resources :field_daily_weather do
+  resources :field_daily_weather, only: :index do
     collection do
       post "post_data"
     end
   end
 
-  resources :fields do
+  resources :fields, only: :index do
     collection do
       post "post_data"
     end
@@ -69,7 +64,7 @@ Rails.application.routes.draw do
 
   resources :irrigation_events
 
-  resources :pivots do
+  resources :pivots, only: :index do
     collection do
       post "post_data"
     end
@@ -79,14 +74,16 @@ Rails.application.routes.draw do
 
   resources :users, only: [:index, :destroy]
 
+  # this is actually called 'Field Groups' on the sidebar
+  resources :weather_stations
+
   resources :weather_station_data do
     collection do
       post "post_data"
     end
   end
 
-  # this is actually called 'Field Groups' on the sidebar
-  resources :weather_stations
+
 
   root to: "home#index"
 
