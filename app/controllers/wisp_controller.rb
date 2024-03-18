@@ -63,11 +63,10 @@ class WispController < AuthenticatedController
   # GET / POST
   def weather
     @weather_stations = @group.weather_stations
-    if @weather_stations == [] || @weather_stations.nil?
-      flash[:error] = "You must first create at least one field group."
-      redirect_to controller: "weather_stations", action: :new
-      return
-    end
+
+    # view will catch empty weather station set
+    return render if @weather_stations.empty?
+
     if params[:weather_station_id]
       wx_stn_id = params[:weather_station_id].to_i
       @weather_station = @weather_stations.detect { |wxs| wxs[:id].to_i == wx_stn_id }
@@ -94,70 +93,6 @@ class WispController < AuthenticatedController
   def lookup
   end
 
-  # Given a season-start date of initial_date and (possibly) a point in that
-  # season in cur_date, find the start and end of the week encompassing cur_date.
-  # If cur_date is nil, use today_or_latest and work from there.
-  def date_strs(initial_date, cur_date = nil)
-    start_date = nil
-    if cur_date
-      begin
-        end_date = Date.parse(cur_date) - 1
-      rescue => e
-        Rails.logger.warn "WispController :: Date reset problem: #{e}. Initial date: #{initial_date}, cur_date: #{cur_date}"
-        end_date = today_or_latest(@field_id) - 1
-      end
-    else
-      end_date = today_or_latest(@field_id) - 1
-    end
-    # So now end_date is provisionally set; find start_date and coerce end_date to
-    # week boundaries
-    weeks = ((end_date - initial_date).to_i / 7).to_i
-    start_date = initial_date + (7 * weeks)
-    end_date = start_date + 6
-    cur_date = end_date.strftime("%Y-%m-%d")
-    [start_date, end_date, cur_date]
-  end
-
-  def field_status_data(cur_date = nil)
-    @field = Field.find(@field_id) if @field_id
-    @pivot = Pivot.find(@pivot_id = @field[:pivot_id])
-    @farm = Farm.find(@farm_id = @pivot[:farm_id])
-
-    @field_weather_data = @field.field_daily_weather
-    @initial_date = @field_weather_data.first.date
-    start_date, end_date, @cur_date = date_strs(@initial_date, cur_date)
-    Rails.logger.debug ">> WispController :: field_status_data: cur_date passed in was #{cur_date}, #{start_date} to #{end_date} at #{@cur_date} for #{@field_id}"
-    @ad_recs = FieldDailyWeather.fdw_for(@field_id, start_date, end_date)
-    @ad_data = @ad_recs.collect { |fdw| fdw.ad }
-    # sets @graph_data, @projected_ad_data,@dates,@date_str,and @date_hash
-    graph_data(@field_weather_data, start_date, end_date)
-    # Rails.logger.info "field_status_data: cur_date #{@cur_date}, start_date #{start_date.to_s}, end_date #{end_date.to_s}, dates #{@dates.inspect}"
-    # Rails.logger.info "field_status_data: fdw is \n#{@ad_recs.collect { |e| [e.date,e.field_id,e.ref_et].join(",") }.join("\n")}"
-    # Rails.logger.info "field_status_data: @graph_data is #{@graph_data.inspect}, @projected is #{@projected_ad_data.inspect}, over #{@date_hash.inspect}"
-    @summary_data = FieldDailyWeather.summary(@field.id)
-    @target_ad_data = target_ad_data(@field, @ad_data)
-  end
-
-  # from a set of fdw recs and some idea of where to begin looking, return
-  # the graph and summary data. This will be a an array of AD numbers,
-  def graph_data(fdw, start_date, end_date, start_projecting = Date.today)
-    ad_recs = @ad_recs # just so it's something if we don't reset them
-    # reposition the window, if necessary, so that it ends NLT the end of AD data
-    # Rails.logger.info "graph_data: start_date is #{start_date.inspect}, end_date is #{end_date.inspect}, #{fdw.size} records"
-    first_ad_idx = fdw.index { |rec| rec.ad.nil? } || fdw.index { |rec| rec.date == start_date } || 0
-    first_ad_idx = 0 if first_ad_idx < 0
-    last_ad_idx = first_ad_idx + 8
-    last_ad_idx = fdw.size - 1 if last_ad_idx >= fdw.size
-    ad_recs = fdw[(first_ad_idx..last_ad_idx)]
-    start_date = ad_recs[0].date
-    end_date = ad_recs[-3].date
-    @projected_ad_data = []
-    # (first_ad_idx..last_ad_idx).each { |idx| @projected_ad_data << (fdw[idx].ref_et == 0.0) }
-    @projected_ad_data = fdw[(first_ad_idx..last_ad_idx)].collect { |fdw| fdw.ref_et.zero? }
-    @graph_data = ad_recs.collect { |fdw| fdw.ad }
-    @dates, @date_str, @date_hash = make_dates(start_date, end_date)
-  end
-
   # GET / POST
   def field_status
     # Rails.logger.info "field_status: group #{@group_id} user #{@user_id} farm #{@farm_id} pivot #{@pivot_id} field #{@field_id}"
@@ -170,14 +105,15 @@ class WispController < AuthenticatedController
     end
 
     # initial date values for the view
-    @min_date = FieldDailyWeather.minimum(:date).to_s
-    @max_date = FieldDailyWeather.maximum(:date).to_s
-    @today = Date.today.to_s
-    @cur_date = params[:cur_date] || @today
-
+    @min_date = FieldDailyWeather.minimum(:date)
+    @max_date = FieldDailyWeather.maximum(:date)
+    @today = Date.today.clamp(@min_date, @max_date)
+    # @cur_date = (cur_date || @today).clamp(@min_date, @max_date)
+    # puts "cur_date #{cur_date}"
+    
     @ad_at_pwp = @field.ad_at_pwp
+    field_status_data(params[:cur_date]) # @cur_date may be nil, but will be set if so
     session[:today] = @cur_date
-    field_status_data(@cur_date) # @cur_date may be nil, but will be set if so
     # now that we've got the last week's fdw recs, check if any need ET
     @ad_recs.each do |adr|
       if adr.ref_et.nil? || adr.ref_et.zero?
@@ -200,11 +136,6 @@ class WispController < AuthenticatedController
     # render "field_status.html.erb"
   end
 
-  def field_status_from_javascript
-    "******* I AM A CAN OF TUNA **********"
-    field_status
-  end
-
   # GET
   def projection_data
     @field_id = params[:field_id]
@@ -222,16 +153,6 @@ class WispController < AuthenticatedController
         }
       }
     end
-  end
-
-  # Make a line for the Target AD value for this field
-  # We just use the length of projected_ad_data EDIT: Didn't work when date was less than a week out from initial date
-  def target_ad_data(field, ad_data)
-    return nil unless field.target_ad_pct
-    days = 9 # x axis length for plot
-    ret = []
-    days.times { ret << (field.target_ad_pct / 100.0) * field.ad_max }
-    ret
   end
 
   # GET
@@ -284,6 +205,95 @@ class WispController < AuthenticatedController
   end
 
   private
+
+  # Make a line for the Target AD value for this field
+  # We just use the length of projected_ad_data EDIT: Didn't work when date was less than a week out from initial date
+  def target_ad_data(field, ad_data)
+    return nil unless field.target_ad_pct
+    days = 9 # x axis length for plot
+    ret = []
+    days.times { ret << (field.target_ad_pct / 100.0) * field.ad_max }
+    ret
+  end
+  
+  # Given a season-start date of initial_date and (possibly) a point in that
+  # season in cur_date, find the start and end of the week encompassing cur_date.
+  # If cur_date is nil, use today_or_latest and work from there.
+  def date_strs(initial_date, cur_date = nil)
+    start_date = nil
+    if cur_date
+      begin
+        end_date = Date.parse(cur_date)
+      rescue => e
+        Rails.logger.warn "WispController :: Date reset problem: #{e}. Initial date: #{initial_date}, cur_date: #{cur_date}"
+        end_date = today_or_latest(@field_id)
+      end
+    else
+      end_date = today_or_latest(@field_id)
+    end
+    # So now end_date is provisionally set; find start_date and coerce end_date to
+    # week boundaries
+    weeks = ((end_date - initial_date).to_i / 7).to_i
+    start_date = initial_date + (7 * weeks)
+    end_date = start_date + 6
+    cur_date ||= start_date.strftime("%Y-%m-%d")
+    [start_date, end_date, cur_date]
+  end
+
+  # this creates unexpected behavior where the initial date can be in the future and doesn't match what is shown in the data table or the plot (ie before crop emergence)
+  def today_or_latest(field_id)
+    # field = Field.find(field_id)
+    Date.today.clamp(
+      FieldDailyWeather.where(field_id:).minimum(:date),
+      FieldDailyWeather.where(field_id:).maximum(:date),
+    )
+    # earliest = field.current_crop.emergence_date
+    # query = "select max(date) as date from field_daily_weather where field_id=#{field_id}"
+    # latest = FieldDailyWeather.find_by_sql(query).first.date
+    # day = Date.today
+    # day = earliest if day < earliest
+    # day
+  end
+
+  def field_status_data(cur_date = nil)
+    @field = Field.find(@field_id) if @field_id
+    @pivot = Pivot.find(@pivot_id = @field[:pivot_id])
+    @farm = Farm.find(@farm_id = @pivot[:farm_id])
+
+    @field_weather_data = @field.field_daily_weather
+    @initial_date = @field_weather_data.first.date
+    start_date, end_date, @cur_date = date_strs(@initial_date, cur_date)
+    Rails.logger.debug ">> WispController :: field_status_data: cur_date passed in was #{cur_date}, #{start_date} to #{end_date} at #{@cur_date} for #{@field_id}"
+    @ad_recs = FieldDailyWeather.fdw_for(@field_id, start_date, end_date)
+    @ad_data = @ad_recs.collect { |fdw| fdw.ad }
+    # sets @graph_data, @projected_ad_data,@dates,@date_str,and @date_hash
+    graph_data(@field_weather_data, start_date, end_date)
+    # Rails.logger.info "field_status_data: cur_date #{@cur_date}, start_date #{start_date.to_s}, end_date #{end_date.to_s}, dates #{@dates.inspect}"
+    # Rails.logger.info "field_status_data: fdw is \n#{@ad_recs.collect { |e| [e.date,e.field_id,e.ref_et].join(",") }.join("\n")}"
+    # Rails.logger.info "field_status_data: @graph_data is #{@graph_data.inspect}, @projected is #{@projected_ad_data.inspect}, over #{@date_hash.inspect}"
+    @summary_data = FieldDailyWeather.summary(@field.id)
+    @target_ad_data = target_ad_data(@field, @ad_data)
+  end
+
+  # from a set of fdw recs and some idea of where to begin looking, return
+  # the graph and summary data. This will be a an array of AD numbers,
+  def graph_data(fdw, start_date, end_date, start_projecting = Date.today)
+    ad_recs = @ad_recs # just so it's something if we don't reset them
+    # reposition the window, if necessary, so that it ends NLT the end of AD data
+    # Rails.logger.info "graph_data: start_date is #{start_date.inspect}, end_date is #{end_date.inspect}, #{fdw.size} records"
+    first_ad_idx = fdw.index { |rec| rec.ad.nil? } || fdw.index { |rec| rec.date == start_date } || 0
+    first_ad_idx = 0 if first_ad_idx < 0
+    last_ad_idx = first_ad_idx + 8
+    last_ad_idx = fdw.size - 1 if last_ad_idx >= fdw.size
+    ad_recs = fdw[(first_ad_idx..last_ad_idx)]
+    start_date = ad_recs[0].date
+    end_date = ad_recs[-3].date
+    @projected_ad_data = []
+    # (first_ad_idx..last_ad_idx).each { |idx| @projected_ad_data << (fdw[idx].ref_et == 0.0) }
+    @projected_ad_data = fdw[(first_ad_idx..last_ad_idx)].collect { |fdw| fdw.ref_et.zero? }
+    @graph_data = ad_recs.collect { |fdw| fdw.ad }
+    @dates, @date_str, @date_hash = make_dates(start_date, end_date)
+  end
 
   # Usually start_date will be a week ago and finish_date will be yesterday
   def make_dates(start_date, finish_date)

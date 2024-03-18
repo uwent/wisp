@@ -43,9 +43,9 @@ body {
 }
 
 // testing
-div {
-  border: 1px dotted grey;
-}
+// div {
+//   border: 1px dotted grey;
+// }
 
 
 // --- LAYOUT --- //
@@ -298,6 +298,7 @@ div {
 //-- NAMED ELEMENTS --//
 
 #fieldStatusGrid {
+  margin-top: 10px;
   display: grid;
   grid-template-columns: 25% calc(75% - 10px);
   gap: 10px;
@@ -307,7 +308,11 @@ div {
   }
 }
 
-#fieldGroupTable {
+#fdwNavBox {
+  margin-bottom: 5px;
+}
+
+#fieldGroupTable, #farmProblemsTable {
   border-collapse: collapse;
   width: 100%;
   td, th {
@@ -349,6 +354,9 @@ div {
   }
   input, textarea {
     width: 250px;
+    padding: 5px;
+  }
+  select {
     padding: 5px;
   }
 }

@@ -77,18 +77,16 @@
 
   // From example http://stackoverflow.com/questions/5092571/how-to-make-cell-editable-dynamically-in-jqgrid
   function fillProblemsBox(id) {
-    $.ajax(
-      {
-        type: "GET",
-        // Had farm ID tacked on using & notation
-        url: '<%= url_for(controller: :farms, action: :problems, user_id: @user) %>',
-        dataType: "html",
-        async: false,
-        success: function(newHtml) {
-          $("#farmProblemsBox").html(newHtml);
-        }
+    $.ajax({
+      type: "GET",
+      // Had farm ID tacked on using & notation
+      url: "<%= url_for(controller: :farms, action: :problems, user_id: @user) %>",
+      dataType: "html",
+      async: false,
+      success: function(newHtml) {
+        $("#farmProblemsBox").html(newHtml);
       }
-    );
+    });
   }
 
   $(document).ready(function() {
@@ -120,7 +118,7 @@
       rownumbers: false,
       multiselect: false,
       onSelectRow: function(id) {
-        if (id && id!==lastsel) {
+        if (id && id !== lastsel) {
           $("#farm_setup").restoreRow(lastsel);
           $("#farm_setup").editRow(id, true);
           lastsel = id;

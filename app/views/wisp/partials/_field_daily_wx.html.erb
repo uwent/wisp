@@ -51,10 +51,23 @@
     return true;
   }
 
+  function showSummaryBox(date) {
+    $.ajax({
+      type: "GET",
+      url: "<%= url_for(controller: :wisp, action: :summary_box, field_id: @field, user_id: @user) %>&cur_date=" + date,
+      dataType: "html",
+      async: false,
+      success: function(newHtml) {
+        // Set the HTML of the summary box to the new stuff
+        $("#summaryBox").html(newHtml);
+      }
+    });
+  }
+
   let mygrid;
   $(document).ready(function() {
     mygrid = $("#weather").jqGrid({
-      page: curPage(initial_date, cur_date),
+      page: getCurPage(initial_date, cur_date),
       url: '<%= url_for(controller: "field_daily_weather", q: 1, parent_id: @pivot, field_id: @field, user_id: @user) %>',
       editurl: '<%= url_for(controller: "field_daily_weather", action: "post_data", parent_id: @pivot, field_id: @field, user_id: @user) %>',
       datatype: "json",
@@ -182,6 +195,7 @@
       sortorder: "",
       gridview: false,
       scrollrows: true,
+      height: 170,
       autowidth: true,
       scrollOffset: 20,
       rownumbers: false,
@@ -200,6 +214,4 @@
   });
 </script>
 
-<div id="tableDataBox">
-  <table id="weather" class="scroll" cellpadding="0" cellspacing="0"></table>
-</div>
+<table id="weather" class="scroll" cellpadding="0" cellspacing="0"></table>

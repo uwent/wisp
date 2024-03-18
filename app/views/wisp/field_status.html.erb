@@ -3,29 +3,7 @@
 
 <script>
   <%= grid_javascript_settings %>
-  var cur_date = "<%= @cur_date %>";
-  var lastWeek;
-  var nextWeek;
-  setLastAndNextWeeks(cur_date);
-  var initial_date = "<%= @initial_date %>";
-
-  function parseDate(input) {
-    var parts = input.match(/(\d+)/g);
-    return new Date(parts[0], parts[1]-1, parts[2]);
-  }
-
-  function dateToS(date) {
-    return date.getFullYear() + '-' + (1 + date.getMonth()) + '-' + date.getDate();
-  }
-
-  function setLastAndNextWeeks(date) {
-    lastWeek = parseDate(date);
-    lastWeek.setDate(lastWeek.getDate() - 7);
-    lastWeek = dateToS(lastWeek);
-    nextWeek = parseDate(date);
-    nextWeek.setDate(nextWeek.getDate() + 7);
-    nextWeek = dateToS(nextWeek);
-  }
+  var cur_date = "<%= @today %>";
 
   // We don't know why the Google Vis API suddenly started having a cow over
   // our numbers. But this will reformat to fix it.
@@ -173,7 +151,6 @@
     const title = `Calculated${projected_anno == "Projected" ? " / Projected" : ""} Allowable Depletion (inches)`
     const options = {
       title: title,
-      width: "100%",
       height: 290,
       colors: colors,
       fontSize: 12,
@@ -194,27 +171,13 @@
   google.load("visualization", "1.0", { "packages": ["corechart"] } );
   google.setOnLoadCallback(plotGraph);
 
-  function curPage(initial_date_str, cur_date_str) {
-    let initial_date_obj = parseDate(initial_date_str);
+  function getCurPage(initial_date_str, cur_date_str) {
+    let initial_date_obj = new Date(initial_date_str);
     initial_date_obj.setTime(initial_date_obj.getTime() - 1) // subtract an hour to prevent initial and current being the same
-    let cur_date = cur_date_str;
-    let cur_date_obj = parseDate(cur_date_str);
+    let cur_date_obj = new Date(cur_date_str);
     let days = (cur_date_obj.getTime() - initial_date_obj.getTime()) / (86400 * 1000);
     let page = Math.ceil(days / 7);
-    return(page);
-  }
-
-  function showSummaryBox(date) {
-    $.ajax({
-      type: "GET",
-      url: "<%= url_for(controller: :wisp, action: :summary_box, field_id: @field, user_id: @user) %>&cur_date=" + date,
-      dataType: "html",
-      async: false,
-      success: function(newHtml) {
-        // Set the HTML of the summary box to the new stuff
-        $("#summaryBox").html(newHtml);
-      }
-    });
+    return page;
   }
 
   function showTargetAD() {
@@ -223,91 +186,96 @@
     $("#target_ad").val(adValue);
   }
 
-  function checkDate(newDate) {
-    minDate = new Date('<%= @min_date %>');
-    maxDate = new Date('<%= @max_date %>');
-    date = new Date(newDate);
-    prevWeek = new Date(newDate);
-    prevWeek.setDate(date.getDate() - 7);
-    nextWeek = new Date(newDate);
-    nextWeek.setDate(date.getDate() + 7);
+  // function hoverColor(id, hover) {
+  //   if (hover)
+  //     $(id).css({"background-color":"blue","color":"white"});
+  //   else
+  //     $(id).css({"background-color":"#DDD","color":"black"});
+  // }
 
-    prevWkBtnDisabled = (prevWeek < minDate);
-    nextWkBtnDisabled = (nextWeek > maxDate);
 
-    $("#backAWeek").prop("disabled", prevWkBtnDisabled);
-    $("#forwardAWeek").prop("disabled", nextWkBtnDisabled);
-  }
+  //-- DATEPICKER --//
+  const minDate = new Date('<%= @min_date.to_s %>');
+  const maxDate = new Date('<%= @max_date.to_s %>');
+  const initial_date = "<%= @initial_date %>";
 
-  function changeDate(newDate) {
+  function setDate(newDate) {
+    let pickerval = $("#date_input").val();
+
+    // check if calendar field is blank
+    if (pickerval == '') return $("#date_input").val(cur_date);
+
     // Detect if the passed-in object is coming from the calendar's "change" event, or
     // passed in explicitly by one of our button handlers
     if (newDate.type == "change") {
-      cur_date = $("#date_input").val();
+      cur_date = pickerval;
     } else {
       cur_date = newDate;
       $("#date_input").val(cur_date);
     }
-    checkDate(cur_date);
-    setLastAndNextWeeks(cur_date);
-    cur_page = curPage(initial_date, cur_date);
-    $("#weather").setGridParam({ page: cur_page }).trigger("reloadGrid");
+    checkDateBtns(cur_date);
+    $("#weather").setGridParam({ page: getCurPage(initial_date, cur_date) }).trigger("reloadGrid");
     plotGraph();
-    showSummaryBox(cur_date);
   }
 
-  function hoverColor(id,hover) {
-    if (hover)
-      $(id).css({"background-color":"blue","color":"white"});
-    else
-      $(id).css({"background-color":"#DDD","color":"black"});
-    }
+  function shiftDate(days) {
+    let date = new Date(cur_date);
+    date.setDate(date.getDate() + days);
+    setDate(date.toISOString().split('T')[0]);
+  }
 
-  $(document).ready(function(){
-    plotGraph();
-    showSummaryBox(cur_date);
-    showTargetAD();
-    $("#date_input").change(changeDate);
-  });
+  function checkDateBtns(date_str) {
+    const date = new Date(date_str);
+    const prevWeek = structuredClone(date);
+    const nextWeek = structuredClone(date);
+    prevWeek.setDate(date.getDate() - 7);
+    nextWeek.setDate(date.getDate() + 7);
+    $("#backAWeek").prop("disabled", prevWeek.getTime() < minDate.getTime());
+    $("#forwardAWeek").prop("disabled", nextWeek.getTime() > maxDate.getTime());
+  }
 
-  // datepicker
-  $(function() {
-    opts = {
-        dateFormat: "yy-mm-dd",
-        minDate: "<%= @min_date %>",
-        maxDate: "<%= @max_date %>"
-      };
-    if ("<%= @cur_date %>") {
-      opts = {...opts, defaultDate: "<%= @cur_date %>"}
+  // on load
+  $(() => {
+    const dateOpts = {
+      dateFormat: "yy-mm-dd",
+      minDate: "<%= @min_date %>",
+      maxDate: "<%= @max_date %>",
+      defaultDate: "<%= @cur_date %>",
     };
-    $("#date_input").datepicker(opts);
+    $("#date_input").datepicker(dateOpts);
+    $("#date_input").change(setDate);
+    checkDateBtns(cur_date);
+    plotGraph();
+    showTargetAD();
   });
 </script>
 
 <% @title = "Field Status" %>
 <h2>Field Status</h2>
 
-<div class="inline-flex">
-  <b>Select a field:</b>
+<div class="field inline-flex">
   <%= form_tag(url_for(controller: "wisp", action: "field_status", pivot_id: "", field_id: "")) do %>
+    <label for="farm_id">Farm</label><br>
     <%= select_tag "farm_id", options_from_group_for_select(@group, @farm), { onchange: "this.form.submit();" } %>
   <% end %>
   <%= form_tag(url_for(controller: "wisp", action: "field_status", field_id: "")) do %>
+    <label for="pivot_id">Pivot</label></br>
     <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot), { onchange: "this.form.submit();" } %>
   <% end %>
   <%= form_tag(url_for(controller: "wisp", action: "field_status")) do %>
+    <label for="field_id">Field</label><br>
     <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field), { onchange: "this.form.submit();" } %>
   <% end %>
 </div>
-<br><br>
 <div id="fieldStatusGrid">
   <div id="fieldDataBox" class="flex-down">
     <h3>Field data</h3>
     <div class="content-box">
-      <b>Farm:</b> <%= truncate(@farm.name, :length => 32) if @farm %><br>
-      <b>Pivot:</b> <%= truncate(@pivot.name, :length => 32) if @pivot %><br>
-      <b>Field/soil:</b> <%= truncate(@field.name, :length => 30) %><br>
-      <b>Crop:</b> <%= truncate((@field.current_crop.name + " " + @field.current_crop.variety), :length => 32) %><br>
+      <b>Farm:</b> <%= truncate(@farm.name, :length => 30) if @farm %><br>
+      <b>Pivot:</b> <%= truncate(@pivot.name, :length => 30) if @pivot %><br>
+      <b>Field:</b> <%= truncate(@field.name, :length => 30) %><br>
+      <b>Crop:</b> <%= truncate(@field.current_crop.name, length: 32) %><br>
+      <b>Variety:</b> <%= truncate(@field.current_crop.variety, length: 30) %>
       <hr>
       <b>Root zone depth:</b> <%= @field.current_crop.max_root_zone_depth if @field && @field.current_crop %> in.<br>
       <b>Emergence Date:</b> <%= abr(@field.current_crop.emergence_date) if @field && @field.current_crop %><br>
@@ -322,20 +290,25 @@
   <div id="fieldDailyWeather" class="flex-down">
     <h3>Field daily weather</h3>
     <div class="content-box">
-      <div class="flex-center">
+      <div id="fdwNavBox" class="flex-center">
         <div class="inline-flex">
-          <button id="backAWeek" title="Previous week" onclick="changeDate(lastWeek);">&lt;</button>
+          Week:
+          <button id="backAWeek" title="Previous week" onclick="shiftDate(-7)">&lt;</button>
           <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>">
-          <button id="forwardAWeek" title="Next week" onclick="changeDate(nextWeek);">&gt;</button>
-          <button id="curDate" class="week-button" onclick="changeDate('<%= @today %>');">Today</button>
+          <button id="forwardAWeek" title="Next week" onclick="shiftDate(7)">&gt;</button>
+          <button id="curDate" class="week-button" onclick="setDate('<%= @today %>');">Today</button>
         </div>
       </div>
-      <%= render "wisp/partials/field_daily_wx" %>
+      <div id="fdwDataTable">
+        <%= render "wisp/partials/field_daily_wx" %>
+      </div>
     </div>
   </div>
   <div class="flex-down">
     <h3>Season totals</h3>
-    <div id="summaryBox" class="content-box"></div>
+    <div id="summaryBox" class="content-box">
+      <%= render "wisp/partials/summary_box" %>
+    </div>
   </div>
   <div class="flex-down">
     <h3>Field water balance</h3>

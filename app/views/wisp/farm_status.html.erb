@@ -1,20 +1,3 @@
-<script>
-  function fillProblemsBox(id) {
-    $.ajax(
-      {
-        type: "GET",
-        // Had farm ID tacked on using & notation
-        url: '<%= url_for(:controller => "farms", :action => :problems, :user_id => @user) %>',
-        dataType: "html",
-        async: false,
-        success: function(newHtml) {
-          // Set the HTML of the summary box to the new stuff
-          $("#farmProblemsBox").html(newHtml);
-        }
-      });
-  }
-</script>
-
 <% @title = "Farm Status" %>
 <h2>Farm Status</h2>
 <p>To edit a farm's name or notes, click on the appropriate cell in the table below. To confirm your changes you must press "Enter". Use the button to the right of each farm to delete it, or create a new farm using the botton below the table. "AD < 0" shows how many fields within each farm are below allowable depletion. Farms are used to organize one or more pivots, which in turn can serve one or more fields.</p>
