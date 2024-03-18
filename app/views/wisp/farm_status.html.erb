@@ -1,5 +1,6 @@
 <% @title = "Farm Status" %>
 <h2>Farm Status</h2>
+<p>In WISP, farms are used to organize one or more pivots together. One or more pivots must be created within a farm, and one or more fields must be created under a pivot. If you delete a farm, it will also delete any pivots and fields that were created within that farm.</p>
 <p>To edit a farm's name or notes, click on the appropriate cell in the table below. To confirm your changes you must press "Enter". Use the button to the right of each farm to delete it, or create a new farm using the botton below the table. "AD < 0" shows how many fields within each farm are below allowable depletion. Farms are used to organize one or more pivots, which in turn can serve one or more fields.</p>
 <div id="farmDataBox" class="content-box">
   <%= render "/wisp/partials/farm_setup_grid" %>
