@@ -31,6 +31,7 @@ group :development do
   gem "letter_opener_web"
   gem "web-console"
   gem "standard"
+  gem "shutup" # easy kill of servers
 end
 
 group :development, :test do
