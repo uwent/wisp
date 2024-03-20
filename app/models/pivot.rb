@@ -55,7 +55,7 @@ class Pivot < ApplicationRecord
 
   def set_defaults
     # self.name ||= "New pivot (farm ID: #{farm_id})"
-    self.name ||= "New pivot (Farm #{self.farm.name.truncate(20)})"
+    self.name ||= "New pivot (Farm #{self.farm.name&.truncate(20) || self.farm.id})"
     self.cropping_year ||= Time.now.year
     self.latitude ||= 43
     self.longitude ||= -89

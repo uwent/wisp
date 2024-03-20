@@ -52,7 +52,7 @@ describe Crop do
         let(:crop) { build :crop, field: field, name: nil }
 
         it "changes the name" do
-          expect { crop.valid? }.to change { crop.name }.to("New crop (field ID: 123)")
+          expect { crop.valid? }.to change { crop.name }.to("New crop (#{crop.field.cropping_year})")
         end
       end
 

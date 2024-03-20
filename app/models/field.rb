@@ -619,7 +619,7 @@ class Field < ApplicationRecord
 
   def set_defaults
     # self.name ||= "New field (Pivot ID: #{pivot_id})"
-    self.name ||= "New field (Pivot: #{self.pivot.name.truncate(20)})"
+    self.name ||= "New field" + (self.pivot ? " (Pivot: #{self.pivot.name&.truncate(20) || self.pivot.id})" : "")
     self.soil_type = SoilType.default_soil_type
     self.et_method ||= PCT_COVER_METHOD
   end
