@@ -1,16 +1,14 @@
 Rails.application.routes.draw do
+  root to: "home#index"
+
+  get "wisp" => redirect("")
+  get "home" => redirect("")
+
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   devise_for :users, path: "wisp" do
     collection do
       get "report_setup"
     end
-  end
-
-  get "/wisp" => "home#index"
-  get "/userguide" => "home#guide"
-  get "fdw/irrig_only/:id" => "field_daily_weather#irrig_only"
-
-  resources :home, only: [:index] do
   end
 
   resources :wisp, only: [] do
@@ -62,8 +60,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :irrigation_events
-
   resources :pivots, only: :index do
     collection do
       post "post_data"
@@ -82,10 +78,6 @@ Rails.application.routes.draw do
       post "post_data"
     end
   end
-
-
-
-  root to: "home#index"
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
