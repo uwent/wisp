@@ -148,6 +148,7 @@ body {
   min-height: 750px;
   @media #{$small-only} {
     flex-direction: column-reverse;
+    gap: 10px;
   }
 }
 
@@ -198,24 +199,6 @@ body {
   }
 }
 
-.notice {
-  border: 1px solid $frame-bg-color;
-  border-radius: 5px;
-  color: $content-text-color;
-  padding: .5rem;
-  transition: opacity 1s ease-out;
-  font-weight: bold;
-  background: hsl(120, 100%, 90%);
-  border: hsl(120, 100%, 25%);
-  color: hsl(120, 100%, 25%);
-}
-
-.notice.error {
-  background: hsl(350, 100%, 90%);
-  border: hsl(350, 100%, 25%);
-  color: hsl(350, 100%, 25%);
-}
-
 .hidden {
   opacity: 0;
 }
@@ -239,9 +222,6 @@ body {
     margin-block-end: .5em;
   }
 
-  .btn {
-    margin: 5px;
-  }
 }
 
 .content-box {
@@ -278,6 +258,18 @@ body {
   flex-wrap: wrap;
 }
 
+.gap-10 {
+  gap: 10px;
+}
+
+.margin-5 {
+  margin: 5px;
+}
+
+.margin-10 {
+  margin: 10px;
+}
+
 .uw-logo {
   padding: 5px;
   margin-top: auto;
@@ -296,6 +288,38 @@ body {
 
 
 //-- NAMED ELEMENTS --//
+
+#notice {
+  display: flex;
+  margin-bottom: 1em;
+
+  .notice-box {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 5px;
+    padding: .5rem;
+    font-weight: bold;
+    transition: opacity 1s ease-out;
+  }
+  .notice {
+    background: hsl(200, 100%, 95%);
+    border: 1px solid hsl(200, 100%, 50%);
+    color: hsl(200, 100%, 10%);
+  }
+  .error, .alert {
+    background: hsl(350, 100%, 95%);
+    border: 1px solid hsl(350, 100%, 50%);
+    color: hsl(350, 100%, 10%);
+  }
+}
+
+#notice-close {
+  cursor: pointer;
+}
+
+
 
 #fieldStatusGrid {
   margin-top: 10px;
@@ -361,16 +385,8 @@ body {
   }
 }
 
-.devise-links {
-  h4 {
-    margin: 1rem 0 .5rem 0;
-  }
-  ul {
-    margin: .5rem 0;
-  }
-  li {
-    line-height: 2rem;
-  }
+.devise-btns {
+  margin-top: 1em;
 }
 
 

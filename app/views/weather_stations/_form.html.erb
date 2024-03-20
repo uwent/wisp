@@ -100,10 +100,10 @@
           </tr>
           <tr>
             <td width="25%">
-              <%= collection_select :multi_edit_link, :weather_station_id, @available_fields - @weather_station.fields, :id, :name, {}, {size: 20, multiple: true, style: "width:100%"}%>
+              <%= collection_select :multi_edit_link, :weather_station_id, @available_fields - @weather_station.fields, :id, :name_for_field_groups, {}, {size: 20, multiple: true, style: "width:100%"}%>
             </td>
             <td width="10%" align="center">
-              <div class="flex-down">
+              <div class="flex-down gap-10 margin-10">
                 <button type="button" class="btn btn-success" onclick="add();">Add >></button>
                 <button type="button" class="btn btn-success" onclick="addAll();">Add all</button>
                 &nbsp;
@@ -118,7 +118,7 @@
         </table>
       </div>
     </p>
-    <div class="btn-group">
+    <div class="margin-5 btn-group">
       <button class="btn btn-primary" onclick="clickIt();">Save changes</button>
       <%= link_to 'Discard changes', weather_stations_path, class: "btn btn-danger" %>
     </div>

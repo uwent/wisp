@@ -10,10 +10,6 @@
     <label for="farm_id">Farm</label><br>
     <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %>
   <% end %>
-  <%= form_tag(url_for :controller => "wisp", :action => :pivot_crop, :field_id => "") do %>
-    <label for="pivot_id">Pivot</label><br>
-    <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot),{ :onchange => "this.form.submit();"} %>
-  <% end %>
 </div>
 
 <div class="content-box">

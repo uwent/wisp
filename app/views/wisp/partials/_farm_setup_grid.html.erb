@@ -109,12 +109,10 @@
       imgpath: '<%= image_folder_path("jqgrid") %>',
       sortname: "",
       viewrecords: true,
-      height: 140,
-      width: 918,
       sortorder: "",
       gridview: false,
       scrollrows: true,
-      autowidth: false,
+      autowidth: true,
       rownumbers: false,
       multiselect: false,
       onSelectRow: function(id) {
@@ -141,5 +139,11 @@
   });
 </script>
 
-<table id="farm_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
-<button type="button" class="btn btn-light" onclick="addNewFarmRow();">Add New Farm</button>
+<div class="flex-down gap-10">
+  <div>
+    <table id="farm_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
+  </div>
+  <div>
+    <button type="button" class="btn btn-light" onclick="addNewFarmRow();">Add New Farm</button>
+  </div>
+</div>

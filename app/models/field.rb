@@ -65,6 +65,10 @@ class Field < ApplicationRecord
     Date.civil(year, *EMERGENCE_DATE)
   end
 
+  def name_for_field_groups
+    "#{self.pivot.farm.name} ≫ #{self.pivot.name} ≫ #{name}"
+  end
+
   def et_method_name
     {
       PCT_COVER_METHOD => "Pct Cover",

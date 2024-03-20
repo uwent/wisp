@@ -18,12 +18,13 @@
   <div>
     <% if @weather_station.fields.empty? %>
       <p>This field group has no fields added to it. You must add at least one field to use this data entry page for this field group.</p>
-      <%= link_to "Edit this field group", edit_weather_station_path(@weather_station), class: "btn btn-primary" %>
     <% else %>
       <b>Fields in this group:</b> <%= @weather_station.fields.collect(&:name).join(", ") %><br>
-      <p><b>Note:</b> Entering data below will <strong>overwrite any corresponding values</strong> already entered for these individual fields!</p>
       <%= render :partial => 'wisp/partials/weather_station_data_grid'%>
     <% end %>
+    <div class="btn-group" style="margin-top: 10px;">
+      <%= link_to "Edit this field group", edit_weather_station_path(@weather_station), class: "btn btn-light" %>
+      <%= link_to "Back to Field Groups", { controller: :weather_stations }, class: "btn btn-light" %>
+    </div>
   </div>
-  <div><%= link_to "Back to Field Groups", { controller: :weather_stations }, class: "btn btn-light" %></div>
 <% end %>

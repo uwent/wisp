@@ -15,7 +15,7 @@ class CropsController < AuthenticatedController
   # GET /crops
   def index
     # only JSON format allowed
-    return redirect_to "/wisp/pivot_crop", notice: "You were redirected to the Pivots, Fields, and Crops page" if request.format.html?
+    return redirect_to "/wisp/pivot_crop" if request.format.html?
 
     get_current_ids
     @field = @group.fields.find(params[:parent_id])

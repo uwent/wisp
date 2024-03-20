@@ -15,7 +15,7 @@ class FieldDailyWeatherController < AuthenticatedController
   # GET /field_daily_weather
   def index
     # only json/csv formats allowed
-    return redirect_to "/wisp/field_status", notice: "You were redirected to the Field Status page" if request.format.html?
+    return redirect_to "/wisp/field_status" if request.format.html?
 
     page = -1
     page_size = -1

@@ -20,7 +20,7 @@ class FieldsController < AuthenticatedController
 
   # GET /fields
   def index
-    return redirect_to "/wisp/pivot_crop", notice: "You were redirected to the Pivots, Fields, and Crops page" if request.format.html?
+    return redirect_to "/wisp/pivot_crop" if request.format.html?
 
     get_current_ids
     @pivot_id = params[:parent_id]

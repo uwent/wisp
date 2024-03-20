@@ -15,6 +15,13 @@
     laiIsEditable = false;
     pctCoverIsEditable = true;
   }
+
+  function rowSelect(id) {
+    if (!id) return;
+    if (id !== lastsel) $('#weather').restoreRow(lastsel);
+    $("#weather").editRow(id, true, "", "", "", "", displayCalcValues); 
+    lastsel = id;
+  }
   
   function editedFormatter(cellvalue, options, obj) {
     if (cellvalue === undefined) return '';
@@ -200,12 +207,7 @@
       scrollOffset: 20,
       rownumbers: false,
       multiselect: false,
-      onSelectRow: function(id) {
-        if (!id) return;
-        if (id !== lastsel) $('#weather').restoreRow(lastsel);
-        $("#weather").editRow(id, true, "", "", "", "", displayCalcValues); 
-        lastsel = id;
-      },
+      onSelectRow: rowSelect,
       subGrid: false,
       caption: "Edit Observed Values Below",
     })

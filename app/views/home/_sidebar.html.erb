@@ -1,21 +1,3 @@
-<% if flash[:notice] || flash[:error] %>
-  <script>
-    $(() => {
-      // fadeout the notice
-      setTimeout(() => {
-        $('#notice').fadeOut(500, () => {
-          $(this).remove();
-        })
-      }, 10000)
-    })
-  </script>
-  <div id="notice">
-    <% flash.each do |type, msg| %>
-      <div class="notice <%= type %>"><%= msg %></div>
-    <% end %>
-  </div>
-<% end %>
-
 <div class="sidebar-account">
   <% if user_signed_in? %>
     <h4>Signed in as <%= current_user.email %>.</h4>
@@ -30,7 +12,7 @@
     <h4>Not signed in.</h4>
     <div class="btn-group">
       <%= link_to new_user_session_path do %>
-        <button class="btn btn-light">Sign in</button>
+        <button class="btn btn-primary">Sign in</button>
       <% end %>
       <%= link_to new_user_registration_path do %>
         <button class="btn btn-light">Sign up</button>

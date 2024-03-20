@@ -280,12 +280,10 @@
       imgpath: '<%= image_folder_path("jqgrid") %>',
       sortname: '',
       viewrecords: true,
-      height: 280,
-      width: 918,
       sortorder: '',
       gridview: false,
       scrollrows: true,
-      autowidth: false,
+      autowidth: true,
       rownumbers: false,
       multiselect: false,
       onSelectRow: rowSelect,
@@ -310,5 +308,7 @@
 </script>
 
 <table id="field_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
-<button type="button" class="btn btn-light" onclick="addNewFieldRow(PCT_COVER_METHOD);">Add New Field (% Cover)</button>
-<button type="button" class="btn btn-light" onclick="addNewFieldRow(LAI_METHOD);">Add New Field (Leaf Area Index)</button>
+<div style="margin-top: 10px; margin-bottom: 10px;">
+  <button type="button" class="btn btn-light" onclick="addNewFieldRow(PCT_COVER_METHOD);">Add New Field (% Cover)</button>
+  <button type="button" class="btn btn-light" onclick="addNewFieldRow(LAI_METHOD);">Add New Field (Leaf Area Index)</button>
+</div>

@@ -32,7 +32,7 @@
         <td>
           <div class="btn-group">
             <%= link_to 'Edit', edit_weather_station_path(weather_station), class: "btn btn-warning" %>
-            <%= link_to "Enter data", { controller: :wisp, action: :weather, weather_station_id: weather_station.id }, class: "btn btn-primary" %>
+            <%= link_to "Enter data", { controller: :wisp, action: :weather, weather_station_id: weather_station.id }, class: "btn btn-success" %>
             <%= button_to 'Delete', weather_station, method: :delete, class: "btn btn-danger", data: { confirm: "Delete field group '#{weather_station.name}'?" } %>
           </div>
         </td>
@@ -44,4 +44,6 @@
   <% end %>
 </div>
 
-<%= link_to 'Add New Field Group', new_weather_station_path, class: "btn btn-light" %>
+<div style="margin-top: 10px">
+  <%= link_to 'Add New Field Group', new_weather_station_path, class: "btn btn-primary" %>
+</div>

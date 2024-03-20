@@ -4,7 +4,7 @@
   // If pivot_id is set, load the field grid for that one. If it's zero,
   // grab the id of the first pivot in the grid and use that.
   function loadFieldGrid() {
-    if (pivot_id == 0) {
+    if (!pivot_id) {
       pivot_id = $("#pivot_setup").getDataIDs()[0];
     }
     $('#fieldDataGrid').load(
@@ -14,11 +14,11 @@
   }
 
   function rowSelect(id) {
-    if (id) {
-      $('#pivot_setup').editRow(id, true, null, updatePivotSelectName);
-      pivot_id = id;
-      loadFieldGrid(); // will load for the pivot id we just selected
-    }
+    if (!id) return;
+    if (id !== pivot_id) $('#pivot_setup').restoreRow(pivot_id);
+    pivot_id = id;
+    $('#pivot_setup').editRow(id, true, null, updatePivotSelectName);
+    loadFieldGrid(); // will load for the pivot id we just selected
   }
 
   function reloadGrids(pivot_id) {
@@ -99,7 +99,8 @@
     <%= grid_javascript_settings %> // Sets pivot_id
     loadFieldGrid();
     var mygrid = $("#pivot_setup").jqGrid({
-      url: '<%= url_for(controller: "pivots", farm_id: @farm_id) %>' + `&pivot_id=${pivot_id}`,
+      // url: '<%= url_for(controller: "pivots", farm_id: @farm_id) %>' + `&pivot_id=${pivot_id}`,
+      url: '<%= url_for(controller: "pivots", farm_id: @farm_id) %>',
       editurl:'<%= grid_post_data_url "pivots", @farm_id %>',
       datatype: "json",
       colNames: ['Name','Lat.','Long.','WDNR Hicap Well No','Pump Capacity','Energy Type','Crop Yr','Notes','Delete','Farm ID','ID'],
@@ -117,17 +118,16 @@
         { name: 'id', index: 'id', width: 1, hidden: true, editable: true },
       ],
       pager: '#pivot_setup_pager',
-      rowNum: 10,
-      rowList: [10],
+      rowNum: 5,
+      rowList: [5],
       imgpath: '<%= image_folder_path("jqgrid") %>',
       sortname: '',
       viewrecords: true,
-      height: 22,
-      width: 918,
       sortorder: '',
       gridview: false,
       scrollrows: true,
-      autowidth: false,
+      autowidth: true,
+      autoheight: true,
       rownumbers: false,
       multiselect: false,
       loadComplete: function() {
@@ -135,12 +135,14 @@
       },
       onSelectRow: rowSelect,
       subGrid: false,
-      caption: "Pivot <%= @farm ? "for #{@farm.name}" : '' %>"
+      caption: "Pivots <%= @farm ? "for #{@farm.name}" : '' %>"
     })
   });
 </script>
 
 <div id="pivotDataGrid">
   <table id="pivot_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
-  <button type="button" class="btn btn-light" onclick="addNewPivotRow();">Add New Pivot</button>
+  <div style="margin-top: 10px; margin-bottom: 10px;">
+    <button type="button" class="btn btn-light" onclick="addNewPivotRow();">Add New Pivot</button>
+  </div>
 </div>

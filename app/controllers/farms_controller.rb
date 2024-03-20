@@ -5,7 +5,7 @@ class FarmsController < AuthenticatedController
 
   # GET /farms returns JSON
   def index
-    return redirect_to "/wisp/farm_status", notice: "You were redirected to Farm Status page" if request.format.html?
+    return redirect_to "/wisp/farm_status" if request.format.html?
 
     get_current_ids
     raise "no group!" unless @group_id
