@@ -37,7 +37,7 @@ class WeatherStationDataController < AuthenticatedController
     )
   rescue => e
     Rails.logger.error "WeatherStationDataController :: Index >> #{e}"
-    return redirect_to "/wisp/weather_stations"
+    redirect_to "/wisp/weather_stations"
   end
 
   # POST

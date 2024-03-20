@@ -110,7 +110,7 @@ class WispController < AuthenticatedController
     @today = Date.today.clamp(@min_date, @max_date)
     # @cur_date = (cur_date || @today).clamp(@min_date, @max_date)
     # puts "cur_date #{cur_date}"
-    
+
     @ad_at_pwp = @field.ad_at_pwp
     field_status_data(params[:cur_date]) # @cur_date may be nil, but will be set if so
     session[:today] = @cur_date
@@ -215,7 +215,7 @@ class WispController < AuthenticatedController
     days.times { ret << (field.target_ad_pct / 100.0) * field.ad_max }
     ret
   end
-  
+
   # Given a season-start date of initial_date and (possibly) a point in that
   # season in cur_date, find the start and end of the week encompassing cur_date.
   # If cur_date is nil, use today_or_latest and work from there.
@@ -245,7 +245,7 @@ class WispController < AuthenticatedController
     # field = Field.find(field_id)
     Date.today.clamp(
       FieldDailyWeather.where(field_id:).minimum(:date),
-      FieldDailyWeather.where(field_id:).maximum(:date),
+      FieldDailyWeather.where(field_id:).maximum(:date)
     )
     # earliest = field.current_crop.emergence_date
     # query = "select max(date) as date from field_daily_weather where field_id=#{field_id}"

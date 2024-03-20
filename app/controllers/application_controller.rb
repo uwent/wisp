@@ -30,14 +30,13 @@ class ApplicationController < ActionController::Base
       {title: "Pivots/Fields", path: "/wisp/pivot_crop", controller: :wisp, action: :pivot_crop},
       {title: "Field Status", path: "/wisp/field_status", controller: :wisp, action: :field_status},
       {title: "Field Groups", path: "/weather_stations", controller: :weather_stations},
-      {title: "Edit Daily Data", path: "/wisp/weather", controller: :wisp, action: :weather},
+      {title: "Edit Daily Data", path: "/wisp/weather", controller: :wisp, action: :weather}
     ].collect do |tab|
       selected = (tab[:controller] == params[:controller]&.to_sym) && (tab[:action].blank? || tab[:action] == params[:action]&.to_sym)
       tab[:selected] = selected
       tab
     end
   end
-
 
   # TODO: Remove most of this.
   def get_by_parent(klass, parent_klass, parent_id)
@@ -103,7 +102,7 @@ class ApplicationController < ActionController::Base
   def set_parent_id(attribs, params, parent_id_sym, parent_var)
     parent_id = attribs[parent_id_sym]
     if parent_id.nil? || parent_id == "" || parent_id == "_empty"
-      attribs[parent_id_sym] = params[:parent_id] == "" ? parent_var : params[:parent_id]
+      attribs[parent_id_sym] = (params[:parent_id] == "") ? parent_var : params[:parent_id]
     end
   end
 

@@ -87,7 +87,7 @@ describe Crop do
   describe "new year" do
     let(:crop) {
       create :crop, emergence_date: 2.days.ago,
-      harvest_or_kill_date: 1.day.ago
+        harvest_or_kill_date: 1.day.ago
     }
 
     it "sets emergence date to default" do

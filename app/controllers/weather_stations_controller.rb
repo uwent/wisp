@@ -7,7 +7,7 @@ class WeatherStationsController < AuthenticatedController
   end
 
   def show
-    return redirect_to action: :index
+    redirect_to action: :index
   end
 
   def new
@@ -53,6 +53,6 @@ class WeatherStationsController < AuthenticatedController
   end
 
   def weather_station_params
-    params.require(:weather_station).permit(:name, :location, :notes, { field_ids: [] }, :multi_edit_link)
+    params.require(:weather_station).permit(:name, :location, :notes, {field_ids: []}, :multi_edit_link)
   end
 end

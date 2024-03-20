@@ -66,7 +66,7 @@ class Field < ApplicationRecord
   end
 
   def name_for_field_groups
-    "#{self.pivot.farm.name} ≫ #{self.pivot.name} ≫ #{name}"
+    "#{pivot.farm.name} ≫ #{pivot.name} ≫ #{name}"
   end
 
   def et_method_name
@@ -175,7 +175,7 @@ class Field < ApplicationRecord
       days_since_emergence = date - emergence_date
       if et_method == LAI_METHOD
         # FIXME: This call to lai_corn s/b delegated to current_crop.plant
-        lai = days_since_emergence >= 0 ? lai_corn(days_since_emergence) : 0.0
+        lai = (days_since_emergence >= 0) ? lai_corn(days_since_emergence) : 0.0
         pct_cover = nil
       elsif et_method == PCT_COVER_METHOD
         pct_cover = 0.0
@@ -278,13 +278,13 @@ class Field < ApplicationRecord
 
   def get_et
     unless pivot.latitude && pivot.longitude
-      Rails.logger.warn "Field #{self.id} >> Failed to get ET data: no lat/long for pivot"
+      Rails.logger.warn "Field #{id} >> Failed to get ET data: no lat/long for pivot"
       return
     end
 
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
-    Rails.logger.info "Field #{self.id} >> Starting get_et at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
+    Rails.logger.info "Field #{id} >> Starting get_et at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
 
     vals = {}
     begin
@@ -292,8 +292,8 @@ class Field < ApplicationRecord
         lat: pivot.latitude.round(1),
         long: pivot.longitude.round(1),
         start_date: start_date,
-        end_dat: end_date,
-        #method: "adjusted" # per new ET equations
+        end_dat: end_date
+        # method: "adjusted" # per new ET equations
       }
       response = HTTParty.get(ET_ENDPOINT, query: query, timeout: 10)
       json = JSON.parse(response.body, symbolize_names: true)
@@ -302,7 +302,7 @@ class Field < ApplicationRecord
         vals[day[:date]] = day[:value]
       end
     rescue => e
-      Rails.logger.warn "Field #{self.id} >> Could not get ETs from endpoint: #{e.message}"
+      Rails.logger.warn "Field #{id} >> Could not get ETs from endpoint: #{e.message}"
     end
 
     field_daily_weather.each do |fdw|
@@ -318,17 +318,17 @@ class Field < ApplicationRecord
         # Rails.logger.debug "Get ET: #{date} (#{cur_et}) ==> OK"
       end
     end
-    Rails.logger.info "Field #{self.id} >> Done with get_et"
+    Rails.logger.info "Field #{id} >> Done with get_et"
   end
 
   def get_precip
     unless pivot.latitude && pivot.longitude
-      Rails.logger.warn "Field #{self.id} >> Failed to get precip data: no lat/long for pivot"
+      Rails.logger.warn "Field #{id} >> Failed to get precip data: no lat/long for pivot"
       return
     end
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
-    Rails.logger.info "Field #{self.id} >> Starting get_precip at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
+    Rails.logger.info "Field #{id} >> Starting get_precip at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
 
     vals = {}
     begin
@@ -345,7 +345,7 @@ class Field < ApplicationRecord
         vals[day[:date]] = day[:value] / 25.4 # convert mm to in
       end
     rescue => e
-      Rails.logger.warn "Field #{self.id} >> Could not get precips from endpoint: #{e.message}"
+      Rails.logger.warn "Field #{id} >> Could not get precips from endpoint: #{e.message}"
     end
     field_daily_weather.each do |fdw|
       date = fdw.date.to_s
@@ -360,7 +360,7 @@ class Field < ApplicationRecord
         # Rails.logger.debug "Get precip: #{date} (#{cur_precip}) ==> OK"
       end
     end
-    Rails.logger.info "Field #{self.id} >> Done with precip"
+    Rails.logger.info "Field #{id} >> Done with precip"
   end
 
   def need_degree_days?
@@ -374,7 +374,7 @@ class Field < ApplicationRecord
     end_date = field_daily_weather[-1].date.to_s
 
     # TODO: Extract method.
-    Rails.logger.info "Field #{self.id} >> Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}"
+    Rails.logger.info "Field #{id} >> Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}"
 
     begin
       query = {
@@ -619,7 +619,7 @@ class Field < ApplicationRecord
 
   def set_defaults
     # self.name ||= "New field (Pivot ID: #{pivot_id})"
-    self.name ||= "New field" + (self.pivot ? " (Pivot: #{self.pivot.name&.truncate(20) || self.pivot.id})" : "")
+    self.name ||= "New field" + (pivot ? " (Pivot: #{pivot.name&.truncate(20) || pivot.id})" : "")
     self.soil_type = SoilType.default_soil_type
     self.et_method ||= PCT_COVER_METHOD
   end

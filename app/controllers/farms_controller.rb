@@ -16,7 +16,7 @@ class FarmsController < AuthenticatedController
     end
     Rails.logger.warn "FarmsController :: No farms for group #{@group_id} found!" unless @farms && @farms.size > 0
     @farms ||= []
-    
+
     render json: @farms.to_a.to_jqgrid_json(
       [:name, :notes, :problem, :act, :group_id, :id],
       params[:page],
