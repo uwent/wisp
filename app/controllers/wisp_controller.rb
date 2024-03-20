@@ -171,7 +171,7 @@ class WispController < AuthenticatedController
     get_current_ids
     @field_id = params[:field_id]
     field_status_data(params[:cur_date])
-    render partial: "wisp/partials/summary_box"
+    render partial: "wisp/field_status__summary_box"
   end
 
   # GET

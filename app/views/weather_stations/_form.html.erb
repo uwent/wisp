@@ -112,7 +112,7 @@
               </div>
             </td>
             <td width="25%">
-              <%= f.select :field_ids, @weather_station.fields.collect { |f| [f.name, f.id] }, {}, {size: 20, multiple: true, style: "width:100%"} %>
+              <%= f.select :field_ids, @weather_station.fields.collect { |f| [f.name_for_field_groups, f.id] }, {}, {size: 20, multiple: true, style: "width:100%"} %>
             </td>
           </tr>
         </table>

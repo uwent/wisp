@@ -258,6 +258,10 @@ body {
   flex-wrap: wrap;
 }
 
+.gap-5 {
+  gap: 5px;
+}
+
 .gap-10 {
   gap: 10px;
 }
@@ -331,15 +335,38 @@ body {
   margin-top: 10px;
   display: grid;
   grid-template-columns: 25% calc(75% - 10px);
-  gap: 10px;
+  grid-template-areas:
+    "a b"
+    "c d";
+  gap: 15px 5px;
   min-height: 600px;
   h3:first-child {
     margin: 0;
   }
-}
-
-#fdwNavBox {
-  margin-bottom: 5px;
+  .content-box {
+    max-width: calc(100% - 20px);
+  }
+  #fieldDataBox {
+    grid-area: a;
+  }
+  #weatherBox {
+    grid-area: b;
+  }
+  #seasonTotalsBox {
+    grid-area: c;
+  }
+  #graphBox {
+    grid-area: d;
+  }
+  @media #{$medium-down} {
+    // display: flex;
+    // flex-direction: column;
+    grid-template-columns: 50% 50% 100% 100%;
+    grid-template-areas:
+      "a c"
+      "b b"
+      "d d";
+  }
 }
 
 #fieldGroupTable, #farmProblemsTable {
@@ -388,6 +415,7 @@ body {
   }
   select {
     padding: 5px;
+    overflow: auto;
   }
 }
 

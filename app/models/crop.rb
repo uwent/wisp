@@ -53,9 +53,9 @@ class Crop < ApplicationRecord
 
   def set_defaults
     self.plant ||= Plant.default_plant
-
     self.max_root_zone_depth ||= plant.default_max_root_zone_depth
-    self.name ||= "New crop (field ID: #{field.id})" if field
+    # self.name ||= "New crop (field ID: #{field.id})" if field
+    self.name ||= "#{self.field.cropping_year} #{self.plant.name}"
     self.variety ||= "A variety"
   end
 end

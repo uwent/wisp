@@ -83,6 +83,6 @@ class FarmsController < AuthenticatedController
     end
     # Add farm name to problems structure
     @problems = @farms.collect { |f| f.problems }.flatten
-    render partial: "/wisp/partials/farm_problems"
+    render partial: "/wisp/farm_problems"
   end
 end

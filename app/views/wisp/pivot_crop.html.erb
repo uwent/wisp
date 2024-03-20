@@ -1,3 +1,142 @@
+<%= content_for :scripts do %>
+<script>
+  <%= grid_javascript_settings %>
+
+  function reloadGrids(pivot_id) {
+    $('#pivotDataGrid').load(
+      '<%= url_for(controller: :wisp, action: :pivot_crop) %>',
+      { farm_id: farm_id, parent_id: farm_id, pivot_id: pivot_id, ajax: true }
+    );
+  }
+
+  function reloadPage() {
+    url = '<%= url_for(controller: :wisp, action: :pivot_crop, pivot_id: "", field_id: "") %>';
+    window.location.href = url;
+  }
+
+  function deletePivot(id) {
+    pivot_id = 0; // We no longer know what the current one is; find out after grids reload
+    $('#pivotDataGrid').delGridRow(id, { afterSubmit: reloadPage } );
+  }
+
+  function addPivotToSelect(id, pivot_data) {
+    $('#pivot_id').append($('<option/>', {
+      value: id,
+      text: pivot_data['name'],
+    }));
+    reloadGrids(id);
+  }
+
+  function updatePivotSelectName(response) {
+    let json = $.parseJSON(response.responseText);
+    let name = json['name'];
+    let id = json['id'];
+    $(`#pivot_id option[value=${id}]`).text(name);
+    $('#pivot').val(id);
+    loadFieldGrid();
+    return(true);
+  }
+
+  function addPivotDeleteButtons() {
+    let ids = $("#pivotDataGrid").getDataIDs();
+    let nRows = ids.length;
+    for (let i = 0; i < nRows; i++) {
+      let id = ids[i];
+      be = `<div class='grid-del-btn'><input type='button' value='Del' title='Delete this pivot' onclick='deletePivot(${id});'></div>`;
+      $("#pivotDataGrid").setRowData(id, { act: be } );
+    }
+  }
+
+  function addNewPivotRow() {
+    const grid = $('#pivotDataGrid');
+    const newPivot = createNewPivot();
+    pivot_id = newPivot['id'];
+    grid.addRowData(pivot_id, newPivot); // add a new row with the new field's data
+    addPivotDeleteButtons();
+    addPivotToSelect(pivot_id, newPivot);
+    grid.editRow(pivot_id, true, null, updatePivotSelectName); // put new row into inline-edit mode
+  }
+
+  function createNewPivot() {
+    let pvt = {};
+    $.ajax({
+      type: "POST",
+      url: '<%= url_for(controller: :pivots, action: :post_data) %>',
+      dataType: "json",
+      data: { farm_id: farm_id, parent_id: farm_id, oper: 'add', id: '_empty' },
+      contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
+      async: false,
+      success: function(json) {
+        pvt = json;
+      }
+    });
+    return pvt;
+  }
+
+  const pivotGridOpts = {
+    // url: '<%= url_for(controller: "pivots", farm_id: @farm_id) %>' + `&pivot_id=${pivot_id}`,
+    url: '<%= url_for controller: "pivots", farm_id: @farm_id %>',
+    editurl:'<%= grid_post_data_url "pivots", @farm_id %>',
+    datatype: "json",
+    colNames: ['Name','Lat.','Long.','WDNR Hicap Well No','Pump Capacity','Energy Type','Crop Yr','Notes','Delete','Farm ID','ID'],
+    colModel: [
+      { name: 'name', index: 'name', width: 83, editable: true },
+      { name: 'latitude', index: 'latitude', width: 18, editable: true, align: 'right', formatter: 'number', formatoptions: { decimalPlaces: 2 }, editrules: { number: true, minValue: 42.0, maxValue: 50.0 } },
+      { name: 'longitude', index: 'longitude', width: 18, editable: true, align: 'right', formatter: 'number', formatoptions: { decimalPlaces: 2 }, editrules: { number: true, minValue: -98.0, maxValue: -86.0 } },
+      { name: 'equipment', index: 'equipment', width: 55, editable: true, align: 'right' },
+      { name: 'pump_capacity', index: 'pump_capacity', width: 40, editable: true, align: 'right', editrules: { number: true, minValue: 0.0 } },
+      { name: 'some_energy_rate_metric', index: 'some_energy_rate_metric', resizable: true, width: 60, editable: true, align: 'left', editrules: { required: false }, sorttype: "text", edittype: "select", formatter: 'select', editoptions: { value: "<%= energy_types_for_select %>" } },
+      { name: 'cropping_year', index: 'cropping_year', width: 20, editable: false, align: 'right' },
+      { name: 'notes', index: 'notes', width: 80, editable: true, align: 'right' },
+      { name: 'act', index: 'act', width: 20 },
+      { name: 'farm_id', index: 'farm_id', width: 10, hidden: true, editable: true },
+      { name: 'id', index: 'id', width: 1, hidden: true, editable: true },
+    ],
+    pager: '#pivotDataGrid_pager',
+    rowNum: 5,
+    rowList: [5],
+    imgpath: '<%= image_folder_path("jqgrid") %>',
+    sortname: '',
+    viewrecords: true,
+    sortorder: '',
+    gridview: false,
+    scrollrows: true,
+    height: 176, // 6 x 22px
+    autowidth: true,
+    rownumbers: false,
+    multiselect: false,
+    loadComplete: function() {
+      addPivotDeleteButtons();
+    },
+    onSelectRow: function(id) {
+      if (!id) return;
+      if (id !== pivot_id) $('#pivotDataGrid').restoreRow(pivot_id);
+      pivot_id = id;
+      $('#pivotDataGrid').editRow(id, true, null, updatePivotSelectName);
+      loadFieldGrid();
+    },
+    subGrid: false,
+    caption: "Pivots <%= @farm ? "for #{@farm.name}" : "" %>",
+  }
+
+  $(() => {
+    // Load the dependent field and crop grids with appropriate values
+    loadFieldGrid();
+    const pivotGrid = $("#pivotDataGrid").jqGrid(pivotGridOpts)
+  });
+
+  // If pivot_id is set, load the field grid for that one. If it's zero,
+  // grab the id of the first pivot in the grid and use that.
+  function loadFieldGrid() {
+    if (!pivot_id) pivot_id = $("#pivotDataGrid").getDataIDs()[0];
+    $('#fieldDataBox').load(
+      '<%= url_for(controller: :wisp, action: :field_setup_grid) %>',
+      { pivot_id: pivot_id, farm_id: farm_id }
+    );
+  }
+</script>
+<% end %>
+
 <% @title = "Pivots/Fields" %>
 <h2>Manage Pivots, Fields, and Crops</h2>
 
@@ -13,13 +152,18 @@
 </div>
 
 <div class="content-box">
-  <div id="pivotDataBox">
-    <%= render "/wisp/partials/pivot_setup_grid" %>
-  </div>
-  <div id="fieldDataBox">
-    <div id="fieldDataGrid">Loading fields...</div>
-  </div>
-  <div id="cropsDataBox">
-    <div id="cropDataGrid">Loading crops...</div>
+  <div class="flex-down gap-10">
+    <div id="pivotDataBox" class="flex-down gap-10">
+      <table id="pivotDataGrid" class="scroll" cellpadding="0" cellspacing="0"></table>
+      <div>
+        <button type="button" class="btn btn-light" onclick="addNewPivotRow();">Add New Pivot</button>
+      </div>
+    </div>
+    <div id="fieldDataBox">
+      <div style="height: 196px"> Loading fields... </div>
+    </div>
+    <div id="cropDataBox">
+      <div style="height: 70px"> Loading crops... </div>
+    </div>
   </div>
 </div>

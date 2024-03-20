@@ -20,7 +20,7 @@
       <p>This field group has no fields added to it. You must add at least one field to use this data entry page for this field group.</p>
     <% else %>
       <b>Fields in this group:</b> <%= @weather_station.fields.collect(&:name).join(", ") %><br>
-      <%= render :partial => 'wisp/partials/weather_station_data_grid'%>
+      <%= render partial: 'wisp/weather_station_data_grid' %>
     <% end %>
     <div class="btn-group" style="margin-top: 10px;">
       <%= link_to "Edit this field group", edit_weather_station_path(@weather_station), class: "btn btn-light" %>

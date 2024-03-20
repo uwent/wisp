@@ -1,184 +1,20 @@
-
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-
 <script>
   <%= grid_javascript_settings %>
-  var cur_date = "<%= @today %>";
 
-  // We don't know why the Google Vis API suddenly started having a cow over
-  // our numbers. But this will reformat to fix it.
-  function td(num) {
-    if (null === num || undefined === num) { return(0.0); }
-    flt = parseFloat(num); // in case it's a string
-    return(parseFloat(num.toPrecision(2)));
-  }
+  const isLai = <%= @field.et_method_name == "LAI" ? "true" : "false" %>;
+  const max_moisture = <%= @field.field_capacity * 100.0 %>;
+  const ad_at_pwp = <%= @ad_at_pwp %>;
+  let cur_date = "<%= @today %>";
+  let lastsel;
 
-  function array_min(arr) {
-    min = 10000.0;
-    for (var ii = arr.length - 1; ii >= 0; ii--){
-      if (arr[ii] < min) {
-        min = arr[ii];
-      }
-    };
-    return(min);
-  }
+  // Someday we want to turn this back on, but there's no way to adapt the growth curves
+  // to user input yet. So LAI is never editable.
+  let laiIsEditable = false;
+  let pctCoverIsEditable = !isLai
 
-  // Calculate a baseline for the graph. Easy if they're not going into negative-AD territory!
-  function baseLine(ad_data, prj_data) {
-    if (prj_data) {
-      smallest = array_min(ad_data.concat(prj_data));
-    } else {
-      smallest = array_min(ad_data);
-    }
-    if (smallest >= 0.0) {
-      smallest = 0.0;
-    } else {
-      // drop the baseline to a skosh below the lowest point
-      smallest = Math.floor(smallest - 0.20);
-    }
-    return smallest;
-  }
 
-  // Callback that creates and populates a data table,
-  // instantiates the chart, passes in the data and
-  // draws it.
-  function plotGraph() {
-    // Not ready yet.
-    if (!(google.visualization && google.visualization.DataTable)) {
-      return;
-    }
-    let ad_data = null;
-    let prj_data = null;
-    let targ_data = null;
-    let labels = null;
-
-    url = "<%= url_for(action: :projection_data, field_id: @field_id, user_id: @user) %>&cur_date=" + cur_date;
-    ad_max = td(<%= @field.ad_max %>);
-    ad_min = 0.0;
-    $.ajax({
-      type: "GET",
-      url: url,
-      dataType: "json",
-      async: false,
-      success: function(json) {
-        ad_data = json["ad_data"];
-        prj_data = json["projected_ad_data"];
-        targ_data = json["target_ad_data"];
-        labels = json["labels"];
-      }
-    });
-
-    // Create the data table.
-    // Field Capacity, AD, [Target], [Projected], 0.0 AD
-    const data = new google.visualization.DataTable();
-    data.addColumn("string", "Date");
-    data.addColumn("number", "Field capacity");
-    data.addColumn({type: "string", role: "annotation"});
-    data.addColumn("number", "Daily AD (in.)");
-    data.addColumn({type: "boolean", role: "certainty"});
-    data.addColumn({type: "string", role: "annotation"});
-    data.addColumn("number", "Depleted");
-    data.addColumn({type: "string", role: "annotation"});
-    if (targ_data) {
-      data.addColumn("number", "Target");
-      data.addColumn({type: "string", role: "annotation"});
-    }
-    const colors = ["#555555", "#0000FF", "#FF0000", "#00AA00"]; // FC gray, AD blue, AD==0 line red [, target green]
-    let ad_len = ad_data.length;
-    let wsc_anno = [];
-    let targ_anno = [];
-    let depl_anno = [];
-    for (let i = 0; i < ad_len; i++) {
-      wsc_anno[i] = "";
-      targ_anno[i] = "";
-      depl_anno[i] = "";
-    };
-    wsc_anno[0] = "Field capacity";
-    targ_anno[ad_len-2] = "Target AD";
-    depl_anno[0] = "Depleted";
-    // first_projected is set to be false for the second and subsequent points of any series of
-    // projected data. So only the first one gets labeled "Projected", but if there's another series of
-    // them (as weird as that would be for actual data), the first one there gets labeled too.
-    let first_projected = true;
-    for (let i = 0; i < ad_len; i++) {
-      label = labels[i];
-      row = [];
-      // Projected? prj_data is an array 1-for-1 w/ad_data -- true if projected, false if "real"
-      projected_anno = "";
-      if (prj_data[i]) {
-        is_solid_ad_line = false;
-        if (first_projected) {
-          projected_anno = "Projected"; // label this one
-          first_projected = false;  // but ensure subsequent ones aren't
-        }
-      } else {
-        is_solid_ad_line = true;
-        first_projected = true; // ready for the next start of a projection series
-      }
-      row = [
-        label,
-        ad_max,
-        wsc_anno[i],
-        td(ad_data[i]),
-        is_solid_ad_line,
-        projected_anno,
-        ad_min,
-        depl_anno[i]
-      ];
-      if (targ_data) {
-        row[row.length] = td(targ_data[i]); // Tack on target if it's present
-        row[row.length] = targ_anno[i];
-      }
-      data.addRow(row);
-    }
-
-    if (targ_data) {
-      // target line present
-      series = {
-        0:{lineWidth: 8, areaOpacity: 0.2, visibleInLegend: false},
-        1:{pointSize: 15},
-        2:{lineWidth: 8, visibleInLegend: false},
-        3:{areaOpacity: 0, visibleInLegend: false}
-      };
-    } else {
-      series = {
-        0:{lineWidth: 8, areaOpacity: 0.2, visibleInLegend: false},
-        1:{pointSize: 15},
-        2:{lineWidth: 8, visibleInLegend: false}
-      };
-    }
-    // Set chart options
-    const title = `Calculated${projected_anno == "Projected" ? " / Projected" : ""} Allowable Depletion (inches)`
-    const options = {
-      title: title,
-      height: 290,
-      colors: colors,
-      fontSize: 12,
-      pointSize: 0,
-      titleTextStyle: { fontSize: 18 },
-      series: series,
-      // Set vertical axis range to run between fudge-factored values to make the annotations show nicely
-      vAxis: { baseline: baseLine(ad_data, prj_data), maxValue: Math.ceil(ad_max + 0.2) },
-      annotation: { style: "line" },
-    };
-
-    // Instantiate and draw our chart, passing in some options.
-    const chart = new google.visualization.AreaChart(document.getElementById("graphBox"));
-    chart.draw(data, options);
-  }
-
-  // Load the Visualization API and the piechart package.
-  google.load("visualization", "1.0", { "packages": ["corechart"] } );
-  google.setOnLoadCallback(plotGraph);
-
-  function getCurPage(initial_date_str, cur_date_str) {
-    let initial_date_obj = new Date(initial_date_str);
-    initial_date_obj.setTime(initial_date_obj.getTime() - 1) // subtract an hour to prevent initial and current being the same
-    let cur_date_obj = new Date(cur_date_str);
-    let days = (cur_date_obj.getTime() - initial_date_obj.getTime()) / (86400 * 1000);
-    let page = Math.ceil(days / 7);
-    return page;
-  }
+  //-- FIELD DATA BOX --//
 
   function showTargetAD() {
     // adValue = 0.0;
@@ -186,15 +22,26 @@
     $("#target_ad").val(adValue);
   }
 
-  // function hoverColor(id, hover) {
-  //   if (hover)
-  //     $(id).css({"background-color":"blue","color":"white"});
-  //   else
-  //     $(id).css({"background-color":"#DDD","color":"black"});
-  // }
+
+  //-- SUMMARY BOX --//
+
+  function showSummaryBox(date) {
+    console.log(date)
+    $.ajax({
+      type: "GET",
+      url: "<%= url_for(controller: :wisp, action: :summary_box, field_id: @field, user_id: @user) %>&cur_date=" + date,
+      dataType: "html",
+      async: false,
+      success: function(newHtml) {
+        // Set the HTML of the summary box to the new stuff
+        $("#summaryBox").html(newHtml);
+      }
+    });
+  }
 
 
-  //-- DATEPICKER --//
+  //-- WEATHER DATE PICKER --//
+
   const minDate = new Date('<%= @min_date.to_s %>');
   const maxDate = new Date('<%= @max_date.to_s %>');
   const initial_date = "<%= @initial_date %>";
@@ -234,7 +81,304 @@
     $("#forwardAWeek").prop("disabled", nextWeek.getTime() > maxDate.getTime());
   }
 
-  // on load
+
+  //-- FIELD WEATHER GRID --//
+
+  function getCurPage(initial_date_str, cur_date_str) {
+    let initial_date_obj = new Date(initial_date_str);
+    initial_date_obj.setTime(initial_date_obj.getTime() - 1) // subtract an hour to prevent initial and current being the same
+    let cur_date_obj = new Date(cur_date_str);
+    let days = (cur_date_obj.getTime() - initial_date_obj.getTime()) / (86400 * 1000);
+    let page = Math.ceil(days / 7);
+    return page;
+  }
+
+  function editedFormatter(cellvalue, options, obj) {
+    if (cellvalue === undefined) return '';
+    // Is there an "E" for "entered"?
+    if (cellvalue.indexOf("E") == -1) return parseFloat(cellvalue).toFixed(2).toString();
+    return cellvalue.replace("E","");
+  }
+  
+  function posRedFormatter(cellvalue, options, obj) {
+    let cellFloat = parseFloat(cellvalue).toFixed(2);
+    if (cellFloat > 0.0) {
+      let cellstr = cellFloat.toString();
+      return `<span style="color:red; font-size:1.5em; font-weight:bold">${cellstr}</span>`;
+    }
+    return "";
+  }
+  
+  function naFormatter(cellvalue, options, obj) {
+    if (cellvalue == "n/a") return cellvalue;
+    if (cellvalue == "") return "0.0";
+    return parseFloat(cellvalue).toFixed(2).toString();
+  }
+
+  function displayCalcValues(rowid, response) {
+    console.log('foo');
+    $("#weather").trigger("reloadGrid");
+    plotGraph();
+    showSummaryBox(cur_date);
+    return true;
+  }
+
+  const weatherGridOpts = {
+    page: getCurPage(initial_date, cur_date),
+    url: '<%= url_for(controller: "field_daily_weather", q: 1, parent_id: @pivot, field_id: @field, user_id: @user) %>',
+    editurl: '<%= url_for(controller: "field_daily_weather", action: "post_data", parent_id: @pivot, field_id: @field, user_id: @user) %>',
+    datatype: "json",
+    colNames: ["Date", "Poten. ET", "Rainfall", "Irrigation", "% Moisture", "% Cover", "LAI", "Adj. ET", "AD", "Deep Drainage", "ID"],
+    colModel: [
+      { name: "date", index: "date", width: 75 },
+      {
+        name: "ref_et", index: "ref_et", width: 64, align: "right",
+        editable: true, editrules: { number: true, minValue: 0.0, maxValue: 0.6 },
+        formatter: "number", formatoptions: { decimalPlaces: 2 },
+      },
+      {
+        name: "rain", index: "rain", width: 67, align: "right",
+        editable: true,editrules: { number: true, minValue: 0.0, maxValue: 10.0 },
+        formatter: "number", formatoptions: { decimalPlaces: 2 },
+      },
+      {
+        name: "irrigation", index: "irrigation", width: 67, align: "right",
+        editable: true, editrules: { number: true, minValue: 0.0, maxValue: 10.0 },
+        formatter: "number", formatoptions: { decimalPlaces: 2 },
+      },
+      {
+        name: "pct_moisture", index: "pct_moisture", width: 72, align: "right",
+        editable: true, editrules: { number: true, minValue: 0.0, maxValue: max_moisture },
+        formatter: editedFormatter, formatoptions: { decimalPlaces: 2 },
+        cellattr: function (rowId, tv, rawObject, cm, rdata) {
+          if (rawObject[4].indexOf("E") == -1) return "";
+          return ('style="color:#00A050; font-size:larger"');
+        },
+      },
+      {
+        name: "entered_pct_cover", index: "entered_pct_cover", width: 63, align: "right", hidden: isLai,
+        editable: pctCoverIsEditable, editrules: { number: true, minValue: 0.0, maxValue: 100.0 },
+        formatter: editedFormatter, formatoptions: { decimalPlaces: 0 },
+        cellattr: function (rowId, tv, rawObject, cm, rdata) {
+          if (rawObject[5].indexOf('E') == -1) return "";
+          return ('style="color:#00A050; font-size:larger"');
+        },
+      },
+      {
+        name: "leaf_area_index", index: "leaf_area_index", width: 63, align: "right", hidden: !(isLai),
+        // Since we don't have any way to rejigger curves, laiIsEditable == false
+        editable: laiIsEditable, editrules: { number: true, minValue: 0.0, maxValue: 10.0 },
+        formatter: "number", formatoptions: { decimalPlaces: 2 },
+      },
+      {
+        name: "adj_et", index: "adj_et", width: 61, align: "right",
+        formatter: naFormatter, formatoptions: { decimalPlaces: 2 },
+      },
+      {
+        name: "ad", index: "ad", width: 44, align: "right",
+        formatter: "number", formatoptions: { decimalPlaces: 2 },
+        cellattr: function (rowId, tv, rawObject, cm, rdata) {
+          let ad = parseFloat(rawObject[8]);
+          if (ad > ad_at_pwp) return "";
+          return ('style="background-color:#FF0000;font-size:larger"');
+        },
+      },
+      {
+        name: "deep_drainage", index: "deep_drainage", width: 92, align: "right",
+        formatter: posRedFormatter, formatoptions: { decimalPlaces: 2 },
+      },
+      { name: "id", index: "id", width: 1, editable: true, hidden: true }
+    ], 
+    pager: "#weather_pager",
+    rowNum: 7,
+    rowList: [7, <%= FieldDailyWeather::SEASON_DAYS %>],
+    imgpath: '<%= image_folder_path("jqgrid") %>',
+    sortname: "",
+    viewrecords: true,
+    sortorder: "",
+    gridview: false,
+    scrollrows: true,
+    height: 162,
+    autowidth: true,
+    scrollOffset: 20,
+    rownumbers: false,
+    multiselect: false,
+    onSelectRow: function(id) {
+      if (id !== lastsel) $('#weather').restoreRow(lastsel);
+      // TODO: displayCalcValues not being called
+      $("#weather").editRow(id, true, "", "", "", "", displayCalcValues); 
+      lastsel = id;
+    },
+    subGrid: false,
+    caption: "Edit observed values below for field <%= @field.name %>",
+  }
+
+
+  //-- GRAPH --//
+
+  // We don't know why the Google Vis API suddenly started having a cow over
+  // our numbers. But this will reformat to fix it.
+  function td(num) {
+    if (null === num || undefined === num) return 0.0;
+    return parseFloat(num.toPrecision(2));
+  }
+
+  function array_min(arr) {
+    min = 10000.0;
+    for (var ii = arr.length - 1; ii >= 0; ii--){
+      if (arr[ii] < min) {
+        min = arr[ii];
+      }
+    };
+    return min;
+  }
+
+  // Calculate a baseline for the graph. Easy if they're not going into negative-AD territory!
+  function baseLine(ad_data, prj_data) {
+    let smallest = prj_data ? array_min(ad_data.concat(prj_data)) : array_min(ad_data)
+    if (smallest >= 0.0) {
+      smallest = 0.0;
+    } else {
+      // drop the baseline to a skosh below the lowest point
+      smallest = Math.floor(smallest - 0.20);
+    }
+    return smallest;
+  }
+
+  // Callback that creates and populates a data table,
+  // instantiates the chart, passes in the data and
+  // draws it.
+  function plotGraph() {
+    // Not ready yet.
+    if (!(google.visualization && google.visualization.DataTable)) return;
+
+    let url = "<%= url_for(action: :projection_data, field_id: @field_id, user_id: @user) %>&cur_date=" + cur_date;
+    let ad_max = td(<%= @field.ad_max %>);
+    let ad_min = 0.0;
+    let ad_data = null;
+    let prj_data = null;
+    let targ_data = null;
+    let labels = null;
+
+    $.ajax({
+      type: "GET",
+      url: url,
+      dataType: "json",
+      async: false,
+      success: function(json) {
+        ad_data = json["ad_data"];
+        prj_data = json["projected_ad_data"];
+        targ_data = json["target_ad_data"];
+        labels = json["labels"];
+      }
+    });
+
+    // Create the data table.
+    // Field Capacity, AD, [Target], [Projected], 0.0 AD
+    const data = new google.visualization.DataTable();
+    data.addColumn("string", "Date");
+    data.addColumn("number", "Field capacity");
+    data.addColumn({type: "string", role: "annotation"});
+    data.addColumn("number", "Daily AD (in.)");
+    data.addColumn({type: "boolean", role: "certainty"});
+    data.addColumn({type: "string", role: "annotation"});
+    data.addColumn("number", "Depleted");
+    data.addColumn({type: "string", role: "annotation"});
+    if (targ_data) {
+      data.addColumn("number", "Target");
+      data.addColumn({type: "string", role: "annotation"});
+    }
+    const colors = ["#555555", "#0000FF", "#FF0000", "#00AA00"]; // FC gray, AD blue, AD==0 line red [, target green]
+
+    let ad_len = ad_data.length;
+    let wsc_anno = [];
+    let targ_anno = [];
+    let depl_anno = [];
+    for (let i = 0; i < ad_len; i++) {
+      wsc_anno[i] = "";
+      targ_anno[i] = "";
+      depl_anno[i] = "";
+    };
+    wsc_anno[0] = "Field capacity";
+    targ_anno[ad_len-2] = "Target AD";
+    depl_anno[0] = "Depleted";
+
+    // first_projected is set to be false for the second and subsequent points of any series of
+    // projected data. So only the first one gets labeled "Projected", but if there's another series of
+    // them (as weird as that would be for actual data), the first one there gets labeled too.
+    let first_projected = true;
+    for (let i = 0; i < ad_len; i++) {
+      label = labels[i];
+      row = [];
+      // Projected? prj_data is an array 1-for-1 w/ad_data -- true if projected, false if "real"
+      projected_anno = "";
+      if (prj_data[i]) {
+        is_solid_ad_line = false;
+        if (first_projected) {
+          projected_anno = "Projected"; // label this one
+          first_projected = false;  // but ensure subsequent ones aren't
+        }
+      } else {
+        is_solid_ad_line = true;
+        first_projected = true; // ready for the next start of a projection series
+      }
+      row = [
+        label,
+        ad_max,
+        wsc_anno[i],
+        td(ad_data[i]),
+        is_solid_ad_line,
+        projected_anno,
+        ad_min,
+        depl_anno[i]
+      ];
+      if (targ_data) {
+        row[row.length] = td(targ_data[i]); // Tack on target if it's present
+        row[row.length] = targ_anno[i];
+      }
+      data.addRow(row);
+    }
+
+    if (targ_data) {
+      // target line present
+      series = {
+        0: {lineWidth: 8, areaOpacity: 0.2, visibleInLegend: false},
+        1: {pointSize: 15},
+        2: {lineWidth: 8, visibleInLegend: false},
+        3: {areaOpacity: 0, visibleInLegend: false}
+      };
+    } else {
+      series = {
+        0: {lineWidth: 8, areaOpacity: 0.2, visibleInLegend: false},
+        1: {pointSize: 15},
+        2: {lineWidth: 8, visibleInLegend: false}
+      };
+    }
+
+    // Set chart options
+    const title = `Calculated${projected_anno == "Projected" ? " / Projected" : ""} Allowable Depletion (inches)`
+    const options = {
+      title: title,
+      height: 290,
+      colors: colors,
+      fontSize: 12,
+      pointSize: 0,
+      titleTextStyle: { fontSize: 18 },
+      series: series,
+      // Set vertical axis range to run between fudge-factored values to make the annotations show nicely
+      vAxis: { baseline: baseLine(ad_data, prj_data), maxValue: Math.ceil(ad_max + 0.2) },
+      annotation: { style: "line" },
+    };
+
+    // Instantiate and draw our chart, passing in some options.
+    const chart = new google.visualization.AreaChart(document.getElementById("graph"));
+    chart.draw(data, options);
+  }
+
+  // Load the Visualization API and the piechart package.
+  google.load("visualization", "1.0", { "packages": ["corechart"] } );
+  google.setOnLoadCallback(plotGraph);
+
   $(() => {
     const dateOpts = {
       dateFormat: "yy-mm-dd",
@@ -245,9 +389,13 @@
     $("#date_input").datepicker(dateOpts);
     $("#date_input").change(setDate);
     checkDateBtns(cur_date);
-    plotGraph();
     showTargetAD();
+    const weatherGrid = $("#weather").jqGrid(weatherGridOpts)
+    weatherGrid.filterToolbar();
+    weatherGrid[0].toggleToolbar();
+    plotGraph();
   });
+
 </script>
 
 <% @title = "Field Status" %>
@@ -267,6 +415,7 @@
     <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field), { onchange: "this.form.submit();" } %>
   <% end %>
 </div>
+
 <div id="fieldStatusGrid">
   <div id="fieldDataBox" class="flex-down">
     <h3>Field data</h3>
@@ -290,10 +439,10 @@
       <% end %>
     </div>
   </div>
-  <div id="fieldDailyWeather" class="flex-down">
+  <div id="weatherBox" class="flex-down">
     <h3>Field daily weather</h3>
-    <div class="content-box">
-      <div id="fdwNavBox" class="flex-center">
+    <div class="content-box flex-down gap-5">
+      <div class="flex-center">
         <div class="inline-flex">
           Week:
           <button id="backAWeek" title="Previous week" onclick="shiftDate(-7)">&lt;</button>
@@ -302,20 +451,24 @@
           <button id="curDate" class="week-button" onclick="setDate('<%= @today %>');">Today</button>
         </div>
       </div>
-      <div id="fdwDataTable">
-        <%= render "wisp/partials/field_daily_wx" %>
+      <div style="max-width: 100%; overflow: auto">
+        <table id="weather" class="scroll" cellpadding="0" cellspacing="0"></table>
       </div>
     </div>
   </div>
-  <div class="flex-down">
+  <div id="seasonTotalsBox" class="flex-down">
     <h3>Season totals</h3>
-    <div id="summaryBox" class="content-box">
-      <%= render "wisp/partials/summary_box" %>
+    <div class="content-box">
+      <div id="summaryBox">
+        <%= render partial: "field_status__summary_box" %>
+      </div>
     </div>
   </div>
-  <div class="flex-down">
+  <div id="graphBox" class="flex-down">
     <h3>Field water balance</h3>
-    <div id="graphBox" class="content-box"></div>
+    <div class="content-box">
+      <div id="graph"></div>
+    </div>
   </div>
 </div>
 
@@ -337,9 +490,3 @@
     </table>
   <% end %>
 </div>
-
-
-
-
-
-

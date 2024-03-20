@@ -19,151 +19,96 @@
     let plants = <%= plant_characteristics %>;
     dmrzd = plants[plant_id]['default_max_root_zone_depth'];
     $(`#${curFieldID}_max_root_zone_depth`).val(dmrzd);
-   }
- 
-  $(document).ready(function() {
-    let mygrid = $("#crop_setup").jqGrid({
-      url: '<%= grid_data_url "crops", @field %>',
-      editurl: '<%= grid_post_data_url "crops", @field %>',
-      datatype: "json",
-      colNames: ['Name', 'Plant', 'Variety', 'Emergence', 'Harvest/Kill', 'Root zone depth', 'AD Frac.', 'Notes', ' ', ' '],
-      colModel: [
-        {
-          name: 'name',
-          index: 'name',
-          width: 40,
-          editable: true,
+  }
+
+  const cropGridOpts = {
+    url: '<%= grid_data_url "crops", @field %>',
+    editurl: '<%= grid_post_data_url "crops", @field %>',
+    datatype: "json",
+    colNames: ['Name', 'Plant', 'Variety', 'Emergence', 'Harvest/Kill', 'Root zone depth', 'AD Frac.', 'Notes', ' ', ' '],
+    colModel: [
+      { name: 'name', index: 'name', width: 40, editable: true },
+      {
+        name: 'plant_id', index: 'plant_id', width: 30, sortable: true,
+        editable: true, edittype: 'select', editrules: { required: true }, editoptions: {
+          value: "<%= plant_types_for_select %>",
+          dataEvents: [{ type: 'change', fn: set_crop_characteristics_from_event }]
         },
-        {
-          name: 'plant_id',
-          index: 'plant_id',
-          width: 30, 
-          editable: true,
-          sortable: true,
-          edittype: 'select',
-          formatter: 'select',
-          editoptions: {
-            value: "<%= plant_types_for_select %>",
-            dataEvents: [{ type: 'change', fn: set_crop_characteristics_from_event }]
-          },
-          editrules: { required: true },
-        },
-        {
-          name: 'variety',
-          index: 'variety',
-          width: 40,
-          editable: true,
-          align: 'right',
-        },
-        {
-          name: 'emergence_date',
-          index: 'emergence_date',
-          width: 30,
-          editable: true,
-          align: 'right',
-          editrules:{date:true},
-          editoptions: { 
-            dataInit: function(el) { 
-              setTimeout(function() {
-                $(el).datepicker({
-                  dateFormat: "yy-mm-dd",
-                  onClose: function(selectedDate) {
-                    $("#" + $.jgrid.jqID(lastsel) + "_emergence_date").focus();
-                  }
-                });
-              }, 200);
-            }
-          }
-        },
-        {
-          name: 'harvest_or_kill_date',
-          index: 'harvest_or_kill_date',
-          width: 30,
-          editable: true,
-          align:'right',
-          editrules: { required: false, date: true },
-          editoptions: {
-            dataInit: function(el) {
-              setTimeout(function() {
-                $(el).datepicker({
-                  dateFormat: "yy-mm-dd",
-                  onClose: function(selectedDate) {
-                    $(`#${$.jgrid.jqID(lastsel)}_harvest_or_kill_date`).focus();
-                  }
-                });
-              }, 200);
-            }
-          }
-        },
-        {
-          name: 'max_root_zone_depth',
-          index: 'max_root_zone_depth',
-          width: 35,
-          editable: true,
-          align: 'right',
-          editrules: { number: true, minValue: 0, maxValue: 60 }
-        },
-        {
-          name: 'max_allowable_depletion_frac',
-          index: 'max_allowable_depletion_frac',
-          width: 20,
-          editable: true,
-          align: 'right',
-          editrules: { number: true, minValue: 0.0, maxValue: 1.0 }
-        },
-        {
-          name: 'notes',
-          index: 'notes',
-          width: 45,
-          editable: true,
-          align: 'right'
-        },
-        {
-          name: 'id',
-          index: 'id',
-          width: 1,
-          hidden: true
-        },
-        {
-          name: 'field_id',
-          index: 'field_id',
-          width: 1,
-          hidden: true,
-          editable: true
-        }
-      ],
-      pager: '#crop_setup_pager',
-      rowNum: 180,
-      rowList: [180],
-      imgpath: '<%= image_folder_path("jqgrid") %>',
-      sortname: '',
-      viewrecords: true,
-      sortorder: '',
-      gridview: false,
-      scrollrows: true,
-      autowidth: true,
-      height: 30,
-      rownumbers: false,
-      multiselect: false,
-      onSelectRow: function(id) {
-        if (!id) return;
-        if (id !== lastsel) {
-          $('#crop_setup').restoreRow(lastsel);
-        }
-        $('#crop_setup').editRow(id, true);
-        lastsel = id;
+        formatter: 'select',
       },
-      subGrid: false,
-      caption: "Crop <%= @field ? " for #{@field.name}" : '(select field above)' %>",
-    }).navGrid('#crop_setup_pager',
-      { edit: false, add: false, del: false, search: false, refresh: true }, // Restore add and del someday! For now, we're one crop per year.
-      { afterSubmit:function(r,data){return true;(r,data,'edit');} },
-      { afterSubmit:function(r,data){return true;(r,data,'add');} },
-      { afterSubmit:function(r,data){return true;(r,data,'delete');} }
-    )
-    mygrid.filterToolbar();
-    mygrid[0].toggleToolbar();
+      { name: 'variety', index: 'variety', width: 40, editable: true, align: 'right' },
+      {
+        name: 'emergence_date', index: 'emergence_date', width: 30, align: 'right',
+        editable: true, editrules: { date: true }, editoptions: { 
+          dataInit: function(el) { 
+            setTimeout(function() {
+              $(el).datepicker({
+                dateFormat: "yy-mm-dd",
+                onClose: function(selectedDate) {
+                  $("#" + $.jgrid.jqID(lastsel) + "_emergence_date").focus();
+                }
+              });
+            }, 200);
+          }
+        }
+      },
+      {
+        name: 'harvest_or_kill_date', index: 'harvest_or_kill_date', width: 30, align: 'right',
+        editable: true, editrules: { required: false, date: true }, editoptions: {
+          dataInit: function(el) {
+            setTimeout(function() {
+              $(el).datepicker({
+                dateFormat: "yy-mm-dd",
+                onClose: function(selectedDate) {
+                  $(`#${$.jgrid.jqID(lastsel)}_harvest_or_kill_date`).focus();
+                }
+              });
+            }, 200);
+          }
+        }
+      },
+      {
+        name: 'max_root_zone_depth', index: 'max_root_zone_depth', width: 35, align: 'right',
+        editable: true, editrules: { number: true, minValue: 0, maxValue: 60 },
+      },
+      {
+        name: 'max_allowable_depletion_frac', index: 'max_allowable_depletion_frac', width: 20, align: 'right',
+        editable: true, editrules: { number: true, minValue: 0.0, maxValue: 1.0 },
+      },
+      { name: 'notes', index: 'notes', width: 45, align: 'right', editable: true },
+      { name: 'id', index: 'id', width: 1, hidden: true },
+      { name: 'field_id', index: 'field_id', width: 1, hidden: true, editable: true}
+    ],
+    pager: '#cropDataGrid_pager',
+    rowNum: 180,
+    rowList: [180],
+    imgpath: '<%= image_folder_path("jqgrid") %>',
+    sortname: '',
+    viewrecords: true,
+    sortorder: '',
+    gridview: false,
+    scrollrows: true,
+    autowidth: true,
+    height: 23,
+    rownumbers: false,
+    multiselect: false,
+    onSelectRow: function(id) {
+      if (!id) return;
+      if (id !== lastsel) $('#cropDataGrid').restoreRow(lastsel);
+      lastsel = id;
+      $('#cropDataGrid').editRow(id, true);
+    },
+    subGrid: false,
+    caption: "Crop <%= @field ? " for #{@field.name}" : '(select field above)' %>",
+  }
+ 
+  $(() => {
+    const cropGrid = $("#cropDataGrid").jqGrid(cropGridOpts)
+    cropGrid.filterToolbar();
+    cropGrid[0].toggleToolbar();
   });
 </script>
 
-<table id="crop_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
+<div>
+  <table id="cropDataGrid" class="scroll" cellpadding="0" cellspacing="0"></table>
+</div>
