@@ -286,6 +286,14 @@ body {
   }
 }
 
+.grid-del-btn {
+  text-align: center;
+  input {
+    height: 22px;
+    width: 35px;
+  }
+}
+
 
 //-- NAMED ELEMENTS --//
 
@@ -318,8 +326,6 @@ body {
 #notice-close {
   cursor: pointer;
 }
-
-
 
 #fieldStatusGrid {
   margin-top: 10px;
