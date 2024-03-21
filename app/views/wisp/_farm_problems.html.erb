@@ -1,0 +1,33 @@
+<% if @problems && @problems.size > 0 %>
+  <div id="farmProblemsTable">
+  <% for farm in @farms %>
+    <% farm_problems = @problems.select { |p| p.keys.first.pivot.farm_id == farm.id }%>
+    <% if farm_problems && farm_problems.size > 0 %>
+      <h3><%= @problems.size %> field(s) are projected below allowable depletion<%= farm ? " for #{farm.name}" : "" %></h3>
+      <table width="100%" border="1" cellpadding="1" cellspacing="1" summary="Action Items for farm">
+        <tr>
+          <th>Field name</th>
+          <th width="25%">Calculated or projected AD</th>
+          <th width="15%">On</th>
+        </tr>
+        <% farm_problems.each do |problem| %>
+          <% problem.each do |field,date_plus_val|%>
+            <tr>
+              <td>
+                <div class="inline-flex">
+                  <%= link_to "View", {controller: "wisp", action: "field_status", field_id: field[:id]}, class: "btn btn-light" %>
+                  <b><%= field.name %></b>
+                </div>
+              </td>
+              <td><%= sprintf('%0.1f',date_plus_val[1]) %> in</td>
+              <td><%= date_plus_val[0].strftime("%b %d, %Y") %></td>
+            </tr>
+          <% end %>
+        <% end %>
+      </table>
+    <% end %> <!-- if problems and size > 1 -->
+  <% end %> <!-- loop on farms -->
+  </div>
+<% else %>
+  <h3>No fields below allowable depletion</h3>
+<% end %>

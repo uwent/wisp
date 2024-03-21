@@ -1,111 +1,102 @@
-  <script type="text/javascript">
+<script>
+  function option(id, text, selected) {
+    return `<option ${selected ? 'selected="selected"' : ''} value='${parseInt(id)}'>${escapeHTML(text)}</option>`;
+  }
 
-    var formID = $('[id*=weather_station]').attr('id');
+  function addOptions() {
+    const opt = option($(this).val(), $(this).text(), true);
+    $('#weather_station_field_ids').append(opt);
+    $(this).remove();
+  }
 
-    function option(id,text) {
-      return("<option value='"+id+"'>"+text+"</option>");
-    }
+  function removeOptions() {
+    const opt = option($(this).attr("value"), $(this).text(), false);
+    $('#multi_edit_link_weather_station_id').append(opt);
+    $(this).remove();
+  }
 
-    function add() {
-      $('#multi_edit_link_weather_station_id option:selected').each(function(){
-        opt = option($(this).attr("value"),$(this).text());
-        $('#weather_station_field_ids').append(opt);
-        $('#multi_edit_link_weather_station_id option:selected').remove();
+  function add() {
+    $('#multi_edit_link_weather_station_id option:selected').each(addOptions);
+  }
+
+  function addAll() {
+    $('#multi_edit_link_weather_station_id option').each(addOptions);
+  }
+
+  function remove() {
+    $('#weather_station_field_ids option:selected').each(removeOptions);
+  }
+
+  function removeAll() {
+    $('#weather_station_field_ids option').each(removeOptions);
+  }
+
+  // select all options before submitting
+  $(() => {
+    $("#weather_station_form").on("submit", function(e) {
+      $('#weather_station_field_ids option').each(function() {
+        $(this).prop('selected', true);
       });
-    }
+    })
+  })
+</script>
 
-    function addAll() {
-      // just like add, except don't bother picking out the selected one(s)
-      $('#multi_edit_link_weather_station_id option').each(function(){
-        opt = option($(this).attr("value"),$(this).text());
-        $('#weather_station_field_ids').append(opt);
-        $(this).remove();
-        // $('#multi_edit_link_weather_station_id option:selected').remove();
-      });
-    }
+<div id="fieldGroupForm" class="content-box">
+  <%= form_for @weather_station, html: {id: "weather_station_form"} do |f| %>
+    <% if @weather_station.errors.any? %>
+      <div id="error_explanation">
+        <h3><%= pluralize(@weather_station.errors.count, "error") %> prohibited this weather_station from being saved:</h3>
+        <ul>
+        <% @weather_station.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    <% end %>
 
-    function removeFromLeft() {
-      // exactly the inverse of add()
-      $('#weather_station_field_ids option:selected').each(function(){
-        opt = option($(this).attr("value"),$(this).text());
-        $('#multi_edit_link_weather_station_id').append(opt);
-        $('#weather_station_field_ids option:selected').remove();
-      });
-    }
-
-    function removeAll() {
-      // same as remove(), except we don't bother with selected
-      $('#weather_station_field_ids option').each(function(){
-        opt = option($(this).attr("value"),$(this).text());
-        $('#multi_edit_link_weather_station_id').append(opt);
-        $(this).remove();
-      });
-    }
-
-    function selectEverything() {
-      $('#weather_station_field_ids option').each(function(){
-        $(this).attr('selected',true);
-      });
-    }
-
-    function clickIt() {
-      form = $(this).parentsUntil('form');
-      selectEverything();
-      form.submit();
-    }
-
-    // double-click handler for adding
-    $('#multi_edit_link_weather_station_id option').on('dblclick',function(){
-      add();
-    });
-
-    // and one for removing
-    $('#weather_station_field_ids option').on('dblclick',function(){
-      removeFromLeft();
-    });
-
-  </script>
-
-<%= form_for(@weather_station) do |f| %>
-  <% if @weather_station.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@weather_station.errors.count, "error") %> prohibited this weather_station from being saved:</h2>
-
-      <ul>
-      <% @weather_station.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+    <div class="inline-flex">
+      <div class="field">
+        <%= f.label :name, 'Group Name' %><br />
+        <%= f.text_field :name, required: true, placeholder: "Field group name (required)" %>
+      </div>
+      <div class="field">
+        <%= f.label :location %><br />
+        <%= f.text_field :location, placeholder: "Location description (optional)" %>
+      </div>
     </div>
-  <% end %>
-
-  <div class="field">
-  </div>
-  <div class="field">
-    <%= f.label :name, 'Group Name' %><br />
-    <%= f.text_field :name %>
-  </div>
-  <div class="field">
-    <%= f.label :location %><br />
-    <%= f.text_field :location %>
-  </div>
-  <div class="field">
-    <%= f.label :notes %><br />
-    <%= f.text_field :notes %>
-  </div>
-  <p>
+    <div class="field">
+      <%= f.label :notes %><br />
+      <%= f.text_area :notes, size: "60x4", placeholder: "Field group notes (optional)" %>
+    </div>
     <div class="field">
       <table>
-        <tr><th>Fields selected for this group</th><th align="center">&nbsp;</th><th>Available fields for this group</th></tr>
         <tr>
-          <td width="40%"><%= f.select :field_ids, @weather_station.fields.collect { |f| [f.name,f.id] }, {}, {size: 20, multiple: true, style: "width:98%"} %></td>
-          <td width="10%" align="center"><button type="button" onclick="add();">Add</button><br/><button type="button" onclick="addAll();">Add all</button><br/>&nbsp;<br/><button type="button" onclick="removeFromLeft();">Remove </button><br/><button type="button" onclick="removeAll();">Remove all</button></td>
-          <td width="40%"><%= collection_select :multi_edit_link, :weather_station_id, @available_fields - @weather_station.fields, :id, :name, {}, {size: 20, multiple: true, style: "width:90%"}%></td>
+          <th>Available fields for this group</th>
+          <th align="center"></th>
+          <th>Fields selected for this group</th>
+        </tr>
+        <tr>
+          <td width="25%">
+            <%= collection_select :multi_edit_link, :weather_station_id, @available_fields - @weather_station.fields, :id, :name_for_field_groups, {}, {size: 20, multiple: true, style: "width:100%"}%>
+          </td>
+          <td width="10%" align="center">
+            <div class="flex-down gap-10 margin-10">
+              <button type="button" class="btn btn-success" onclick="add();">Add >></button>
+              <button type="button" class="btn btn-success" onclick="addAll();">Add all</button>
+              &nbsp;
+              <button type="button" class="btn btn-warning" onclick="remove();"><< Remove </button>
+              <button type="button" class="btn btn-warning" onclick="removeAll();">Remove all</button>
+            </div>
+          </td>
+          <td width="25%">
+            <%= f.select :field_ids, @weather_station.fields.collect { |f| [f.name_for_field_groups, f.id] }, {}, {size: 20, multiple: true, style: "width:100%"} %>
+          </td>
         </tr>
       </table>
     </div>
-  </p>
-  <div class="actions">
-    <button onclick="clickIt();">OK</button>
-  </div>
-<% end %>
+    <div class="margin-5 btn-group">
+      <button class="btn btn-primary">Save changes</button>
+      <%= link_to 'Discard changes', weather_stations_path, class: "btn btn-danger" %>
+    </div>
+  <% end %>
+</div>

@@ -45,10 +45,10 @@ module Jqgrid
 
     # Stringify options values
     options.each_with_object({}) do |(key, value), options|
-      options[key] = key != :subgrid ? value.to_s : value
+      options[key] = (key != :subgrid) ? value.to_s : value
     end
 
-    options[:error_handler_return_value] = options[:error_handler] == "null" ? "true;" : options[:error_handler]
+    options[:error_handler_return_value] = (options[:error_handler] == "null") ? "true;" : options[:error_handler]
     edit_button = (options[:edit] == "true" && options[:inline_edit] == "false").to_s
 
     # Generate columns data

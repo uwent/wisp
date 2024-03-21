@@ -1,0 +1,43 @@
+<div class="sidebar-account">
+  <% if user_signed_in? %>
+    <h4>Signed in as <%= current_user.email %>.</h4>
+    <div class="btn-group">
+      <%= button_to "Manage account", edit_user_registration_path, method: :get, class: "btn btn-light" %>
+      <% if current_user&.admin? %>
+        <%= button_to "Admin", users_path, method: :get, class: "btn btn-light" %>
+      <% end %>
+      <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-light" %>
+    </div>
+  <% else %>
+    <h4>Not signed in.</h4>
+    <div class="btn-group">
+      <%= link_to new_user_session_path do %>
+        <button class="btn btn-primary">Sign in</button>
+      <% end %>
+      <%= link_to new_user_registration_path do %>
+        <button class="btn btn-light">Sign up</button>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<div class="sidebar-links">
+  <h4>More information:</h4>
+  <ul>
+    <li><%= link_to "AgWeather", "https://agweather.cals.wisc.edu/", target: "_blank" %></li>
+    <li><%= link_to "Vegetable Disease and Insect Forecasting map tool", "https://agweather.cals.wisc.edu/vdifn", target: "_blank" %></li>
+    <li><%= link_to "UW Vegetable Entomology Lab", "https://vegento.russell.wisc.edu/", target: "_blank" %>
+    <li><%= link_to "UW Vegetable Pathology Lab", "https://vegpath.plantpath.wisc.edu/", target: "_blank" %>
+    <li><%= link_to "View WISP User Guide (PDF)", "wisp-user-guide.pdf", target: "_blank" %></li>
+    <li><%= mail_to "agweather@cals.wisc.edu", "Contact us" %></li>
+  </ul>
+</div>
+
+<div class="sidebar-reminder">
+  <h4>Please note:</h4>
+  <p>WISP user input data will be purged on Feb. 15<sup>th</sup> each year. To save current year data use the <b>Create Report</b> link on the <%= link_to "Field Status", "/wisp/field_status" %> page prior to 2/15!</p>
+</div>
+
+<div class="uw-logo">
+  <%= image_tag("uw-logo.png", width: "100%") %>
+</div>

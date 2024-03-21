@@ -14,12 +14,11 @@ class Pivot < ApplicationRecord
     ""
   end
 
-  # TODO: Remove, this appears unused.
-  # def problem
-  #   fields.select do |field|
-  #     field.problem
-  #   end
-  # end
+  def problem
+    fields.select do |field|
+      field.problem
+    end
+  end
 
   # FIXME: Remove this.
   # def clone_for(year=Time.now.year)
@@ -55,7 +54,8 @@ class Pivot < ApplicationRecord
   private
 
   def set_defaults
-    self.name ||= "New pivot (farm ID: #{farm_id})"
+    # self.name ||= "New pivot (farm ID: #{farm_id})"
+    self.name ||= "New pivot (Farm #{farm.name&.truncate(20) || farm.id})"
     self.cropping_year ||= Time.now.year
     self.latitude ||= 43
     self.longitude ||= -89

@@ -52,7 +52,7 @@ describe Crop do
         let(:crop) { build :crop, field: field, name: nil }
 
         it "changes the name" do
-          expect { crop.valid? }.to change { crop.name }.to("New crop (field ID: 123)")
+          expect { crop.valid? }.to change { crop.name }.to("New crop (#{crop.field.cropping_year})")
         end
       end
 
@@ -87,7 +87,7 @@ describe Crop do
   describe "new year" do
     let(:crop) {
       create :crop, emergence_date: 2.days.ago,
-      harvest_or_kill_date: 1.day.ago
+        harvest_or_kill_date: 1.day.ago
     }
 
     it "sets emergence date to default" do

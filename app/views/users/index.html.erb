@@ -1,15 +1,16 @@
 <h2>Users</h2>
 <% unless alert.blank? %>
-<br />
-<div class="alert">
-  <p id="notice"><%= alert %></p>
-</div>
+  <br />
+  <div class="alert">
+    <p id="notice"><%= alert %></p>
+  </div>
 <% end %>
-<br />
-<%=  link_to 'Export Email CSV', users_path(format: :csv) %>
-<br />
-<br />
-<%= will_paginate @users, class: :apple_pagination %>
+<br>
+<%= link_to 'Export Email CSV', users_path(format: :csv) %>
+<br>
+<br>
+
+<%= will_paginate @users %>
 
 <table width="90%" style="margin-left: 5%;">
   <thead>
@@ -23,8 +24,8 @@
   <tbody>
     <% @users.each do |user| %>
       <tr>
-        <td><%= button_to 'Destroy', user_path(user),
-            data: {:confirm => 'Are you sure?'}, :method => :delete %></td>
+        <td>
+          <%= button_to 'Destroy', user_path(user), data: {confirm: 'Are you sure?'}, method: :delete %></td>
         <td><%= user.email %></td>
         <td><%= user.created_at.to_date %></td>
         <td><%= user.last_sign_in_at.try(:to_date) %></td>
@@ -32,5 +33,5 @@
     <% end %>
   </tbody>
 </table>
-<br />
-<%= will_paginate @users, class: :apple_pagination %>
+<br>
+<%= will_paginate @users %>

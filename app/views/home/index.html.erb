@@ -1,0 +1,36 @@
+<h2>WISP Home</h2>
+
+<h3>About WISP</h3>
+<p>The Wisconsin Irrigation Scheduling Program (WISP) is an irrigation water management tool developed by the Departments of Soil Science and Biological Systems Engineering at the University of Wisconsin-Madison. WISP is designed to help growers optimize crop water use efficiency by tracking the root zone water inputs and outputs (water balance).</p>
+<p>Using WISP's water balance predictions, along with root zone soil moisture monitoring, a grower can plan irrigation timing and amount to take maximum advantage of natural rainfall while minimizing over-application of water resulting in leaching.</p>
+<p>WISP will automatically pull degree day, evapotranspiration, and precipitation data from <%= link_to "AgWeather", "https://agweather.cals.wisc.edu" %> for fields located within our data service range (latitudes between 38 and 50, longitudes between -98 and -82, roughly the upper midwest). Data can be manually entered or updated if desired.</p>
+
+<h3>Organization</h3>
+<p>WISP accommodates multiple Farms, Pivots, Fields and Crops with a hierarchy:</p>
+<ul>
+  <li>A <strong>farm</strong> can be any set of pivots the user chooses (e.g. common ownership, location or management).</li>
+  <li>A <strong>pivot</strong> can have one or more fields growing different crops.</li>
+  <li>A <strong>field</strong> is typically defined by a set of common physical or management characteristics (e.g., crop type, soil water holding capacity or irrigation management) assigned to a land area. Field characteristics can change from year to year.</li>
+  <li>For each <strong>crop</strong> on a field, you must specify an emergence date and depth of the managed root zone. WISP's default initial soil moisture content is field capacity which can be replaced by entering a measured value.</li>
+</ul>
+<p>To simplify entering daily data that are the same for multiple fields, <strong>field groups</strong> are provided. Fields can be associated with a field group; daily data entered for the field group (e.g., rainfall or irrigation) are automatically copied to all associated fields. The groupings can be changed at any time.</p>
+
+<h3>Getting Started</h3>
+<p>When you start WISP you are directed to a login page where you enter your email address and password. If this is your first time using WISP, select <b>Sign Up</b> in the sidebar to create your user account. That's all there is to it!</p>
+<ol>
+  <li>Begin by selecting the <b>Farm Status</b> link in the navigation bar on the left side of the screen. You will be asked to enter your login credentials.</li>
+  <li>Upon successful login, you will see the WISP Farm Status screen.</li>
+  <li>When you first use WISP, a default farm, pivot, field, and crop are created for you, along with weather/irrigation records for the season. You can edit the default values and/or add to them.</li>
+</ol>
+
+<h3>Setting up your farm</h3>
+<p>You can add more farms using the "Add Farms" button on the "Farm Status" page. Pivots, the fields they serve, and crop in the field are managed from the "Pivots, Fields, and Crops" page.</p>
+<ol>
+  <li>Click on the "Pivots" link in the navigation bar, and use the "Add Pivots" button to add pivots for the farm.</li>
+  <li>All field information is required except "Notes".</li>
+  <li>If you have multiple fields under a pivot for which you would like to combine data entry, create a field group and use "Multi-Edit Daily Data" feature.</li>
+</ol>
+<p>The <%= link_to 'User Guide', 'wisp-user-guide.pdf', target: "_blank" %> provides additional model input and application guidance.</p>
+
+<h3>Contact us</h3>
+<p>WISP is currently managed by the UW-Madison Department of Entomology, specifically <%= link_to "Ben Bradford", "https://entomology.wisc.edu/directory/ben-bradford/", target: "_blank" %> in the <%= link_to "Vegetable Entomology Lab", "https://vegento.russell.wisc.edu/", target: "_blank" %>. Questions, comments, or bug reports should be directed to our email address at <%= mail_to "agweather@cals.wisc.edu" %>.</p>

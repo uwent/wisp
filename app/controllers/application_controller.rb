@@ -2,8 +2,8 @@ class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
   protect_from_forgery with: :exception
-
   skip_before_action :verify_authenticity_token, if: :json_request?
+  before_action :set_nav_tabs
 
   # TODO: Remove this.
   # Implicit conversion of nil into string error with stylesheet tags and content_for, per
@@ -23,6 +23,21 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def set_nav_tabs
+    @nav_tabs = [
+      {title: "Home", path: "/home", controller: :home},
+      {title: "Farm Status", path: "/wisp/farm_status", controller: :wisp, action: :farm_status},
+      {title: "Pivots/Fields", path: "/wisp/pivot_crop", controller: :wisp, action: :pivot_crop},
+      {title: "Field Status", path: "/wisp/field_status", controller: :wisp, action: :field_status},
+      {title: "Field Groups", path: "/weather_stations", controller: :weather_stations},
+      {title: "Edit Daily Data", path: "/wisp/weather", controller: :wisp, action: :weather}
+    ].collect do |tab|
+      selected = (tab[:controller] == params[:controller]&.to_sym) && (tab[:action].blank? || tab[:action] == params[:action]&.to_sym)
+      tab[:selected] = selected
+      tab
+    end
+  end
+
   # TODO: Remove most of this.
   def get_by_parent(klass, parent_klass, parent_id)
     begin
@@ -32,7 +47,7 @@ class ApplicationController < ActionController::Base
       id = obj[:id] if obj
     rescue ActiveRecord::RecordNotFound
       Rails.logger.error "ApplicationController :: Parent object find failed for #{klass} / #{parent_klass}:#{parent_id}"
-      flash[:notice] = "We're sorry, an internal error has occurred"
+      flash[:error] = "We're sorry, an internal error has occurred"
       id = obj = nil
     end
     [id, obj]
@@ -84,21 +99,10 @@ class ApplicationController < ActionController::Base
     session[:today] || today_or_latest(1)
   end
 
-  # this creates unexpected behavior where the initial date can be in the future and doesn't match what is shown in the data table or the plot (ie before crop emergence)
-  def today_or_latest(field_id)
-    # field = Field.find(field_id)
-    # earliest = field.current_crop.emergence_date
-    # query = "select max(date) as date from field_daily_weather where field_id=#{field_id}"
-    # latest = FieldDailyWeather.find_by_sql(query).first.date
-    day = Date.today
-    # day = earliest if day < earliest
-    day
-  end
-
   def set_parent_id(attribs, params, parent_id_sym, parent_var)
     parent_id = attribs[parent_id_sym]
     if parent_id.nil? || parent_id == "" || parent_id == "_empty"
-      attribs[parent_id_sym] = params[:parent_id] == "" ? parent_var : params[:parent_id]
+      attribs[parent_id_sym] = (params[:parent_id] == "") ? parent_var : params[:parent_id]
     end
   end
 

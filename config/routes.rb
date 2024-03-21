@@ -1,20 +1,13 @@
 Rails.application.routes.draw do
+  root to: "home#index"
+
+  get "wisp" => redirect("")
+  get "home" => redirect("")
+
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   devise_for :users, path: "wisp" do
     collection do
       get "report_setup"
-    end
-  end
-
-  get "/wisp" => "welcome#index"
-  get "/userguide" => "welcome#guide"
-  get "fdw/irrig_only/:id" => "field_daily_weather#irrig_only"
-
-  resources :welcome, only: [:index] do
-    collection do
-      get "about"
-      get "guide"
-      get "weather"
     end
   end
 
@@ -42,34 +35,32 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :crops do
+  resources :crops, only: :index do
     collection do
       post "post_data"
     end
   end
 
-  resources :farms do
+  resources :farms, only: :index do
     collection do
       get "problems"
       post "post_data"
     end
   end
 
-  resources :field_daily_weather do
+  resources :field_daily_weather, only: :index do
     collection do
       post "post_data"
     end
   end
 
-  resources :fields do
+  resources :fields, only: :index do
     collection do
       post "post_data"
     end
   end
 
-  resources :irrigation_events
-
-  resources :pivots do
+  resources :pivots, only: :index do
     collection do
       post "post_data"
     end
@@ -79,16 +70,14 @@ Rails.application.routes.draw do
 
   resources :users, only: [:index, :destroy]
 
+  # this is actually called 'Field Groups' on the sidebar
+  resources :weather_stations
+
   resources :weather_station_data do
     collection do
       post "post_data"
     end
   end
-
-  # this is actually called 'Field Groups' on the sidebar
-  resources :weather_stations
-
-  root to: "welcome#index"
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 

@@ -1,62 +1,153 @@
-<% content_for :stylesheet do %>
-  <style type="text/css">
-    h2 {
-      text-align: center;
-    }
+<%= content_for :scripts do %>
+<script>
+  let lastsel;
 
-    #farmDataBox {
-      position: absolute;
-      left: 275px;
-      top: 150px;
-      width: 920px;
-      padding: 2px;
-      border: 1px solid gray;
-      margin: 0px;
-    }
-
-    #farmProblemsBox {
-      position: absolute;
-      left: 275px;
-      top: 400px;
-      width: 920px;
-      padding: 2px;
-      border: 1px solid gray;
-      margin: 0px;
-    }
-  </style>
-<% end %>
-
-<script type="text/javascript">
+  // From example http://stackoverflow.com/questions/5092571/how-to-make-cell-editable-dynamically-in-jqgrid
   function fillProblemsBox(id) {
-    $.ajax(
-      {
-        type: "GET",
-        // Had farm ID tacked on using & notation
-        url: '<%= url_for(:controller => "farms", :action => :problems, :user_id => @user) %>',
-        dataType: "html",
-        async: false,
-        success: function(newHtml)
-        {
-          // Set the HTML of the summary box to the new stuff
-          $("#farmProblemsBox").html(newHtml);
-        }
-      });
+    $.ajax({
+      type: "GET",
+      url: "<%= url_for(controller: :farms, action: :problems, user_id: @user).html_safe %>",
+      dataType: "html",
+      async: false,
+      success: function(newHtml) {
+        $("#farmProblemsBox").html(newHtml);
+      }
+    });
   }
+
+  // Display "Yes" or "No" for boolean
+  function yesNoBoolFormat(cellvalue, options, rowObject) {
+    if (cellvalue === undefined) return '';
+    if (cellvalue == true || cellvalue == 'true') return 'Yes';
+    return 'No';
+  }
+
+  // And (sigh!) translate back
+  function yesNoBoolUnformat(cellvalue, options, rowObject) {
+    if (cellvalue === undefined) return '';
+    return (cellvalue == 'Yes') ? 'true' : 'false';
+  }
+
+  // Adds a delete button to each row of the grid
+  function addDeleteButton(cl) {
+    let ids = $("#farm_setup").getDataIDs();
+    let nRows = ids.length;
+    let el;
+    if (nRows == 1) {
+      el = "<div class='grid-del-btn'><input type='button' value='Del' disabled='true' title='Cannot delete last farm'/></div>";
+      $("#farm_setup").setRowData(cl, {act: el});
+    } else {
+      for (let i = 0; i < nRows; i++) {
+        let id = ids[i];
+        el = `<div class='grid-del-btn'><input type='button' value='Del' title='Delete this farm' onclick='removeRow(${cl})'></div>`;
+        $("#farm_setup").setRowData(cl, {act: el});
+      }
+    }
+  }
+
+  function addNewFarmRow() {
+    let grid = $("#farm_setup");
+    let newFarm = createNewFarm();
+    curID = newFarm["id"];
+    grid.addRowData(curID, newFarm); // add a new row with the new field's data
+    addDeleteButton(curID);
+    grid.editRow(curID, true); // put new row into inline-edit mode
+    $("#farm_setup").trigger("reloadGrid");
+  }
+
+  function createNewFarm() {
+    let frm = {};
+    $.ajax({
+      type: "POST",
+      url: "<%= url_for(controller: :farms, action: :post_data).html_safe %>",
+      data: { oper: "add", id: "_empty" },
+      dataType: "json",
+      contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
+      async: false,
+      success: function(json) {
+        frm = json;
+      }
+    });
+    return frm;
+  }
+
+  function removeRow(rowID) {
+    $("#farm_setup").delGridRow(rowID);
+    $("#farm_setup").trigger("reloadGrid");
+  }
+
+  const farmGridOpts = {
+    url: '<%= url_for(controller: :farms, action: :index, q: 1).html_safe %>',
+    editurl: '<%= grid_post_data_url "farms", @group_id %>',
+    datatype: "json",
+    colNames: ["Name", "Notes", "AD < 0?", "Delete", "Group ID", "ID"],
+    colModel: [
+      { name: "name", index: "name", width: 83, editable: true },
+      { name: "notes", index: "notes", width: 87, editable: true, align: "right" },
+      { name: "problem", index: "problem", formatter: yesNoBoolFormat, unformat: yesNoBoolUnformat, width: 20, align: "right" },
+      { name: "act", index: "act", width: 20 },
+      { name: "group_id", index: "group_id", width: 10, hidden: true, editable: true },
+      { name: "id", index: "id", width: 10, hidden: true, editable: false }
+    ],
+    pager: "#farm_setup_pager",
+    rowNum: 180,
+    rowList: [180],
+    imgpath: '<%= image_folder_path("jqgrid") %>',
+    sortname: "",
+    viewrecords: true,
+    sortorder: "",
+    gridview: false,
+    scrollrows: true,
+    autowidth: true,
+    rownumbers: false,
+    multiselect: false,
+    onSelectRow: function(id) {
+      if (id && id !== lastsel) {
+        $("#farm_setup").restoreRow(lastsel);
+        $("#farm_setup").editRow(id, true);
+        lastsel = id;
+        fillProblemsBox(id);
+      }
+    },
+    loadComplete: function() {
+      let ids = $("#farm_setup").getDataIDs();
+      fillProblemsBox(ids[0]);
+      for(var i = 0; i < ids.length; i++) {
+        let cl = ids[i];
+        addDeleteButton(cl);
+      }
+    },
+    subGrid: false,
+    caption: "Farms",
+  }
+
+  $(() => {
+    const farmGrid = $("#farm_setup").jqGrid(farmGridOpts);
+    farmGrid.filterToolbar();
+    farmGrid[0].toggleToolbar();
+  });
 </script>
-
-<% content_for :title do %>
-  WISP: Farm Data
 <% end %>
 
-<h2>WISP Farm Data</h2>
+<% @title = "Farm Status" %>
+<h2>Farm Status</h2>
 
-<div id="farmDataBox">
-  <%= render :partial => "/wisp/partials/farm_setup_grid" %>
+<p>In WISP, farms are used to organize one or more pivots together. One or more pivots must be created within a farm, and one or more fields must be created under a pivot. If you delete a farm, it will also delete any pivots and fields that were created within that farm.</p>
+<p>To edit a farm's name or notes, click on the appropriate cell in the table below. To confirm your changes you must press "Enter". Use the button to the right of each farm to delete it, or create a new farm using the botton below the table. "AD < 0" shows how many fields within each farm are below allowable depletion. Farms are used to organize one or more pivots, which in turn can serve one or more fields.</p>
+
+<h3>Farms</h3>
+<div id="farmDataBox" class="content-box">
+  <div class="flex-down gap-10">
+  <div>
+    <table id="farm_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
+  </div>
+  <div>
+    <button type="button" class="btn btn-light" onclick="addNewFarmRow();">Add New Farm</button>
+  </div>
+</div>
 </div>
 
-<div id="farmProblemsBox">
+<h3>Current Status</h3>
+<div id="farmProblemsBox" class="content-box">
+  Loading farm problems...
 </div>
-
-<% content_for :footer do %>
-<!-- Nothing needed in here for now -->
-<% end %>

@@ -14,8 +14,9 @@ class PivotsController < AuthenticatedController
   ]
 
   # GET /pivots
-  # GET /pivots.xml
   def index
+    return redirect_to "/wisp/pivot_crop" if request.format.html?
+
     get_current_ids
     session[:farm_id] = @farm_id
     @farm = Farm.find(@farm_id)
@@ -34,19 +35,9 @@ class PivotsController < AuthenticatedController
 
     # puts "getting pivots for pivot #{@pivot_id}, found #{@pivots.size} entries"
     @pivots ||= []
-    respond_to do |format|
-      format.html # index.html.erb
-      format.xml { render xml: @pivots }
-      columns = COLUMN_NAMES
-      format.json {
-        render json: @pivots.to_a.to_jqgrid_json(
-          columns,
-          params[:page],
-          params[:rows],
-          @pivots.size
-        )
-      }
-    end
+    json = @pivots.to_a.to_jqgrid_json(COLUMN_NAMES, params[:page] || 1, params[:rows] || @pivots.size, @pivots.size)
+    puts json
+    render json: json
   end
 
   # POST

@@ -1,0 +1,32 @@
+<% days_since_emergence = (@summary_data[:date] - @field.current_crop.emergence_date).to_int %>
+<b>Today:</b> <%= @summary_data[:date].strftime("%b %d, %Y") %><br>
+<b>Crop emergence:</b> 
+<%= @field.current_crop.emergence_date.strftime("%b %d, %Y") %> 
+(<%= days_since_emergence == 0 ? "today" : "#{pluralize(days_since_emergence.abs, "day")} #{days_since_emergence > 0 ? 'ago' : 'from now'}" %>)<br>
+<br>
+<table border="0">
+  <tr>
+    <th>Pot. ET:</th>
+    <td> <%= sprintf("%0.2f", @summary_data[:ref_et] || 0.0) %> in.</td>
+  </tr>
+  <tr>
+    <th>Rainfall:</th>
+    <td><%= sprintf("%0.2f", @summary_data[:rain] || 0.0) %> in.</td>
+  </tr>
+  <tr>
+    <th>Irrigation:</th>
+    <td><%= sprintf("%0.2f", @summary_data[:irrigation] || 0.0) %> in.</td>
+  </tr>
+  <tr>
+    <th>Adj. ET:</th>
+    <td> <%= sprintf("%0.2f", @summary_data[:adj_et] || 0.0) %> in.</td>
+  </tr>
+  <tr>
+    <th>Drainage:</th>
+    <td> <%= sprintf("%0.2f", @summary_data[:deep_drainage] || 0.0) %> in.</td>
+  </tr>
+</table>
+
+<p>
+  <%= link_to "Create Report in CSV Format", :controller => "field_daily_weather", :field_id => @field, :page => 1, :rows => FieldDailyWeather::SEASON_DAYS, :format => :csv %>
+</p>

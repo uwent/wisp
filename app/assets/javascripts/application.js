@@ -4,11 +4,16 @@
 //= require jqgrid-jquery-rails
 //= require_tree .
 
-if (typeof jQuery != 'undefined') {
-  $(document).ajaxSend(function(event, request, settings) {
-    if (typeof(AUTH_TOKEN) == "undefined") return;
-    // settings.data is a serialized string like "foo=bar&baz=boink" (or null)
-    settings.data = settings.data || "";
-    settings.data += (settings.data ? "&" : "") + "authenticity_token=" + encodeURIComponent(AUTH_TOKEN);
-  });
+// remove params from URL after page load
+$(() => {
+  window.history.replaceState(null, null, window.location.pathname)
+});
+
+function escapeHTML(unsafe) {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }

@@ -63,11 +63,10 @@ class WispController < AuthenticatedController
   # GET / POST
   def weather
     @weather_stations = @group.weather_stations
-    if @weather_stations == [] || @weather_stations.nil?
-      flash[:notice] = "You must first create at least one field group."
-      redirect_to controller: "weather_stations", action: :new
-      return
-    end
+
+    # view will catch empty weather station set
+    return render if @weather_stations.empty?
+
     if params[:weather_station_id]
       wx_stn_id = params[:weather_station_id].to_i
       @weather_station = @weather_stations.detect { |wxs| wxs[:id].to_i == wx_stn_id }
@@ -94,6 +93,129 @@ class WispController < AuthenticatedController
   def lookup
   end
 
+  # GET / POST
+  def field_status
+    # Rails.logger.info "field_status: group #{@group_id} user #{@user_id} farm #{@farm_id} pivot #{@pivot_id} field #{@field_id}"
+    @pivot_id, @pivot = get_and_set(Pivot, Farm, @farm_id)
+    @field_id, @field = get_and_set(Field, Pivot, @pivot_id)
+    if params[:field] && params[:field][:target_ad_pct]
+      @field.update target_ad_pct: params[:field][:target_ad_pct]
+    else
+      @field.do_balances
+    end
+
+    # initial date values for the view
+    @min_date = FieldDailyWeather.minimum(:date)
+    @max_date = FieldDailyWeather.maximum(:date)
+    @today = Date.today.clamp(@min_date, @max_date)
+    # @cur_date = (cur_date || @today).clamp(@min_date, @max_date)
+    # puts "cur_date #{cur_date}"
+
+    @ad_at_pwp = @field.ad_at_pwp
+    field_status_data(params[:cur_date]) # @cur_date may be nil, but will be set if so
+    session[:today] = @cur_date
+    # now that we've got the last week's fdw recs, check if any need ET
+    @ad_recs.each do |adr|
+      if adr.ref_et.nil? || adr.ref_et.zero?
+        @field.get_et
+        @field.get_precip
+        break
+      end
+    end
+    # run it around again for degree days
+    if @field.need_degree_days?
+      @ad_recs.each do |adr|
+        if adr.degree_days.nil? || adr.degree_days.zero?
+          @field.get_degree_days
+          break
+        end
+      end
+    end
+    # for some reason, IE makes a request for format JSON, which kinda whacks things. So we explicitly
+    # specify the template, which works for everybody.
+    # render "field_status.html.erb"
+  end
+
+  # GET
+  def projection_data
+    @field_id = params[:field_id]
+    @field = Field.find(@field_id)
+    @farm = @field.pivot.farm
+    @farm_id = @farm[:id]
+    field_status_data(params[:cur_date]) # may be nil
+    respond_to do |format|
+      format.json {
+        render json: {
+          ad_data: @graph_data,
+          projected_ad_data: @projected_ad_data,
+          target_ad_data: @target_ad_data,
+          labels: @date_hash
+        }
+      }
+    end
+  end
+
+  # GET
+  def farm_status
+    get_current_ids
+    if @farm && !@group_id
+      @group_id = @farm.group[:id]
+    end
+    if params[:ajax]
+      render layout: false
+    end
+  end
+
+  # Ajax-accessible summary/projected box
+  def summary_box
+    get_current_ids
+    @field_id = params[:field_id]
+    field_status_data(params[:cur_date])
+    render partial: "wisp/field_status__summary_box"
+  end
+
+  # GET
+  def report_setup
+  end
+
+  # POST?
+  def set_farm
+    # Rails.logger.info "SET_FARM: setting the ids to #{params[:farm_id]}"
+    session[:farm_id] = @farm_id = params[:farm_id]
+    if @farm_id
+      @farm = Farm.find(@farm_id)
+    end
+    head :ok, content_type: "text/html"
+  end
+
+  # POST?
+  def set_pivot
+    head :ok, content_type: "text/html"
+  end
+
+  # POST?
+  def set_field
+    # Rails.logger.info "set field with id #{params[:id]}"
+    if params[:field_id]
+      @field_id = params[:field_id]
+      @field = Field.find(@field_id)
+      session[:field_id] = @field_id
+    end
+    render json: {field_id: params[:field_id]}
+  end
+
+  private
+
+  # Make a line for the Target AD value for this field
+  # We just use the length of projected_ad_data EDIT: Didn't work when date was less than a week out from initial date
+  def target_ad_data(field, ad_data)
+    return nil unless field.target_ad_pct
+    days = 9 # x axis length for plot
+    ret = []
+    days.times { ret << (field.target_ad_pct / 100.0) * field.ad_max }
+    ret
+  end
+
   # Given a season-start date of initial_date and (possibly) a point in that
   # season in cur_date, find the start and end of the week encompassing cur_date.
   # If cur_date is nil, use today_or_latest and work from there.
@@ -101,21 +223,36 @@ class WispController < AuthenticatedController
     start_date = nil
     if cur_date
       begin
-        end_date = Date.parse(cur_date) - 1
+        end_date = Date.parse(cur_date)
       rescue => e
         Rails.logger.warn "WispController :: Date reset problem: #{e}. Initial date: #{initial_date}, cur_date: #{cur_date}"
-        end_date = today_or_latest(@field_id) - 1
+        end_date = today_or_latest(@field_id)
       end
     else
-      end_date = today_or_latest(@field_id) - 1
+      end_date = today_or_latest(@field_id)
     end
     # So now end_date is provisionally set; find start_date and coerce end_date to
     # week boundaries
     weeks = ((end_date - initial_date).to_i / 7).to_i
     start_date = initial_date + (7 * weeks)
     end_date = start_date + 6
-    cur_date = end_date.strftime("%Y-%m-%d")
+    cur_date ||= start_date.strftime("%Y-%m-%d")
     [start_date, end_date, cur_date]
+  end
+
+  # this creates unexpected behavior where the initial date can be in the future and doesn't match what is shown in the data table or the plot (ie before crop emergence)
+  def today_or_latest(field_id)
+    # field = Field.find(field_id)
+    Date.today.clamp(
+      FieldDailyWeather.where(field_id:).minimum(:date),
+      FieldDailyWeather.where(field_id:).maximum(:date)
+    )
+    # earliest = field.current_crop.emergence_date
+    # query = "select max(date) as date from field_daily_weather where field_id=#{field_id}"
+    # latest = FieldDailyWeather.find_by_sql(query).first.date
+    # day = Date.today
+    # day = earliest if day < earliest
+    # day
   end
 
   def field_status_data(cur_date = nil)
@@ -157,133 +294,6 @@ class WispController < AuthenticatedController
     @graph_data = ad_recs.collect { |fdw| fdw.ad }
     @dates, @date_str, @date_hash = make_dates(start_date, end_date)
   end
-
-  # GET / POST
-  def field_status
-    # Rails.logger.info "field_status: group #{@group_id} user #{@user_id} farm #{@farm_id} pivot #{@pivot_id} field #{@field_id}"
-    @pivot_id, @pivot = get_and_set(Pivot, Farm, @farm_id)
-    @field_id, @field = get_and_set(Field, Pivot, @pivot_id)
-    if params[:field] && params[:field][:target_ad_pct]
-      @field.update target_ad_pct: params[:field][:target_ad_pct]
-    else
-      @field.do_balances
-    end
-
-    # initial date values for the view
-    @min_date = FieldDailyWeather.minimum(:date).to_s
-    @max_date = FieldDailyWeather.maximum(:date).to_s
-    @today = Date.today.to_s
-    @cur_date = params[:cur_date] || @today
-
-    @ad_at_pwp = @field.ad_at_pwp
-    session[:today] = @cur_date
-    field_status_data(@cur_date) # @cur_date may be nil, but will be set if so
-    # now that we've got the last week's fdw recs, check if any need ET
-    @ad_recs.each do |adr|
-      if adr.ref_et.nil? || adr.ref_et.zero?
-        @field.get_et
-        @field.get_precip
-        break
-      end
-    end
-    # run it around again for degree days
-    if @field.need_degree_days?
-      @ad_recs.each do |adr|
-        if adr.degree_days.nil? || adr.degree_days.zero?
-          @field.get_degree_days
-          break
-        end
-      end
-    end
-    # for some reason, IE makes a request for format JSON, which kinda whacks things. So we explicitly
-    # specify the template, which works for everybody.
-    # render "field_status.html.erb"
-  end
-
-  def field_status_from_javascript
-    "******* I AM A CAN OF TUNA **********"
-    field_status
-  end
-
-  # GET
-  def projection_data
-    @field_id = params[:field_id]
-    @field = Field.find(@field_id)
-    @farm = @field.pivot.farm
-    @farm_id = @farm[:id]
-    field_status_data(params[:cur_date]) # may be nil
-    respond_to do |format|
-      format.json {
-        render json: {
-          ad_data: @graph_data,
-          projected_ad_data: @projected_ad_data,
-          target_ad_data: @target_ad_data,
-          labels: @date_hash
-        }
-      }
-    end
-  end
-
-  # Make a line for the Target AD value for this field
-  # We just use the length of projected_ad_data EDIT: Didn't work when date was less than a week out from initial date
-  def target_ad_data(field, ad_data)
-    return nil unless field.target_ad_pct
-    days = 9 # x axis length for plot
-    ret = []
-    days.times { ret << (field.target_ad_pct / 100.0) * field.ad_max }
-    ret
-  end
-
-  # GET
-  def farm_status
-    get_current_ids
-    if @farm && !@group_id
-      @group_id = @farm.group[:id]
-    end
-    if params[:ajax]
-      render layout: false
-    end
-  end
-
-  # Ajax-accessible summary/projected box
-  def summary_box
-    get_current_ids
-    @field_id = params[:field_id]
-    field_status_data(params[:cur_date])
-    render partial: "wisp/partials/summary_box"
-  end
-
-  # GET
-  def report_setup
-  end
-
-  # POST?
-  def set_farm
-    # Rails.logger.info "SET_FARM: setting the ids to #{params[:farm_id]}"
-    session[:farm_id] = @farm_id = params[:farm_id]
-    if @farm_id
-      @farm = Farm.find(@farm_id)
-    end
-    head :ok, content_type: "text/html"
-  end
-
-  # POST?
-  def set_pivot
-    head :ok, content_type: "text/html"
-  end
-
-  # POST?
-  def set_field
-    # Rails.logger.info "set field with id #{params[:id]}"
-    if params[:field_id]
-      @field_id = params[:field_id]
-      @field = Field.find(@field_id)
-      session[:field_id] = @field_id
-    end
-    render json: {field_id: params[:field_id]}
-  end
-
-  private
 
   # Usually start_date will be a week ago and finish_date will be yesterday
   def make_dates(start_date, finish_date)

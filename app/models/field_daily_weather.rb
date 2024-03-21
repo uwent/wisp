@@ -112,7 +112,7 @@ class FieldDailyWeather < ApplicationRecord
     total_available_water = taw(fc, pwp, mrzd)
     self[:ad] = [ad_from_moisture(total_available_water, fc), total_available_water].min
     # puts "set ad from calculated moisture: fc #{fc}, pwp #{pwp}, mrzd #{mrzd}, mad_frac #{field.current_crop.max_allowable_depletion_frac}, new ad #{self[:ad]}"
-    self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad] - total_available_water : 0.0)
+    self[:deep_drainage] = ((self[:ad] > total_available_water) ? self[:ad] - total_available_water : 0.0)
   end
 
   # if we have the wherewithal and the adj_et is 0.0 or nil, calculate it
@@ -131,7 +131,7 @@ class FieldDailyWeather < ApplicationRecord
     if entered_pct_moisture
       self[:calculated_pct_moisture] = entered_pct_moisture
       self[:ad] = [ad_from_moisture(total_available_water), total_available_water].min
-      self[:deep_drainage] = (self[:ad] > total_available_water ? self[:ad] - total_available_water : 0.0)
+      self[:deep_drainage] = ((self[:ad] > total_available_water) ? self[:ad] - total_available_water : 0.0)
       # Rails.logger.info "#{self[:date]}: Deep drainage #{self[:deep_drainage]} from entered moisture of #{entered_pct_moisture}" if self[:deep_drainage] > 0.0
     else
       return unless ref_et || previous_max_adj_et
