@@ -9,7 +9,6 @@
         <tr>
           <th>ID</th>
           <th>Email</th>
-          <th>Name</th>
           <th>Created</th>
           <th>Confirmed?</th>
           <th>Last Signed In</th>
@@ -21,7 +20,6 @@
           <% if user.id == @user.id %><tr style="font-weight: bold"><% else %><tr><% end %>
             <td><%= user.id %></td>
             <td><%= user.email %></td>
-            <td><%= [user.first_name, user.last_name].compact.join(" ") %></td>
             <td><%= user.created_at.to_date %></td>
             <td><%= user.confirmed? %></td>
             <td>
