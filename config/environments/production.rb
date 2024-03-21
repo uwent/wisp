@@ -80,6 +80,21 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
+  config.action_mailer.delivery_method = :sendmail
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.default_options = {from: "agweather@cals.wisc.edu"}
+  config.action_mailer.default_url_options = {
+    host: ENV["WISP_HOST"] || "wisp.cals.wisc.edu",
+    protocol: "https"
+  }
+
+  # fix for gem mail v2.7 => v2.8
+  # https://www.gamecreatures.com/blog/2022/12/19/incompatibility-rails-5-2-and-mail-gem-argumenterror-arguments-expected-to-be-an-array-of-individual-string-args/
+  config.action_mailer.sendmail_settings = {
+    location: "/usr/sbin/sendmail",
+    arguments: ["-i"]
+  }
+
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
   config.i18n.fallbacks = true
