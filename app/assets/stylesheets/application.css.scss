@@ -26,6 +26,8 @@ $content-bg-color: #e9e4d0;
 $content-text-color: #000000;
 $content-link-color: #26241a;
 $content-link-hover-color: #383425;
+$tbl-odd-color: hsl(48, 36%, 90%);
+$tbl-even-color: hsl(48, 36%, 85%);
 $copyright-text-color: #4e4a3a;
 
 
@@ -298,6 +300,38 @@ body {
   }
 }
 
+.fancy-table {
+  border-collapse: collapse;
+  width: 100%;
+  td, th {
+    border: 1px solid #bebebe;
+    padding: 5px;
+    vertical-align: middle;
+  }
+  tr:nth-child(odd){
+    background-color: $tbl-odd-color;
+  }
+  tr:nth-child(even){
+    background-color: $tbl-even-color;
+  }
+  tr:hover {
+    background-color: #ddd;
+  }
+  th {
+    text-align: left;
+    background-color: $frame-bg-color;
+    color: white;
+  }
+  ol {
+    margin: 0;
+    padding-left: 1em;
+  }
+  td:last-child {
+    width: 1px;
+    white-space: nowrap;
+  }
+}
+
 
 //-- NAMED ELEMENTS --//
 
@@ -359,8 +393,6 @@ body {
     grid-area: d;
   }
   @media #{$medium-down} {
-    // display: flex;
-    // flex-direction: column;
     grid-template-columns: 50% 50% 100% 100%;
     grid-template-areas:
       "a c"
@@ -370,32 +402,6 @@ body {
 }
 
 #fieldGroupTable, #farmProblemsTable {
-  border-collapse: collapse;
-  width: 100%;
-  td, th {
-    border: 1px solid #bebebe;
-    padding: 5px;
-    vertical-align: middle;
-  }
-  tr:nth-child(even){
-    background-color: #f2f2f2;
-  }
-  tr:hover {
-    background-color: #ddd;
-  }
-  th {
-    text-align: left;
-    background-color: $frame-bg-color;
-    color: white;
-  }
-  ol {
-    margin: 0;
-    padding-left: 1em;
-  }
-  td:last-child {
-    width: 1px;
-    white-space: nowrap;
-  }
   .btn {
     margin: 0;
   }
@@ -407,14 +413,15 @@ body {
       flex-wrap: wrap;
     }
   }
-
 }
 
 
 //-- DEVISE --//
 
 .field {
-  margin: .5em 0;
+  display: flex;
+  flex-direction: column;
+  margin: 1em 0;
   label {
     font-weight: bold;
     margin-bottom: 5px;
@@ -429,6 +436,11 @@ body {
   }
 }
 
+.field_with_errors {
+  margin: 0;
+  color: darkred;
+}
+
 .devise-btns {
   margin-top: 1em;
 }
@@ -437,8 +449,8 @@ body {
 // -- PAGINATION -- //
 
 .apple_pagination {
-  background: #f1f1f1;
-  border: 1px solid #e5e5e5;
+  // background: #f1f1f1;
+  // border: 1px solid #e5e5e5;
   text-align: center;
   padding: 1em;
   cursor: default;

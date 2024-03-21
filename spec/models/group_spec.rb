@@ -7,9 +7,10 @@ describe Group do
       .and_return([Date.yesterday, Date.today])
   end
 
-  describe "#create_dependent_objects" do
-    let(:group) { Group.new }
+  let(:group) { build :group }
+  let(:user) { build :user }
 
+  describe "#create_dependent_objects" do
     it "is called after create" do
       expect(group).to receive(:create_dependent_objects)
 
@@ -22,8 +23,6 @@ describe Group do
   end
 
   describe "#destroy" do
-    let(:group) { Group.new }
-
     it "removes associated farms" do
       group.save!
       group.reload
@@ -39,8 +38,7 @@ describe Group do
 
     it "removes associated memberships" do
       group.save!
-      group.users << User.new(email: "foo@bar.com", password: "blahblah",
-        password_confirmation: "blahblah")
+      group.users << user
       group.reload
       expect { group.destroy }.to change { Membership.count }
     end

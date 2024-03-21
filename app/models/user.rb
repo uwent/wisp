@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   devise \
     :database_authenticatable,
+    :confirmable,
     :recoverable,
     :registerable,
     :rememberable,
@@ -9,6 +10,10 @@ class User < ApplicationRecord
     :timeoutable
 
   before_destroy :remove_group_if_group_admin
+
+  before_validation do
+    errors.add(:email, "can't be from a .ru domain") if %r{\w+\.ru$}.match?(email)
+  end
 
   has_many :memberships, dependent: :destroy
   has_many :groups, through: :memberships
@@ -26,8 +31,19 @@ class User < ApplicationRecord
 
   def self.to_csv
     CSV.generate(headers: true) do |csv|
+      csv << %w[id email first_name last_name created_at updated_at last_sign_in last_sign_in_year admin]
       User.all.each do |user|
-        csv << [user.email]
+        csv << [
+          user.id,
+          user.email,
+          user.first_name,
+          user.last_name,
+          user.created_at,
+          user.updated_at,
+          user.last_sign_in_at,
+          user.last_sign_in_at.year,
+          user.admin
+        ]
       end
     end
   end

@@ -4,7 +4,7 @@
   <%= render "devise/shared/error_messages", resource: resource %>
   
   <div class="field">
-    <%= f.label :email %> <i>(to change, remove current address, enter new address)</i><br>
+    <%= f.label :email %> <i>(to change, remove current address, enter new address)</i>
     <%= f.email_field :email, autofocus: true %>
   </div>
 
@@ -13,17 +13,17 @@
   <% end %>
 
   <div class="field">
-    <%= f.label :password, "New password" %> <i>(leave blank if you don't want to change it)</i><br>
+    <%= f.label :password, "New password" %> <i>(leave blank if you don't want to change it)</i>
     <%= f.password_field :password, autocomplete: "off" %>
   </div>
 
   <div class="field">
-    <%= f.label :password_confirmation, "New password confirmation" %><br>
+    <%= f.label :password_confirmation, "New password confirmation" %>
     <%= f.password_field :password_confirmation, autocomplete: "off" %>
   </div>
 
   <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br>
+    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i>
     <%= f.password_field :current_password, autocomplete: "off" %>
   </div>
   <div id="change-instructions">

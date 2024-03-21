@@ -4,5 +4,6 @@ FactoryBot.define do
     last_name { "McEahern" }
     email { "mark@mceahern.com" }
     password { "password" }
+    confirmed_at { Time.now }
   end
 end

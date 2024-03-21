@@ -1,6 +1,6 @@
 <div class="sidebar-account">
   <% if user_signed_in? %>
-    <h4>Signed in as <%= current_user.email %>.</h4>
+    <h4>Signed in as <%= current_user.email %></h4>
     <div class="btn-group">
       <%= button_to "Manage account", edit_user_registration_path, method: :get, class: "btn btn-light" %>
       <% if current_user&.admin? %>
