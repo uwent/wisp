@@ -2,7 +2,7 @@ class UsersController < AuthenticatedController
   before_action :ensure_admin!
 
   def index
-    @users = User.order(last_sign_in_at: :desc).paginate(page: params[:page], per_page: 30)
+    @users = User.order(last_sign_in_at: :desc).paginate(page: params[:page], per_page: 100)
 
     respond_to do |format|
       format.html
