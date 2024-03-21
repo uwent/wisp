@@ -8,31 +8,31 @@
         <th>No.</th>
         <th>Name</th>
         <th>Location</th>
-        <th>Notes</th>
         <th>Fields</th>
+        <th>Notes</th>
         <th>Actions</th>
       </tr>
-    <% weather_stations.each_with_index do |weather_station, i| %>
+    <% weather_stations.order(:name).each_with_index do |weather_station, i| %>
       <tr>
         <td><%= i + 1 %></td>
         <td><%= weather_station.name %></td>
         <td><%= weather_station.location %></td>
-        <td><%= weather_station.notes %></td>
         <td>
           <% if weather_station.fields.size == 0 %>
             <i>No fields added.</i>
           <% else %>
             <ol>
-              <% weather_station.fields.each do |ws| %>
+              <% weather_station.fields.order(:name).each do |ws| %>
                 <li><%= ws.name %></li>
               <% end %>
             </ol>
           <% end %>
         </td>
+        <td><%= weather_station.notes %></td>
         <td>
           <div class="btn-group">
-            <%= link_to 'Edit', edit_weather_station_path(weather_station), class: "btn btn-warning" %>
-            <%= link_to "Enter data", { controller: :wisp, action: :weather, weather_station_id: weather_station.id }, class: "btn btn-success" %>
+            <%= link_to 'Edit', edit_weather_station_path(weather_station), class: "btn btn-light" %>
+            <%= link_to "Enter data", { controller: :wisp, action: :weather, weather_station_id: weather_station.id }, class: "btn btn-light" %>
             <%= button_to 'Delete', weather_station, method: :delete, class: "btn btn-danger", data: { confirm: "Delete field group '#{weather_station.name}'?" } %>
           </div>
         </td>

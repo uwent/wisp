@@ -60,7 +60,7 @@
     let field = {};
     $.ajax({
       type: "POST",
-      url: '<%= url_for(controller: :fields, action: :post_data) %>',
+      url: '<%= url_for(controller: :fields, action: :post_data).html_safe %>',
       data: { pivot_id: pivot_id, parent_id: pivot_id, oper: 'add', id: '_empty', et_method: method },
       dataType: "json",
       contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
@@ -194,7 +194,6 @@
       }
     },
     onSaveRow: function(id) {
-      console.log(id)
       loadCropGrid(id);
     },
     loadComplete: function() {

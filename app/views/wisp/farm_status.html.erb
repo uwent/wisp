@@ -6,8 +6,7 @@
   function fillProblemsBox(id) {
     $.ajax({
       type: "GET",
-      // Had farm ID tacked on using & notation
-      url: "<%= url_for controller: "farms", action: "problems", user_id: @user %>",
+      url: "<%= url_for(controller: :farms, action: :problems, user_id: @user).html_safe %>",
       dataType: "html",
       async: false,
       success: function(newHtml) {
@@ -60,7 +59,7 @@
     let frm = {};
     $.ajax({
       type: "POST",
-      url: "<%= url_for controller: "farms", action: "post_data" %>",
+      url: "<%= url_for(controller: :farms, action: :post_data).html_safe %>",
       data: { oper: "add", id: "_empty" },
       dataType: "json",
       contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
@@ -78,7 +77,7 @@
   }
 
   const farmGridOpts = {
-    url: '<%= url_for controller: :farms, action: :index, q: 1 %>',
+    url: '<%= url_for(controller: :farms, action: :index, q: 1).html_safe %>',
     editurl: '<%= grid_post_data_url "farms", @group_id %>',
     datatype: "json",
     colNames: ["Name", "Notes", "AD < 0?", "Delete", "Group ID", "ID"],

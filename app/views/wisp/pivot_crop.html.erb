@@ -61,7 +61,7 @@
     let pvt = {};
     $.ajax({
       type: "POST",
-      url: '<%= url_for(controller: :pivots, action: :post_data) %>',
+      url: '<%= url_for(controller: :pivots, action: :post_data).html_safe %>',
       dataType: "json",
       data: { farm_id: farm_id, parent_id: farm_id, oper: 'add', id: '_empty' },
       contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
@@ -74,8 +74,7 @@
   }
 
   const pivotGridOpts = {
-    // url: '<%= url_for(controller: "pivots", farm_id: @farm_id) %>' + `&pivot_id=${pivot_id}`,
-    url: '<%= url_for controller: "pivots", farm_id: @farm_id %>',
+    url: '<%= url_for(controller: "pivots", farm_id: @farm_id).html_safe %>',
     editurl:'<%= grid_post_data_url "pivots", @farm_id %>',
     datatype: "json",
     colNames: ['Name','Lat.','Long.','WDNR Hicap Well No','Pump Capacity','Energy Type','Crop Yr','Notes','Delete','Farm ID','ID'],
