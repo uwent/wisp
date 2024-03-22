@@ -112,14 +112,13 @@ body {
     flex-direction: column;
   }
   .nav-title {
-    max-width: unset;
     text-align: center;
     margin-bottom: .5em;
   }
   .nav-btns {
     flex-wrap: wrap;
     justify-content: space-evenly;
-    margin-left: inherit;
+    margin: 0;
     width: 100%;
   }
   .nav-btn {
