@@ -3,46 +3,46 @@
 <h3>Current field groups</h3>
 <div>
   <% if weather_stations.size > 0 %>
-    <table id="fieldGroupTable" class="fancy-table">
-      <thead>
-        <tr>
-          <th>No.</th>
-          <th>Name</th>
-          <th>Location</th>
-          <th>Fields</th>
-          <th>Notes</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% weather_stations.order(:name).each_with_index do |weather_station, i| %>
+    <div class="table-container">
+      <table id="fieldGroupTable" class="fancy-table">
+        <thead>
           <tr>
-            <td><%= i + 1 %></td>
-            <td><%= weather_station.name %></td>
-            <td><%= weather_station.location %></td>
-            <td>
-              <% if weather_station.fields.size == 0 %>
-                <i>No fields added.</i>
-              <% else %>
-                <ol>
-                  <% weather_station.fields.order(:name).each do |ws| %>
-                    <li><%= ws.name %></li>
-                  <% end %>
-                </ol>
-              <% end %>
-            </td>
-            <td><%= weather_station.notes %></td>
-            <td>
-              <div class="btn-group">
-                <%= link_to 'Edit', edit_weather_station_path(weather_station), class: "btn btn-light" %>
-                <%= link_to "Enter data", { controller: :wisp, action: :weather, weather_station_id: weather_station.id }, class: "btn btn-light" %>
-                <%= button_to 'Delete', weather_station, method: :delete, class: "btn btn-danger", data: { confirm: "Delete field group '#{weather_station.name}'?" } %>
-              </div>
-            </td>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Fields</th>
+            <th>Notes</th>
+            <th>Actions</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% weather_stations.order(:name).each do |group| %>
+            <tr>
+              <td><%= group.name %></td>
+              <td><%= group.location %></td>
+              <td>
+                <% if group.fields.size == 0 %>
+                  <i>No fields added.</i>
+                <% else %>
+                  <ol>
+                    <% group.fields.order(:name).each do |field| %>
+                      <li><%= field.name %></li>
+                    <% end %>
+                  </ol>
+                <% end %>
+              </td>
+              <td><%= group.notes %></td>
+              <td>
+                <div class="btn-group">
+                  <%= link_to 'Edit', edit_weather_station_path(group), class: "btn btn-light" %>
+                  <%= link_to "Enter data", { controller: :wisp, action: :weather, weather_station_id: group.id }, class: "btn btn-light" %>
+                  <%= button_to 'Delete', group, method: :delete, class: "btn btn-danger", data: { confirm: "Delete field group '#{group.name}'?" } %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   <% else %>
     <p>You don't have any field groups set up. Click the button below to add one.</p>
   <% end %>

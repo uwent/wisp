@@ -243,6 +243,13 @@
     return smallest;
   }
 
+  // title for chart depending on how many data points are projected
+  function plotTitle(prj_data) {
+    if (prj_data.every(v => v === true)) return "Projected Allowable Depletion";
+    if (prj_data.every(v => v === false)) return "Calculated Allowable Depletion";
+    return "Calculated/Projected Allowable Depletion";
+  }
+
   // Callback that creates and populates a data table,
   // instantiates the chart, passes in the data and
   // draws it.
@@ -340,21 +347,21 @@
     if (targ_data) {
       // target line present
       series = {
-        0: {lineWidth: 8, areaOpacity: 0.2, visibleInLegend: false},
-        1: {pointSize: 15},
-        2: {lineWidth: 8, visibleInLegend: false},
-        3: {areaOpacity: 0, visibleInLegend: false}
+        0: { lineWidth: 8, areaOpacity: 0.2, visibleInLegend: false },
+        1: { pointSize: 15},
+        2: { lineWidth: 8, visibleInLegend: false },
+        3: { areaOpacity: 0, visibleInLegend: false },
       };
     } else {
       series = {
-        0: {lineWidth: 8, areaOpacity: 0.2, visibleInLegend: false},
-        1: {pointSize: 15},
-        2: {lineWidth: 8, visibleInLegend: false}
+        0: { lineWidth: 8, areaOpacity: 0.2, visibleInLegend: false },
+        1: { pointSize: 15 },
+        2: { lineWidth: 8, visibleInLegend: false },
       };
     }
 
     // Set chart options
-    const title = `Calculated${projected_anno == "Projected" ? " / Projected" : ""} Allowable Depletion (inches)`
+    const title = plotTitle(prj_data);
     const options = {
       title: title,
       height: 290,
@@ -364,7 +371,11 @@
       titleTextStyle: { fontSize: 18 },
       series: series,
       // Set vertical axis range to run between fudge-factored values to make the annotations show nicely
-      vAxis: { baseline: baseLine(ad_data, prj_data), maxValue: Math.ceil(ad_max + 0.2) },
+      vAxis: {
+        title: "Allowable depletion (in.)",
+        baseline: baseLine(ad_data, prj_data),
+        maxValue: Math.ceil(ad_max + 0.2),
+      },
       annotation: { style: "line" },
     };
 
@@ -399,19 +410,25 @@
 <% @title = "Field Status" %>
 <h2>Field Status</h2>
 
-<div class="field inline-flex">
-  <%= form_tag(url_for(controller: "wisp", action: "field_status", pivot_id: "", field_id: "")) do %>
-    <label for="farm_id">Farm</label><br>
-    <%= select_tag "farm_id", options_from_group_for_select(@group, @farm), { onchange: "this.form.submit();" } %>
-  <% end %>
-  <%= form_tag(url_for(controller: "wisp", action: "field_status", field_id: "")) do %>
-    <label for="pivot_id">Pivot</label></br>
-    <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot), { onchange: "this.form.submit();" } %>
-  <% end %>
-  <%= form_tag(url_for(controller: "wisp", action: "field_status")) do %>
-    <label for="field_id">Field</label><br>
-    <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field), { onchange: "this.form.submit();" } %>
-  <% end %>
+<div class="flex-across gap-10">
+  <div class="field">
+    <%= form_tag(url_for(controller: "wisp", action: "field_status", pivot_id: "", field_id: "")) do %>
+      <label for="farm_id">Farm</label><br>
+      <%= select_tag "farm_id", options_from_group_for_select(@group, @farm), { onchange: "this.form.submit();" } %>
+    <% end %>
+  </div>
+  <div class="field">
+    <%= form_tag(url_for(controller: "wisp", action: "field_status", field_id: "")) do %>
+      <label for="pivot_id">Pivot</label></br>
+      <%= select_tag "pivot_id", options_from_farm_for_select(@farm, @pivot), { onchange: "this.form.submit();" } %>
+    <% end %>
+  </div>
+  <div class="field">
+    <%= form_tag(url_for(controller: "wisp", action: "field_status")) do %>
+      <label for="field_id">Field</label><br>
+      <%= select_tag "field_id", options_from_pivot_for_select(@pivot, @field), { onchange: "this.form.submit();" } %>
+    <% end %>
+  </div>
 </div>
 
 <div id="fieldStatusGrid">
@@ -439,18 +456,22 @@
   </div>
   <div id="weatherBox" class="flex-down">
     <h3>Field daily weather</h3>
-    <div class="content-box flex-down gap-5">
-      <div class="flex-center">
-        <div class="inline-flex">
-          Week:
-          <button id="backAWeek" title="Previous week" onclick="shiftDate(-7)">&lt;</button>
-          <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>">
-          <button id="forwardAWeek" title="Next week" onclick="shiftDate(7)">&gt;</button>
-          <button id="curDate" class="week-button" onclick="setDate('<%= @today %>');">Today</button>
+    <div class="content-box">
+      <div>
+        <div class="flex-down gap-5">
+          <div class="flex-center">
+            <div class="inline-flex">
+              Week:
+              <button id="backAWeek" title="Previous week" onclick="shiftDate(-7)">&lt;</button>
+              <input name="date_input" id="date_input" class='date_input' size="10" value="<%= @cur_date %>">
+              <button id="forwardAWeek" title="Next week" onclick="shiftDate(7)">&gt;</button>
+              <button id="curDate" class="week-button" onclick="setDate('<%= @today %>');">Today</button>
+            </div>
+          </div>
+          <div class="grid-container">
+            <table id="weather" class="scroll" cellpadding="0" cellspacing="0"></table>
+          </div>
         </div>
-      </div>
-      <div style="max-width: 100%; overflow: auto">
-        <table id="weather" class="scroll" cellpadding="0" cellspacing="0"></table>
       </div>
     </div>
   </div>

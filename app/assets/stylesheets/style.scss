@@ -60,28 +60,23 @@ body {
   margin-top: 20px;
 }
 
-.nav-bar {
-  display: inline-flex;
-  width: 100%;
 
-  @media #{$medium-down} {
-    flex-direction: column;
-  }
+// ---  NAV BAR --- //
+.nav-bar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .nav-title {
-  max-width: 30em;
   color: $nav-title-color;
   font-variant: small-caps;
-
   a {
     text-decoration: none;
     color: inherit
   }
-
-  @media #{$medium-down} {
-    text-align: center;
-    margin-bottom: 1rem;
+  @media screen and (min-width: 1025px) {
+    max-width: 22em;
   }
 }
 
@@ -93,14 +88,6 @@ body {
   white-space: nowrap;
   justify-content: flex-end;
   gap: 1px;
-
-  @media #{$small-only} {
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    margin-left: inherit;
-    width: 100%;
-  }
-
   a {
     flex-grow: 1;
     color: inherit;
@@ -118,8 +105,24 @@ body {
   text-align: center;
   font-weight: bold;
   font-size: 1rem;
+}
 
-  @media #{$small-only} {
+@media screen and (max-width: 700px) {
+  .nav-bar {
+    flex-direction: column;
+  }
+  .nav-title {
+    max-width: unset;
+    text-align: center;
+    margin-bottom: .5em;
+  }
+  .nav-btns {
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin-left: inherit;
+    width: 100%;
+  }
+  .nav-btn {
     margin: 5px;
     border-radius: 5px;
     flex-wrap: wrap;
@@ -131,6 +134,9 @@ body {
   background-color: $frame-bg-color;
   color: $content-bg-color;
 }
+
+
+// --- MAIN LAYOUT --- //
 
 .main-wrapper,
 .sidebar-wrapper,
@@ -167,6 +173,11 @@ body {
 .sidebar-image img {
   border-radius: 5px;
   width: 100%;
+  @media #{$small-only} {
+    max-height: 150px;
+    object-fit: cover;
+    object-position: bottom;
+  }
 }
 
 .sidebar {
@@ -177,25 +188,25 @@ body {
   color: $sidebar-text-color;
   margin-top: .5rem;
   padding: 5px;
-
-  a,
-  a:hover,
-  a:visited {
+  a, a:hover, a:visited {
     color: $sidebar-link-color
   }
-
   h4 {
     margin-top: 0px;
     margin-bottom: 10px;
+  }
+  hr {
+    margin: 0;
+    border: none;
+    border-bottom: 1px solid $frame-bg-color;
   }
 }
 
 .sidebar-links {
   ul {
-    margin-top: 5px;
+    margin: .5em;
     padding-inline-start: 25px;
   }
-
   li {
     margin-bottom: .75em;
   }
@@ -208,6 +219,7 @@ body {
 .content-wrapper {
   background: $content-bg-color;
   padding: 10px;
+  padding-bottom: 20px;
   flex: 1 1 0;
   min-width: 0;
 }
@@ -235,6 +247,15 @@ body {
   flex: 1;
 }
 
+.table-container {
+  overflow: auto;
+}
+
+.grid-container {
+  overflow: auto;
+  min-width: 600px;
+}
+
 .flex-center {
   display: flex;
   align-items: center;
@@ -257,7 +278,6 @@ body {
 .flex-down {
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
 }
 
 .gap-5 {
@@ -285,8 +305,7 @@ body {
   font: 13px arial, sans-serif;
   color: $copyright-text-color;
   text-align: right;
-  margin-right: 10px;
-
+  margin-right: 5px;
   p {
     margin-top: 10px;
   }
@@ -391,6 +410,9 @@ body {
   }
   #graphBox {
     grid-area: d;
+    .content-box {
+      background: white;
+    }
   }
   @media #{$medium-down} {
     grid-template-columns: 50% 50% 100% 100%;
@@ -398,6 +420,9 @@ body {
       "a c"
       "b b"
       "d d";
+      #fieldDataBox, #seasonTotalsBox {
+        font-size: 13px;
+      }
   }
 }
 

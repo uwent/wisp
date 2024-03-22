@@ -20,24 +20,26 @@
     </div>
   <% end %>
 </div>
-
+<hr>
 <div class="sidebar-links">
   <h4>More information:</h4>
   <ul>
-    <li><%= link_to "AgWeather", "https://agweather.cals.wisc.edu/", target: "_blank" %></li>
-    <li><%= link_to "Vegetable Disease and Insect Forecasting map tool", "https://agweather.cals.wisc.edu/vdifn", target: "_blank" %></li>
+    <li><%= link_to "View WISP User Guide (PDF)", "wisp-user-guide.pdf", target: "_blank" %>
+    <li><%= link_to "AgWeather main site", "https://agweather.cals.wisc.edu/", target: "_blank" %>
+    <li><%= link_to "Vegetable Disease and Insect Forecasting map tool (VDIFN)", "https://agweather.cals.wisc.edu/vdifn", target: "_blank" %>
+    <li><%= link_to "UW Extension Crops & Soils", "https://cropsandsoils.extension.wisc.edu/", target: "_blank" %>
     <li><%= link_to "UW Vegetable Entomology Lab", "https://vegento.russell.wisc.edu/", target: "_blank" %>
     <li><%= link_to "UW Vegetable Pathology Lab", "https://vegpath.plantpath.wisc.edu/", target: "_blank" %>
-    <li><%= link_to "View WISP User Guide (PDF)", "wisp-user-guide.pdf", target: "_blank" %></li>
-    <li><%= mail_to "agweather@cals.wisc.edu", "Contact us" %></li>
+    <li><%= link_to "WiscoNet Weather Stations", "https://wisconet.wisc.edu/", target: "_blank" %>
+    <li><%= mail_to "agweather@cals.wisc.edu", "Contact us" %>
   </ul>
 </div>
-
+<hr>
 <div class="sidebar-reminder">
   <h4>Please note:</h4>
   <p>WISP user input data will be purged on Feb. 15<sup>th</sup> each year. To save current year data use the <b>Create Report</b> link on the <%= link_to "Field Status", "/wisp/field_status" %> page prior to 2/15!</p>
 </div>
 
 <div class="uw-logo">
-  <%= image_tag("uw-logo.png", width: "100%") %>
+  <%= link_to image_tag("uw-logo.png", width: "100%"), "https://www.wisc.edu/", target: "_blank" %>
 </div>
