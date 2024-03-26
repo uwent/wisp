@@ -1,5 +1,5 @@
 class FieldsController < AuthenticatedController
-  skip_before_action :verify_authenticity_token, only: :post_data
+  # skip_before_action :verify_authenticity_token, only: :post_data
 
   COLUMN_NAMES = [
     :name,
