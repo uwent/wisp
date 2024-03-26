@@ -7,4 +7,5 @@ Rails.application.configure do
     host: ENV["WISP_HOST"] || "dev.wisp.cals.wisc.edu",
     protocol: "https"
   }
+  config.log_level = :debug
 end
