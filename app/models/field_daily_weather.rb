@@ -224,10 +224,11 @@ class FieldDailyWeather < ApplicationRecord
 
   # CLASS METHODS
   def self.today_or_latest(field_id)
-    query = <<-END
-      select max(date) as date from field_daily_weather where field_id=#{field_id}
-    END
-    latest = FieldDailyWeather.find_by_sql(query).first.date
+    # query = <<-END
+    #   select max(date) as date from field_daily_weather where field_id=#{field_id}
+    # END
+    # latest = FieldDailyWeather.find_by_sql(query).first.date
+    latest = FieldDailyWeather.where(field_id: field_id).maximum(:date)
     today = Date.today
     unless latest
       return today
@@ -280,11 +281,18 @@ class FieldDailyWeather < ApplicationRecord
       # today = [today,kill_date,last_data_date].min
       # finish_date ||= today
     end
-    query = <<-END
-    select '#{finish_date}' as date, sum(rain) as rain, sum(irrigation) as irrigation, sum(deep_drainage) as deep_drainage, sum(ref_et) as ref_et, sum(adj_et) as adj_et
-    from field_daily_weather where field_id=#{field_id} and date >= '#{start_date}' and date <= '#{finish_date}'
-    END
-    find_by_sql(query).first
+    # query = <<-END
+    # select '#{finish_date}' as date, sum(rain) as rain, sum(irrigation) as irrigation, sum(deep_drainage) as deep_drainage, sum(ref_et) as ref_et, sum(adj_et) as adj_et
+    # from field_daily_weather where field_id=#{field_id} and date >= '#{start_date}' and date <= '#{finish_date}'
+    # END
+    # find_by_sql(query).first
+    cols = ["rain", "irrigation", "deep_drainage", "ref_et", "adj_et"]
+    vals = FieldDailyWeather.where(date: start_date..finish_date, field_id: field_id)
+      .pluck("sum(rain), sum(irrigation), sum(deep_drainage), sum(ref_et), sum(adj_et)")
+      .first
+    hash = cols.zip(vals).to_h
+    hash[:date] = finish_date
+    hash
   end
 
   def self.fdw_for(field_id, start_date, end_date)
