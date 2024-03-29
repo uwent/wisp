@@ -3,7 +3,7 @@
   <%= grid_javascript_settings %>
 
   function reloadGrids(pivot_id) {
-    $('#pivotDataGrid').load(
+    $('#pivotSetupGrid').load(
       '<%= url_for(controller: :wisp, action: :pivot_crop) %>',
       { farm_id: farm_id, parent_id: farm_id, pivot_id: pivot_id, ajax: true }
     );
@@ -16,7 +16,7 @@
 
   function deletePivot(id) {
     pivot_id = 0; // We no longer know what the current one is; find out after grids reload
-    $('#pivotDataGrid').delGridRow(id, { afterSubmit: reloadPage } );
+    $('#pivotSetupGrid').delGridRow(id, { afterSubmit: reloadPage } );
   }
 
   function addPivotToSelect(id, pivot_data) {
@@ -38,17 +38,17 @@
   }
 
   function addPivotDeleteButtons() {
-    let ids = $("#pivotDataGrid").getDataIDs();
+    let ids = $("#pivotSetupGrid").getDataIDs();
     let nRows = ids.length;
     for (let i = 0; i < nRows; i++) {
       let id = ids[i];
       be = `<div class='grid-del-btn'><input type='button' value='Del' title='Delete this pivot' onclick='deletePivot(${id});'></div>`;
-      $("#pivotDataGrid").setRowData(id, { act: be } );
+      $("#pivotSetupGrid").setRowData(id, { act: be } );
     }
   }
 
   function addNewPivotRow() {
-    const grid = $('#pivotDataGrid');
+    const grid = $('#pivotSetupGrid');
     const newPivot = createNewPivot();
     pivot_id = newPivot['id'];
     grid.addRowData(pivot_id, newPivot); // add a new row with the new field's data
@@ -91,7 +91,7 @@
       { name: 'farm_id', index: 'farm_id', width: 10, hidden: true, editable: true },
       { name: 'id', index: 'id', width: 1, hidden: true, editable: true },
     ],
-    pager: '#pivotDataGrid_pager',
+    pager: '#pivotSetupGrid_pager',
     rowNum: 5,
     rowList: [5],
     imgpath: '<%= image_folder_path("jqgrid") %>',
@@ -109,30 +109,43 @@
     },
     onSelectRow: function(id) {
       if (!id) return;
-      if (id !== pivot_id) $('#pivotDataGrid').restoreRow(pivot_id);
+      if (id !== pivot_id) $('#pivotSetupGrid').restoreRow(pivot_id);
       pivot_id = id;
-      $('#pivotDataGrid').editRow(id, true, null, updatePivotSelectName);
+      $('#pivotSetupGrid').editRow(id, true, null, updatePivotSelectName);
       loadFieldGrid();
     },
     subGrid: false,
     caption: "Pivots <%= @farm ? "for #{@farm.name}" : "" %>",
   }
 
-  $(() => {
-    // Load the dependent field and crop grids with appropriate values
-    loadFieldGrid();
-    const pivotGrid = $("#pivotDataGrid").jqGrid(pivotGridOpts)
-  });
-
   // If pivot_id is set, load the field grid for that one. If it's zero,
   // grab the id of the first pivot in the grid and use that.
   function loadFieldGrid() {
-    if (!pivot_id) pivot_id = $("#pivotDataGrid").getDataIDs()[0];
+    if (!pivot_id) pivot_id = $("#pivotSetupGrid").getDataIDs()[0];
     $('#fieldDataBox').load(
       '<%= url_for(controller: :wisp, action: :field_setup_grid) %>',
       { pivot_id: pivot_id, farm_id: farm_id }
     );
   }
+
+  // handle window resizing and resize grid and chart after delay
+  var resizeTimer;
+  window.onresize = function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const width = $("#gridContainer").width() - 3;
+      $("#pivotSetupGrid").setGridWidth(width);
+      $("#fieldSetupGrid").setGridWidth(width);
+      $("#cropSetupGrid").setGridWidth(width);
+    }, 500);
+  };
+
+  // Load the dependent field and crop grids with appropriate values
+  $(() => {
+    loadFieldGrid();
+    const pivotGrid = $("#pivotSetupGrid").jqGrid(pivotGridOpts)
+  });
+
 </script>
 <% end %>
 
@@ -150,21 +163,21 @@
   <% end %>
 </div>
 
-<div class="content-box">
-  <div class="flex-down gap-10">
-    <div id="pivotDataBox" class="flex-down gap-10">
-      <div class="grid-container">
-        <table id="pivotDataGrid" class="scroll" cellpadding="0" cellspacing="0"></table>
+<div class="overflow">
+  <div id="gridContainer" class="content-box grid-container">
+    <div class="flex-down gap-10">
+      <div id="pivotDataBox" class="flex-down gap-10">
+        <table id="pivotSetupGrid" cellpadding="0" cellspacing="0"></table>
+        <div class="btn-group">
+          <button type="button" class="btn btn-light" onclick="addNewPivotRow();">Add New Pivot</button>
+        </div>
       </div>
-      <div class="btn-group">
-        <button type="button" class="btn btn-light" onclick="addNewPivotRow();">Add New Pivot</button>
+      <div id="fieldDataBox">
+        <div style="height: 196px"> Loading fields... </div>
       </div>
-    </div>
-    <div id="fieldDataBox">
-      <div style="height: 196px"> Loading fields... </div>
-    </div>
-    <div id="cropDataBox">
-      <div style="height: 70px"> Loading crops... </div>
+      <div id="cropDataBox">
+        <div style="height: 70px"> Loading crops... </div>
+      </div>
     </div>
   </div>
 </div>

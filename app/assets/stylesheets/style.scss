@@ -52,7 +52,7 @@ body {
 
 // --- LAYOUT --- //
 
-.wrapper {
+#page {
   max-width: 1250px;
   min-height: calc(100vh - 20px);
   text-align: left;
@@ -60,8 +60,6 @@ body {
   margin-top: 20px;
 }
 
-
-// ---  NAV BAR --- //
 .nav-bar {
   display: flex;
   flex-direction: row;
@@ -128,27 +126,21 @@ body {
   }
 }
 
-.nav-btn:hover,
-.nav-btn.selected {
+.nav-btn:hover, .nav-btn.selected {
   background-color: $frame-bg-color;
   color: $content-bg-color;
 }
 
-
-// --- MAIN LAYOUT --- //
-
-.main-wrapper,
-.sidebar-wrapper,
-.content-wrapper {
+#main, #sidebar, #content {
   border-radius: 5px;
 }
 
-.main-wrapper {
+#main {
   background-color: $frame-bg-color;
   padding: 10px;
 }
 
-.main {
+.main-content {
   display: flex;
   gap: 0 10px;
   width: inherit;
@@ -159,13 +151,16 @@ body {
   }
 }
 
-.sidebar-wrapper {
+#sidebar {
   background-color: $sidebar-bg-color;
   display: flex;
   flex-direction: column;
   min-width: 200px;
-  @media #{$medium-up} {
+  @media #{$large} {
     width: 250px;
+  }
+  @media #{$medium-only} {
+    width: 200px;
   }
 }
 
@@ -179,7 +174,7 @@ body {
   }
 }
 
-.sidebar {
+.sidebar-content {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -211,147 +206,27 @@ body {
   }
 }
 
-.hidden {
-  opacity: 0;
-}
-
-.content-wrapper {
-  background: $content-bg-color;
-  padding: 10px;
-  padding-bottom: 20px;
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.content {
-  h2 {
-    padding-bottom: 5px;
-    border-bottom: 1px solid $hr-color;
-    margin-bottom: .5em;
-  }
-
-  h3 {
-    margin-block-start: 1em;
-    margin-block-end: .5em;
-  }
-
-}
-
-.content-box {
-  background: $page-bg-color;
-  border-radius: 5px;
-  border: 1px solid $frame-bg-color;
-  padding: 5px;
-  overflow: auto;
-  flex: 1;
-}
-
-.table-container {
-  overflow: auto;
-}
-
-.grid-container {
-  overflow: auto;
-  min-width: 600px;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.inline-flex {
-  display: inline-flex;
-  align-items: center;
-  gap: 1em;
-  flex-wrap: wrap;
-}
-
-.flex-across {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-.flex-down {
-  display: flex;
-  flex-direction: column;
-}
-
-.gap-5 {
-  gap: 5px;
-}
-
-.gap-10 {
-  gap: 10px;
-}
-
-.margin-5 {
-  margin: 5px;
-}
-
-.margin-10 {
-  margin: 10px;
-}
-
 .uw-logo {
   padding: 5px;
   margin-top: auto;
 }
 
-.copyright {
-  font: 13px arial, sans-serif;
-  color: $copyright-text-color;
-  text-align: right;
-  margin-right: 5px;
-  p {
-    margin-top: 10px;
+#content {
+  background: $content-bg-color;
+  padding: 10px;
+  padding-bottom: 20px;
+  flex: 1 1 0;
+  min-width: 0;
+  h2 {
+    padding-bottom: 5px;
+    border-bottom: 1px solid $hr-color;
+    margin-bottom: .5em;
+  }
+  h3 {
+    margin-block-start: 1em;
+    margin-block-end: .5em;
   }
 }
-
-.grid-del-btn {
-  text-align: center;
-  input {
-    height: 22px;
-    width: 35px;
-  }
-}
-
-.fancy-table {
-  border-collapse: collapse;
-  width: 100%;
-  td, th {
-    border: 1px solid #bebebe;
-    padding: 5px;
-    vertical-align: middle;
-  }
-  tr:nth-child(odd){
-    background-color: $tbl-odd-color;
-  }
-  tr:nth-child(even){
-    background-color: $tbl-even-color;
-  }
-  tr:hover {
-    background-color: #ddd;
-  }
-  th {
-    text-align: left;
-    background-color: $frame-bg-color;
-    color: white;
-  }
-  ol {
-    margin: 0;
-    padding-left: 1em;
-  }
-  td:last-child {
-    width: 1px;
-    white-space: nowrap;
-  }
-}
-
-
-//-- NAMED ELEMENTS --//
 
 #notice {
   display: flex;
@@ -419,9 +294,9 @@ body {
       "a c"
       "b b"
       "d d";
-      #fieldDataBox, #seasonTotalsBox {
-        font-size: 13px;
-      }
+    #fieldDataBox, #seasonTotalsBox {
+      font-size: 13px;
+    }
   }
 }
 
@@ -436,6 +311,119 @@ body {
     @media #{$medium-down} {
       flex-wrap: wrap;
     }
+  }
+}
+
+.copyright {
+  font: 13px arial, sans-serif;
+  color: $copyright-text-color;
+  text-align: right;
+  margin-right: 5px;
+  p {
+    margin-top: 10px;
+  }
+}
+
+
+// -- STYLES -- //
+
+.hidden {
+  opacity: 0;
+}
+
+.overflow {
+  overflow: auto;
+}
+
+.grid-container {
+  min-width: 600px;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inline-flex {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 20px;
+  flex-wrap: wrap;
+}
+
+.flex-across {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.flex-down {
+  display: flex;
+  flex-direction: column;
+}
+
+.gap-5 {
+  gap: 5px;
+}
+
+.gap-10 {
+  gap: 10px;
+}
+
+.margin-5 {
+  margin: 5px;
+}
+
+.margin-10 {
+  margin: 10px;
+}
+
+.content-box {
+  background: $page-bg-color;
+  border-radius: 5px;
+  border: 1px solid $frame-bg-color;
+  padding: 5px;
+  flex: 1;
+}
+
+.grid-del-btn {
+  text-align: center;
+  input {
+    height: 22px;
+    width: 35px;
+  }
+}
+
+.fancy-table {
+  border-collapse: collapse;
+  width: 100%;
+  td, th {
+    border: 1px solid #bebebe;
+    padding: 5px;
+    vertical-align: middle;
+  }
+  tr:nth-child(odd){
+    background-color: $tbl-odd-color;
+  }
+  tr:nth-child(even){
+    background-color: $tbl-even-color;
+  }
+  tr:hover {
+    background-color: #ddd;
+  }
+  th {
+    text-align: left;
+    background-color: $frame-bg-color;
+    color: white;
+  }
+  ol {
+    margin: 0;
+    padding-left: 1em;
+  }
+  td:last-child {
+    width: 1px;
+    white-space: nowrap;
   }
 }
 

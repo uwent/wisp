@@ -14,15 +14,6 @@
   let pctCoverIsEditable = !isLai
 
 
-  //-- FIELD DATA BOX --//
-
-  function showTargetAD() {
-    // adValue = 0.0;
-    let adValue = <%= @field.target_ad_pct || "''".html_safe %>;
-    $("#target_ad").val(adValue);
-  }
-
-
   //-- SUMMARY BOX --//
 
   function showSummaryBox(date) {
@@ -60,8 +51,8 @@
       $("#date_input").val(cur_date);
     }
     checkDateBtns(cur_date);
-    $("#weather").setGridParam({ page: getCurPage(initial_date, cur_date) }).trigger("reloadGrid");
-    plotGraph();
+    $("#weatherGrid").setGridParam({ page: getCurPage(initial_date, cur_date) }).trigger("reloadGrid");
+    initializeChart();
   }
 
   function shiftDate(days) {
@@ -115,8 +106,8 @@
   }
 
   function displayCalcValues(rowid, response) {
-    $("#weather").trigger("reloadGrid");
-    plotGraph();
+    $("#weatherGrid").trigger("reloadGrid");
+    initializeChart();
     showSummaryBox(cur_date);
     return true;
   }
@@ -136,7 +127,7 @@
       },
       {
         name: "rain", index: "rain", width: 67, align: "right",
-        editable: true,editrules: { number: true, minValue: 0.0, maxValue: 10.0 },
+        editable: true, editrules: { number: true, minValue: 0.0, maxValue: 10.0 },
         formatter: "number", formatoptions: { decimalPlaces: 2 },
       },
       {
@@ -187,7 +178,7 @@
       },
       { name: "id", index: "id", width: 1, editable: true, hidden: true }
     ], 
-    pager: "#weather_pager",
+    pager: "#weatherGrid_pager",
     rowNum: 7,
     rowList: [7, <%= FieldDailyWeather::SEASON_DAYS %>],
     imgpath: '<%= image_folder_path("jqgrid") %>',
@@ -202,9 +193,9 @@
     rownumbers: false,
     multiselect: false,
     onSelectRow: function(id) {
-      if (id !== lastsel) $('#weather').restoreRow(lastsel);
+      if (id !== lastsel) $('#weatherGrid').restoreRow(lastsel);
       // TODO: displayCalcValues not being called
-      $("#weather").editRow(id, true, "", "", "", "", displayCalcValues); 
+      $("#weatherGrid").editRow(id, true, "", "", "", "", displayCalcValues); 
       lastsel = id;
     },
     subGrid: false,
@@ -221,62 +212,60 @@
     return parseFloat(num.toPrecision(2));
   }
 
-  function array_min(arr) {
-    min = 10000.0;
-    for (var ii = arr.length - 1; ii >= 0; ii--){
-      if (arr[ii] < min) {
-        min = arr[ii];
-      }
-    };
-    return min;
-  }
-
   // Calculate a baseline for the graph. Easy if they're not going into negative-AD territory!
-  function baseLine(ad_data, prj_data) {
-    let smallest = prj_data ? array_min(ad_data.concat(prj_data)) : array_min(ad_data)
-    if (smallest >= 0.0) {
-      smallest = 0.0;
-    } else {
-      // drop the baseline to a skosh below the lowest point
-      smallest = Math.floor(smallest - 0.20);
-    }
-    return smallest;
+  function findBaseline(ad_data, prj_data) {
+    const smallest = prj_data ? Math.min(ad_data.concat(prj_data)) : Math.min(ad_data)
+    if (smallest >= 0.0) return 0.0;
+    // drop the baseline to a skosh below the lowest point
+    return Math.floor(smallest - 0.20);
   }
 
   // title for chart depending on how many data points are projected
-  function plotTitle(prj_data) {
+  function getPlotTitle(prj_data) {
     if (prj_data.every(v => v === true)) return "Projected Allowable Depletion";
     if (prj_data.every(v => v === false)) return "Calculated Allowable Depletion";
     return "Calculated/Projected Allowable Depletion";
   }
 
+  // Load the Visualization API and the piechart package.
+  google.load("visualization", "1.0", { "packages": ["corechart"] } );
+  google.setOnLoadCallback(initializeChart);
+
   // Callback that creates and populates a data table,
   // instantiates the chart, passes in the data and
   // draws it.
-  function plotGraph() {
-    // Not ready yet.
-    if (!(google.visualization && google.visualization.DataTable)) return;
+  function initializeChart() {
+    fetchChartData();
+    drawChart();
+  }
 
-    let url = "<%= url_for(action: :projection_data, field_id: @field_id, user_id: @user) %>&cur_date=" + cur_date;
-    let ad_max = td(<%= @field.ad_max %>);
-    let ad_min = 0.0;
-    let ad_data = null;
-    let prj_data = null;
-    let targ_data = null;
-    let labels = null;
-
+  // fetches data for the chart and stores it
+  var chartData = {};
+  function fetchChartData() {
     $.ajax({
       type: "GET",
-      url: url,
+      url: "<%= url_for(action: :projection_data, field_id: @field_id, user_id: @user) %>&cur_date=" + cur_date,
       dataType: "json",
       async: false,
       success: function(json) {
-        ad_data = json["ad_data"];
-        prj_data = json["projected_ad_data"];
-        targ_data = json["target_ad_data"];
-        labels = json["labels"];
+        chartData = {
+          ad_data: json["ad_data"],
+          prj_data: json["projected_ad_data"],
+          targ_data: json["target_ad_data"],
+          labels: json["labels"],
+        }
       }
     });
+  }
+
+  // draws or redraws the chart without fetching new data
+  function drawChart() {
+    let ad_max = td(<%= @field.ad_max %>);
+    let ad_min = 0.0;
+    let ad_data = chartData.ad_data;
+    let prj_data = chartData.prj_data;
+    let targ_data = chartData.targ_data;
+    let labels = chartData.labels;
 
     // Create the data table.
     // Field Capacity, AD, [Target], [Projected], 0.0 AD
@@ -361,9 +350,8 @@
     }
 
     // Set chart options
-    const title = plotTitle(prj_data);
     const options = {
-      title: title,
+      title: getPlotTitle(prj_data),
       height: 290,
       colors: colors,
       fontSize: 12,
@@ -373,21 +361,35 @@
       // Set vertical axis range to run between fudge-factored values to make the annotations show nicely
       vAxis: {
         title: "Allowable depletion (in.)",
-        baseline: baseLine(ad_data, prj_data),
+        baseline: findBaseline(ad_data, prj_data),
         maxValue: Math.ceil(ad_max + 0.2),
       },
       annotation: { style: "line" },
     };
 
     // Instantiate and draw our chart, passing in some options.
-    const chart = new google.visualization.AreaChart(document.getElementById("graph"));
+    chart = new google.visualization.AreaChart(document.getElementById("graph"));
     chart.draw(data, options);
   }
 
-  // Load the Visualization API and the piechart package.
-  google.load("visualization", "1.0", { "packages": ["corechart"] } );
-  google.setOnLoadCallback(plotGraph);
+  // handle window resizing and resize grid and chart after delay
+  var resizeTimer;
+  window.onresize = function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const width = $("#weatherGridContainer").width() - 3;
+      $("#weatherGrid").setGridWidth(width);
+      drawChart();
+    }, 500);
+  };
 
+  // show target AD in field data box
+  $(() => {
+    const adValue = <%= @field.target_ad_pct || "''".html_safe %>;
+    $("#target_ad").val(adValue);
+  })
+
+  // initialize datepicker above grid
   $(() => {
     const dateOpts = {
       dateFormat: "yy-mm-dd",
@@ -398,13 +400,14 @@
     $("#date_input").datepicker(dateOpts);
     $("#date_input").change(setDate);
     checkDateBtns(cur_date);
-    showTargetAD();
-    const weatherGrid = $("#weather").jqGrid(weatherGridOpts)
+  })
+
+  // initialize field daily weather grid
+  $(() => {
+    const weatherGrid = $("#weatherGrid").jqGrid(weatherGridOpts)
     weatherGrid.filterToolbar();
     weatherGrid[0].toggleToolbar();
-    plotGraph();
   });
-
 </script>
 
 <% @title = "Field Status" %>
@@ -468,8 +471,10 @@
               <button id="curDate" class="week-button" onclick="setDate('<%= @today %>');">Today</button>
             </div>
           </div>
-          <div class="grid-container">
-            <table id="weather" class="scroll" cellpadding="0" cellspacing="0"></table>
+          <div class="overflow">
+            <div id="weatherGridContainer" class="grid-container">
+              <table id="weatherGrid" cellpadding="0" cellspacing="0"></table>
+            </div>
           </div>
         </div>
       </div>
@@ -485,7 +490,7 @@
   </div>
   <div id="graphBox" class="flex-down">
     <h3>Field water balance</h3>
-    <div class="content-box">
+    <div class="content-box overflow">
       <div id="graph"></div>
     </div>
   </div>

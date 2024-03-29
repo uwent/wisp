@@ -30,29 +30,29 @@
 
   // Adds a delete button to each row of the grid
   function addDeleteButton(cl) {
-    let ids = $("#farm_setup").getDataIDs();
+    let ids = $("#farmSetupGrid").getDataIDs();
     let nRows = ids.length;
     let el;
     if (nRows == 1) {
       el = "<div class='grid-del-btn'><input type='button' value='Del' disabled='true' title='Cannot delete last farm'/></div>";
-      $("#farm_setup").setRowData(cl, {act: el});
+      $("#farmSetupGrid").setRowData(cl, {act: el});
     } else {
       for (let i = 0; i < nRows; i++) {
         let id = ids[i];
         el = `<div class='grid-del-btn'><input type='button' value='Del' title='Delete this farm' onclick='removeRow(${cl})'></div>`;
-        $("#farm_setup").setRowData(cl, {act: el});
+        $("#farmSetupGrid").setRowData(cl, {act: el});
       }
     }
   }
 
   function addNewFarmRow() {
-    let grid = $("#farm_setup");
+    let grid = $("#farmSetupGrid");
     let newFarm = createNewFarm();
     curID = newFarm["id"];
     grid.addRowData(curID, newFarm); // add a new row with the new field's data
     addDeleteButton(curID);
     grid.editRow(curID, true); // put new row into inline-edit mode
-    $("#farm_setup").trigger("reloadGrid");
+    $("#farmSetupGrid").trigger("reloadGrid");
   }
 
   function createNewFarm() {
@@ -72,8 +72,8 @@
   }
 
   function removeRow(rowID) {
-    $("#farm_setup").delGridRow(rowID);
-    $("#farm_setup").trigger("reloadGrid");
+    $("#farmSetupGrid").delGridRow(rowID);
+    $("#farmSetupGrid").trigger("reloadGrid");
   }
 
   const farmGridOpts = {
@@ -89,7 +89,7 @@
       { name: "group_id", index: "group_id", width: 10, hidden: true, editable: true },
       { name: "id", index: "id", width: 10, hidden: true, editable: false }
     ],
-    pager: "#farm_setup_pager",
+    pager: "#farmSetupGrid_pager",
     rowNum: 180,
     rowList: [180],
     imgpath: '<%= image_folder_path("jqgrid") %>',
@@ -103,14 +103,14 @@
     multiselect: false,
     onSelectRow: function(id) {
       if (id && id !== lastsel) {
-        $("#farm_setup").restoreRow(lastsel);
-        $("#farm_setup").editRow(id, true);
+        $("#farmSetupGrid").restoreRow(lastsel);
+        $("#farmSetupGrid").editRow(id, true);
         lastsel = id;
         fillProblemsBox(id);
       }
     },
     loadComplete: function() {
-      let ids = $("#farm_setup").getDataIDs();
+      let ids = $("#farmSetupGrid").getDataIDs();
       fillProblemsBox(ids[0]);
       for(var i = 0; i < ids.length; i++) {
         let cl = ids[i];
@@ -121,8 +121,18 @@
     caption: "Farms",
   }
 
+  // handle window resizing and resize grid and chart after delay
+  var resizeTimer;
+  window.onresize = function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const width = $("#farmGridContainer").width() - 3;
+      $("#farmSetupGrid").setGridWidth(width);
+    }, 500);
+  };
+
   $(() => {
-    const farmGrid = $("#farm_setup").jqGrid(farmGridOpts);
+    const farmGrid = $("#farmSetupGrid").jqGrid(farmGridOpts);
     farmGrid.filterToolbar();
     farmGrid[0].toggleToolbar();
   });
@@ -136,15 +146,15 @@
 <p>To edit a farm's name or notes, click on the appropriate cell in the table below. To confirm your changes you must press "Enter". Use the button to the right of each farm to delete it, or create a new farm using the botton below the table. "AD < 0" shows how many fields within each farm are below allowable depletion. Farms are used to organize one or more pivots, which in turn can serve one or more fields.</p>
 
 <h3>Farms</h3>
-<div id="farmDataBox" class="content-box">
-  <div class="flex-down gap-10">
-  <div class="grid-container">
-    <table id="farm_setup" class="scroll" cellpadding="0" cellspacing="0"></table>
+<div class="overflow">
+  <div id="farmGridContainer" class="content-box grid-container">
+    <div class="flex-down gap-10">
+      <table id="farmSetupGrid" cellpadding="0" cellspacing="0"></table>
+      <div>
+        <button type="button" class="btn btn-light" onclick="addNewFarmRow();">Add New Farm</button>
+      </div>
+    </div>
   </div>
-  <div>
-    <button type="button" class="btn btn-light" onclick="addNewFarmRow();">Add New Farm</button>
-  </div>
-</div>
 </div>
 
 <h3>Current Status</h3>

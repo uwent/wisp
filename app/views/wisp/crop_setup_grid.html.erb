@@ -79,7 +79,7 @@
       { name: 'id', index: 'id', width: 1, hidden: true },
       { name: 'field_id', index: 'field_id', width: 1, hidden: true, editable: true}
     ],
-    pager: '#cropDataGrid_pager',
+    pager: '',
     rowNum: 180,
     rowList: [180],
     imgpath: '<%= image_folder_path("jqgrid") %>',
@@ -94,21 +94,21 @@
     multiselect: false,
     onSelectRow: function(id) {
       if (!id) return;
-      if (id !== lastsel) $('#cropDataGrid').restoreRow(lastsel);
+      if (id !== lastsel) $("#cropSetupGrid").restoreRow(lastsel);
       lastsel = id;
-      $('#cropDataGrid').editRow(id, true);
+      $("#cropSetupGrid").editRow(id, true);
     },
     subGrid: false,
     caption: "Crop <%= @field ? " for #{@field.name}" : '(select field above)' %>",
   }
  
   $(() => {
-    const cropGrid = $("#cropDataGrid").jqGrid(cropGridOpts)
+    const cropGrid = $("#cropSetupGrid").jqGrid(cropGridOpts)
     cropGrid.filterToolbar();
     cropGrid[0].toggleToolbar();
   });
 </script>
 
 <div class="grid-container">
-  <table id="cropDataGrid" class="scroll" cellpadding="0" cellspacing="0"></table>
+  <table id="cropSetupGrid" cellpadding="0" cellspacing="0"></table>
 </div>

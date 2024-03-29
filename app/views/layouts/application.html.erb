@@ -23,7 +23,7 @@
 </head>
 
 <body>
-  <div class="wrapper">
+  <div id="page">
     <div class="nav-bar">
       <div class="nav-title">
         <h1><%= link_to "Wisconsin Irrigation Scheduling Program", "/home", title: "WISP Home" %></h1>
@@ -36,18 +36,18 @@
         <% end %>
       </div>
     </div>
-    <div class="main-wrapper">
-      <div class="main">
-        <div class="sidebar-wrapper">
+    <div id="main">
+      <div class="main-content">
+        <div id="sidebar">
           <div class="sidebar-image">
             <%= link_to image_tag("pivot.jpg", title: "WISP Home"), "/home" %>
           </div>
-          <div class="sidebar">
+          <div class="sidebar-content">
             <%= render partial: "home/sidebar" %>
           </div>
         </div>
-        <div class="content-wrapper">
-          <div class="content">
+        <div id="content">
+          <div>
             <%= render partial: "home/notice" %>
             <%= yield %>
           </div>
