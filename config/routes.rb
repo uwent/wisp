@@ -35,12 +35,6 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :crops, only: :index do
-    collection do
-      post "post_data"
-    end
-  end
-
   resources :farms, only: :index do
     collection do
       get "problems"
@@ -48,7 +42,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :field_daily_weather, only: :index do
+  resources :pivots, only: :index do
     collection do
       post "post_data"
     end
@@ -60,13 +54,17 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :pivots, only: :index do
+  resources :field_daily_weather, only: :index do
     collection do
       post "post_data"
     end
   end
 
-  resources :plants
+  resources :crops, only: :index do
+    collection do
+      post "post_data"
+    end
+  end
 
   resources :users, only: [:index, :destroy]
 
@@ -82,7 +80,5 @@ Rails.application.routes.draw do
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
   # redirect all wayward routes to home
-  unless Rails.env.development?
-    get "*path", to: redirect("/")
-  end
+  get "*path", to: redirect("/") unless Rails.env.development?
 end
