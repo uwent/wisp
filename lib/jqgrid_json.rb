@@ -12,7 +12,7 @@ module JqgridJson
         attributes.each do |atr|
           value = get_atr_value(elem, atr, couples)
           if value&.is_a? String
-            value = escape_javascript(value).gsub(/\\\'/, "'") # escaped single quote broke jqgrid, have to un-escape it
+            value = escape_javascript(value).gsub("\\'", "'") # escaped single quote broke jqgrid, have to un-escape it
           end
           json << %("#{value}",)
         end

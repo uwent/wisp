@@ -43,7 +43,8 @@ class ApplicationController < ActionController::Base
     begin
       plural = klass.to_s.downcase + "s"
       parent_obj = parent_klass.find(parent_id)
-      obj = eval("parent_obj.#{plural}.first")
+      # obj = eval("parent_obj.#{plural}.first")
+      obj = parent_obj.send(plural).first
       id = obj[:id] if obj
     rescue ActiveRecord::RecordNotFound
       Rails.logger.error "ApplicationController :: Parent object find failed for #{klass} / #{parent_klass}:#{parent_id}"
@@ -85,7 +86,7 @@ class ApplicationController < ActionController::Base
     # Absolute, unchanging:
     @user = current_user
     @user_id = current_user.id
-    
+
     @group = current_group
     @group_id = @group.id
 
