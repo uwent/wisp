@@ -2,57 +2,56 @@
 <script>
   PCT_COVER_METHOD = <%= Field::PCT_COVER_METHOD %>;
   LAI_METHOD = <%= Field::LAI_METHOD %>;
-  let lastFieldSel;
-  let curFieldID;
-  let crop_id;
 
-  function loadCropGrid(field_id) {
-    $('#cropDataBox').load(
-      '<%= url_for(controller: :wisp, action: :crop_setup_grid) %>',
-      { field_id: field_id, user_id: user_id, farm_id: farm_id }
-    );
-    crop_id = $("#crop_setup").getDataIDs()[0];
-  }
+  let field_id;
+  let allowEditField = false; // don't edit jqgrid on first click
 
-  function useFirstFieldRow() {
-    let field_id = $("#fieldSetupGrid").getDataIDs()[0];
-    lastFieldSel = field_id;
-    crop_id = 1; // Wrong, but that's OK
-    // loadCropGrid(field_id);
-    return [true, '', field_id]; // This was a total shot in the dark, Googling 'jqgrid afterSubmit' gave hints
+  function loadCropGrid() {
+    const url = '<%= url_for(controller: "wisp", action: "crop_setup_grid").html_safe %>';
+    const data = { user_id: user_id, farm_id: farm_id, field_id: field_id }
+    $('#cropDataBox').load(url, data);
+    return true;
   }
 
   function deleteField(id) {
-    $('#fieldSetupGrid').delGridRow(id, {
-      afterSubmit: useFirstFieldRow,
-      msg: 'Delete selected record(s)?\nThis will delete all crop data\nassociated with this field.\nProceed with delete?'
+    const grid = $('#fieldSetupGrid')
+    grid.delGridRow(id, {
+      msg: 'Delete this field?\nThis will also delete all crop data\nassociated with this field.',
+      afterSubmit: () => {
+        field_id = grid.getDataIDs()[0];
+        loadCropGrid();
+        return [true];
+      },
     });
   }
 
   function addFieldDeleteButtons() {
-    let fieldIDs = $("#fieldSetupGrid").getDataIDs();
-    let nRows = fieldIDs.length;
-    for (let i = 0; i < nRows; i++) {
-      let id = fieldIDs[i];
-      let btn = (nRows == 1) ?
-        "<input type='button' value='Del' title='Cannot delete only field' disabled='true'/>" :
-        `<input type='button' value='Del' title='Delete this field' onclick='deleteField(${id});'/>`;
-      $("#fieldSetupGrid").setRowData(id, {
-        act: `<div class='grid-del-btn'>${btn}</div>`
-      });
+    let ids = $("#fieldSetupGrid").getDataIDs();
+    let rows = ids.length;
+    for (let i = 0; i < rows; i++) {
+      const id = ids[i];
+      const btn = "<div class='grid-del-btn'>" +
+        `<input type='button' value='Del' title=${
+          rows == 1 ?
+            "'Cannot delete only field' disabled=true" :
+            `'Delete this field' onclick='deleteField(${id})'`
+        } />` + "</div>"
+      $("#fieldSetupGrid").setRowData(id, { act: btn });
     }
   }
 
   // Add new field based on et mthod selection (currently controlled by separate buttons).
   function addNewFieldRow(method) {
-    let grid = $('#fieldSetupGrid');
-    let newField = createNewField(method);
-    let field_id = newField['id'];
+    const grid = $('#fieldSetupGrid');
+    grid.restoreRow(field_id);
+    const newField = createNewField(method);
+    field_id = newField.id;
     set_soil_characteristics(field_id, newField['soil_type_id']);
     grid.addRowData(field_id, newField); // add a new row with the new field's data
     addFieldDeleteButtons();
+    grid.setSelection(field_id);
     grid.editRow(field_id, true); // put new row into inline-edit mode
-    loadCropGrid(field_id);
+    loadCropGrid();
   }
 
   // Make a call to the server to create a new field; will return new row as JSON
@@ -60,12 +59,12 @@
     let field = {};
     $.ajax({
       type: "POST",
-      url: '<%= url_for(controller: :fields, action: :post_data).html_safe %>',
+      url: '<%= url_for(controller: "fields", action: "post_data").html_safe %>',
       data: { pivot_id: pivot_id, parent_id: pivot_id, oper: 'add', id: '_empty', et_method: method },
       dataType: "json",
       contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
       async: false,
-      success: function(json) { field = json; }
+      success: (json) => { field = json; }
     });
     return field;
   }
@@ -99,7 +98,7 @@
   function pctUnformat(cellvalue, options, cell) {
     if (cellvalue === undefined) return '';
     // Remove the percent sign
-    let num = cellvalue.replace("%","");
+    let num = cellvalue.replace("%", "");
     // Do we have decimalPlaces in our format options?
     if (!(options.colModel.formatoptions.decimalPlaces === undefined)) {
       // Try parsing the number as a float (could be blank or null)
@@ -113,21 +112,16 @@
     return num;
   }
 
-  function addFieldDeleteButton(cl) {
-    be = `<div class='grid-del-btn'><input type='button' value='Del' title='Delete this field' onclick="$('#fieldSetupGrid').delGridRow(${cl}); $('#fieldSetupGrid').trigger('reloadGrid');"/></div>`;
-    $("#fieldSetupGrid").setRowData(cl, {act: be } )
-  }
-
   const fieldGridOpts = {
-    url: "<%= grid_data_url 'fields', @pivot_id %>",
-    editurl: "<%= grid_post_data_url "fields", @pivot %>",
+    url: '<%= grid_data_url('fields', @pivot_id).html_safe %>',
+    editurl: '<%= grid_post_data_url("fields", @pivot).html_safe %>',
     datatype: 'json',
     colNames: ['Name', 'ET Method', 'Area', 'Soil Type', 'Field Capacity', 'Perm. Wilt Pt', 'Target AD', 'ET Stn', 'Rain Stn', 'Soil Moist. Stn', 'Notes', 'Delete', 'Pivot', 'ID'],
     colModel:[
       { name: 'name', index: 'name', width: 83, editable: true },
       {
         name: 'et_method', index: 'et_method', width: 25, editable: false,
-        formatter: function(cellvalue, options, rowObject) {
+        formatter: (cellvalue, options, rowObject) => {
           if (cellvalue === undefined) return '';
           return cellvalue == '1' ? 'Pct Cover' : 'LAI';
         },
@@ -171,52 +165,47 @@
       { name: 'id', index: 'id', hidden: true, width: 10 }
     ],
     pager: '#fieldSetupGrid_pager',
-    rowNum: 180,
-    rowList: [180],
+    rowNum: 5,
     imgpath: '<%= image_folder_path("jqgrid") %>',
     sortname: '',
     viewrecords: true,
     sortorder: '',
     gridview: false,
     scrollrows: true,
-    height: 110, // 5 x 22px
+    height: 115, // 5 x 23px
     autowidth: true,
     rownumbers: false,
     multiselect: false,
-    onSelectRow: function(id) {
-      if (!id) return;
-      if (!lastFieldSel || id !== lastFieldSel) {
-        $('#fieldSetupGrid').restoreRow(lastFieldSel);
-        $('#fieldSetupGrid').editRow(id, true);
-        lastFieldSel = id;
+    subGrid: false,
+    onSelectRow: (id) => {
+      const grid = $('#fieldSetupGrid')
+      if (id == field_id && allowEditField) {
+        grid.editRow(id, true, null, loadCropGrid);
+      } else {
+        grid.restoreRow(field_id);
+        allowEditField = true;
         field_id = id;
-        loadCropGrid(field_id);
+        loadCropGrid();
       }
     },
-    onSaveRow: function(id) {
-      loadCropGrid(id);
-    },
-    loadComplete: function() {
+    loadComplete: () => {
       addFieldDeleteButtons();
-      let fieldIDs = $("#fieldSetupGrid").getDataIDs();
-      loadCropGrid(fieldIDs[0]);
+      const grid = $("#fieldSetupGrid");
+      field_id = grid.getDataIDs()[0];
+      allowEditField = false;
+      grid.setSelection(field_id);
     },
-    subGrid: false,
-    caption: "Fields <%= @pivot ? "for #{@pivot.name}" : '(select pivot above)' %>"
+    caption: "Fields for pivot '<%= @pivot&.name %>'"
   }
 
   $(() => {
-    loadCropGrid(field_id);
-    const fieldGrid = $("#fieldSetupGrid").jqGrid(fieldGridOpts)
-    fieldGrid.filterToolbar();
-    fieldGrid[0].toggleToolbar();
+    $("#fieldSetupGrid").jqGrid(fieldGridOpts)
   });
 </script>
 
 <div class="flex-down gap-10">
-  <div class="grid-container">
-    <table id="fieldSetupGrid" cellpadding="0" cellspacing="0"></table>
-  </div>
+  <table id="fieldSetupGrid" cellpadding="0" cellspacing="0"></table>
+  <div id="fieldSetupGrid_pager"></div>
   <div class="btn-group">
     <button type="button" class="btn btn-light" onclick="addNewFieldRow(PCT_COVER_METHOD);">Add New Field (% Cover)</button>
     <button type="button" class="btn btn-light" onclick="addNewFieldRow(LAI_METHOD);">Add New Field (Leaf Area Index)</button>

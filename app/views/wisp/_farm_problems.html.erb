@@ -3,7 +3,7 @@
   <% for farm in @farms %>
     <% farm_problems = @problems.select { |p| p.keys.first.pivot.farm_id == farm.id }%>
     <% if farm_problems && farm_problems.size > 0 %>
-      <b><%= @problems.size %> field(s) are projected below allowable depletion<%= farm ? " for #{farm.name}" : "" %></b>
+      <p><b><%= farm_problems.size %> field(s) are projected below allowable depletion<%= farm ? " for #{farm.name}" : "" %></b></p>
       <table class="fancy-table" summary="Action Items for Farm">
         <thead>
           <tr>

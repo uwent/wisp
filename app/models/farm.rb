@@ -6,7 +6,6 @@ class Farm < ApplicationRecord
   validates :year, presence: true
   validates :name, uniqueness: {scope: :group_id}
 
-  # before_save :set_defaults, on: :create
   before_save :set_defaults
 
   after_create :create_dependent_objects
@@ -42,6 +41,14 @@ class Farm < ApplicationRecord
     ""
   end
 
+  def pivot_count
+    pivots.size
+  end
+
+  def field_count
+    fields.size
+  end
+
   def create_dependent_objects
     pivots.create!
   end
@@ -58,7 +65,7 @@ class Farm < ApplicationRecord
   private
 
   def set_defaults
-    counter = group.farms.count + 1
+    counter = group.farms.size + 1
     self.name ||= "New Farm #{counter}"
   end
 end

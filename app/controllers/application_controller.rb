@@ -85,12 +85,12 @@ class ApplicationController < ActionController::Base
     # Absolute, unchanging:
     @user = current_user
     @user_id = current_user.id
+    
     @group = current_group
     @group_id = @group.id
 
     @farm = @group.farms.find(params[:farm_id]) if params[:farm_id]
-    @farm ||= @group.farms.first
-
+    @farm ||= @group.farms.order(:name).first
     @farm_id = @farm.id
   end
 

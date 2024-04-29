@@ -336,13 +336,14 @@ class Field < ApplicationRecord
         lat: pivot.latitude.round(1),
         long: pivot.longitude.round(1),
         start_date: start_date,
-        end_dat: end_date
+        end_dat: end_date,
+        units: "in"
       }
       response = HTTParty.get(PRECIP_ENDPOINT, query: query, timeout: 10)
       json = JSON.parse(response.body, symbolize_names: true)
       vals = {}
       json[:data].each do |day|
-        vals[day[:date]] = day[:value] / 25.4 # convert mm to in
+        vals[day[:date]] = day[:value]
       end
     rescue => e
       Rails.logger.warn "Field #{id} >> Could not get precips from endpoint: #{e.message}"
@@ -618,8 +619,8 @@ class Field < ApplicationRecord
   end
 
   def set_defaults
-    # self.name ||= "New field (Pivot ID: #{pivot_id})"
-    self.name ||= "New field" + (pivot ? " (Pivot: #{pivot.name&.truncate(20) || pivot.id})" : "")
+    n = pivot.fields.size + 1
+    self.name ||= "New Field #{n}"
     self.soil_type = SoilType.default_soil_type
     self.et_method ||= PCT_COVER_METHOD
   end

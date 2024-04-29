@@ -11,18 +11,16 @@ class FarmsController < AuthenticatedController
     raise "no group!" unless @group_id
     # Now set the current farm
     get_and_set(Farm, Group, @group_id)
-    @farms = Farm.where(group_id: @group_id).order(:name) do
-      paginate page: params[:page], per_page: params[:rows]
-    end
+    @farms = Farm.where(group_id: @group_id).order(:name)
     Rails.logger.warn "FarmsController :: No farms for group #{@group_id} found!" unless @farms && @farms.size > 0
-    @farms ||= []
-
-    render json: @farms.to_a.to_jqgrid_json(
-      [:name, :notes, :problem, :act, :group_id, :id],
+    @paginated_farms = @farms.paginate(page: params[:page], per_page: params[:rows])
+    json = @paginated_farms.to_a.to_jqgrid_json(
+      [:name, :pivot_count, :field_count, :notes, :problem, :act, :group_id, :id],
       params[:page],
       params[:rows],
       @farms.size
     )
+    render json: json
   rescue => e
     Rails.logger.error "FarmsController :: Index >> #{e.message}"
   end

@@ -54,8 +54,9 @@ class Pivot < ApplicationRecord
   private
 
   def set_defaults
-    # self.name ||= "New pivot (farm ID: #{farm_id})"
-    self.name ||= "New pivot (Farm #{farm.name&.truncate(20) || farm.id})"
+    n = farm.pivots.size + 1
+    self.name ||= "New Pivot #{n}"
+    self.some_energy_rate_metric = "Electric"
     self.cropping_year ||= Time.now.year
     self.latitude ||= 43
     self.longitude ||= -89

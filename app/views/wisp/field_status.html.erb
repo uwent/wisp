@@ -19,7 +19,7 @@
   function showSummaryBox(date) {
     $.ajax({
       type: "GET",
-      url: "<%= url_for(controller: :wisp, action: :summary_box, field_id: @field, user_id: @user).html_safe %>&cur_date=" + date,
+      url: "<%= url_for(controller: "wisp", action: "summary_box", field_id: @field, user_id: @user).html_safe %>&cur_date=" + date,
       dataType: "html",
       async: false,
       success: function(newHtml) {
@@ -114,8 +114,8 @@
 
   const weatherGridOpts = {
     page: getCurPage(initial_date, cur_date),
-    url: '<%= url_for(controller: :field_daily_weather, q: 1, parent_id: @pivot, field_id: @field, user_id: @user).html_safe %>',
-    editurl: '<%= url_for(controller: :field_daily_weather, action: :post_data, parent_id: @pivot, field_id: @field, user_id: @user).html_safe %>',
+    url: '<%= url_for(controller: "field_daily_weather", q: 1, parent_id: @pivot, field_id: @field, user_id: @user).html_safe %>',
+    editurl: '<%= url_for(controller: "field_daily_weather", action: "post_data", parent_id: @pivot, field_id: @field, user_id: @user).html_safe %>',
     datatype: "json",
     colNames: ["Date", "Poten. ET", "Rainfall", "Irrigation", "% Moisture", "% Cover", "LAI", "Adj. ET", "AD", "Deep Drainage", "ID"],
     colModel: [
@@ -244,7 +244,7 @@
   function fetchChartData() {
     $.ajax({
       type: "GET",
-      url: "<%= url_for(action: :projection_data, field_id: @field_id, user_id: @user) %>&cur_date=" + cur_date,
+      url: "<%= url_for(action: "projection_data", field_id: @field_id, user_id: @user).html_safe %>&cur_date=" + cur_date,
       dataType: "json",
       async: false,
       success: function(json) {
