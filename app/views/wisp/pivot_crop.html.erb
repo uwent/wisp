@@ -1,8 +1,6 @@
 <script>
   <%= grid_javascript_settings %>
 
-  let allowEditPivot = false; // don't edit jqgrid on first click
-
   // If pivot_id is set, load the field grid for that one. If it's zero,
   // grab the id of the first pivot in the grid and use that.
   function loadFieldGrid() {
@@ -42,7 +40,7 @@
     pivot_id = newPivot.id;
     grid.addRowData(pivot_id, newPivot); // add a new row with the new field's data
     addPivotDeleteButtons();
-    grid.setSelection(pivot_id);
+    grid.setSelection(pivot_id, false);
     grid.editRow(pivot_id, true, null, loadFieldGrid);
     loadFieldGrid();
   }
@@ -94,11 +92,10 @@
     subGrid: false,
     onSelectRow: (id) => {
       const grid = $('#pivotSetupGrid')
-      if (id == pivot_id && allowEditPivot) {
+      if (id == pivot_id) {
         grid.editRow(id, true, null, loadFieldGrid);
       } else {
         grid.restoreRow(pivot_id);
-        allowEditPivot = true;
         pivot_id = id;
         loadFieldGrid();
       }
@@ -107,8 +104,8 @@
       addPivotDeleteButtons();
       const grid = $("#pivotSetupGrid")
       pivot_id = grid.getDataIDs()[0];
-      allowEditPivot = false;
-      grid.setSelection(pivot_id);
+      grid.setSelection(pivot_id, false);
+      loadFieldGrid();
     },
     caption: "Pivots for farm '<%= @farm&.name %>'",
   }

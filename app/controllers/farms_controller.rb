@@ -1,5 +1,4 @@
 class FarmsController < AuthenticatedController
-  # skip_before_action :verify_authenticity_token, only: :post_data
 
   COLUMN_NAMES = [:name, :notes]
 
@@ -70,7 +69,12 @@ class FarmsController < AuthenticatedController
         farm.update(attribs)
       end
     end
-    render json: ApplicationController.jsonify(farm.attributes)
+    attrs = farm.attributes.symbolize_keys.merge({
+      pivots: farm.pivot_count,
+      fields: farm.field_count,
+      problem: farm.problem,
+    })
+    render json: ApplicationController.jsonify(attrs)
   end
 
   def problems

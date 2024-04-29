@@ -32,17 +32,15 @@ class Pivot < ApplicationRecord
   private
 
   def set_defaults
-    n = farm.pivots.size + 1
-    self.name ||= "New Pivot #{n}"
-    self.some_energy_rate_metric = "Electric"
+    self.name ||= farm ? "New Pivot #{farm.pivots.size + 1}" : "New Pivot"
     self.cropping_year ||= Time.now.year
     self.latitude ||= 43
     self.longitude ||= -89
+    self.some_energy_rate_metric = "Electric"
   end
 
   def create_dependent_objects
     return if fields.any? || cloning
-
     fields.create!
   end
 end

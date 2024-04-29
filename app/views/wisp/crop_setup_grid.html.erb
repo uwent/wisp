@@ -1,6 +1,5 @@
 <script>
   let crop_id;
-  let allowEditCrop = false; // don't edit jqgrid on first click
   
   // datepicker re-focus per
   // http://stackoverflow.com/questions/18626761/how-to-set-focus-on-specific-cell-in-onselectrow-in-inline-edit-jqgrid
@@ -86,19 +85,17 @@
     subGrid: false,
     onSelectRow: (id) => {
       const grid = $("#cropSetupGrid");
-      if (id == crop_id && allowEditCrop) {
+      if (id == crop_id) {
         grid.editRow(id, true);
       } else {
         grid.restoreRow(crop_id);
-        allowEditCrop = true;
         crop_id = id;
       }
     },
     loadComplete: () => {
       const grid = $("#cropSetupGrid");
       crop_id = grid.getDataIDs()[0];
-      allowEditCrop = false;
-      grid.setSelection(crop_id);
+      grid.setSelection(crop_id, false);
     },
     caption: "Crop for field '<%= @field&.name %>'",
   }

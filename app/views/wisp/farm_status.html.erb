@@ -1,6 +1,5 @@
 <script>
   let farm_id;
-  let allowEditFarm = false;
 
   // From example http://stackoverflow.com/questions/5092571/how-to-make-cell-editable-dynamically-in-jqgrid
   function fillProblemsBox() {
@@ -51,14 +50,13 @@
     const newFarm = createNewFarm();
     farm_id = newFarm.id;
     grid.addRowData(farm_id, newFarm); // add a new row with the new field's data
-    // addDeleteButton(curID);
     addFarmDeleteButtons();
-    grid.editRow(curID, true); // put new row into inline-edit mode
-    grid.trigger("reloadGrid");
+    grid.setSelection(farm_id);
+    grid.editRow(farm_id, true); // put new row into inline-edit mode
   }
 
   function createNewFarm() {
-    let frm = {};
+    let farm = {};
     $.ajax({
       type: "POST",
       url: "<%= url_for(controller: "farms", action: "post_data").html_safe %>",
@@ -66,9 +64,9 @@
       dataType: "json",
       contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
       async: false,
-      success: (json) => { frm = json; }
+      success: (json) => { farm = json; }
     });
-    return frm;
+    return farm;
   }
 
   function deleteFarm(id) {
@@ -110,15 +108,10 @@
     multiselect: false,
     subGrid: false,
     onSelectRow: (id) => {
-      if (!id) return;
       const grid = $('#farmSetupGrid');
-      if (id == farm_id && allowEditFarm) {
-        grid.editRow(id, true, null, fillProblemsBox);
-      } else {
-        grid.restoreRow(farm_id);
-        allowEditFarm = true;
-        farm_id = id;
-      }
+      if (id != farm_id) grid.restoreRow(farm_id);
+      grid.editRow(id, true, null, fillProblemsBox);
+      farm_id = id;
     },
     loadComplete: () => {
       addFarmDeleteButtons();

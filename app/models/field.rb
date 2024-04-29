@@ -619,8 +619,7 @@ class Field < ApplicationRecord
   end
 
   def set_defaults
-    n = pivot.fields.size + 1
-    self.name ||= "New Field #{n}"
+    self.name ||= pivot ? "New Field #{pivot.fields.size + 1}" : "New Field"
     self.soil_type = SoilType.default_soil_type
     self.et_method ||= PCT_COVER_METHOD
   end

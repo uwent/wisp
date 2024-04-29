@@ -4,7 +4,6 @@
   LAI_METHOD = <%= Field::LAI_METHOD %>;
 
   let field_id;
-  let allowEditField = false; // don't edit jqgrid on first click
 
   function loadCropGrid() {
     const url = '<%= url_for(controller: "wisp", action: "crop_setup_grid").html_safe %>';
@@ -179,11 +178,10 @@
     subGrid: false,
     onSelectRow: (id) => {
       const grid = $('#fieldSetupGrid')
-      if (id == field_id && allowEditField) {
+      if (id == field_id) {
         grid.editRow(id, true, null, loadCropGrid);
       } else {
         grid.restoreRow(field_id);
-        allowEditField = true;
         field_id = id;
         loadCropGrid();
       }
@@ -192,8 +190,8 @@
       addFieldDeleteButtons();
       const grid = $("#fieldSetupGrid");
       field_id = grid.getDataIDs()[0];
-      allowEditField = false;
-      grid.setSelection(field_id);
+      grid.setSelection(field_id, false);
+      loadCropGrid();
     },
     caption: "Fields for pivot '<%= @pivot&.name %>'"
   }

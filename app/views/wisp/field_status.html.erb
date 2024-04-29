@@ -6,7 +6,7 @@
   const max_moisture = <%= @field.field_capacity * 100.0 %>;
   const ad_at_pwp = <%= @ad_at_pwp %>;
   let cur_date = "<%= @today %>";
-  let lastsel;
+  let weather_id;
 
   // Someday we want to turn this back on, but there's no way to adapt the growth curves
   // to user input yet. So LAI is never editable.
@@ -192,14 +192,28 @@
     scrollOffset: 20,
     rownumbers: false,
     multiselect: false,
-    onSelectRow: function(id) {
-      if (id !== lastsel) $('#weatherGrid').restoreRow(lastsel);
-      // TODO: displayCalcValues not being called
-      $("#weatherGrid").editRow(id, true, "", "", "", "", displayCalcValues); 
-      lastsel = id;
-    },
     subGrid: false,
-    caption: "Edit observed values below for field <%= @field.name %>",
+    onSelectRow: (id) => {
+      const grid = $('#weatherGrid');
+      if (id !== weather_id) grid.restoreRow(weather_id);
+      grid.editRow(id, true, null, displayCalcValues); 
+      weather_id = id;
+    },
+    loadComplete: () => {
+      // select current day
+      const today = "<%= @today %>";
+      const grid = $('#weatherGrid');
+      const ids = grid.getDataIDs();
+      for (let i = 0; i <= ids.length - 1; i++) {
+        const id = ids[i];
+        const rowData = grid.getRowData(id);
+        if (rowData.date === today) {
+          grid.setSelection(id, false); // don't fire onSelectRow callback
+          break
+        }
+      }
+    },
+    caption: "Edit observed values below for field '<%= @field.name %>'",
   }
 
 
