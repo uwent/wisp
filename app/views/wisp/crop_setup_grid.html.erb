@@ -38,6 +38,7 @@
     editurl: '<%= grid_post_data_url("crops", @field).html_safe %>',
     datatype: 'json',
     colNames: ['Name', 'Plant', 'Variety', 'Emergence', 'Harvest/Kill', 'Root zone depth', 'AD Frac.', 'Notes', 'ID', 'Field ID'],
+    cmTemplate: { sortable: false },
     colModel: [
       { name: 'name', index: 'name', width: 40, editable: true },
       {
@@ -70,12 +71,9 @@
       { name: 'id', index: 'id', width: 1, hidden: true },
       { name: 'field_id', index: 'field_id', width: 1, hidden: true, editable: true}
     ],
-    pager: '',
     rowNum: 1,
     imgpath: '<%= image_folder_path("jqgrid") %>',
-    sortname: '',
     viewrecords: true,
-    sortorder: '',
     gridview: false,
     scrollrows: true,
     autowidth: true,

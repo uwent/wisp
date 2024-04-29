@@ -64,6 +64,7 @@
     editurl:'<%= grid_post_data_url("pivots", @farm_id).html_safe %>',
     datatype: 'json',
     colNames: ['Name', 'Lat.', 'Long.', 'WDNR Hicap Well No', 'Pump Capacity', 'Energy Type', 'Crop Yr', 'Notes', 'Delete', 'Farm ID', 'ID'],
+    cmTemplate: { sortable: false },
     colModel: [
       { name: 'name', index: 'name', width: 83, editable: true },
       { name: 'latitude', index: 'latitude', width: 18, editable: true, align: 'right', formatter: 'number', formatoptions: { decimalPlaces: 2 }, editrules: { number: true, minValue: 42.0, maxValue: 50.0 } },
@@ -80,9 +81,7 @@
     pager: '#pivotSetupGrid_pager',
     rowNum: 10,
     imgpath: '<%= image_folder_path("jqgrid") %>',
-    sortname: '',
     viewrecords: true,
-    sortorder: '',
     gridview: false,
     scrollrows: true,
     height: 175,

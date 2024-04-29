@@ -116,6 +116,7 @@
     editurl: '<%= grid_post_data_url("fields", @pivot).html_safe %>',
     datatype: 'json',
     colNames: ['Name', 'ET Method', 'Area', 'Soil Type', 'Field Capacity', 'Perm. Wilt Pt', 'Target AD', 'ET Stn', 'Rain Stn', 'Soil Moist. Stn', 'Notes', 'Delete', 'Pivot', 'ID'],
+    cmTemplate: { sortable: false },
     colModel:[
       { name: 'name', index: 'name', width: 83, editable: true },
       {
@@ -166,9 +167,7 @@
     pager: '#fieldSetupGrid_pager',
     rowNum: 5,
     imgpath: '<%= image_folder_path("jqgrid") %>',
-    sortname: '',
     viewrecords: true,
-    sortorder: '',
     gridview: false,
     scrollrows: true,
     height: 115, // 5 x 23px

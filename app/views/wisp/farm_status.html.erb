@@ -85,6 +85,7 @@
     editurl: '<%= grid_post_data_url 'farms', @group_id %>',
     datatype: 'json',
     colNames: ['Name', 'Pivots', 'Fields', 'Notes', 'AD < 0?', 'Delete', 'Group ID', 'ID'],
+    cmTemplate: { sortable: false },
     colModel: [
       { name: 'name', index: 'name', width: 40, editable: true },
       { name: 'pivots', index: 'pivots', width: 10, align: 'center' },
@@ -98,9 +99,7 @@
     pager: '#farmSetupGrid_pager',
     rowNum: 10,
     imgpath: '<%= image_folder_path('jqgrid') %>',
-    sortname: '',
     viewrecords: true,
-    sortorder: '',
     gridview: false,
     scrollrows: true,
     autowidth: true,

@@ -118,6 +118,7 @@
     editurl: '<%= url_for(controller: "field_daily_weather", action: "post_data", parent_id: @pivot, field_id: @field, user_id: @user).html_safe %>',
     datatype: "json",
     colNames: ["Date", "Poten. ET", "Rainfall", "Irrigation", "% Moisture", "% Cover", "LAI", "Adj. ET", "AD", "Deep Drainage", "ID"],
+    cmTemplate: { sortable: false },
     colModel: [
       { name: "date", index: "date", width: 75 },
       {
@@ -182,9 +183,7 @@
     rowNum: 7,
     rowList: [7, <%= FieldDailyWeather::SEASON_DAYS %>],
     imgpath: '<%= image_folder_path("jqgrid") %>',
-    sortname: "",
     viewrecords: true,
-    sortorder: "",
     gridview: false,
     scrollrows: true,
     height: 162,

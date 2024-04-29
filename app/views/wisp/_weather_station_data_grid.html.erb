@@ -6,6 +6,7 @@
     editurl: '<%= url_for(controller: "weather_station_data", action: "post_data", weather_station_id: @weather_station, user_id: @user, year: @year).html_safe %>',
     datatype: 'json',
     colNames: ['Date', 'Pot. ET. (in)', 'Rainfall (in)', 'Irrigation (in)', 'Soil Moisture (%)', 'Canopy Cover (%)', 'Notes', 'ID'],
+    cmTemplate: { sortable: false },
     colModel: [
       { name: 'date', index: 'date', width: 35 },
       { name: 'ref_et', index: 'ref_et', width: 30, editable: true, align: 'center', editrules: { number: true, minValue: 0.001, maxValue: 0.6 } },
@@ -20,10 +21,8 @@
     rowNum: 28,
     rowList: [14, 28, 100, 250],
     imgpath: '<%= image_folder_path("jqgrid") %>',
-    sortname: '',
     viewrecords: true,
     height: 330, // 14 * 22px
-    sortorder: '',
     gridview: false,
     scrollrows: true,
     autowidth: true,
