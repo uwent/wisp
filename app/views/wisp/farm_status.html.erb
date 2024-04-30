@@ -1,18 +1,18 @@
-<%= content_for :scripts do %>
 <script>
-  let lastsel;
+  let farm_id;
 
   // From example http://stackoverflow.com/questions/5092571/how-to-make-cell-editable-dynamically-in-jqgrid
-  function fillProblemsBox(id) {
+  function fillProblemsBox() {
     $.ajax({
       type: "GET",
-      url: "<%= url_for(controller: :farms, action: :problems, user_id: @user).html_safe %>",
+      url: "<%= url_for(controller: "farms", action: "problems", user_id: @user).html_safe %>",
       dataType: "html",
       async: false,
-      success: function(newHtml) {
+      success: (newHtml) => {
         $("#farmProblemsBox").html(newHtml);
       }
     });
+    return true;
   }
 
   // Display "Yes" or "No" for boolean
@@ -28,102 +28,101 @@
     return (cellvalue == 'Yes') ? 'true' : 'false';
   }
 
-  // Adds a delete button to each row of the grid
-  function addDeleteButton(cl) {
-    let ids = $("#farmSetupGrid").getDataIDs();
-    let nRows = ids.length;
-    let el;
-    if (nRows == 1) {
-      el = "<div class='grid-del-btn'><input type='button' value='Del' disabled='true' title='Cannot delete last farm'/></div>";
-      $("#farmSetupGrid").setRowData(cl, {act: el});
-    } else {
-      for (let i = 0; i < nRows; i++) {
-        let id = ids[i];
-        el = `<div class='grid-del-btn'><input type='button' value='Del' title='Delete this farm' onclick='removeRow(${cl})'></div>`;
-        $("#farmSetupGrid").setRowData(cl, {act: el});
-      }
+  function addFarmDeleteButtons() {
+    const grid = $("#farmSetupGrid")
+    const ids = grid.getDataIDs();
+    const rows = ids.length;
+    for (let i = 0; i < rows; i++) {
+      const id = ids[i];
+      const btn = "<div class='grid-del-btn'>" +
+        `<input type='button' value='Del' title=${
+          rows == 1 ?
+            "'Cannot delete only farm' disabled=true" :
+            `'Delete this farm' onclick='deleteFarm(${id})'`
+        } />` + "</div>"
+      grid.setRowData(id, { act: btn });
     }
   }
 
   function addNewFarmRow() {
-    let grid = $("#farmSetupGrid");
-    let newFarm = createNewFarm();
-    curID = newFarm["id"];
-    grid.addRowData(curID, newFarm); // add a new row with the new field's data
-    addDeleteButton(curID);
-    grid.editRow(curID, true); // put new row into inline-edit mode
-    $("#farmSetupGrid").trigger("reloadGrid");
+    const grid = $("#farmSetupGrid");
+    grid.restoreRow(farm_id);
+    const newFarm = createNewFarm();
+    farm_id = newFarm.id;
+    grid.addRowData(farm_id, newFarm); // add a new row with the new field's data
+    addFarmDeleteButtons();
+    grid.setSelection(farm_id);
+    grid.editRow(farm_id, true); // put new row into inline-edit mode
   }
 
   function createNewFarm() {
-    let frm = {};
+    let farm = {};
     $.ajax({
       type: "POST",
-      url: "<%= url_for(controller: :farms, action: :post_data).html_safe %>",
+      url: "<%= url_for(controller: "farms", action: "post_data").html_safe %>",
       data: { oper: "add", id: "_empty" },
       dataType: "json",
       contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
       async: false,
-      success: function(json) {
-        frm = json;
-      }
+      success: (json) => { farm = json; }
     });
-    return frm;
+    return farm;
   }
 
-  function removeRow(rowID) {
-    $("#farmSetupGrid").delGridRow(rowID);
-    $("#farmSetupGrid").trigger("reloadGrid");
+  function deleteFarm(id) {
+    const grid = $("#farmSetupGrid")
+    grid.delGridRow(id, {
+      msg: 'Delete this farm?\nThis will also delete all pivots,\nfields, and crops associated\nwith this farm.',
+      afterSubmit: () => {
+        grid.trigger("reloadGrid");
+        return [true];
+      },
+    });
   }
 
   const farmGridOpts = {
-    url: '<%= url_for(controller: :farms, action: :index, q: 1).html_safe %>',
-    editurl: '<%= grid_post_data_url "farms", @group_id %>',
-    datatype: "json",
-    colNames: ["Name", "Notes", "AD < 0?", "Delete", "Group ID", "ID"],
+    url: '<%= url_for(controller: 'farms', q: 1).html_safe %>',
+    editurl: '<%= grid_post_data_url 'farms', @group_id %>',
+    datatype: 'json',
+    colNames: ['Name', 'Pivots', 'Fields', 'Notes', 'AD < 0?', 'Delete', 'Group ID', 'ID'],
+    cmTemplate: { sortable: false },
     colModel: [
-      { name: "name", index: "name", width: 83, editable: true },
-      { name: "notes", index: "notes", width: 87, editable: true, align: "right" },
-      { name: "problem", index: "problem", formatter: yesNoBoolFormat, unformat: yesNoBoolUnformat, width: 20, align: "right" },
-      { name: "act", index: "act", width: 20 },
-      { name: "group_id", index: "group_id", width: 10, hidden: true, editable: true },
-      { name: "id", index: "id", width: 10, hidden: true, editable: false }
+      { name: 'name', index: 'name', width: 40, editable: true },
+      { name: 'pivots', index: 'pivots', width: 10, align: 'center' },
+      { name: 'fields', index: 'fields', width: 10, align: 'center' },
+      { name: 'notes', index: 'notes', width: 80, editable: true },
+      { name: 'problem', index: 'problem', formatter: yesNoBoolFormat, unformat: yesNoBoolUnformat, width: 10, align: 'center' },
+      { name: 'act', index: 'act', width: 10 },
+      { name: 'group_id', index: 'group_id', width: 10, hidden: true, editable: true },
+      { name: 'id', index: 'id', width: 10, hidden: true, editable: false }
     ],
-    pager: "#farmSetupGrid_pager",
-    rowNum: 180,
-    rowList: [180],
-    imgpath: '<%= image_folder_path("jqgrid") %>',
-    sortname: "",
+    pager: '#farmSetupGrid_pager',
+    rowNum: 10,
+    imgpath: '<%= image_folder_path('jqgrid') %>',
     viewrecords: true,
-    sortorder: "",
     gridview: false,
     scrollrows: true,
     autowidth: true,
     rownumbers: false,
     multiselect: false,
-    onSelectRow: function(id) {
-      if (id && id !== lastsel) {
-        $("#farmSetupGrid").restoreRow(lastsel);
-        $("#farmSetupGrid").editRow(id, true);
-        lastsel = id;
-        fillProblemsBox(id);
-      }
-    },
-    loadComplete: function() {
-      let ids = $("#farmSetupGrid").getDataIDs();
-      fillProblemsBox(ids[0]);
-      for(var i = 0; i < ids.length; i++) {
-        let cl = ids[i];
-        addDeleteButton(cl);
-      }
-    },
     subGrid: false,
-    caption: "Farms",
+    onSelectRow: (id) => {
+      const grid = $('#farmSetupGrid');
+      if (id != farm_id) grid.restoreRow(farm_id);
+      grid.editRow(id, true, null, fillProblemsBox);
+      farm_id = id;
+    },
+    loadComplete: () => {
+      addFarmDeleteButtons();
+      farm_id = $('#farmSetupGrid').getDataIDs()[0];
+      fillProblemsBox();
+    },
+    caption: 'Farms',
   }
 
   // handle window resizing and resize grid and chart after delay
   var resizeTimer;
-  window.onresize = function() {
+  window.onresize = () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
       const width = $("#farmGridContainer").width() - 3;
@@ -137,7 +136,6 @@
     farmGrid[0].toggleToolbar();
   });
 </script>
-<% end %>
 
 <% @title = "Farm Status" %>
 <h2>Farm Status</h2>
@@ -150,6 +148,7 @@
   <div id="farmGridContainer" class="content-box grid-container">
     <div class="flex-down gap-10">
       <table id="farmSetupGrid" cellpadding="0" cellspacing="0"></table>
+      <div id="farmSetupGrid_pager"></div>
       <div>
         <button type="button" class="btn btn-light" onclick="addNewFarmRow();">Add New Farm</button>
       </div>
@@ -158,6 +157,6 @@
 </div>
 
 <h3>Current Status</h3>
-<div id="farmProblemsBox" class="content-box">
+<div id="farmProblemsBox">
   Loading farm problems...
 </div>

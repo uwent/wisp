@@ -1,13 +1,12 @@
 class WeatherStationDataController < AuthenticatedController
   COLUMN_NAMES = [
+    :ref_et,
     :rain,
     :irrigation,
     :entered_pct_moisture,
-    :ref_et,
     :entered_pct_cover,
     :notes
   ]
-  ROWS_PER_PAGE = 14
 
   # returns JSON
   def index
@@ -23,18 +22,18 @@ class WeatherStationDataController < AuthenticatedController
     @year = params[:year] ? params[:year].to_i : Time.now.year
     wx_start_date, wx_end_date = date_endpoints(@year)
 
-    @weather_data = WeatherStationData.where(weather_station_id: weather_station_id, date: wx_start_date..wx_end_date).order(:date) do
-      paginate page: params[:page], per_page: ROWS_PER_PAGE
-    end
-    # puts "getting wx stn data for #{weather_station_id} #{@year}, found #{@weather_data.size} entries"
-    @weather_data ||= []
+    @weather_data = WeatherStationData
+      .where(weather_station_id: weather_station_id, date: wx_start_date..wx_end_date)
+      .order(:date)
+    @paginated_wx_data = @weather_data.paginate(page: params[:page], per_page: params[:rows])
 
-    render json: @weather_data.to_a.to_jqgrid_json(
+    json = @paginated_wx_data.to_a.to_jqgrid_json(
       [:date] + COLUMN_NAMES + [:id],
       params[:page],
       params[:rows],
       @weather_data.size
     )
+    render json: json
   rescue => e
     Rails.logger.error "WeatherStationDataController :: Index >> #{e}"
     redirect_to "/wisp/weather_stations"

@@ -31,15 +31,16 @@ class User < ApplicationRecord
 
   def self.to_csv
     CSV.generate(headers: true) do |csv|
-      csv << %w[id email created_at updated_at last_sign_in last_sign_in_year admin]
+      csv << %w[id email created confirmed updated last_sign_in last_sign_in_year admin]
       User.all.each do |user|
         csv << [
           user.id,
           user.email,
-          user.created_at,
-          user.updated_at,
-          user.last_sign_in_at,
-          user.last_sign_in_at.year,
+          user.created_at&.to_date,
+          user.confirmed_at&.to_date,
+          user.updated_at&.to_date,
+          user.last_sign_in_at&.to_date,
+          user.last_sign_in_at&.year,
           user.admin
         ]
       end

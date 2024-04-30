@@ -2,13 +2,9 @@ class Farm < ApplicationRecord
   belongs_to :group, optional: true
   has_many :pivots, dependent: :destroy
   has_many :fields, through: :pivots
-
   validates :year, presence: true
   validates :name, uniqueness: {scope: :group_id}
-
-  # before_save :set_defaults, on: :create
   before_save :set_defaults
-
   after_create :create_dependent_objects
 
   # TODO: rename to for_group
@@ -42,6 +38,14 @@ class Farm < ApplicationRecord
     ""
   end
 
+  def pivot_count
+    pivots.size
+  end
+
+  def field_count
+    fields.size
+  end
+
   def create_dependent_objects
     pivots.create!
   end
@@ -58,7 +62,6 @@ class Farm < ApplicationRecord
   private
 
   def set_defaults
-    counter = group.farms.count + 1
-    self.name ||= "New Farm #{counter}"
+    self.name ||= group ? "New Farm #{group.farms.size + 1}" : "New Farm"
   end
 end

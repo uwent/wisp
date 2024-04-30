@@ -1,43 +1,43 @@
 <script>
-  let lastsel;
+  let station_row;
 
   const stationGridOpts = {
     url: '<%= url_for(controller: "weather_station_data", weather_station_id: @weather_station, year: @year, user_id: @user, q: 1).html_safe %>',
     editurl: '<%= url_for(controller: "weather_station_data", action: "post_data", weather_station_id: @weather_station, user_id: @user, year: @year).html_safe %>',
     datatype: 'json',
-    colNames: ['Date', 'Rainfall', 'Irrigation', 'Soil Moisture', 'Potential ET', '% Cover', 'Notes', 'ID'],
+    colNames: ['Date', 'Pot. ET. (in)', 'Rainfall (in)', 'Irrigation (in)', 'Soil Moisture (%)', 'Canopy Cover (%)', 'Notes', 'ID'],
+    cmTemplate: { sortable: false },
     colModel: [
       { name: 'date', index: 'date', width: 35 },
-      { name: 'rain', index: 'rain', width: 25, editable: true, align: 'right', editrules: { number: true, minValue: 0.0, maxValue: 10.0 } },
-      { name: 'irrigation', index: 'irrigation', width: 25, editable: true, align: 'right', editrules: { number: true, minValue: 0.0, maxValue: 10.0 } },
-      { name: 'entered_pct_moisture', index: 'entered_pct_moisture', width: 40, editable: true, align: 'right', editrules: { number: true, minValue: 0.0, maxValue: 100.0 } },
-      { name: 'ref_et', index: 'ref_et', width: 30, editable: true, align: 'right', editrules: { number: true, minValue: 0.001, maxValue: 0.6 } },
-      { name: 'entered_pct_cover', index: 'entered_pct_cover', width: 40, editable: true, align: 'right', editrules: { number: true, minValue: 0.0, maxValue: 100.0 } },
-      { name: 'notes', index: 'notes', width: 150, editable: true, align: 'right' },
+      { name: 'ref_et', index: 'ref_et', width: 30, editable: true, align: 'center', editrules: { number: true, minValue: 0.001, maxValue: 0.6 } },
+      { name: 'rain', index: 'rain', width: 25, editable: true, align: 'center', editrules: { number: true, minValue: 0.0, maxValue: 10.0 } },
+      { name: 'irrigation', index: 'irrigation', width: 25, editable: true, align: 'center', editrules: { number: true, minValue: 0.0, maxValue: 10.0 } },
+      { name: 'entered_pct_moisture', index: 'entered_pct_moisture', width: 40, editable: true, align: 'center', editrules: { number: true, minValue: 0.0, maxValue: 100.0 } },
+      { name: 'entered_pct_cover', index: 'entered_pct_cover', width: 40, editable: true, align: 'center', editrules: { number: true, minValue: 0.0, maxValue: 100.0 } },
+      { name: 'notes', index: 'notes', width: 150, editable: true },
       { name: 'id', index: 'id', hidden: true, width: 1 }
     ],
-    pager: '#stationDataGrid_pager',
-    rowNum: <%= FieldDailyWeather::SEASON_DAYS %>,
-    rowList: [<%= FieldDailyWeather::SEASON_DAYS %>],
+    pager: '#stationGrid_pager',
+    rowNum: 28,
+    rowList: [14, 28, 100, 250],
     imgpath: '<%= image_folder_path("jqgrid") %>',
-    sortname: '',
     viewrecords: true,
-    height: 300,
-    sortorder: '',
+    height: 330, // 14 * 22px
     gridview: false,
     scrollrows: true,
     autowidth: true,
     rownumbers: false,
     multiselect: false,
-    onSelectRow: function(id) {
-      if (id && id !== lastsel) {
-        $('#stationGrid').restoreRow(lastsel);
-        $('#stationGrid').editRow(id, true);
-        lastsel = id;
-      }
-    },
     subGrid: false,
-    caption: "Field Group <%= @weather_station.name %>",
+    onSelectRow: (id) => {
+      const grid = $('#stationGrid');
+      if (id != station_row) {
+        if (station_row) grid.restoreRow(station_row);
+        station_row = id;
+      }
+      grid.editRow(id, true);
+    },
+    caption: "Field group '<%= @weather_station&.name %>'",
   }
 
   // handle window resizing and resize grid and chart after delay
@@ -51,18 +51,18 @@
   };
 
   $(() => {
-    const stationGrid = $("#stationGrid").jqGrid(stationGridOpts)
-    stationGrid.filterToolbar();
-    stationGrid[0].toggleToolbar();
+    $("#stationGrid").jqGrid(stationGridOpts)
   });
 </script>
 
 <div>
-  <h3>Enter shared data for this group</h3>
-  <p><i>All inputs in inches. Click any cell to edit a value. You must press 'Enter' to save your edits. Entering data below will <strong>overwrite any corresponding values</strong> already entered for these individual fields!</i></p>
+  <h3>Enter shared data for group '<%= @weather_station.name %>'</h3>
+  <p>Click any row to edit values, press 'Enter' to save your edits. Potential evapotranspiration and rainfall for individual fields are automatically sourced from AgWeather and should only be entered here if you have an on-site or preferred weather station for these values. Entering data below will <strong>overwrite any corresponding values</strong> already entered for individual fields in this group!</p>
+  <p>Fields in this group: <%= @weather_station.fields.collect(&:name).join(", ") %></p>
   <div class="overflow">
     <div id="stationGridContainer" class="content-box grid-container">
       <table id="stationGrid" cellpadding="0" cellspacing="0"></table>
+      <div id="stationGrid_pager"></div>
     </div>
   </div>
 </div>

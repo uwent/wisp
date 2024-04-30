@@ -10,7 +10,8 @@ class Pivot < ApplicationRecord
 
   attr_accessor :cloning
 
-  def act # placeholder for dummy JSON info, to be replaced by "action" button in grid
+  # placeholder for dummy JSON info, to be replaced by "action" button in grid
+  def act
     ""
   end
 
@@ -19,29 +20,6 @@ class Pivot < ApplicationRecord
       field.problem
     end
   end
-
-  # FIXME: Remove this.
-  # def clone_for(year=Time.now.year)
-  #   return if cropping_year == year # Can't clone to same year
-
-  #   new_pivot = self.dup
-  #   new_pivot.cropping_year = year
-  #   new_pivot.cloning = true
-
-  #   transaction do
-  #     new_pivot.save!
-
-  #     fields.each do |field|
-  #       new_field = field.dup
-  #       new_field.pivot = new_pivot
-  #       new_field.save!
-  #     end
-
-  #     self.destroy!
-  #   end
-
-  #   new_pivot
-  # end
 
   def new_year
     return if cropping_year == Time.now.year
@@ -54,16 +32,15 @@ class Pivot < ApplicationRecord
   private
 
   def set_defaults
-    # self.name ||= "New pivot (farm ID: #{farm_id})"
-    self.name ||= "New pivot (Farm #{farm.name&.truncate(20) || farm.id})"
+    self.name ||= farm ? "New Pivot #{farm.pivots.size + 1}" : "New Pivot"
     self.cropping_year ||= Time.now.year
     self.latitude ||= 43
     self.longitude ||= -89
+    self.some_energy_rate_metric = "Electric"
   end
 
   def create_dependent_objects
     return if fields.any? || cloning
-
     fields.create!
   end
 end

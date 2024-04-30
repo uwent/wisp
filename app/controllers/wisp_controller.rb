@@ -16,9 +16,11 @@ class WispController < AuthenticatedController
       @farm = @pivot.farm
       @farm_id = @farm.id
     else
-      @pivot, @pivot_id = [@farm.pivots.first, @farm.pivots.first[:id]]
+      @pivot = @farm.pivots.order(:name).first
+      @pivot_id = @pivot.id
     end
-    @field, @field_id = [@pivot.fields.first, @pivot.fields.first[:id]]
+    @field = @pivot.fields.order(:name).first
+    @field_id = @field.id
     # @crop_id = @field.current_crop[:id]
     # # @farm = Farm.find(@farm_id) if @farm_id
     # @pivot = Pivot.find(@pivot_id) if @pivot_id
@@ -28,9 +30,9 @@ class WispController < AuthenticatedController
     # @crop = Crop.find(@crop_id) if @crop_id
     # @crops = Crop.where(:field_id => @field_id)
     # FIXME: Need to filter everything below pivot for current year
-    if params[:ajax]
-      render partial: "/wisp/partials/pivot_setup_grid"
-    end
+    # if params[:ajax]
+    #   render partial: "pivot_setup_grid"
+    # end
   end
 
   # GET / POST

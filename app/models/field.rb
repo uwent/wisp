@@ -6,15 +6,18 @@ class Field < ApplicationRecord
   after_create :create_dependent_objects
   after_save :set_fdw_initial_moisture, :do_balances
   before_validation :set_defaults, on: :create
+  belongs_to :pivot, optional: true
+  belongs_to :soil_type, optional: true
+  has_many :crops, dependent: :destroy
+  has_many :field_daily_weather, -> { order(:date) }, dependent: :destroy
+  has_many :multi_edit_links, dependent: :destroy
+  has_many :weather_stations, through: :multi_edit_links
+  delegate :farm, to: :pivot, prefix: true, allow_nil: true
 
-  include HTTParty
-
-  BASE_ENDPOINT = ENV["AG_WEATHER_BASE_URL"]
-
-  ET_ENDPOINT = "#{BASE_ENDPOINT}/evapotranspirations"
-  DD_ENDPOINT = "#{BASE_ENDPOINT}/degree_days"
-  PRECIP_ENDPOINT = "#{BASE_ENDPOINT}/precips"
-
+  include ADCalculator
+  include ETCalculator
+  include AgWeather
+  
   START_DATE = [4, 1]
   END_DATE = [11, 30]
   EMERGENCE_DATE = [5, 1]
@@ -27,19 +30,6 @@ class Field < ApplicationRecord
 
   PCT_COVER_METHOD = 1
   LAI_METHOD = 2
-
-  include ADCalculator
-  include ETCalculator
-
-  belongs_to :pivot, optional: true
-  belongs_to :soil_type, optional: true
-
-  has_many :crops, dependent: :destroy
-  has_many :field_daily_weather, -> { order(:date) }, dependent: :destroy
-  has_many :multi_edit_links, dependent: :destroy
-  has_many :weather_stations, through: :multi_edit_links
-
-  delegate :farm, to: :pivot, prefix: true, allow_nil: true
 
   validates :target_ad_pct,
     numericality: {
@@ -277,38 +267,14 @@ class Field < ApplicationRecord
   end
 
   def get_et
-    unless pivot.latitude && pivot.longitude
-      Rails.logger.warn "Field #{id} >> Failed to get ET data: no lat/long for pivot"
-      return
-    end
-
-    start_date = field_daily_weather[0].date.to_s
-    end_date = field_daily_weather[-1].date.to_s
-    Rails.logger.info "Field #{id} >> Starting get_et at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
-
-    vals = {}
-    begin
-      query = {
-        lat: pivot.latitude.round(1),
-        long: pivot.longitude.round(1),
-        start_date: start_date,
-        end_dat: end_date
-        # method: "adjusted" # per new ET equations
-      }
-      response = HTTParty.get(ET_ENDPOINT, query: query, timeout: 10)
-      json = JSON.parse(response.body, symbolize_names: true)
-      vals = {}
-      json[:data].each do |day|
-        vals[day[:date]] = day[:value]
-      end
-    rescue => e
-      Rails.logger.warn "Field #{id} >> Could not get ETs from endpoint: #{e.message}"
-    end
+    opts = weather_opts.merge({units: "in"})
+    Rails.logger.debug "Field #{id} >> Starting get_et with #{opts.inspect}"
+    ets = AgWeather.get_et(opts)
 
     field_daily_weather.each do |fdw|
       date = fdw.date.to_s
       cur_et = fdw.ref_et
-      new_et = vals[date]
+      new_et = ets[date]
       next if new_et.nil?
       if (cur_et.nil? || cur_et.zero?) && (cur_et != new_et)
         # Rails.logger.debug "Get ET: #{date} (#{cur_et}) ==> (#{new_et})"
@@ -318,39 +284,17 @@ class Field < ApplicationRecord
         # Rails.logger.debug "Get ET: #{date} (#{cur_et}) ==> OK"
       end
     end
-    Rails.logger.info "Field #{id} >> Done with get_et"
   end
 
   def get_precip
-    unless pivot.latitude && pivot.longitude
-      Rails.logger.warn "Field #{id} >> Failed to get precip data: no lat/long for pivot"
-      return
-    end
-    start_date = field_daily_weather[0].date.to_s
-    end_date = field_daily_weather[-1].date.to_s
-    Rails.logger.info "Field #{id} >> Starting get_precip at #{pivot.latitude}, #{pivot.longitude} for #{start_date} - #{end_date}"
+    opts = weather_opts.merge({units: "in"})
+    Rails.logger.debug "Field #{id} >> Starting get_precip with #{opts.inspect}"
+    precips = AgWeather.get_precip(opts)
 
-    vals = {}
-    begin
-      query = {
-        lat: pivot.latitude.round(1),
-        long: pivot.longitude.round(1),
-        start_date: start_date,
-        end_dat: end_date
-      }
-      response = HTTParty.get(PRECIP_ENDPOINT, query: query, timeout: 10)
-      json = JSON.parse(response.body, symbolize_names: true)
-      vals = {}
-      json[:data].each do |day|
-        vals[day[:date]] = day[:value] / 25.4 # convert mm to in
-      end
-    rescue => e
-      Rails.logger.warn "Field #{id} >> Could not get precips from endpoint: #{e.message}"
-    end
     field_daily_weather.each do |fdw|
       date = fdw.date.to_s
       cur_precip = fdw.rain
-      new_precip = vals[date]
+      new_precip = precips[date]
       next if new_precip.nil?
       if (cur_precip.nil? || cur_precip.zero?) && (cur_precip != new_precip)
         # Rails.logger.debug "Get precip: #{date} (#{cur_precip}) ==> (#{new_precip})"
@@ -360,7 +304,6 @@ class Field < ApplicationRecord
         # Rails.logger.debug "Get precip: #{date} (#{cur_precip}) ==> OK"
       end
     end
-    Rails.logger.info "Field #{id} >> Done with precip"
   end
 
   def need_degree_days?
@@ -368,43 +311,20 @@ class Field < ApplicationRecord
   end
 
   def get_degree_days(method = "Simple", base_temp = 50.0, upper_temp = nil)
-    return unless pivot.latitude && pivot.longitude
+    opts = weather_opts.merge({base: base_temp, upper: upper_temp, units: "F"})
+    Rails.logger.debug "Field #{id} >> Starting get_dds with #{opts.inspect}"
+    dds = AgWeather.get_dds(opts)
 
-    start_date = field_daily_weather[0].date.to_s
-    end_date = field_daily_weather[-1].date.to_s
-
-    # TODO: Extract method.
-    Rails.logger.info "Field #{id} >> Starting get_dds for #{start_date} to #{end_date} at #{pivot.latitude},#{pivot.longitude}"
-
-    begin
-      query = {
-        lat: pivot.latitude.round(1),
-        long: pivot.longitude.round(1),
-        start_date: start_date,
-        end_date: end_date,
-        base: base_temp,
-        upper: upper_temp || 150
-      }
-      response = HTTParty.get(DD_ENDPOINT, query: query, timeout: 10)
-      json = JSON.parse(response.body, symbolize_names: true)
-      vals = {}
-      json[:data].each do |day|
-        vals[day[:date]] = day[:value]
-      end
-    rescue => e
-      Rails.logger.warn "Field :: Could not get DDs from the agweather; connected? (#{e})"
-    end
     field_daily_weather.each do |fdw|
       if fdw.degree_days.nil? || fdw.degree_days.zero?
-        if vals[fdw.date.to_s]
-          fdw.degree_days = vals[fdw.date.to_s]
+        if dds[fdw.date.to_s]
+          fdw.degree_days = dds[fdw.date.to_s]
           # TODO: Determine if this is really the appropriate place to trigger this
           fdw.adj_et = adj_et(fdw)
           fdw.save!
         end
       end
     end
-    Rails.logger.info "Field :: Done with get_dds"
   end
 
   def fdw_index(date)
@@ -612,14 +532,21 @@ class Field < ApplicationRecord
   end
 
   private
+  
+  def weather_opts
+    lat = pivot.latitude
+    long = pivot.longitude
+    start_date = field_daily_weather[0].date.to_s
+    end_date = field_daily_weather[-1].date.to_s
+    {lat:, long:, start_date:, end_date:}
+  end
 
   def default_emergence_date
     Date.civil(cropping_year, *EMERGENCE_DATE)
   end
 
   def set_defaults
-    # self.name ||= "New field (Pivot ID: #{pivot_id})"
-    self.name ||= "New field" + (pivot ? " (Pivot: #{pivot.name&.truncate(20) || pivot.id})" : "")
+    self.name ||= pivot ? "New Field #{pivot.fields.size + 1}" : "New Field"
     self.soil_type = SoilType.default_soil_type
     self.et_method ||= PCT_COVER_METHOD
   end

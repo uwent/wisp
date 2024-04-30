@@ -1,83 +1,70 @@
-<%= content_for :scripts do %>
 <script>
   <%= grid_javascript_settings %>
 
-  function reloadGrids(pivot_id) {
-    $('#pivotSetupGrid').load(
-      '<%= url_for(controller: :wisp, action: :pivot_crop) %>',
-      { farm_id: farm_id, parent_id: farm_id, pivot_id: pivot_id, ajax: true }
+  // If pivot_id is set, load the field grid for that one. If it's zero,
+  // grab the id of the first pivot in the grid and use that.
+  function loadFieldGrid() {
+    if (!pivot_id) pivot_id = $("#pivotSetupGrid").getDataIDs()[0];
+    $('#fieldDataBox').load(
+      '<%= url_for(controller: "wisp", action: "field_setup_grid").html_safe %>',
+      { pivot_id: pivot_id, farm_id: farm_id }
     );
-  }
-
-  function reloadPage() {
-    url = '<%= url_for(controller: :wisp, action: :pivot_crop, pivot_id: "", field_id: "") %>';
-    window.location.href = url;
+    return true;
   }
 
   function deletePivot(id) {
-    pivot_id = 0; // We no longer know what the current one is; find out after grids reload
-    $('#pivotSetupGrid').delGridRow(id, { afterSubmit: reloadPage } );
-  }
-
-  function addPivotToSelect(id, pivot_data) {
-    $('#pivot_id').append($('<option/>', {
-      value: id,
-      text: pivot_data['name'],
-    }));
-    reloadGrids(id);
-  }
-
-  function updatePivotSelectName(response) {
-    let json = $.parseJSON(response.responseText);
-    let name = json['name'];
-    let id = json['id'];
-    $(`#pivot_id option[value=${id}]`).text(name);
-    $('#pivot').val(id);
-    loadFieldGrid();
-    return(true);
+    $('#pivotSetupGrid').delGridRow(id, {
+      msg: 'Delete this pivot? This will\nalso delete all fields and crops\nassociated with this pivot.',
+    });
   }
 
   function addPivotDeleteButtons() {
-    let ids = $("#pivotSetupGrid").getDataIDs();
-    let nRows = ids.length;
-    for (let i = 0; i < nRows; i++) {
-      let id = ids[i];
-      be = `<div class='grid-del-btn'><input type='button' value='Del' title='Delete this pivot' onclick='deletePivot(${id});'></div>`;
-      $("#pivotSetupGrid").setRowData(id, { act: be } );
+    const ids = $("#pivotSetupGrid").getDataIDs();
+    const rows = ids.length;
+    for (let i = 0; i < rows; i++) {
+      const id = ids[i];
+      const btn = "<div class='grid-del-btn'>" +
+        `<input type='button' value='Del' title=${
+          rows == 1 ?
+            "'Cannot delete only pivot' disabled=true" :
+            `'Delete this field' onclick='deletePivot(${id})'`
+        } />` + "</div>"
+      $("#pivotSetupGrid").setRowData(id, { act: btn });
     }
   }
 
   function addNewPivotRow() {
     const grid = $('#pivotSetupGrid');
+    grid.restoreRow(pivot_id);
     const newPivot = createNewPivot();
-    pivot_id = newPivot['id'];
+    pivot_id = newPivot.id;
     grid.addRowData(pivot_id, newPivot); // add a new row with the new field's data
     addPivotDeleteButtons();
-    addPivotToSelect(pivot_id, newPivot);
-    grid.editRow(pivot_id, true, null, updatePivotSelectName); // put new row into inline-edit mode
+    grid.setSelection(pivot_id, false);
+    grid.editRow(pivot_id, true, null, loadFieldGrid);
+    loadFieldGrid();
   }
 
   function createNewPivot() {
     let pvt = {};
     $.ajax({
-      type: "POST",
-      url: '<%= url_for(controller: :pivots, action: :post_data).html_safe %>',
-      dataType: "json",
+      type: 'POST',
+      url: '<%= url_for(controller: "pivots", action: "post_data").html_safe %>',
+      dataType: 'json',
       data: { farm_id: farm_id, parent_id: farm_id, oper: 'add', id: '_empty' },
       contentType: "application/x-www-form-urlencoded", // This is so Rails knows to decode it
       async: false,
-      success: function(json) {
-        pvt = json;
-      }
+      success: (json) => { pvt = json },
     });
     return pvt;
   }
 
   const pivotGridOpts = {
     url: '<%= url_for(controller: "pivots", farm_id: @farm_id).html_safe %>',
-    editurl:'<%= grid_post_data_url "pivots", @farm_id %>',
-    datatype: "json",
-    colNames: ['Name','Lat.','Long.','WDNR Hicap Well No','Pump Capacity','Energy Type','Crop Yr','Notes','Delete','Farm ID','ID'],
+    editurl:'<%= grid_post_data_url("pivots", @farm_id).html_safe %>',
+    datatype: 'json',
+    colNames: ['Name', 'Lat.', 'Long.', 'WDNR Hicap Well No', 'Pump Capacity', 'Energy Type', 'Crop Yr', 'Notes', 'Delete', 'Farm ID', 'ID'],
+    cmTemplate: { sortable: false },
     colModel: [
       { name: 'name', index: 'name', width: 83, editable: true },
       { name: 'latitude', index: 'latitude', width: 18, editable: true, align: 'right', formatter: 'number', formatoptions: { decimalPlaces: 2 }, editrules: { number: true, minValue: 42.0, maxValue: 50.0 } },
@@ -88,44 +75,38 @@
       { name: 'cropping_year', index: 'cropping_year', width: 20, editable: false, align: 'right' },
       { name: 'notes', index: 'notes', width: 80, editable: true, align: 'right' },
       { name: 'act', index: 'act', width: 20 },
-      { name: 'farm_id', index: 'farm_id', width: 10, hidden: true, editable: true },
-      { name: 'id', index: 'id', width: 1, hidden: true, editable: true },
+      { name: 'farm_id', index: 'farm_id', width: 10, hidden: true, editable: true }, 
+      { name: 'id', index: 'id', width: 1, hidden: true },
     ],
     pager: '#pivotSetupGrid_pager',
-    rowNum: 5,
-    rowList: [5],
+    rowNum: 10,
     imgpath: '<%= image_folder_path("jqgrid") %>',
-    sortname: '',
     viewrecords: true,
-    sortorder: '',
     gridview: false,
     scrollrows: true,
-    height: 176, // 6 x 22px
+    height: 175,
     autowidth: true,
     rownumbers: false,
     multiselect: false,
-    loadComplete: function() {
-      addPivotDeleteButtons();
+    subGrid: false,
+    onSelectRow: (id) => {
+      const grid = $('#pivotSetupGrid')
+      if (id == pivot_id) {
+        grid.editRow(id, true, null, loadFieldGrid);
+      } else {
+        grid.restoreRow(pivot_id);
+        pivot_id = id;
+        loadFieldGrid();
+      }
     },
-    onSelectRow: function(id) {
-      if (!id) return;
-      if (id !== pivot_id) $('#pivotSetupGrid').restoreRow(pivot_id);
-      pivot_id = id;
-      $('#pivotSetupGrid').editRow(id, true, null, updatePivotSelectName);
+    loadComplete: () => {
+      addPivotDeleteButtons();
+      const grid = $("#pivotSetupGrid")
+      pivot_id = grid.getDataIDs()[0];
+      grid.setSelection(pivot_id, false);
       loadFieldGrid();
     },
-    subGrid: false,
-    caption: "Pivots <%= @farm ? "for #{@farm.name}" : "" %>",
-  }
-
-  // If pivot_id is set, load the field grid for that one. If it's zero,
-  // grab the id of the first pivot in the grid and use that.
-  function loadFieldGrid() {
-    if (!pivot_id) pivot_id = $("#pivotSetupGrid").getDataIDs()[0];
-    $('#fieldDataBox').load(
-      '<%= url_for(controller: :wisp, action: :field_setup_grid) %>',
-      { pivot_id: pivot_id, farm_id: farm_id }
-    );
+    caption: "Pivots for farm '<%= @farm&.name %>'",
   }
 
   // handle window resizing and resize grid and chart after delay
@@ -140,26 +121,22 @@
     }, 500);
   };
 
-  // Load the dependent field and crop grids with appropriate values
   $(() => {
-    loadFieldGrid();
-    const pivotGrid = $("#pivotSetupGrid").jqGrid(pivotGridOpts)
+    $("#pivotSetupGrid").jqGrid(pivotGridOpts);
   });
-
 </script>
-<% end %>
 
 <% @title = "Pivots/Fields" %>
 <h2>Manage Pivots, Fields, and Crops</h2>
 
-<p>View and manage your WISP setup here. Click on a cell in any of the tables below to edit the content for that row (such as renaming or entering values). Once you have made your changes you must press "Enter" to save the changes. The row will turn yellow indicating changes have been saved. To edit the crop for that field you must select the field in the Field table.</p>
+<p>View and manage your WISP setup here. Click on a row in any of the tables below to select it, click again to edit it. After entering new values, press enter to save your edits. Farms may have one or more pivots, pivots may have one or more fields, and each field may have one crop.</p>
 
 <div class="field">
-  <%= form_tag(url_for(:controller => "wisp", :action => :pivot_crop, :pivot_id => "", :field_id => ""), :method => 'GET') do %>
+  <%= form_tag(url_for(controller: "wisp", action: "pivot_crop"), method: "GET") do %>
     <input type="hidden" name="pivot_id" value=""></input>
     <input type="hidden" name="field_id" value=""></input>
     <label for="farm_id">Farm</label><br>
-    <%= select_tag "farm_id", options_from_group_for_select(@group, @farm),{ :onchange => "this.form.submit();"} %>
+    <%= select_tag "farm_id", options_from_group_for_select(@group, @farm), { onchange: "this.form.submit();" } %>
   <% end %>
 </div>
 
@@ -168,6 +145,7 @@
     <div class="flex-down gap-10">
       <div id="pivotDataBox" class="flex-down gap-10">
         <table id="pivotSetupGrid" cellpadding="0" cellspacing="0"></table>
+        <div id="pivotSetupGrid_pager"></div>
         <div class="btn-group">
           <button type="button" class="btn btn-light" onclick="addNewPivotRow();">Add New Pivot</button>
         </div>

@@ -24,12 +24,11 @@ class FieldsController < AuthenticatedController
 
     get_current_ids
     @pivot_id = params[:parent_id]
-    @fields = Field.where(pivot_id: @pivot_id).order(:name) do
-      paginate page: params[:page], per_page: params[:rows]
-    end
-    @fields ||= []
+    @fields = Field.where(pivot_id: @pivot_id).order(:name)
+    @paginated_fields = @fields.paginate(page: params[:page], per_page: params[:rows])
 
-    render json: @fields.to_a.to_jqgrid_json(COLUMN_NAMES, params[:page], params[:rows], @fields.size)
+    json = @paginated_fields.to_a.to_jqgrid_json(COLUMN_NAMES, params[:page], params[:rows], @fields.size)
+    render json: json
   rescue => e
     Rails.logger.error "FieldsController :: Index >> #{e.message}"
   end

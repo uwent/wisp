@@ -1,5 +1,6 @@
 <script>
-  let lastsel;
+  let crop_id;
+  
   // datepicker re-focus per
   // http://stackoverflow.com/questions/18626761/how-to-set-focus-on-specific-cell-in-onselectrow-in-inline-edit-jqgrid
   // to set the focus, and 
@@ -21,51 +22,42 @@
     $(`#${curFieldID}_max_root_zone_depth`).val(dmrzd);
   }
 
+  function init_datepicker(el, id_suffix) {
+    setTimeout(() => {
+      $(el).datepicker({
+        dateFormat: "yy-mm-dd",
+        onClose: (selectedDate) => {
+          $("#" + $.jgrid.jqID(crop_id) + id_suffix).focus();
+        }
+      });
+    }, 200);
+  }
+
   const cropGridOpts = {
-    url: '<%= grid_data_url "crops", @field %>',
-    editurl: '<%= grid_post_data_url "crops", @field %>',
-    datatype: "json",
-    colNames: ['Name', 'Plant', 'Variety', 'Emergence', 'Harvest/Kill', 'Root zone depth', 'AD Frac.', 'Notes', ' ', ' '],
+    url: '<%= grid_data_url("crops", @field).html_safe %>',
+    editurl: '<%= grid_post_data_url("crops", @field).html_safe %>',
+    datatype: 'json',
+    colNames: ['Name', 'Plant', 'Variety', 'Emergence', 'Harvest/Kill', 'Root zone depth', 'AD Frac.', 'Notes', 'ID', 'Field ID'],
+    cmTemplate: { sortable: false },
     colModel: [
       { name: 'name', index: 'name', width: 40, editable: true },
       {
-        name: 'plant_id', index: 'plant_id', width: 30, sortable: true,
+        name: 'plant_id', index: 'plant_id', width: 30, sortable: true, formatter: 'select',
         editable: true, edittype: 'select', editrules: { required: true }, editoptions: {
           value: "<%= plant_types_for_select %>",
           dataEvents: [{ type: 'change', fn: set_crop_characteristics_from_event }]
         },
-        formatter: 'select',
       },
-      { name: 'variety', index: 'variety', width: 40, editable: true, align: 'right' },
+      { name: 'variety', index: 'variety', width: 40, editable: true },
       {
         name: 'emergence_date', index: 'emergence_date', width: 30, align: 'right',
-        editable: true, editrules: { date: true }, editoptions: { 
-          dataInit: function(el) { 
-            setTimeout(function() {
-              $(el).datepicker({
-                dateFormat: "yy-mm-dd",
-                onClose: function(selectedDate) {
-                  $("#" + $.jgrid.jqID(lastsel) + "_emergence_date").focus();
-                }
-              });
-            }, 200);
-          }
-        }
+        editable: true, editrules: { date: true },
+        editoptions: { dataInit: (el) => { init_datepicker(el, '_emergence_date') } },
       },
       {
         name: 'harvest_or_kill_date', index: 'harvest_or_kill_date', width: 30, align: 'right',
-        editable: true, editrules: { required: false, date: true }, editoptions: {
-          dataInit: function(el) {
-            setTimeout(function() {
-              $(el).datepicker({
-                dateFormat: "yy-mm-dd",
-                onClose: function(selectedDate) {
-                  $(`#${$.jgrid.jqID(lastsel)}_harvest_or_kill_date`).focus();
-                }
-              });
-            }, 200);
-          }
-        }
+        editable: true, editrules: { required: false, date: true },
+        editoptions: { dataInit: (el) => { init_datepicker(el, '_harvest_or_kill_date') } },
       },
       {
         name: 'max_root_zone_depth', index: 'max_root_zone_depth', width: 35, align: 'right',
@@ -79,33 +71,35 @@
       { name: 'id', index: 'id', width: 1, hidden: true },
       { name: 'field_id', index: 'field_id', width: 1, hidden: true, editable: true}
     ],
-    pager: '',
-    rowNum: 180,
-    rowList: [180],
+    rowNum: 1,
     imgpath: '<%= image_folder_path("jqgrid") %>',
-    sortname: '',
     viewrecords: true,
-    sortorder: '',
     gridview: false,
     scrollrows: true,
     autowidth: true,
-    height: 23,
+    height: 25,
     rownumbers: false,
     multiselect: false,
-    onSelectRow: function(id) {
-      if (!id) return;
-      if (id !== lastsel) $("#cropSetupGrid").restoreRow(lastsel);
-      lastsel = id;
-      $("#cropSetupGrid").editRow(id, true);
-    },
     subGrid: false,
-    caption: "Crop <%= @field ? " for #{@field.name}" : '(select field above)' %>",
+    onSelectRow: (id) => {
+      const grid = $("#cropSetupGrid");
+      if (id == crop_id) {
+        grid.editRow(id, true);
+      } else {
+        grid.restoreRow(crop_id);
+        crop_id = id;
+      }
+    },
+    loadComplete: () => {
+      const grid = $("#cropSetupGrid");
+      crop_id = grid.getDataIDs()[0];
+      grid.setSelection(crop_id, false);
+    },
+    caption: "Crop for field '<%= @field&.name %>'",
   }
  
   $(() => {
-    const cropGrid = $("#cropSetupGrid").jqGrid(cropGridOpts)
-    cropGrid.filterToolbar();
-    cropGrid[0].toggleToolbar();
+    $("#cropSetupGrid").jqGrid(cropGridOpts);
   });
 </script>
 
