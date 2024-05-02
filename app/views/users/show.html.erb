@@ -1,11 +1,11 @@
-<% @title = "User #{@user.id}" %>
+<% @title = "User details" %>
 
-<h2>User <%= @user.id %></h2>
+<h2>User <%= @user.email %></h2>
 
 <h3>User attributes</h3>
 <ul>
   <% @attributes.each do |k, v| %>
-    <li><%= k %>: <%= v %></li>
+    <li><%= k %>: <%= v.is_a?(Time) ? format_user_date(v, inline: true) : v %></li>
   <% end %>
 </ul>
 

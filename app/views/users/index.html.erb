@@ -25,13 +25,9 @@
           <% if user.id == @user.id %><tr style="font-weight: bold"><% else %><tr><% end %>
             <td><%= user.id %></td>
             <td><%= link_to user.email, user_path(user.id) %></td>
-            <td><%= user.created_at.to_date %></td>
+            <td><%= format_user_date(user.created_at) %></td>
             <td><%= user.confirmed? %></td>
-            <td>
-              <% if user.last_sign_in_at %>
-                <%= user.last_sign_in_at.to_date %> (<%= (Date.today - user.last_sign_in_at.to_date).to_i %> days ago)
-              <% end %>
-            </td>
+            <td><%= format_user_date(user.current_sign_in_at) %></td>
             <td><%= user.farms.size %></td>
             <td><%= user.pivots.size %></td>
             <td><%= user.fields.size %></td>

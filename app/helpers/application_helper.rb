@@ -21,6 +21,13 @@ module ApplicationHelper
     new_opts
   end
 
+  def format_user_date(date, inline: false)
+    date = date.to_date
+    "#{date}#{inline ? ' ' : '<br>'}<span style='font-size:small'>(#{time_ago_in_words(date)} ago)</span>".html_safe
+  rescue
+    ""
+  end
+
   private
 
   def my_select_month(date, opts)

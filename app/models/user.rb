@@ -38,9 +38,9 @@ class User < ApplicationRecord
       "ID" => id,
       "Email" => email,
       "Admin" => admin,
-      "Created" => days_ago(created_at),
-      "Confirmed" => days_ago(confirmed_at),
-      "Last sign in" => days_ago(current_sign_in_at),
+      "Created" => created_at,
+      "Confirmed" => confirmed_at,
+      "Last sign in" => current_sign_in_at,
       "Farms" => farms.size,
       "Pivots" => pivots.size,
       "Fields" => fields.size,
@@ -89,13 +89,6 @@ class User < ApplicationRecord
   end
 
   private
-
-  def days_ago(date)
-    date = date.to_date
-    "#{date} (#{(Date.today - date).to_i} days ago)"
-  rescue
-    ""
-  end
 
   def create_group_and_membership
     transaction do
