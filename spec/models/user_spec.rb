@@ -79,4 +79,16 @@ describe User do
       expect { user.destroy }.to change { Membership.count }
     end
   end
+
+  describe "methods for #show" do
+    it "creates a hash with some user attributes" do
+      user.save!
+      expect(user.attributes).to be_a Hash
+    end
+
+    it "creates a nested farm structure" do
+      user.save!
+      expect(user.farm_structure).to be_a Array
+    end
+  end
 end

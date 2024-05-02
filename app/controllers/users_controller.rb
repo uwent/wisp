@@ -10,6 +10,12 @@ class UsersController < AuthenticatedController
     end
   end
 
+  def show
+    @user = User.find(params[:id])
+    @attributes = @user.attributes
+    @farm_structure = @user.farm_structure
+  end
+
   def destroy
     @user = User.find(params[:id])
     old_email = @user.email

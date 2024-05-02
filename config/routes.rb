@@ -66,7 +66,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :users, only: [:index, :destroy]
+  resources :users, only: [:index, :show, :destroy]
 
   # this is actually called 'Field Groups' on the sidebar
   resources :weather_stations

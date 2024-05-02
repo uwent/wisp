@@ -1,0 +1,34 @@
+<% @title = "User #{@user.id}" %>
+
+<h2>User <%= @user.id %></h2>
+
+<h3>User attributes</h3>
+<ul>
+  <% @attributes.each do |k, v| %>
+    <li><%= k %>: <%= v %></li>
+  <% end %>
+</ul>
+
+<h3>Farm structure</h3>
+<% if @farm_structure.size == 0 %>
+  Farm has not been set up.
+<% else %>
+  <ol>
+    <% @farm_structure.each do |farm| %>
+      <li><%= farm[:name] %>
+      <ol>
+        <% farm[:pivots].each do |pivot| %>
+          <li><%= pivot[:name] %>
+          <ol>
+            <% pivot[:fields].each do |field| %>
+              <li><%= field[:name] %>: <%= field[:crop] %>
+            <% end %>
+          </ol>
+        <% end %>
+      </ol>
+    <% end %>
+  </ol>
+<% end %>
+
+<hr>
+<p><%= link_to "< Back", :back, class: "btn btn-secondary" %></p>
