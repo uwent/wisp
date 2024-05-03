@@ -47,22 +47,21 @@ class User < ApplicationRecord
       "Fields" => fields.size,
       "Crops" => plants.distinct.size,
       "Crop types" => (plants.distinct.size == 0) ? "None" : plants.distinct.pluck(:name).sort.join(", ")
-    }.merge(location)
+    }.merge(location_info)
   end
 
-  def location
+  def location_info
     return {} unless pivots.size > 0
     lats = pivots.pluck(:latitude).compact
     longs = pivots.pluck(:longitude).compact
-    loc = {
-      "Centroid" => [lats.sum / lats.size, longs.sum / longs.size],
-      "Lat range" => (lats.max - lats.min).round(1),
-      "Long range" => (longs.max - longs.min).round(1)
+    ranges = [(lats.max - lats.min).round(1), (longs.max - longs.min).round(1)]
+    {
+      "Centroid" => [(lats.sum / lats.size).round(2), (longs.sum / longs.size).round(2)],
+      "Ranges" => ranges,
+      "Area" => "#{ranges[0] * 10} km x #{ranges[1] * 8} km"
     }
-    loc["Approx. area"] = "#{loc["Lat range"] * 10} km x #{loc["Long range"] * 8} km"
-    loc
-  rescue
-    Rails.logger.error "Failed to calculate location attributes for user #{id}"
+  rescue => e
+    Rails.logger.error "Failed to calculate location attributes for user #{id}: #{e.message}"
     {}
   end
 
