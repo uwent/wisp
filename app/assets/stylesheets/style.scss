@@ -346,6 +346,16 @@ hr {
   overflow: auto;
 }
 
+.center,
+.center > thead th {
+  text-align: center;
+}
+
+.left,
+.left > thead th {
+  text-align: left;
+}
+
 .grid-container {
   min-width: 600px;
 }

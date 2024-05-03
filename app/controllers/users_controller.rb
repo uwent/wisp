@@ -11,9 +11,12 @@ class UsersController < AuthenticatedController
   end
 
   def show
+    @session_user = @user
     @user = User.find(params[:id])
     @attributes = @user.attributes
     @farm_structure = @user.farm_structure
+  rescue
+    redirect_to users_path, alert: "No such user '#{params[:id]}'"
   end
 
   def destroy

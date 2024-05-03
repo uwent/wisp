@@ -1,6 +1,6 @@
 <% @title = "User details" %>
 
-<h2>User <%= @user.email %></h2>
+<h2>User <%= @user.id %>: <%= @user.email %><%= @user == @session_user ? " (you)" : nil %></h2>
 
 <h3>User attributes</h3>
 <ul>
@@ -29,6 +29,17 @@
     <% end %>
   </ol>
 <% end %>
+
+<h3>Actions</h3>
+
+<% if @user == @session_user %>
+  No actions available against your own account.
+<% elsif @user.admin? %>
+  You cannot modify another admin's account.
+<% else %>
+  <%= button_to 'Delete this account', user_path(@user), data: {confirm: 'Are you sure?'}, method: :delete %>
+<% end %>
+
 
 <hr>
 <p><%= link_to "< Back", :back, class: "btn btn-secondary" %></p>
