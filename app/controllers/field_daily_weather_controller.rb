@@ -25,7 +25,7 @@ class FieldDailyWeatherController < AuthenticatedController
       if params[:id]
         ev = IrrigationEvent.find(params[:id])
         pivot = ev.pivot
-        field_ids = pivot.fields.collect do |field|
+        pivot.fields.each do |field|
           qstr = "select '#{field.name}' as field_name,irrigation,id from field_daily_weather "
           qstr += "where date='#{ev.date}' and field_id=#{field.id}"
           @field_daily_weather += FieldDailyWeather.find_by_sql(qstr)
@@ -84,12 +84,12 @@ class FieldDailyWeatherController < AuthenticatedController
         # CSVs always start at start of weather data and go through to the bitter end, per John
         season_year = @field_daily_weather.first ? @field_daily_weather.first.date.year : Date.today.year
         start_date = Date.new(season_year, Field::START_DATE[0], Field::START_DATE[1])
-        finish_date = Date.new(season_year, Field::END_DATE[0], Field::END_DATE[1])
+        # finish_date = Date.new(season_year, Field::END_DATE[0], Field::END_DATE[1])
         @soil_type = ""
         @soil_type = @field_daily_weather.first.field.soil_type.name
         @summary = FieldDailyWeather.summary(field_id, start_date)
         render template: "field_daily_weather/daily_report", filename: "field_summary", content_type: "text/csv", format: :csv
-        Rails.logger.info("FDW Controller :: Rendered CSV")
+        Rails.logger.info "FDW Controller :: Rendered CSV"
       end
     rescue => e
       Rails.logger.error "FieldDailyWeatherController :: index >> #{e.message}"

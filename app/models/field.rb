@@ -17,7 +17,7 @@ class Field < ApplicationRecord
   include ADCalculator
   include ETCalculator
   include AgWeather
-  
+
   START_DATE = [4, 1]
   END_DATE = [11, 30]
   EMERGENCE_DATE = [5, 1]
@@ -532,7 +532,7 @@ class Field < ApplicationRecord
   end
 
   private
-  
+
   def weather_opts
     lat = pivot.latitude
     long = pivot.longitude

@@ -15,13 +15,13 @@
 <% else %>
   <ol>
     <% @farm_structure.each do |farm| %>
-      <li><%= farm[:name] %>
+      <li>Farm: <%= farm[:name] %>
       <ol>
         <% farm[:pivots].each do |pivot| %>
-          <li><%= pivot[:name] %>
+          <li>Pivot: <%= pivot[:name] %> (<%= pivot[:coordinates] %>)
           <ol>
             <% pivot[:fields].each do |field| %>
-              <li><%= field[:name] %>: <%= field[:crop] %>
+              <li>Field: <%= field[:name] %> (<%= field[:crop] %>)
             <% end %>
           </ol>
         <% end %>
@@ -39,7 +39,6 @@
 <% else %>
   <%= button_to 'Delete this account', user_path(@user), data: {confirm: 'Are you sure?'}, method: :delete %>
 <% end %>
-
 
 <hr>
 <p><%= link_to "< Back", :back, class: "btn btn-secondary" %></p>

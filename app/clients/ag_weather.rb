@@ -21,14 +21,14 @@ module AgWeather
 
   def self.fetch(query, endpoint)
     vals = {}
-    response = HTTParty.get(endpoint, query: query, timeout: 10)
+    response = HTTParty.get(endpoint, query: query, timeout: 5)
     json = JSON.parse(response.body, symbolize_names: true)
     json[:data].each do |day|
       vals[day[:date]] = day[:value]
     end
     vals
   rescue => e
-    Rails.logger.error "Could not get ET from #{endpoint} with #{query.inspect}"
+    Rails.logger.error "Could not get ET from #{endpoint} with #{query.inspect}: #{e.message}"
     {}
   end
 end

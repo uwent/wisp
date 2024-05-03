@@ -1,5 +1,4 @@
 class FarmsController < AuthenticatedController
-
   COLUMN_NAMES = [:name, :notes]
 
   # GET /farms returns JSON
@@ -72,7 +71,7 @@ class FarmsController < AuthenticatedController
     attrs = farm.attributes.symbolize_keys.merge({
       pivots: farm.pivot_count,
       fields: farm.field_count,
-      problem: farm.problem,
+      problem: farm.problem
     })
     render json: ApplicationController.jsonify(attrs)
   end

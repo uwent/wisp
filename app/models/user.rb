@@ -21,6 +21,7 @@ class User < ApplicationRecord
   has_many :pivots, through: :farms
   has_many :fields, through: :pivots
   has_many :crops, through: :fields
+  has_many :plants, through: :crops
 
   after_create :create_group_and_membership
 
@@ -44,8 +45,25 @@ class User < ApplicationRecord
       "Farms" => farms.size,
       "Pivots" => pivots.size,
       "Fields" => fields.size,
-      "Crops" => crops.pluck(:plant_id).uniq.size
+      "Crops" => plants.distinct.size,
+      "Crop types" => (plants.distinct.size == 0) ? "None" : plants.distinct.pluck(:name).sort.join(", ")
+    }.merge(location)
+  end
+
+  def location
+    return {} unless pivots.size > 0
+    lats = pivots.pluck(:latitude).compact
+    longs = pivots.pluck(:longitude).compact
+    loc = {
+      "Centroid" => [lats.sum / lats.size, longs.sum / longs.size],
+      "Lat range" => (lats.max - lats.min).round(1),
+      "Long range" => (longs.max - longs.min).round(1)
     }
+    loc["Approx. area"] = "#{loc["Lat range"] * 10} km x #{loc["Long range"] * 8} km"
+    loc
+  rescue
+    Rails.logger.error "Failed to calculate location attributes for user #{id}"
+    {}
   end
 
   def farm_structure
@@ -55,6 +73,7 @@ class User < ApplicationRecord
         pivots: farm.pivots.collect do |pivot|
           {
             name: pivot.name,
+            coordinates: [pivot.latitude, pivot.longitude].join(", "),
             fields: pivot.fields.collect do |field|
               {
                 name: field.name,
@@ -66,7 +85,6 @@ class User < ApplicationRecord
       }
     end
   end
-
 
   def self.to_csv
     CSV.generate(headers: true) do |csv|
