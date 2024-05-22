@@ -266,27 +266,15 @@ class FieldDailyWeather < ApplicationRecord
       today = Date.today
       last_data_date = Date.new(season_year, Field::END_DATE[0], Field::END_DATE[1])
       kill_date ||= last_data_date
-      last_data_date.inspect
-      if today.year == season_year
-        # use today, or kill date or the end of season, whichever is earliest
-        today = [today, kill_date, last_data_date].min
-        finish_date ||= today
+
+      # use today, or kill date or the end of season, whichever is earliest
+      finish_date ||= if today.year == season_year
+        [today, kill_date, last_data_date].min
       else
-        finish_date ||= [kill_date, last_data_date].min
+        [kill_date, last_data_date].min
       end
-      # Is the following better than the lines above? pk 6/3/14
-      # if today.year != season_year
-      # today.year = season_year
-      # end
-      # today = [today,kill_date,last_data_date].min
-      # finish_date ||= today
     end
-    # query = <<-END
-    # select '#{finish_date}' as date, sum(rain) as rain, sum(irrigation) as irrigation, sum(deep_drainage) as deep_drainage, sum(ref_et) as ref_et, sum(adj_et) as adj_et
-    # from field_daily_weather where field_id=#{field_id} and date >= '#{start_date}' and date <= '#{finish_date}'
-    # END
-    # find_by_sql(query).first
-    cols = ["rain", "irrigation", "deep_drainage", "ref_et", "adj_et"]
+    cols = [:rain, :irrigation, :deep_drainage, :ref_et, :adj_et]
     vals = FieldDailyWeather.where(date: start_date..finish_date, field_id: field_id)
       .pluck("sum(rain), sum(irrigation), sum(deep_drainage), sum(ref_et), sum(adj_et)")
       .first

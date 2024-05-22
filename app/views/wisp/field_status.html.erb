@@ -211,6 +211,7 @@
           break
         }
       }
+      showSummaryBox(today)
     },
     caption: "Edit observed values below for field '<%= @field.name %>'",
   }
@@ -496,9 +497,7 @@
   <div id="seasonTotalsBox" class="flex-down">
     <h3>Season totals</h3>
     <div class="content-box">
-      <div id="summaryBox">
-        <%= render partial: "field_status__summary_box" %>
-      </div>
+      <div id="summaryBox"></div>
     </div>
   </div>
   <div id="graphBox" class="flex-down">
