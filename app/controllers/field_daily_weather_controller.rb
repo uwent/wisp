@@ -20,76 +20,52 @@ class FieldDailyWeatherController < AuthenticatedController
     page = -1
     page_size = -1
     wx_size = -1
-    if params[:irrig_only]
-      @field_daily_weather = []
-      if params[:id]
-        ev = IrrigationEvent.find(params[:id])
-        pivot = ev.pivot
-        field_ids = pivot.fields.collect do |field|
-          qstr = "select '#{field.name}' as field_name,irrigation,id from field_daily_weather "
-          qstr += "where date='#{ev.date}' and field_id=#{field.id}"
-          @field_daily_weather += FieldDailyWeather.find_by_sql(qstr)
-        end
-      end
-      wx_size = @field_daily_weather.size
-      # puts "Irrig only present, found #{@field_daily_weather.size} records"
-    else
-      field_id = session[:field_id] || session[:field_id] = params[:field_id]
-      # FIXME: Shouldn't the date be in here too? I mean, 3 years from now will we be returning 500 records?
-      @field_daily_weather = FieldDailyWeather.where(field_id: field_id).order(:date)
-      wx_size = @field_daily_weather.size
-      if params[:rows]
-        if params[:rows].to_i == 20 # Stupid default value passed, means first refresh
-          page_size = 7
-          page = FieldDailyWeather.page_for(page_size, @field_daily_weather.first.date)
-        else
-          page_size = params[:rows].to_i
-          page = params[:page] || "-1"
-        end
+
+    field_id = session[:field_id] || session[:field_id] = params[:field_id]
+    # FIXME: Shouldn't the date be in here too? I mean, 3 years from now will we be returning 500 records?
+    @field_daily_weather = FieldDailyWeather.where(field_id: field_id).order(:date)
+    wx_size = @field_daily_weather.size
+    if params[:rows]
+      if params[:rows].to_i == 20 # Stupid default value passed, means first refresh
+        page_size = 7
+        page = FieldDailyWeather.page_for(page_size, @field_daily_weather.first.date)
       else
+        page_size = params[:rows].to_i
         page = params[:page] || "-1"
       end
-      page = page.to_i
-      if page == -1
-        days = current_day - @field_daily_weather.first.date
-        days = 7 if days < 7
-        page = days / page_size
-      end
-      # logger.info "\n****\nfdw#index full; for field_id #{field_id}, page is #{page}, page_size is #{page_size}, #{wx_size} records"; $stdout.flush
-      page = 1 if page < 1
-      @field_daily_weather = @field_daily_weather.paginate(page: page, per_page: page_size)
+    else
+      page = params[:page] || "-1"
     end
-    @field_daily_weather ||= []
+    page = page.to_i
+    if page == -1
+      days = current_day - @field_daily_weather.first.date
+      days = 7 if days < 7
+      page = days / page_size
+    end
+    # logger.info "\n****\nfdw#index full; for field_id #{field_id}, page is #{page}, page_size is #{page_size}, #{wx_size} records"; $stdout.flush
+    page = 1 if page < 1
+    @field_daily_weather = @field_daily_weather.paginate(page: page, per_page: page_size)
 
     respond_to do |format|
       format.json do
-        json = if params[:irrig_only]
-          @field_daily_weather.to_a.to_jqgrid_json(
-            [:field_name, :irrigation, :id],
-            params[:page] || 1,
-            params[:rows] || 7,
-            wx_size
-          )
-        else
-          @field_daily_weather.to_a.to_jqgrid_json(
-            [:date, :ref_et, :rain, :irrigation, :display_pct_moisture, :pct_cover_for_json, :leaf_area_index, :adj_et_for_json, :ad, :deep_drainage, :id],
-            page,
-            page_size,
-            wx_size
-          )
-        end
+        json = @field_daily_weather.to_a.to_jqgrid_json(
+          [:date, :ref_et, :rain, :irrigation, :display_pct_moisture, :pct_cover_for_json, :leaf_area_index, :adj_et_for_json, :ad, :deep_drainage, :id],
+          page,
+          page_size,
+          wx_size
+        )
         render json: json
       end
       format.csv do
-        # CSVs always start at start of weather data and go through to the bitter end, per John
-        season_year = @field_daily_weather.first ? @field_daily_weather.first.date.year : Date.today.year
-        start_date = Date.new(season_year, Field::START_DATE[0], Field::START_DATE[1])
-        finish_date = Date.new(season_year, Field::END_DATE[0], Field::END_DATE[1])
-        @soil_type = ""
+        @field_daily_weather = @field_daily_weather.where("date <= ?", Date.today)
+        start_date = @field_daily_weather.first.date
+        finish_date = [@field_daily_weather.last.date, Date.today].min
+        # season_year = @field_daily_weather.first ? @field_daily_weather.first.date.year : Date.today.year
+        # start_date = Date.new(season_year, Field::START_DATE[0], Field::START_DATE[1])
         @soil_type = @field_daily_weather.first.field.soil_type.name
-        @summary = FieldDailyWeather.summary(field_id, start_date)
+        @summary = FieldDailyWeather.summary(field_id, start_date, finish_date)
         render template: "field_daily_weather/daily_report", filename: "field_summary", content_type: "text/csv", format: :csv
-        Rails.logger.info("FDW Controller :: Rendered CSV")
+        Rails.logger.info "FDW Controller :: Rendered CSV"
       end
     rescue => e
       Rails.logger.error "FieldDailyWeatherController :: index >> #{e.message}"

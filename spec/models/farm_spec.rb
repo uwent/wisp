@@ -8,7 +8,7 @@ describe Farm do
   end
 
   let(:group) { build :group }
-  let(:farm) { build :farm, year: Date.current.year}
+  let(:farm) { build :farm, year: Date.current.year }
 
   describe "#validation" do
     it "can create valid farm" do

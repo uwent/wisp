@@ -222,7 +222,6 @@ class WispController < AuthenticatedController
   # season in cur_date, find the start and end of the week encompassing cur_date.
   # If cur_date is nil, use today_or_latest and work from there.
   def date_strs(initial_date, cur_date = nil)
-    start_date = nil
     if cur_date
       begin
         end_date = Date.parse(cur_date)

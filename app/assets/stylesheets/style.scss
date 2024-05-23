@@ -44,6 +44,12 @@ body {
   font-family: "Lato", sans-serif;
 }
 
+hr {
+  margin: 1em 0;
+  border: none;
+  border-bottom: 1px solid $hr-color;
+}
+
 // testing
 // div {
 //   border: 1px dotted grey;
@@ -195,7 +201,6 @@ body {
   }
   hr {
     margin: 0;
-    border: none;
     border-bottom: 1px solid $frame-bg-color;
   }
 }
@@ -322,9 +327,7 @@ body {
 }
 
 .copyright {
-  font:
-    13px arial,
-    sans-serif;
+  font: 13px arial, sans-serif;
   color: $copyright-text-color;
   text-align: right;
   margin-right: 5px;
@@ -341,6 +344,16 @@ body {
 
 .overflow {
   overflow: auto;
+}
+
+.center,
+.center > thead th {
+  text-align: center;
+}
+
+.left,
+.left > thead th {
+  text-align: left;
 }
 
 .grid-container {

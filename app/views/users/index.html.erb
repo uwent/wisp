@@ -1,10 +1,12 @@
 <% @title = "Users" %>
 <h2>Users</h2>
 
-<div class="flex-down gap-10">
+<p>Unconfirmed accounts can be deleted from this page. Click any user's email or the 'view' button to see more information about the user.</p>
+
+<p>
   <div class="overflow">
     <%= will_paginate @users, class: "apple_pagination" %>
-    <table class="fancy-table">
+    <table class="fancy-table center">
       <thead>
         <tr>
           <th>ID</th>
@@ -12,6 +14,9 @@
           <th>Created</th>
           <th>Confirmed?</th>
           <th>Last Signed In</th>
+          <th>Farms</th>
+          <th>Pivots</th>
+          <th>Fields</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -19,17 +24,18 @@
         <% @users.each do |user| %>
           <% if user.id == @user.id %><tr style="font-weight: bold"><% else %><tr><% end %>
             <td><%= user.id %></td>
-            <td><%= user.email %></td>
-            <td><%= user.created_at.to_date %></td>
+            <td class="left"><%= link_to user.email, user_path(user.id) %></td>
+            <td><%= format_user_date(user.created_at) %></td>
             <td><%= user.confirmed? %></td>
+            <td><%= format_user_date(user.current_sign_in_at) %></td>
+            <td><%= user.farms.size %></td>
+            <td><%= user.pivots.size %></td>
+            <td><%= user.fields.size %></td>
             <td>
-              <% if user.last_sign_in_at %>
-                <%= user.last_sign_in_at.to_date %> (<%= (Date.today - user.last_sign_in_at.to_date).to_i %> days ago)
-              <% end %>
-            </td>
-            <td>
-              <% if user.id != @user.id %>
+              <% if !user.confirmed? %>
                 <%= button_to 'Destroy', user_path(user), data: {confirm: 'Are you sure?'}, method: :delete %>
+              <% else %>
+                <%= button_to 'View', user_path(user), method: :get %>
               <% end %>
             </td>
           </tr>
@@ -37,9 +43,5 @@
       </tbody>
     </table>
     <%= will_paginate @users, class: "apple_pagination" %>
-  </div>
-  <div>
-    <%= link_to 'Export Email CSV', users_path(format: :csv), class: "btn btn-primary" %>
-  </div>
-</div>
-
+</p>
+<p><%= link_to 'Export Email CSV', users_path(format: :csv), class: "btn btn-primary" %></p>

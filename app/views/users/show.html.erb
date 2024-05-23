@@ -1,0 +1,44 @@
+<% @title = "User details" %>
+
+<h2>User <%= @user.id %>: <%= @user.email %><%= @user == @session_user ? " (you)" : nil %></h2>
+
+<h3>User attributes</h3>
+<ul>
+  <% @attributes.each do |k, v| %>
+    <li><%= k %>: <%= v.is_a?(Time) ? format_user_date(v, inline: true) : v %></li>
+  <% end %>
+</ul>
+
+<h3>Farm structure</h3>
+<% if @farm_structure.size == 0 %>
+  Farm has not been set up.
+<% else %>
+  <ol>
+    <% @farm_structure.each do |farm| %>
+      <li>Farm: <%= farm[:name] %>
+      <ol>
+        <% farm[:pivots].each do |pivot| %>
+          <li>Pivot: <%= pivot[:name] %> (<%= pivot[:coordinates] %>)
+          <ol>
+            <% pivot[:fields].each do |field| %>
+              <li>Field: <%= field[:name] %> (<%= field[:crop] %>)
+            <% end %>
+          </ol>
+        <% end %>
+      </ol>
+    <% end %>
+  </ol>
+<% end %>
+
+<h3>Actions</h3>
+
+<% if @user == @session_user %>
+  No actions available against your own account.
+<% elsif @user.admin? %>
+  You cannot modify another admin's account.
+<% else %>
+  <%= button_to 'Delete this account', user_path(@user), data: {confirm: 'Are you sure?'}, method: :delete %>
+<% end %>
+
+<hr>
+<p><%= link_to "< Back", :back, class: "btn btn-secondary" %></p>

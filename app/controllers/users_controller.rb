@@ -2,12 +2,21 @@ class UsersController < AuthenticatedController
   before_action :ensure_admin!
 
   def index
-    @users = User.order(last_sign_in_at: :desc).paginate(page: params[:page], per_page: 100)
+    @users = User.order(current_sign_in_at: :desc).paginate(page: params[:page], per_page: 100)
 
     respond_to do |format|
       format.html
       format.csv { send_data User.to_csv, filename: "wisp-users-#{Date.today}.csv" }
     end
+  end
+
+  def show
+    @session_user = @user
+    @user = User.find(params[:id])
+    @attributes = @user.attributes
+    @farm_structure = @user.farm_structure
+  rescue
+    redirect_to users_path, alert: "No such user '#{params[:id]}'"
   end
 
   def destroy
