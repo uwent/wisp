@@ -8,13 +8,14 @@ The Wisconsin Irrigation Scheduling Program (WISP) is an irrigation water manage
 
 WISP uses the checkbook method to track soil moisture on a daily basis given a user defined managed root zone depth. Soil moisture losses through evapotranspiration (ET) (primarily via plant transpiration) and deep drainage (water passing vertically through the managed root zone) are considered along with water inputs that include daily rainfall and irrigation. WISP is a soil moisture management decision support tool and is best used in combination with other information such as soil moisture monitoring and field observations when making irrigation decisions. All inputs with the exception of daily rainfall and irrigation need only be entered once during initial set up with some possible cropping season modification. Should the field crop change new inputs will be needed. The model accommodates multiple farms, pivots (water application device), fields and crops described using a hierarchal structure:
 
-* A farm can be any set of pivots the user chooses (e.g. common ownership, location or management).
-* A pivot can have one or more fields growing different crops.
-* A field is typically defined by a set of common physical and/or management characteristics (e.g., crop type, soil water holding characteristics or irrigation management) assigned to a land area. Field characteristics can change from year to year.
+- A farm can be any set of pivots the user chooses (e.g. common ownership, location or management).
+- A pivot can have one or more fields growing different crops.
+- A field is typically defined by a set of common physical and/or management characteristics (e.g., crop type, soil water holding characteristics or irrigation management) assigned to a land area. Field characteristics can change from year to year.
 
 ## Dependencies
 
 `Ruby`
+
 ```bash
 # install rbenv
 sudo apt -y install rbenv
@@ -31,13 +32,14 @@ git -C "$(rbenv root)"/plugins/ruby-build pull
 git config --global url."https://github.com/".insteadOf git://github.com/
 
 # install ruby with rbenv
-rbenv install 3.3.0 # or latest version
+rbenv install 3.3.3 # or latest version
 
 # update bundler to latest
 gem install bundler
 ```
 
 `Postgres` and `gem pg`
+
 ```bash
 # install postgres
 sudo apt -y install postgresql-14 postgresql-client-14 libpq-dev
@@ -74,15 +76,15 @@ bundle exec rspec
 
 Work with db admin to authorize your ssh key for the deploy user. Confirm you can access the dev and production servers:
 
-* `ssh deploy@dev.agweather.cals.wisc.edu -p 216`
-* `ssh deploy@agweather.cals.wisc.edu -p 216`
+- `ssh deploy@dev.agweather.cals.wisc.edu -p 216`
+- `ssh deploy@agweather.cals.wisc.edu -p 216`
 
 Then run the following commands from the main branch to deploy:
 
-* Staging: `cap staging deploy`
-* Production: `cap production deploy`
+- Staging: `cap staging deploy`
+- Production: `cap production deploy`
 
 Deployment targets:
 
-* Staging: [https://dev.wisp.cals.wisc.edu/](https://dev.wisp.cals.wisc.edu/)
-* Production: [https://wisp.cals.wisc.edu/](https://wisp.cals.wisc.edu/)
+- Staging: [https://dev.wisp.cals.wisc.edu/](https://dev.wisp.cals.wisc.edu/)
+- Production: [https://wisp.cals.wisc.edu/](https://wisp.cals.wisc.edu/)
