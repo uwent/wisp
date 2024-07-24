@@ -5,6 +5,7 @@
   <p>You must create at least one field group to use this page.</p>
   <%= link_to "Create a field group", { controller: :weather_stations, action: :new }, class: "btn btn-primary" %>
 <% else %>
+  <p>Click any row to edit values, press 'Enter' to save your edits. Potential evapotranspiration and rainfall for individual fields are automatically sourced from AgWeather and should only be entered here if you have an on-site or preferred weather station for these values. Entering data below will <b>overwrite any corresponding values</b> already entered for individual fields in this group! If you have changed data in an individual field <b>after</b> entering it here, you must change and re-enter the value here to overwrite individual field values with this shared data.</p>
   <div class="field">
     <%= form_tag(url_for controller: :wisp, action: :weather) do %>
       <label>Select a field group</label>

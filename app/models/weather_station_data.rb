@@ -40,8 +40,9 @@ class WeatherStationData < ApplicationRecord
   def send_changes
     changes_to_send = COLUMNS_TO_PROPAGATE.each_with_object({}) do |col, hash|
       old_value, new_value = extract_changes(col)
-      if new_value
-        if old_value.nil? || (old_value.to_f - new_value.to_f) > CHANGE_EPSILON
+      if !new_value.nil?
+        new_value = CHANGE_EPSILON if new_value.zero? # use a small nonzero value to differentiate this from true zeros which are filled for all dates when field_daily_weather is populated
+        if old_value.nil? || (old_value.to_f - new_value.to_f).abs > CHANGE_EPSILON
           hash.merge!({col => new_value.to_f})
         end
       end

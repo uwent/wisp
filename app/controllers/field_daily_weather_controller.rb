@@ -1,4 +1,5 @@
 class FieldDailyWeatherController < AuthenticatedController
+  CHANGE_EPSILON = 0.00001 # small nonzero value to indicate user has entered a zero, distinct from the true zero default value for rainfall
   MOISTURE_EPSILON = 0.01 # Amount by which an incoming pct moist must differ to be treated as "new"
   PCT_COVER_EPSILON = 0.001 # Likewise for percent cover
 
@@ -123,6 +124,8 @@ class FieldDailyWeatherController < AuthenticatedController
     end
 
     # logger.info "before update_attributes, fdw was #{fdw.inspect}"
+    # logger.info "attributes are #{attribs.inspect}"
+    attribs[:rain] = CHANGE_EPSILON if attribs[:rain] && attribs[:rain].to_f.zero? # set rain to small nonzero value if user enters a zero because any true zeros are refreshed from agweather
     fdw.update(attribs)
     # logger.info "after update_attributes, fdw now #{fdw.inspect}"
     if do_pct_cover

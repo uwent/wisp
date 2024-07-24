@@ -35,8 +35,9 @@ class WeatherStationDataController < AuthenticatedController
     )
     render json: json
   rescue => e
-    Rails.logger.error "WeatherStationDataController :: Index >> #{e}"
-    redirect_to "/wisp/weather_stations"
+    err = "WeatherStationDataController :: Index >> #{e}"
+    Rails.logger.error(err)
+    render json: {status: 500, message: err}, status: 500
   end
 
   # POST
