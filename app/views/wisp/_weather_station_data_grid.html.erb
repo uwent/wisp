@@ -1,6 +1,14 @@
 <script>
   let station_row;
 
+  function getCurPage() {
+    const initial_date = new Date("<%= @min_date %>");
+    const cur_date = new Date("<%= @today %>");
+    initial_date.setTime(initial_date.getTime() - 1) // subtract an hour to prevent initial and current being the same
+    const days = (cur_date.getTime() - initial_date.getTime()) / (86400 * 1000);
+    return Math.ceil(days / 28); // divide by default page size
+  }
+
   const stationGridOpts = {
     url: '<%= url_for(controller: "weather_station_data", weather_station_id: @weather_station, year: @year, user_id: @user, q: 1).html_safe %>',
     editurl: '<%= url_for(controller: "weather_station_data", action: "post_data", weather_station_id: @weather_station, user_id: @user, year: @year).html_safe %>',
@@ -18,6 +26,7 @@
       { name: 'id', index: 'id', hidden: true, width: 1 }
     ],
     pager: '#stationGrid_pager',
+    page: getCurPage(),
     rowNum: 28,
     rowList: [14, 28, 100, 250],
     imgpath: '<%= image_folder_path("jqgrid") %>',
@@ -31,11 +40,23 @@
     subGrid: false,
     onSelectRow: (id) => {
       const grid = $('#stationGrid');
-      if (id != station_row) {
-        if (station_row) grid.restoreRow(station_row);
-        station_row = id;
-      }
+      if (id != station_row) grid.restoreRow(station_row);
       grid.editRow(id, true);
+      station_row = id;
+    },
+    loadComplete: () => {
+      // highlight current day
+      const today = "<%= @today %>";
+      const grid = $('#stationGrid');
+      const ids = grid.getDataIDs();
+      for (let i = 0; i <= ids.length - 1; i++) {
+        const id = ids[i];
+        const rowData = grid.getRowData(id);
+        if (rowData.date === today) {
+          grid.setSelection(id, false); // don't fire onSelectRow callback
+          break
+        }
+      }
     },
     caption: "Field group '<%= @weather_station&.name %>'",
   }
@@ -56,9 +77,11 @@
 </script>
 
 <div>
-  <h3>Enter shared data for group '<%= @weather_station.name %>'</h3>
-  <p>Click any row to edit values, press 'Enter' to save your edits. Potential evapotranspiration and rainfall for individual fields are automatically sourced from AgWeather and should only be entered here if you have an on-site or preferred weather station for these values. Entering data below will <strong>overwrite any corresponding values</strong> already entered for individual fields in this group!</p>
-  <p>Fields in this group: <%= @weather_station.fields.collect(&:name).join(", ") %></p>
+  <p><b>Fields in this group:</b> <%=
+    @weather_station.fields.collect do |fld|
+      link_to(fld.name, url_for(controller: "wisp", action: "field_status", field_id: fld.id), {title: "Go to this field's status page"})
+    end.join(", ").html_safe
+  %></p>
   <div class="overflow">
     <div id="stationGridContainer" class="content-box grid-container">
       <table id="stationGrid" cellpadding="0" cellspacing="0"></table>

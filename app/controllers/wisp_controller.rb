@@ -85,6 +85,10 @@ class WispController < AuthenticatedController
     @year = Time.now.year
     # Check that this year's data are present for this station
     @weather_station.ensure_data_for(@year)
+    # set date ranges for determining initial grid page
+    @min_date = Date.civil(@year, *Field::START_DATE)
+    @max_date = Date.civil(@year, *Field::END_DATE)
+    @today = Date.today.clamp(@min_date, @max_date)
 
     if params[:ajax]
       render layout: false

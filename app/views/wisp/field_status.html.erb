@@ -113,7 +113,6 @@
   }
 
   const weatherGridOpts = {
-    page: getCurPage(initial_date, cur_date),
     url: '<%= url_for(controller: "field_daily_weather", q: 1, parent_id: @pivot, field_id: @field, user_id: @user).html_safe %>',
     editurl: '<%= url_for(controller: "field_daily_weather", action: "post_data", parent_id: @pivot, field_id: @field, user_id: @user).html_safe %>',
     datatype: "json",
@@ -180,6 +179,7 @@
       { name: "id", index: "id", width: 1, editable: true, hidden: true }
     ], 
     pager: "#weatherGrid_pager",
+    page: getCurPage(initial_date, cur_date),
     rowNum: 7,
     rowList: [7, <%= FieldDailyWeather::SEASON_DAYS %>],
     imgpath: '<%= image_folder_path("jqgrid") %>',
@@ -426,6 +426,8 @@
 
 <% @title = "Field Status" %>
 <h2>Field Status</h2>
+
+<p>Potential evapotranspiration (ET) and rainfall are automatically imported from <%= link_to "AgWeather", "https://agweather.cals.wisc.edu" %> up through the prior day. These values, as well as any irrigation events, may be adjusted in the table below for this field, or in the <%= link_to "Shared Data Entry", action: "weather" %> page for groups of fields. Also note that periodically entering accurate values for % Moisture and % Cover will have a major influence on the accuracy of the field water balance.</p>
 
 <div class="flex-across gap-10">
   <div class="field">
