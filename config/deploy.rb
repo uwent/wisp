@@ -38,7 +38,7 @@ set :linked_dirs, %w[log tmp/pids tmp/cache tmp/sockets]
 # rbenv
 set :deploy_user, "deploy"
 set :rbenv_type, :user
-set :rbenv_ruby, "3.3.3"
+set :rbenv_ruby, "3.3.5"
 
 namespace :deploy do
   desc "Restart application"

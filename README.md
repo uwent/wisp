@@ -32,7 +32,7 @@ git -C "$(rbenv root)"/plugins/ruby-build pull
 git config --global url."https://github.com/".insteadOf git://github.com/
 
 # install ruby with rbenv
-rbenv install 3.3.3 # or latest version
+rbenv install 3.3.5 # or latest version
 
 # update bundler to latest
 gem install bundler
