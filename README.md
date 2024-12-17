@@ -14,7 +14,7 @@ WISP uses the checkbook method to track soil moisture on a daily basis given a u
 
 ## Dependencies
 
-`Ruby`
+### Ruby
 
 ```bash
 # install rbenv
@@ -32,26 +32,39 @@ git -C "$(rbenv root)"/plugins/ruby-build pull
 git config --global url."https://github.com/".insteadOf git://github.com/
 
 # install ruby with rbenv
-rbenv install 3.3.5 # or latest version
+rbenv install 3.3.6 # or latest version
 
 # update bundler to latest
 gem install bundler
+
+# update gems...
+bundle update
+
+# OR if migrating to a new version of Ruby...
+rm Gemfile.lock
+bundle install
 ```
 
-`Postgres` and `gem pg`
+When upgrading Ruby versions, need to change the version number in the documentation above, in `.ruby-version`, and in `config/deploy.rb`.
+
+### Rails
+
+When upgrading to a new version of Rails, run the update task with `THOR_MERGE="code -d $1 $2" rails app:update`. This will use VSCode as the merge conflict tool.
+
+### Postgres
 
 ```bash
 # install postgres
-sudo apt -y install postgresql-14 postgresql-client-14 libpq-dev
+sudo apt -y install postgresql-16 postgresql-client-16 libpq-dev
 sudo service postgresql start
-
-# install gem pg
-gem install pg
 
 # Set postgres user password to 'password'
 sudo su - postgres
 psql -c "alter user postgres with password 'password'"
 exit
+
+# install gem pg
+gem install pg
 ```
 
 ## Setup
@@ -61,7 +74,7 @@ exit
 3. Install gems with `bundle install` in project directory
 4. Create database and schema with `bundle exec rake db:setup db:seed`
 5. Ensure [ag-weather](https://github.com/uwent/ag-weather) is set up and running on port `8080`
-6. Run the server with `bundle exec rails s`
+6. Run the server with `bin/rails s`
 7. Launch the site with `localhost:3000`
 
 ## Running tests
