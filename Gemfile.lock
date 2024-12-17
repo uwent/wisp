@@ -484,6 +484,7 @@ DEPENDENCIES
   letter_opener
   letter_opener_web
   net-smtp
+  ostruct
   pg
   puma
   rails (~> 8.0)

@@ -20,6 +20,7 @@ gem "net-smtp" # required as of ruby 3.1
 gem "terser" # for JS compression
 gem "asigbiophys", path: "vendor/asigbiophys"
 gem "csv" # no longer part of the standard libary as of Ruby 3.4
+gem "ostruct" # no longer a default gem as of 3.3.6
 
 group :development do
   gem "puma"
