@@ -53,10 +53,10 @@ class User < ApplicationRecord
   def location_info
     return {} unless pivots.size > 0
     lats = pivots.pluck(:latitude).compact
-    longs = pivots.pluck(:longitude).compact
-    ranges = [(lats.max - lats.min).round(1), (longs.max - longs.min).round(1)]
+    lngs = pivots.pluck(:longitude).compact
+    ranges = [(lats.max - lats.min).round(1), (lngs.max - lngs.min).round(1)]
     {
-      "Centroid" => [(lats.sum / lats.size).round(2), (longs.sum / longs.size).round(2)],
+      "Centroid" => [(lats.sum / lats.size).round(2), (lngs.sum / lngs.size).round(2)],
       "Ranges" => ranges,
       "Area" => "#{ranges[0] * 10} km x #{ranges[1] * 8} km"
     }
