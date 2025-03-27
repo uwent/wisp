@@ -535,10 +535,10 @@ class Field < ApplicationRecord
 
   def weather_opts
     lat = pivot.latitude
-    long = pivot.longitude
+    lng = pivot.longitude
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
-    {lat:, long:, start_date:, end_date:}
+    {lat:, lng:, start_date:, end_date:}
   end
 
   def default_emergence_date
