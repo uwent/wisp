@@ -1,6 +1,6 @@
 # Wisconsin Irrigation Scheduling Program (WISP)
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/uwent/wisp/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/uwent/wisp/tree/main)
+[![Tests](https://github.com/uwent/wisp/actions/workflows/test.yml/badge.svg)](https://github.com/uwent/wisp/actions/workflows/test.yml)
 
 ## Description
 
