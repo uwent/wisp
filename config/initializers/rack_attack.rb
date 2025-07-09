@@ -12,9 +12,9 @@ class Rack::Attack
   end
 
   # Stricter throttling for API endpoints
-  throttle('api/ip', limit: 100, period: 1.hour) do |req|
-    req.ip if req.path.start_with?('/api/')
-  end
+  # throttle('api/ip', limit: 100, period: 1.hour) do |req|
+  #   req.ip if req.path.start_with?('/api/')
+  # end
 
   # Throttle POST/PUT/PATCH/DELETE requests more strictly
   throttle('writes/ip', limit: 20, period: 1.minute) do |req|
@@ -22,10 +22,10 @@ class Rack::Attack
   end
 
   # Block requests from bad IPs (example)
-  blocklist('block bad IPs') do |req|
-    # Replace with real IPs to block
-    ['1.2.3.4', '5.6.7.8'].include?(req.ip)
-  end
+  # blocklist('block bad IPs') do |req|
+  #   # Replace with real IPs to block
+  #   ['1.2.3.4', '5.6.7.8'].include?(req.ip)
+  # end
 
   # Block suspicious requests for '/etc/password' or wordpress specific paths.
   # After 3 blocked requests in 10 minutes, block all requests from that IP for 5 minutes.
@@ -111,7 +111,7 @@ class Rack::Attack
   # end
 
   # Custom response for throttled requests
-  self.throttled_response = lambda do |env|
+  self.throttled_responder = lambda do |env|
     [ 429,  # status
       { 'Content-Type' => 'application/json' }, 
       [{ error: 'Rate limit exceeded' }.to_json]
@@ -119,7 +119,7 @@ class Rack::Attack
   end
 
   # Custom response for blocked requests
-  self.blocklisted_response = lambda do |env|
+  self.blocklisted_responder = lambda do |env|
     [ 403,  # status
       { 'Content-Type' => 'application/json' },
       [{ error: 'Forbidden' }.to_json]
