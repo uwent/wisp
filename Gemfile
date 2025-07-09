@@ -21,6 +21,7 @@ gem "terser" # for JS compression
 gem "asigbiophys", path: "vendor/asigbiophys"
 gem "csv" # no longer part of the standard libary as of Ruby 3.4
 gem "ostruct" # no longer a default gem as of 3.3.6
+gem "rack-attack" # rate limiting
 
 group :development do
   gem "puma"
