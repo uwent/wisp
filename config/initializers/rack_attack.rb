@@ -1,14 +1,9 @@
 # config/initializers/rack_attack.rb
 
 class Rack::Attack
-  # Throttle requests to 5 requests per second per IP
-  throttle('req/ip', limit: 5, period: 1.second) do |req|
+  # Throttle requests per second per IP
+  throttle('req/ip', limit: 25, period: 1.second) do |req|
     req.ip
-  end
-
-  # More lenient throttling for authenticated users (if using API tokens)
-  throttle('req/ip/authenticated', limit: 10, period: 1.second) do |req|
-    req.ip if req.env['HTTP_AUTHORIZATION'].present?
   end
 
   # Stricter throttling for API endpoints
@@ -17,7 +12,7 @@ class Rack::Attack
   # end
 
   # Throttle POST/PUT/PATCH/DELETE requests more strictly
-  throttle('writes/ip', limit: 20, period: 1.minute) do |req|
+  throttle('writes/ip', limit: 5, period: 1.second) do |req|
     req.ip if %w[POST PUT PATCH DELETE].include?(req.request_method)
   end
 
