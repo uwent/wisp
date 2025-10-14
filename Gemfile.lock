@@ -91,6 +91,7 @@ GEM
     ast (2.4.3)
     base64 (0.3.0)
     bcrypt (3.1.20)
+    bcrypt_pbkdf (1.1.1)
     benchmark (0.4.1)
     bigdecimal (3.3.1)
     bindex (0.8.1)
@@ -143,6 +144,7 @@ GEM
       dotenv (= 3.1.8)
       railties (>= 6.1)
     drb (2.2.3)
+    ed25519 (1.4.0)
     erb (5.1.1)
     erubi (1.13.1)
     execjs (2.10.0)
@@ -491,6 +493,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport (~> 8.0)
   asigbiophys!
+  bcrypt_pbkdf
   byebug
   capistrano
   capistrano-bundler
@@ -501,6 +504,7 @@ DEPENDENCIES
   decent_exposure
   devise
   dotenv-rails
+  ed25519
   factory_bot_rails
   guard-rspec
   httparty
