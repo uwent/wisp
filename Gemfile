@@ -34,6 +34,8 @@ group :development do
   gem "web-console"
   gem "standard"
   gem "shutup" # easy kill of servers
+  gem "ed25519" # for ssh keys
+  gem "bcrypt_pbkdf" # for ssh keys
 end
 
 group :development, :test do
