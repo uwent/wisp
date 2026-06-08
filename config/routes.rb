@@ -32,6 +32,7 @@ Rails.application.routes.draw do
       post "set_farm"
       post "set_pivot"
       post "set_field"
+      post "set_precip_use_agwx"
     end
   end
 
@@ -78,5 +79,4 @@ Rails.application.routes.draw do
   end
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
-  
 end

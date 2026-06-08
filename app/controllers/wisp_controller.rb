@@ -155,7 +155,7 @@ class WispController < AuthenticatedController
           ad_data: @graph_data,
           projected_ad_data: @projected_ad_data,
           target_ad_data: @target_ad_data,
-          labels: @date_hash
+          labels: @date_hash,
         }
       }
     end
@@ -170,6 +170,13 @@ class WispController < AuthenticatedController
     if params[:ajax]
       render layout: false
     end
+  end
+
+  # POST: toggle whether rainfall is pulled from AgWeather or entered manually
+  def set_precip_use_agwx
+    get_current_ids
+    @group.update!(precip_use_agwx: params[:precip_use_agwx] == "true")
+    render json: { precip_use_agwx: @group.precip_use_agwx }
   end
 
   # Ajax-accessible summary/projected box
@@ -207,7 +214,7 @@ class WispController < AuthenticatedController
       @field = Field.find(@field_id)
       session[:field_id] = @field_id
     end
-    render json: {field_id: params[:field_id]}
+    render json: { field_id: params[:field_id] }
   end
 
   private
@@ -283,7 +290,6 @@ class WispController < AuthenticatedController
   # from a set of fdw recs and some idea of where to begin looking, return
   # the graph and summary data. This will be a an array of AD numbers,
   def graph_data(fdw, start_date, end_date, start_projecting = Date.today)
-    ad_recs = @ad_recs # just so it's something if we don't reset them
     # reposition the window, if necessary, so that it ends NLT the end of AD data
     # Rails.logger.info "graph_data: start_date is #{start_date.inspect}, end_date is #{end_date.inspect}, #{fdw.size} records"
     first_ad_idx = fdw.index { |rec| rec.ad.nil? } || fdw.index { |rec| rec.date == start_date } || 0
