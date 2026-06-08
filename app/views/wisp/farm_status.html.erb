@@ -15,6 +15,26 @@
     return true;
   }
 
+  // Toggle whether rainfall is pulled from AgWeather (checked) or entered manually
+  function togglePrecipUseAgwx(checkbox) {
+    const label = $("#precipUseAgwxLabel");
+    $.ajax({
+      type: "POST",
+      url: "<%= url_for(controller: "wisp", action: "set_precip_use_agwx").html_safe %>",
+      data: { precip_use_agwx: checkbox.checked },
+      dataType: "json",
+      success: (json) => {
+        checkbox.checked = json.precip_use_agwx;
+        label.text(json.precip_use_agwx ? "Auto" : "Manual");
+      },
+      error: () => {
+        // Revert the checkbox if the server didn't confirm the change
+        checkbox.checked = !checkbox.checked;
+        label.text(checkbox.checked ? "Auto" : "Manual");
+      }
+    });
+  }
+
   // Display "Yes" or "No" for boolean
   function yesNoBoolFormat(cellvalue, options, rowObject) {
     if (cellvalue === undefined) return '';
@@ -143,9 +163,20 @@
 <p>In WISP, farms are used to organize one or more pivots together. One or more pivots must be created within a farm, and one or more fields must be created under a pivot. If you delete a farm, it will also delete any pivots and fields that were created within that farm.</p>
 <p>To edit a farm's name or notes, click on the appropriate cell in the table below. To confirm your changes you must press "Enter". Use the button to the right of each farm to delete it, or create a new farm using the botton below the table. "AD < 0" shows how many fields within each farm are below allowable depletion. Farms are used to organize one or more pivots, which in turn can serve one or more fields.</p>
 
+<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+  <strong>Rainfall entry:</strong>
+  <div style="border: 1px solid lightgray; border-radius: 5px; padding: 5px; display: inline-flex; align-items: center; gap: 5px; background: #f9f9f9;">
+    <input type="checkbox" id="precipUseAgwx" onchange="togglePrecipUseAgwx(this);" <%= "checked" if @group.precip_use_agwx %>>
+    <label for="precipUseAgwx">
+      <span id="precipUseAgwxLabel" style="font-family: monospace;"><%= @group.precip_use_agwx ? "Auto" : "Manual" %></span>
+    </label>
+  </div>
+  <span style="font-size: smaller; color: gray; flex: 1;">If checked, WISP will automatically pull rainfall data from AgWeather for each field. If unchecked, you will have to enter rainfall manually for each field. Changing this will not remove any previously entered data.</span>
+</div>
+
 <h3>Farms</h3>
 <div class="overflow">
-  <div id="farmGridContainer" class="content-box grid-container">
+  <div id="farmGridContainer" class="grid-container content-box">
     <div class="flex-down gap-10">
       <table id="farmSetupGrid" cellpadding="0" cellspacing="0"></table>
       <div id="farmSetupGrid_pager"></div>

@@ -15,7 +15,7 @@ class FieldsController < AuthenticatedController
     :notes,
     :act,
     :pivot_id,
-    :id
+    :id,
   ]
 
   # GET /fields
@@ -80,7 +80,7 @@ class FieldsController < AuthenticatedController
     end
     attrs = field.attributes.symbolize_keys.merge({
       field_capacity_pct: field.field_capacity_pct,
-      perm_wilting_pt_pct: field.perm_wilting_pt_pct
+      perm_wilting_pt_pct: field.perm_wilting_pt_pct,
     })
     # puts attrs.inspect
     attrs = ApplicationController.jsonify(attrs)

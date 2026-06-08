@@ -24,6 +24,7 @@ class FieldDailyWeather < ApplicationRecord
   end
 
   include ADCalculator
+
   # from the ActsAsAdjacent plugin, which (with this) we don't need
   scope :previous, lambda { |i| {limit: 1, conditions: ["#{table_name}.date < ? and #{table_name}.field_id = ?", i.date, i.field_id], order: "#{table_name}.date DESC"} }
   scope :next, lambda { |i| {limit: 1, conditions: ["#{table_name}.date > ? and #{table_name}.field_id = ?", i.date, i.field_id], order: "#{table_name}.date ASC"} }

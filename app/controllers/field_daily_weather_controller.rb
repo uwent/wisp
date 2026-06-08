@@ -20,7 +20,6 @@ class FieldDailyWeatherController < AuthenticatedController
 
     page = -1
     page_size = -1
-    wx_size = -1
 
     field_id = session[:field_id] || session[:field_id] = params[:field_id]
     # FIXME: Shouldn't the date be in here too? I mean, 3 years from now will we be returning 500 records?

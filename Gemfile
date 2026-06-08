@@ -36,6 +36,7 @@ group :development do
   gem "shutup" # easy kill of servers
   gem "ed25519" # for ssh keys
   gem "bcrypt_pbkdf" # for ssh keys
+  gem "rails_live_reload" # for live reloading of assets in development
 end
 
 group :development, :test do

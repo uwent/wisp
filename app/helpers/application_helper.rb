@@ -113,7 +113,7 @@ module ApplicationHelper
     ]
       .map(&:titleize)
       .map do |value|
-      [value, value].join(":")
+        [value, value].join(":")
     end.join(";")
   end
 
@@ -143,7 +143,7 @@ module ApplicationHelper
   def plant_characteristics
     plants = Plant.all.sort_by(&:name)
     str = plants.inject("") do |str, plant|
-      so_far(str) + plant[:id].to_s + ":" + "{default_max_root_zone_depth:" + (plant[:default_max_root_zone_depth]).to_s + "}"
+      so_far(str) + plant[:id].to_s + ":" + "{default_max_root_zone_depth:" + plant[:default_max_root_zone_depth].to_s + "}"
     end
     "{#{str}}"
   end
