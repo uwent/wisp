@@ -14,7 +14,7 @@ class Farm < ApplicationRecord
 
   def self.latest_pivots(farms)
     latest_year = farms.collect { |f| f.pivots }.flatten.collect { |p| p.cropping_year }.max
-    (farms.collect { |f| f.pivots }).flatten.select { |p| p.cropping_year == latest_year }
+    farms.collect { |f| f.pivots }.flatten.select { |p| p.cropping_year == latest_year }
   end
 
   # TODO: is this supposed to do something? Called from farms/show.html.erb
