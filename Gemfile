@@ -32,7 +32,7 @@ group :development do
   gem "letter_opener"
   gem "letter_opener_web"
   gem "web-console"
-  gem "standard"
+  gem "standard" # linter
   gem "shutup" # easy kill of servers
   gem "ed25519" # for ssh keys
   gem "bcrypt_pbkdf" # for ssh keys
@@ -40,13 +40,9 @@ group :development do
 end
 
 group :development, :test do
-  gem "byebug"
   gem "dotenv-rails"
   gem "factory_bot_rails"
-  gem "guard-rspec"
   gem "rspec-rails"
-  gem "spring"
-  gem "spring-commands-rspec"
   gem "valid_attribute"
 end
 
