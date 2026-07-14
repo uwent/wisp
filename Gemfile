@@ -38,6 +38,7 @@ group :development do
   gem "ed25519" # for ssh keys
   gem "bcrypt_pbkdf" # for ssh keys
   gem "rails_live_reload" # for live reloading of assets in development
+  gem "solargraph" # Ruby language server for code completion and static analysis
 end
 
 group :development, :test do
