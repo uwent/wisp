@@ -32,12 +32,12 @@ jobs:
       PG_USER: postgres
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "ruby-3"
+          ruby-version: "4.0.5"
           bundler-cache: true
 
       - name: Set up database

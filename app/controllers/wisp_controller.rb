@@ -155,7 +155,7 @@ class WispController < AuthenticatedController
           ad_data: @graph_data,
           projected_ad_data: @projected_ad_data,
           target_ad_data: @target_ad_data,
-          labels: @date_hash,
+          labels: @date_hash
         }
       }
     end
@@ -176,7 +176,7 @@ class WispController < AuthenticatedController
   def set_precip_use_agwx
     get_current_ids
     @group.update!(precip_use_agwx: params[:precip_use_agwx] == "true")
-    render json: { precip_use_agwx: @group.precip_use_agwx }
+    render json: {precip_use_agwx: @group.precip_use_agwx}
   end
 
   # Ajax-accessible summary/projected box
@@ -214,7 +214,7 @@ class WispController < AuthenticatedController
       @field = Field.find(@field_id)
       session[:field_id] = @field_id
     end
-    render json: { field_id: params[:field_id] }
+    render json: {field_id: params[:field_id]}
   end
 
   private

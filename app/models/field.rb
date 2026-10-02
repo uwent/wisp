@@ -34,13 +34,13 @@ class Field < ApplicationRecord
   validates :target_ad_pct,
     numericality: {
       greater_than_or_equal_to: 1.0,
-      less_than_or_equal_to: 100.0,
+      less_than_or_equal_to: 100.0
     },
     allow_nil: true
 
   validates :et_method,
     inclusion: {
-      in: [PCT_COVER_METHOD, LAI_METHOD],
+      in: [PCT_COVER_METHOD, LAI_METHOD]
     }
 
   def self.starts_on(year)
@@ -70,7 +70,7 @@ class Field < ApplicationRecord
   def et_method_name
     {
       PCT_COVER_METHOD => "Pct Cover",
-      LAI_METHOD => "LAI",
+      LAI_METHOD => "LAI"
     }[et_method]
   end
 
@@ -160,7 +160,7 @@ class Field < ApplicationRecord
     crops.create!(
       emergence_date: default_emergence_date,
       max_allowable_depletion_frac: 0.5,
-      initial_soil_moisture: 100 * field_capacity,
+      initial_soil_moisture: 100 * field_capacity
     )
   end
 
@@ -185,7 +185,7 @@ class Field < ApplicationRecord
         ad: 0.0,
         adj_et: 0.0,
         leaf_area_index: lai,
-        calculated_pct_cover: pct_cover,
+        calculated_pct_cover: pct_cover
       )
     end
     set_fdw_initial_moisture
@@ -202,7 +202,7 @@ class Field < ApplicationRecord
   def date_endpoints
     [
       Date.civil(cropping_year, *START_DATE),
-      Date.civil(cropping_year, *END_DATE),
+      Date.civil(cropping_year, *END_DATE)
     ]
   end
 
@@ -275,7 +275,7 @@ class Field < ApplicationRecord
   end
 
   def get_et
-    opts = weather_opts.merge({ units: "in" })
+    opts = weather_opts.merge({units: "in"})
     Rails.logger.debug "Field #{id} >> Starting get_et with #{opts.inspect}"
     ets = AgWeather.get_et(opts)
 
@@ -304,7 +304,7 @@ class Field < ApplicationRecord
       return
     end
 
-    opts = weather_opts.merge({ units: "in" })
+    opts = weather_opts.merge({units: "in"})
     Rails.logger.debug "Field #{id} >> Starting get_precip with #{opts.inspect}"
     precips = AgWeather.get_precip(opts)
 
@@ -328,7 +328,7 @@ class Field < ApplicationRecord
   end
 
   def get_degree_days(method = "Simple", base_temp = 50.0, upper_temp = nil)
-    opts = weather_opts.merge({ base: base_temp, upper: upper_temp, units: "F" })
+    opts = weather_opts.merge({base: base_temp, upper: upper_temp, units: "F"})
     Rails.logger.debug "Field #{id} >> Starting get_dds with #{opts.inspect}"
     dds = AgWeather.get_dds(opts)
 
@@ -433,9 +433,9 @@ class Field < ApplicationRecord
 
     if existing_problem
       # {self => [existing_problems.first.date,existing_problems.first.ad]}
-      { self => existing_problem }
+      {self => existing_problem}
     elsif projected_problem
-      { self => projected_problem }
+      {self => projected_problem}
     end
   end
 
@@ -555,7 +555,7 @@ class Field < ApplicationRecord
     lng = pivot.longitude
     start_date = field_daily_weather[0].date.to_s
     end_date = field_daily_weather[-1].date.to_s
-    { lat:, lng:, start_date:, end_date: }
+    {lat:, lng:, start_date:, end_date:}
   end
 
   def default_emergence_date

@@ -113,7 +113,7 @@ module ApplicationHelper
     ]
       .map(&:titleize)
       .map do |value|
-        [value, value].join(":")
+      [value, value].join(":")
     end.join(";")
   end
 

@@ -22,6 +22,7 @@ gem "asigbiophys", path: "vendor/asigbiophys"
 gem "csv" # no longer part of the standard libary as of Ruby 3.4
 gem "ostruct" # no longer a default gem as of 3.3.6
 gem "rack-attack" # rate limiting
+gem "redis", "~> 5.0" # caching
 
 group :development do
   gem "puma"
@@ -32,21 +33,18 @@ group :development do
   gem "letter_opener"
   gem "letter_opener_web"
   gem "web-console"
-  gem "standard"
+  gem "standard" # linter
   gem "shutup" # easy kill of servers
   gem "ed25519" # for ssh keys
   gem "bcrypt_pbkdf" # for ssh keys
   gem "rails_live_reload" # for live reloading of assets in development
+  gem "solargraph" # Ruby language server for code completion and static analysis
 end
 
 group :development, :test do
-  gem "byebug"
   gem "dotenv-rails"
   gem "factory_bot_rails"
-  gem "guard-rspec"
   gem "rspec-rails"
-  gem "spring"
-  gem "spring-commands-rspec"
   gem "valid_attribute"
 end
 

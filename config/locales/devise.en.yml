@@ -16,6 +16,7 @@ en:
       timeout: "Your session expired. Please sign in again to continue."
       unauthenticated: "You need to sign in or sign up before continuing."
       unconfirmed: "You have to confirm your email address before continuing."
+      unconfirmed_instructions_sent: "You need to confirm your email address before you can log in. We just sent a confirmation link to your email address \u2014 please follow it, then log in again."
     mailer:
       confirmation_instructions:
         subject: "Confirmation instructions"
