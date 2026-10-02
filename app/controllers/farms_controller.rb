@@ -64,7 +64,7 @@ class FarmsController < AuthenticatedController
         if attribs[:group_id]
           attribs.delete(:group_id)
         end
-        farm = Farm.find(params[:id])
+        farm = @group.farms.find(params[:id])
         farm.update(attribs)
       end
     end
@@ -78,7 +78,7 @@ class FarmsController < AuthenticatedController
 
   def problems
     @farms = if params[:farm_id]
-      [Farm.where(id: params[:farm_id].to_i)]
+      current_group.farms.where(id: params[:farm_id].to_i).to_a
     else
       @user.groups.collect { |g| g.farms }.flatten
     end

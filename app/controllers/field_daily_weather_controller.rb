@@ -21,7 +21,10 @@ class FieldDailyWeatherController < AuthenticatedController
     page = -1
     page_size = -1
 
-    field_id = session[:field_id] || session[:field_id] = params[:field_id]
+    # Prefer the session's field (as before), but only ever use one that belongs to this group
+    field_id = [session[:field_id], params[:field_id]].compact.find { |id| current_group.fields.exists?(id) }
+    return head :not_found unless field_id
+    session[:field_id] = field_id
     # FIXME: Shouldn't the date be in here too? I mean, 3 years from now will we be returning 500 records?
     @field_daily_weather = FieldDailyWeather.where(field_id: field_id).order(:date)
     wx_size = @field_daily_weather.size
@@ -96,7 +99,7 @@ class FieldDailyWeatherController < AuthenticatedController
       attribs[col_name] = params[col_name] unless col_name == :id || col_name == :problem || params[col_name]&.empty?
     end
     attribs.compact!
-    fdw = FieldDailyWeather.find(params[:id])
+    fdw = group_scope(FieldDailyWeather).find(params[:id])
     # logger.info "fdw was #{fdw.inspect}"
     # logger.info "new attribs are #{attribs.inspect}"
 

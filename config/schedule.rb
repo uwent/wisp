@@ -26,7 +26,9 @@ job_type :rake, ' cd :path && PATH=:env_path:"$PATH" RAILS_ENV=:environment bund
 job_type :runner, %q( cd :path && PATH=:env_path:"$PATH" script/rails runner -e :environment ':task' :output )
 job_type :script, ' cd :path && PATH=:env_path:"$PATH" RAILS_ENV=:environment bundle exec script/:task :output '
 
-# Deletes all data on Feb 15 of each year
-every "0 1 15 2 *" do
-  rake "yearly:reset"
-end
+# Disabled: "yearly:reset" deletes all previous-season data on Feb 15. The 2026 data must survive
+# for the WISP 3 migration. If this app is still needed for the 2027 season, take a database
+# snapshot first, then run `bundle exec rake yearly:reset` by hand.
+# every "0 1 15 2 *" do
+#   rake "yearly:reset"
+# end

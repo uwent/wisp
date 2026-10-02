@@ -440,4 +440,25 @@ describe Field do
       expect { field.destroy! }.to change { FieldDailyWeather.count }
     end
   end
+
+  describe "#get_precip" do
+    let(:field) { create(:user).groups.first.fields.first }
+    let(:first_date) { field.field_daily_weather.first.date.to_s }
+
+    before { allow(AgWeather).to receive(:get_precip).and_return({first_date => 0.42}) }
+
+    it "fills rainfall from AgWeather when the group is set to Auto" do
+      field.group.update!(precip_use_agwx: true)
+      field.get_precip
+      expect(AgWeather).to have_received(:get_precip)
+      expect(field.field_daily_weather.first.reload.rain).to eq(0.42)
+    end
+
+    it "leaves rainfall alone when the group is set to Manual" do
+      field.group.update!(precip_use_agwx: false)
+      field.get_precip
+      expect(AgWeather).not_to have_received(:get_precip)
+      expect(field.field_daily_weather.first.reload.rain).to eq(0.0)
+    end
+  end
 end

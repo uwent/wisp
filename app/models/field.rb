@@ -299,7 +299,7 @@ class Field < ApplicationRecord
   end
 
   def get_precip
-    if precip_use_agwx?
+    unless precip_use_agwx?
       Rails.logger.debug "Field #{id} >> Skipping precip due to group settings."
       return
     end
