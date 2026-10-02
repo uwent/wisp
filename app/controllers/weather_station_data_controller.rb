@@ -18,7 +18,7 @@ class WeatherStationDataController < AuthenticatedController
     unless @group.weather_stations.detect { |wxs| wxs[:id] == weather_station_id }
       weather_station_id = @group.weather_stations.first[:id]
     end
-    @weather_station = WeatherStation.find(weather_station_id)
+    @weather_station = current_group.weather_stations.find(weather_station_id)
     @year = params[:year] ? params[:year].to_i : Time.now.year
     wx_start_date, wx_end_date = date_endpoints(@year)
 
@@ -44,7 +44,7 @@ class WeatherStationDataController < AuthenticatedController
   def post_data
     attribs = {}
     if params[:id]
-      wx_rec = WeatherStationData.find(params[:id])
+      wx_rec = group_scope(WeatherStationData).find(params[:id])
       COLUMN_NAMES.each do |col|
         attribs[col] = params[col] if params[col]
       end

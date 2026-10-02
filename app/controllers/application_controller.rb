@@ -38,11 +38,27 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # Records the current user is allowed to touch. Every lookup driven by params or session
+  # must go through one of these so users can't reach other groups' records by ID.
+  def group_scope(klass)
+    case klass.name
+    when "Group" then current_user.groups
+    when "Farm" then current_group.farms
+    when "Pivot" then current_group.pivots
+    when "Field" then current_group.fields
+    when "Crop" then Crop.where(field_id: current_group.fields.select(:id))
+    when "FieldDailyWeather" then FieldDailyWeather.where(field_id: current_group.fields.select(:id))
+    when "WeatherStation" then current_group.weather_stations
+    when "WeatherStationData" then WeatherStationData.where(weather_station_id: current_group.weather_stations.select(:id))
+    else raise ArgumentError, "No group scope defined for #{klass}"
+    end
+  end
+
   # TODO: Remove most of this.
   def get_by_parent(klass, parent_klass, parent_id)
     begin
       plural = klass.to_s.downcase + "s"
-      parent_obj = parent_klass.find(parent_id)
+      parent_obj = group_scope(parent_klass).find(parent_id)
       # obj = eval("parent_obj.#{plural}.first")
       obj = parent_obj.send(plural).first
       id = obj[:id] if obj
@@ -62,7 +78,7 @@ class ApplicationController < ActionController::Base
       # puts "get_and_set: found the id (#{id.inspect}) for #{klass.to_s} in either params (#{params[sym]}) or session (#{session[sym]})"
       # puts "get_and_set: what about string key? (#{params.inspect})"
       begin
-        obj = klass.find(id)
+        obj = group_scope(klass).find(id)
       rescue ActiveRecord::RecordNotFound
         # If the object has just been deleted, the find can fail, so fall back to parent's first child
         id, obj = get_by_parent(klass, parent_klass, parent_id)

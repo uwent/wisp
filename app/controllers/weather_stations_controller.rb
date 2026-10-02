@@ -22,7 +22,8 @@ class WeatherStationsController < AuthenticatedController
 
   def create
     @weather_station = WeatherStation.new(weather_station_params)
-    @weather_station.group = @group
+    @weather_station.group = current_group
+    @weather_station.fields = current_group.fields.where(id: field_ids_param)
 
     if @weather_station.save
       redirect_to action: :index
@@ -32,11 +33,9 @@ class WeatherStationsController < AuthenticatedController
   end
 
   def update
-    @weather_station = WeatherStation.find(params[:id])
+    @weather_station = current_group.weather_stations.find(params[:id])
     @weather_station.assign_attributes(weather_station_params)
-    @weather_station.fields = current_group.fields.where(id: params[:weather_station][:field_ids])
-
-    @weather_station.group = current_group
+    @weather_station.fields = current_group.fields.where(id: field_ids_param)
 
     if @weather_station.save
       redirect_to action: :index
@@ -52,7 +51,13 @@ class WeatherStationsController < AuthenticatedController
     redirect_to action: :index, notice: "Successfully deleted field group"
   end
 
+  # field_ids are kept out of mass assignment (assigning them to a saved record writes the
+  # join rows immediately) and always go through the current group instead
   def weather_station_params
-    params.require(:weather_station).permit(:name, :location, :notes, {field_ids: []}, :multi_edit_link)
+    params.require(:weather_station).permit(:name, :location, :notes)
+  end
+
+  def field_ids_param
+    params.require(:weather_station).permit(field_ids: [])[:field_ids] || []
   end
 end

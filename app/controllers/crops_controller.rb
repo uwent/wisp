@@ -1,5 +1,5 @@
 class CropsController < AuthenticatedController
-  before_action(only: [:post_data]) { |controller| @crop = Crop.find(params[:id]) if params[:id] && params[:id] != "_empty" }
+  before_action(only: [:post_data]) { |controller| @crop = group_scope(Crop).find(params[:id]) if params[:id] && params[:id] != "_empty" }
 
   COLUMN_NAMES = [
     :name,
@@ -34,7 +34,7 @@ class CropsController < AuthenticatedController
 
   # handle crop actions
   def post_data
-    @field = Field.find(params[:parent_id])
+    @field = current_group.fields.find(params[:parent_id])
     session[:field_id] = params[:parent_id]
     if params[:oper] == "del"
       # crop = Crop.find(params[:id])
@@ -50,7 +50,7 @@ class CropsController < AuthenticatedController
         attribs[col_name] = params[col_name] unless col_name == :id
       end
       if params[:oper] == "add"
-        set_parent_id(attribs, params, :field_id, @field_id)
+        attribs[:field_id] = @field.id
         Crop.create(attribs)
       else
         @crop.update(attribs)

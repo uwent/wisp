@@ -24,7 +24,7 @@ class FieldsController < AuthenticatedController
 
     get_current_ids
     @pivot_id = params[:parent_id]
-    @fields = Field.where(pivot_id: @pivot_id).order(:name)
+    @fields = current_group.fields.where(pivot_id: @pivot_id).order(:name)
     @paginated_fields = @fields.paginate(page: params[:page], per_page: params[:rows])
 
     json = @paginated_fields.to_a.to_jqgrid_json(COLUMN_NAMES, params[:page], params[:rows], @fields.size)
@@ -35,10 +35,10 @@ class FieldsController < AuthenticatedController
 
   # POST /fields/post_data
   def post_data
-    @pivot = Pivot.find(params[:pivot_id] || params[:parent_id])
+    @pivot = current_group.pivots.find(params[:pivot_id] || params[:parent_id])
     session[:pivot_id] = params[:pivot_id] || params[:parent_id]
     if params[:oper] == "del"
-      field = Field.find(params[:id])
+      field = @pivot.fields.find(params[:id])
       # check that we're in the right hierarchy, and not some random id
       if field.pivot == @pivot
         field.destroy
@@ -64,12 +64,13 @@ class FieldsController < AuthenticatedController
         # attribs[:name] = "New field (pivot #{params[:pivot_id]})" unless attribs[:name] && attribs[:name] != ""
         attribs[:field_capacity] = SoilType.default_soil_type[:field_capacity] unless attribs[:field_capacity]
         attribs[:perm_wilting_pt] = SoilType.default_soil_type[:perm_wilting_pt] unless attribs[:perm_wilting_pt]
+        attribs[:pivot_id] = @pivot.id
         field = Field.create(attribs)
         field.get_et
         field.get_precip
         field.get_degree_days if field.current_crop.plant.uses_degree_days?(field.et_method)
       else
-        field = Field.find(params[:id]) # TODO: , :include => :field_daily_weather)
+        field = current_group.fields.find(params[:id])
         attribs = field.groom_for_defaults(attribs)
         attribs.delete(:act)
         attribs.delete(:pivot_id) if attribs[:pivot_id]

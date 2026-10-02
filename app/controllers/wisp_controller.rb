@@ -12,7 +12,7 @@ class WispController < AuthenticatedController
     # starts clicking, all bets are off!
     if params["pivot_id"] && params["pivot_id"] != ""
       @pivot_id = params["pivot_id"]
-      @pivot = Pivot.find(@pivot_id)
+      @pivot = current_group.pivots.find(@pivot_id)
       @farm = @pivot.farm
       @farm_id = @farm.id
     else
@@ -145,7 +145,7 @@ class WispController < AuthenticatedController
   # GET
   def projection_data
     @field_id = params[:field_id]
-    @field = Field.find(@field_id)
+    @field = current_group.fields.find(@field_id)
     @farm = @field.pivot.farm
     @farm_id = @farm[:id]
     field_status_data(params[:cur_date]) # may be nil
@@ -194,10 +194,11 @@ class WispController < AuthenticatedController
   # POST?
   def set_farm
     # Rails.logger.info "SET_FARM: setting the ids to #{params[:farm_id]}"
-    session[:farm_id] = @farm_id = params[:farm_id]
+    @farm_id = params[:farm_id]
     if @farm_id
-      @farm = Farm.find(@farm_id)
+      @farm = current_group.farms.find(@farm_id)
     end
+    session[:farm_id] = @farm_id
     head :ok, content_type: "text/html"
   end
 
@@ -211,7 +212,7 @@ class WispController < AuthenticatedController
     # Rails.logger.info "set field with id #{params[:id]}"
     if params[:field_id]
       @field_id = params[:field_id]
-      @field = Field.find(@field_id)
+      @field = current_group.fields.find(@field_id)
       session[:field_id] = @field_id
     end
     render json: {field_id: params[:field_id]}
@@ -268,9 +269,11 @@ class WispController < AuthenticatedController
   end
 
   def field_status_data(cur_date = nil)
-    @field = Field.find(@field_id) if @field_id
-    @pivot = Pivot.find(@pivot_id = @field[:pivot_id])
-    @farm = Farm.find(@farm_id = @pivot[:farm_id])
+    @field = current_group.fields.find(@field_id) if @field_id
+    @pivot = @field.pivot
+    @pivot_id = @pivot.id
+    @farm = @pivot.farm
+    @farm_id = @farm.id
 
     @field_weather_data = @field.field_daily_weather
     @initial_date = @field_weather_data.first.date
